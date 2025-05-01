@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados Dia de Sorte</title>
+    <script src="https://kit.fontawesome.com/afb02bf9ac.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #F09300; /* Cor laranja do Dia de Sorte */
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin: 0 auto;
+        }
+
+        .concurso-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .concurso-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .card-header h3 {
+            color: #F09300; /* Cor laranja do Dia de Sorte */
+            font-size: 1.3em;
+        }
+
+        .data {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .numeros {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .numero {
+            width: 35px;
+            height: 35px;
+            background: #F09300; /* Cor laranja do Dia de Sorte */
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .mes-sorte-container {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .mes-sorte {
+            padding: 5px 15px;
+            background: #FFC866; /* Tom mais claro de laranja */
+            color: #8B4513; /* Marrom escuro */
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 1em;
+            text-align: center;
+            border: 2px dashed #F09300;
+        }
+
+        .status-premio {
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f8f8;
+            border-radius: 5px;
+        }
+
+        .acumulou-text {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #F09300; /* Cor laranja do Dia de Sorte */
+        }
+
+        .acumulou-text.acumulado {
+            color: #d32f2f;
+        }
+
+        .premio-principal {
+            font-size: 1em;
+            color: #333;
+            margin-top: 5px;
+        }
+
+        .premiacoes {
+            margin: 15px 0;
+        }
+
+        .premiacao-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+            font-size: 0.9em;
+        }
+
+        .premiacao-item i {
+            color: #F09300; /* Cor laranja do Dia de Sorte */
+            width: 20px;
+        }
+
+        .local {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 15px;
+        }
+
+        .local i {
+            margin-right: 5px;
+            color: #F09300; /* Cor laranja do Dia de Sorte */
+        }
+
+        .proximo-sorteio {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+            text-align: center;
+        }
+
+        .proximo-sorteio p {
+            margin: 5px 0;
+        }
+
+        .estimativa {
+            color: #F09300; /* Cor laranja do Dia de Sorte */
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+
+        .concurso-numero {
+            color: #FF5722; /* Cor laranja mais intenso que contrasta com o laranja principal */
+        }
+
+        /* Barra de carregamento */
+        .loading {
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #F09300;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Mensagem de erro */
+        .error-message {
+            background-color: #ffcccc;
+            color: #cc0000;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        /* Botões */
+        .buttons {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 10px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: #F09300;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #d67e00;
+        }
+
+        /* Responsividade */
+        @media (max-width: 1200px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 800px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Dia de Sorte</h1>
+            <h2>Últimos Resultados</h2>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p>Carregando resultados...</p>
+        </div>
+
+        <div id="error" class="error-message" style="display: none;">
+            <p>Erro ao carregar resultados. Usando dados armazenados localmente.</p>
+        </div>
+
+        <div id="grid-container" class="grid-container" style="display: none;">
+            <!-- Os resultados serão inseridos aqui dinamicamente -->
+        </div>
+
+        <div class="buttons">
+            <button id="reload-btn" class="button">Atualizar Resultados</button>
+        </div>
+    </div>
+
+    <script>
+        // Função para formatar moeda (reais)
+        function formatCurrency(value) {
+            try {
+                // Converter para float
+                if (typeof value === 'string') {
+                    value = parseFloat(value.replace(',', '.'));
+                } else {
+                    value = parseFloat(value);
+                }
+                
+                // Formatar para padrão brasileiro
+                return value.toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            } catch {
+                return '0,00';
+            }
+        }
+
+        // Função para obter o dia da semana
+        function getWeekday(dateStr) {
+            try {
+                // Converter string de data para objeto Date
+                const parts = dateStr.split('/');
+                const date = new Date(parts[2], parts[1] - 1, parts[0]);
+                
+                // Lista de dias da semana em português
+                const weekdays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+                
+                // Retornar o dia da semana
+                return weekdays[date.getDay()];
+            } catch {
+                return "";
+            }
+        }
+
+        // Dados mockados caso a API falhe
+        const mockData = {
+            concursos: [
+                {
+                    numero: 1036,
+                    data: "08/03/2025",
+                    numeros: [2, 10, 12, 14, 15, 20, 21],
+                    mes_sorte: "JULHO",
+                    acumulou: true,
+                    local_sorteio: "ESPAÇO DA SORTE em SÃO PAULO, SP",
+                    ganhadores: {
+                        sete_acertos: 0,
+                        seis_acertos: 43,
+                        cinco_acertos: 1890,
+                        quatro_acertos: 24530,
+                        mes_de_sorte: 56752
+                    },
+                    premios: {
+                        sete_acertos: 0,
+                        seis_acertos: 2357.12,
+                        cinco_acertos: 20,
+                        quatro_acertos: 4,
+                        mes_de_sorte: 2.5
+                    },
+                    proximo_concurso: {
+                        data: "11/03/2025",
+                        numero: 1037,
+                        estimativa_premio: 150000
+                    }
+                },
+                {
+                    numero: 1035,
+                    data: "05/03/2025",
+                    numeros: [3, 4, 8, 16, 18, 19, 26],
+                    mes_sorte: "FEVEREIRO",
+                    acumulou: true,
+                    local_sorteio: "ESPAÇO DA SORTE em SÃO PAULO, SP",
+                    ganhadores: {
+                        sete_acertos: 0,
+                        seis_acertos: 55,
+                        cinco_acertos: 2012,
+                        quatro_acertos: 25342,
+                        mes_de_sorte: 62148
+                    },
+                    premios: {
+                        sete_acertos: 0,
+                        seis_acertos: 1645.89,
+                        cinco_acertos: 20,
+                        quatro_acertos: 4,
+                        mes_de_sorte: 2.5
+                    },
+                    proximo_concurso: {
+                        data: "08/03/2025",
+                        numero: 1036,
+                        estimativa_premio: 120000
+                    }
+                },
+                {
+                    numero: 1034,
+                    data: "01/03/2025",
+                    numeros: [1, 6, 9, 13, 22, 24, 30],
+                    mes_sorte: "MAIO",
+                    acumulou: true,
+                    local_sorteio: "ESPAÇO DA SORTE em SÃO PAULO, SP",
+                    ganhadores: {
+                        sete_acertos: 0,
+                        seis_acertos: 48,
+                        cinco_acertos: 1957,
+                        quatro_acertos: 25876,
+                        mes_de_sorte: 57364
+                    },
+                    premios: {
+                        sete_acertos: 0,
+                        seis_acertos: 1726.42,
+                        cinco_acertos: 20,
+                        quatro_acertos: 4,
+                        mes_de_sorte: 2.5
+                    },
+                    proximo_concurso: {
+                        data: "05/03/2025",
+                        numero: 1035,
+                        estimativa_premio: 90000
+                    }
+                },
+                {
+                    numero: 1033,
+                    data: "26/02/2025",
+                    numeros: [5, 7, 11, 17, 23, 25, 28],
+                    mes_sorte: "AGOSTO",
+                    acumulou: true,
+                    local_sorteio: "ESPAÇO DA SORTE em SÃO PAULO, SP",
+                    ganhadores: {
+                        sete_acertos: 0,
+                        seis_acertos: 62,
+                        cinco_acertos: 2135,
+                        quatro_acertos: 26418,
+                        mes_de_sorte: 59847
+                    },
+                    premios: {
+                        sete_acertos: 0,
+                        seis_acertos: 1292.38,
+                        cinco_acertos: 20,
+                        quatro_acertos: 4,
+                        mes_de_sorte: 2.5
+                    },
+                    proximo_concurso: {
+                        data: "01/03/2025",
+                        numero: 1034,
+                        estimativa_premio: 70000
+                    }
+                },
+                {
+                    numero: 1032,
+                    data: "22/02/2025",
+                    numeros: [2, 9, 12, 13, 21, 27, 29],
+                    mes_sorte: "DEZEMBRO",
+                    acumulou: false,
+                    local_sorteio: "ESPAÇO DA SORTE em SÃO PAULO, SP",
+                    ganhadores: {
+                        sete_acertos: 1,
+                        seis_acertos: 82,
+                        cinco_acertos: 2428,
+                        quatro_acertos: 29753,
+                        mes_de_sorte: 65289
+                    },
+                    premios: {
+                        sete_acertos: 350000,
+                        seis_acertos: 1287.85,
+                        cinco_acertos: 20,
+                        quatro_acertos: 4,
+                        mes_de_sorte: 2.5
+                    },
+                    proximo_concurso: {
+                        data: "26/02/2025",
+                        numero: 1033,
+                        estimativa_premio: 50000
+                    }
+                },
+                {
+                    numero: 1031,
+                    data: "19/02/2025",
+                    numeros: [4, 8, 10, 14, 19, 25, 31],
+                    mes_sorte: "JANEIRO",
+                    acumulou: true,
+                    local_sorteio: "ESPAÇO DA SORTE em SÃO PAULO, SP",
+                    ganhadores: {
+                        sete_acertos: 0,
+                        seis_acertos: 59,
+                        cinco_acertos: 2264,
+                        quatro_acertos: 27893,
+                        mes_de_sorte: 61475
+                    },
+                    premios: {
+                        sete_acertos: 0,
+                        seis_acertos: 1613.47,
+                        cinco_acertos: 20,
+                        quatro_acertos: 4,
+                        mes_de_sorte: 2.5
+                    },
+                    proximo_concurso: {
+                        data: "22/02/2025",
+                        numero: 1032,
+                        estimativa_premio: 350000
+                    }
+                }
+            ]
+        };
+
+        // Função para criar um card de concurso
+        function createConcursoCard(sorteio, index) {
+            return `
+                <div class="concurso-card">
+                    <div class="card-header">
+                        <h3>Concurso <span class="concurso-numero">${sorteio.numero}</span></h3>
+                        <p class="data">${getWeekday(sorteio.data)} - ${sorteio.data}</p>
+                    </div>
+
+                    <div class="numeros">
+                        ${sorteio.numeros.map(numero => 
+                            `<div class="numero">${numero.toString().padStart(2, '0')}</div>`
+                        ).join('')}
+                    </div>
+
+                    <div class="mes-sorte-container">
+                        <div class="mes-sorte">
+                            <i class="fas fa-calendar"></i> Mês da Sorte: ${sorteio.mes_sorte}
+                        </div>
+                    </div>
+
+                    <div class="status-premio">
+                        <p class="acumulou-text ${sorteio.acumulou ? 'acumulado' : ''}">
+                            ${sorteio.acumulou ? "ACUMULOU!" : "PREMIADO!"}
+                        </p>
+                        <p class="premio-principal">
+                            ${sorteio.acumulou 
+                                ? `Prêmio estimado: R$ ${formatCurrency(sorteio.proximo_concurso.estimativa_premio)}`
+                                : `${sorteio.ganhadores.sete_acertos} ganhador(es) - R$ ${formatCurrency(sorteio.premios.sete_acertos)}`
+                            }
+                        </p>
+                    </div>
+
+                    <div class="premiacoes">
+                        <div class="premiacao-item">
+                            <i class="fas fa-trophy"></i>
+                            <span>7 acertos: ${sorteio.ganhadores.sete_acertos}</span>
+                            <span>R$ ${formatCurrency(sorteio.premios.sete_acertos)}</span>
+                        </div>
+                        <div class="premiacao-item">
+                            <i class="fas fa-star"></i>
+                            <span>6 acertos: ${sorteio.ganhadores.seis_acertos}</span>
+                            <span>R$ ${formatCurrency(sorteio.premios.seis_acertos)}</span>
+                        </div>
+                        <div class="premiacao-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>5 acertos: ${sorteio.ganhadores.cinco_acertos}</span>
+                            <span>R$ ${formatCurrency(sorteio.premios.cinco_acertos)}</span>
+                        </div>
+                        <div class="premiacao-item">
+                            <i class="fas fa-check"></i>
+                            <span>4 acertos: ${sorteio.ganhadores.quatro_acertos}</span>
+                            <span>R$ ${formatCurrency(sorteio.premios.quatro_acertos)}</span>
+                        </div>
+                        <div class="premiacao-item">
+                            <i class="fas fa-calendar-day"></i>
+                            <span>Mês da Sorte: ${sorteio.ganhadores.mes_de_sorte}</span>
+                            <span>R$ ${formatCurrency(sorteio.premios.mes_de_sorte)}</span>
+                        </div>
+                    </div>
+
+                    <div class="local">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${sorteio.local_sorteio}</span>
+                    </div>
+
+                    ${index === 0 ? `
+                    <div class="proximo-sorteio">
+                        <p><i class="fas fa-calendar-alt"></i> Próximo: ${sorteio.proximo_concurso.data} (${sorteio.proximo_concurso.numero})</p>
+                        <p class="estimativa">R$ ${formatCurrency(sorteio.proximo_concurso.estimativa_premio)}</p>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // Função para buscar e exibir os resultados do Dia de Sorte
+        async function loadResults() {
+            const loadingElement = document.getElementById('loading');
+            const errorElement = document.getElementById('error');
+            const gridContainer = document.getElementById('grid-container');
+            
+            loadingElement.style.display = 'block';
+            errorElement.style.display = 'none';
+            gridContainer.style.display = 'none';
+            
+            try {
+                // Para teste, vamos usar a API Loteria CAIXA
+                const response = await fetch('https://loteriascaixa-api.herokuapp.com/api/diadesorte/latest');
+                
+                if (!response.ok) {
+                    throw new Error(`API retornou status ${response.status}`);
+                }
+                
+                // Tentar obter dados da API
+                const latestResult = await response.json();
+                
+                // Tentar obter mais resultados anteriores
+                const previousResults = [];
+                const latestConcurso = latestResult.concurso;
+                
+                // Buscar os 5 concursos anteriores
+                for (let i = 1; i <= 5; i++) {
+                    const concursoNum = latestConcurso - i;
+                    if (concursoNum > 0) {
+                        try {
+                            const previousResponse = await fetch(`https://loteriascaixa-api.herokuapp.com/api/diadesorte/${concursoNum}`);
+                            if (previousResponse.ok) {
+                                const previousData = await previousResponse.json();
+                                previousResults.push(previousData);
+                            }
+                        } catch (error) {
+                            console.error(`Erro ao buscar concurso ${concursoNum}:`, error);
+                        }
+                    }
+                }
+                
+                // Processar os resultados para o formato que esperamos
+                const concursos = [latestResult, ...previousResults].map(result => {
+                    const premiacoes = {};
+                    result.premiacoes.forEach(p => {
+                        premiacoes[p.descricao] = p;
+                    });
+                    
+                    return {
+                        numero: result.concurso,
+                        data: result.data,
+                        numeros: result.dezenas.map(d => parseInt(d)),
+                        mes_sorte: result.mesDaSorte,
+                        acumulou: result.acumulou,
+                        local_sorteio: result.local,
+                        ganhadores: {
+                            sete_acertos: premiacoes['7 acertos']?.ganhadores || 0,
+                            seis_acertos: premiacoes['6 acertos']?.ganhadores || 0,
+                            cinco_acertos: premiacoes['5 acertos']?.ganhadores || 0,
+                            quatro_acertos: premiacoes['4 acertos']?.ganhadores || 0,
+                            mes_de_sorte: premiacoes['Mês de Sorte']?.ganhadores || 0
+                        },
+                        premios: {
+                            sete_acertos: premiacoes['7 acertos']?.valorPremio || 0,
+                            seis_acertos: premiacoes['6 acertos']?.valorPremio || 0,
+                            cinco_acertos: premiacoes['5 acertos']?.valorPremio || 0,
+                            quatro_acertos: premiacoes['4 acertos']?.valorPremio || 0,
+                            mes_de_sorte: premiacoes['Mês de Sorte']?.valorPremio || 0
+                        },
+                        proximo_concurso: {
+                            data: result.dataProximoConcurso || '',
+                            numero: result.proximoConcurso || '',
+                            estimativa_premio: result.valorEstimadoProximoConcurso || 0
+                        }
+                    };
+                });
+                
+                // Exibir os resultados
+                displayResults({ concursos });
+                
+            } catch (error) {
+                console.error('Erro ao buscar resultados:', error);
+                errorElement.style.display = 'block';
+                // Usar dados mockados em caso de erro
+                displayResults(mockData);
+            } finally {
+                loadingElement.style.display = 'none';
+            }
+        }
+
+        // Função para exibir os resultados na página
+        function displayResults(data) {
+            const gridContainer = document.getElementById('grid-container');
+            
+            // Limpar conteúdo atual
+            gridContainer.innerHTML = '';
+            
+            // Criar e adicionar cards para cada concurso
+            data.concursos.forEach((sorteio, index) => {
+                const cardHTML = createConcursoCard(sorteio, index);
+                gridContainer.innerHTML += cardHTML;
+            });
+            
+            // Mostrar o grid container
+            gridContainer.style.display = 'grid';
+        }
+
+        // Adicionar evento de clique ao botão de atualizar
+        document.getElementById('reload-btn').addEventListener('click', loadResults);
+
+        // Carregar resultados ao carregar a página
+        document.addEventListener('DOMContentLoaded', loadResults);
+    </script>
+</body>
+</html>

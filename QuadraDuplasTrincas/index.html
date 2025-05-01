@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Jogos - Dia de Sorte</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4C9141; /* Verde Dia de Sorte */
+            --secondary-color: #7AB800;
+            --accent-color: #94C11F;
+            --background-color: #F5F5F5;
+            --text-color: #333333;
+            --border-color: #DDDDDD;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        .type{
+            color:#dc3545;
+        }
+        .instrucaoes {
+          background-color: #f9f9f9;
+          border-radius: 12px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          padding: 20px;
+          text-align: left;
+          font-family: Arial, sans-serif;
+          color: #333;
+          line-height: 35px;
+          margin-top: 20px;
+          margin-bottom: 20px;
+        }
+
+        .group1 { background-color: rgba(255, 0, 0, 0.2); }  /* Vermelho transparente */
+        .group2 { background-color: rgba(0, 255, 0, 0.2); }  /* Verde transparente */
+        .group3 { background-color: rgba(0, 0, 255, 0.2); }  /* Azul transparente */
+        p span { padding: 2px 5px; border-radius: 4px; }
+
+        .jogo-item {
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .jogo-numero {
+            font-weight: bold;
+            color: var(--primary-color);
+            min-width: 30px;
+        }
+
+        .dezena {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            margin: 0 2px;
+            font-weight: bold;
+        }
+
+        .grupos-container {
+            margin-bottom: 20px;
+        }
+
+        .grupos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .grupo-card {
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            background-color: white;
+        }
+
+        .grupo-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .tipo-select {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .tipo-select input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-secondary {
+            background-color: #f8f9fa;
+            color: var(--text-color);
+            padding: 10px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .resultados {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .download-options {
+            margin-top: 20px;
+        }
+
+        .download-options h3 {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .btn-download {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--secondary-color);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-download:hover {
+            background-color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .jogo-item {
+                flex-wrap: wrap;
+            }
+            
+            .dezena {
+                width: 25px;
+                height: 25px;
+                line-height: 25px;
+                font-size: 14px;
+            }
+            
+            .grupos-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gerador de Jogos - Dia de Sorte</h1>
+            <p>Quadras, Triplas e Duplas</p>
+        </header>
+
+        <div class="instrucaoes">
+            <h2>Instruções de uso:</h2>
+            <ol>
+                <li>Sempre aparece nos sorteios <span class="type">Quadra</span><span class="type">, Duplas</span> ou<span class="type"> Trincas</span>.</li>
+                <li>As dezenas que faltarem para a geração de um jogo será aleatória entre 1 e 31.</li>
+                <li>Selecione a quantidade de Quadra, Duplas ou Trincas desejada.</li>
+                <li>Ao clicar em gerar, será gerado jogos com 7 dezenas.</li>
+                <li>Faça o download do(s) jogo(s) (opcional).</li>
+            </ol>
+            <li>EXEMPLO:</li>
+            <p><span class="group1">01-11</span>, <span class="group2">04-14</span>, <span class="group3">07-17</span></p>
+            <p><span class="group1">02-12</span>, <span class="group2">05-15</span>, <span class="group3">08-28</span></p>
+            <p><span class="group1">03-13</span>, <span class="group2">06-16</span>, <span class="group3">09-19</span></p>
+            <p><span class="group1">4, 14, 24</span>, <span class="group2">5, 15, 25</span>, <span class="group3">6, 16, 26</span></p>
+        </div>
+
+        <main>
+            <section class="gerador-form">
+                <div class="input-group">
+                    <label for="quantidade">Quantidade de Jogos: <small>Use somente se quiser vários jogos iguais.</small></label>
+                    <input type="number" id="quantidade" min="1" value="1">
+                </div>
+
+                <div class="grupos-container">
+                    <h2>Selecione os Grupos</h2>
+                    <div class="grupos-grid" id="grupos-grid">
+                        <!-- Grupos serão criados via JavaScript -->
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button id="gerar" class="btn-primary">Gerar Jogos</button>
+                    <button id="limpar" class="btn-secondary">Limpar Seleção</button>
+                </div>
+            </section>
+
+            <section class="resultados" style="display: none;" id="resultados">
+                <h2>Jogos Gerados</h2>
+                <div class="jogos-lista" id="jogos-lista"></div>
+                
+                <div class="download-options">
+                    <h3>Download</h3>
+                    <div class="buttons">
+                        <button class="btn-download" data-formato="txt">TXT</button>
+                        <button class="btn-download" data-formato="xlsx">XLSX</button>
+                        <button class="btn-download" data-formato="html">HTML</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuração dos grupos
+            const grupos = {
+                1: { quadra: [1, 11, 21, 31] },
+                2: { trinca: [2, 12, 22], duplas: [[2, 12], [2, 22], [12, 22]] },
+                3: { trinca: [3, 13, 23], duplas: [[3, 13], [3, 23], [13, 23]] },
+                4: { trinca: [4, 14, 24], duplas: [[4, 14], [4, 24], [14, 24]] },
+                5: { trinca: [5, 15, 25], duplas: [[5, 15], [5, 25], [15, 25]] },
+                6: { trinca: [6, 16, 26], duplas: [[6, 16], [6, 26], [16, 26]] },
+                7: { trinca: [7, 17, 27], duplas: [[7, 17], [7, 27], [17, 27]] },
+                8: { trinca: [8, 18, 28], duplas: [[8, 18], [8, 28], [18, 28]] },
+                9: { trinca: [9, 19, 29], duplas: [[9, 19], [9, 29], [19, 29]] },
+                10: { trinca: [10, 20, 30], duplas: [[10, 20], [10, 30], [20, 30]] }
+            };
+
+            // Elementos do DOM
+            const gruposGrid = document.getElementById('grupos-grid');
+            const btnGerar = document.getElementById('gerar');
+            const btnLimpar = document.getElementById('limpar');
+            const quantidadeInput = document.getElementById('quantidade');
+            const resultadosSection = document.getElementById('resultados');
+            const jogosLista = document.getElementById('jogos-lista');
+
+            // Criar a interface dos grupos
+            function criarGruposUI() {
+                for (let i = 1; i <= 10; i++) {
+                    const grupoCard = document.createElement('div');
+                    grupoCard.className = 'grupo-card';
+                    grupoCard.dataset.grupo = i;
+                    
+                    let html = `<h3>Grupo ${i}</h3>`;
+                    
+                    if (i === 1) {
+                        html += `
+                            <div class="tipo-select">
+                                <input type="checkbox" id="quadra-${i}" value="quadra">
+                                <label for="quadra-${i}">Quadra</label>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="tipo-select">
+                                <input type="checkbox" id="trinca-${i}" value="trinca">
+                                <label for="trinca-${i}">Trinca</label>
+                                <input type="checkbox" id="dupla-${i}" value="dupla">
+                                <label for="dupla-${i}">Dupla</label>
+                            </div>
+                        `;
+                    }
+                    
+                    grupoCard.innerHTML = html;
+                    gruposGrid.appendChild(grupoCard);
+                }
+
+                // Adicionar event listener para checkboxes
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', () => {
+                        const selecoes = obterSelecoes();
+                        const validacao = validarSelecoes(selecoes);
+                        
+                        if (!validacao.valido) {
+                            alert(validacao.mensagem);
+                            checkbox.checked = false; // Desmarca a última seleção
+                        }
+                    });
+                });
+            }
+
+            // Função para validar as seleções
+            function validarSelecoes(selecoes) {
+                let totalNumeros = 0;
+                let mensagemErro = '';
+                let numerosUsados = new Set();
+
+                // Calcula o total de números que seriam usados
+                for (const selecao of selecoes) {
+                    const grupo = grupos[selecao.grupo];
+                    if (selecao.tipo === 'quadra' && grupo.quadra) {
+                        grupo.quadra.forEach(n => numerosUsados.add(n));
+                        totalNumeros = 4;
+                    } else if (selecao.tipo === 'trinca' && grupo.trinca) {
+                        grupo.trinca.forEach(n => numerosUsados.add(n));
+                        totalNumeros += 3;
+                    } else if (selecao.tipo === 'dupla' && grupo.duplas) {
+                        const duplaAleatoria = grupo.duplas[0]; // Pega primeira dupla para validação
+                        duplaAleatoria.forEach(n => numerosUsados.add(n));
+                        totalNumeros += 2;
+                    }
+                }
+
+                if (totalNumeros > 7) {
+                    let combinacoes = selecoes.map(s => {
+                        let tipo = s.tipo.charAt(0).toUpperCase() + s.tipo.slice(1);
+                        return `Grupo ${s.grupo} (${tipo})`;
+                    }).join(', ');
+
+                    mensagemErro = `A combinação selecionada ultrapassa 7 dezenas!\n\n` +
+                                `Seleções atuais: ${combinacoes}\n` +
+                                `Total de números: ${totalNumeros}\n\n` +
+                                `Por favor, selecione uma combinação que totalize 7 ou menos números.`;
+                    return { valido: false, mensagem: mensagemErro };
+                }
+
+                return { valido: true };
+            }
+
+            // Função para obter seleções
+            function obterSelecoes() {
+                const selecoes = [];
+                for (let i = 1; i <= 10; i++) {
+                    const quadra = document.getElementById(`quadra-${i}`);
+                    const trinca = document.getElementById(`trinca-${i}`);
+                    const dupla = document.getElementById(`dupla-${i}`);
+                    
+                    if (quadra && quadra.checked) {
+                        selecoes.push({ grupo: i, tipo: 'quadra' });
+                    }
+                    if (trinca && trinca.checked) {
+                        selecoes.push({ grupo: i, tipo: 'trinca' });
+                    }
+                    if (dupla && dupla.checked) {
+                        selecoes.push({ grupo: i, tipo: 'dupla' });
+                    }
+                }
+                return selecoes;
+            }
+
+            // Função para gerar números aleatórios únicos
+            function getRandomNumbers(min, max, count, exclude = []) {
+                const numbers = [];
+                const available = [];
+                
+                for (let i = min; i <= max; i++) {
+                    if (!exclude.includes(i)) {
+                        available.push(i);
+                    }
+                }
+                
+                while (numbers.length < count && available.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * available.length);
+                    numbers.push(available[randomIndex]);
+                    available.splice(randomIndex, 1);
+                }
+                
+                return numbers;
+            }
+
+            // Função para gerar um jogo
+            function gerarJogo(selecoes) {
+                let numeros = new Set();
+                
+                // Adiciona números das seleções específicas
+                for (const selecao of selecoes) {
+                    const grupo = grupos[selecao.grupo];
+                    if (selecao.tipo === 'quadra' && grupo.quadra) {
+                        grupo.quadra.forEach(n => numeros.add(n));
+                    } else if (selecao.tipo === 'trinca' && grupo.trinca) {
+                        grupo.trinca.forEach(n => numeros.add(n));
+                    } else if (selecao.tipo === 'dupla' && grupo.duplas) {
+                        const duplaAleatoria = grupo.duplas[Math.floor(Math.random() * grupo.duplas.length)];
+                        duplaAleatoria.forEach(n => numeros.add(n));
+                    }
+                }
+            
+                // Completa até 7 números com aleatórios
+                const numerosSelecionados = Array.from(numeros);
+                const numerosFaltantes = 7 - numerosSelecionados.length;
+                if (numerosFaltantes > 0) {
+                    const complementos = getRandomNumbers(1, 31, numerosFaltantes, numerosSelecionados);
+                    complementos.forEach(n => numeros.add(n));
+                }
+            
+                return Array.from(numeros).sort((a, b) => a - b);
+            }
+
+            // Função para exibir os jogos gerados
+            function exibirJogos(jogos) {
+                jogosLista.innerHTML = '';
+                jogos.forEach((jogo, index) => {
+                    const jogoDiv = document.createElement('div');
+                    jogoDiv.className = 'jogo-item';
+                    jogoDiv.innerHTML = `
+                        <span class="jogo-numero">${index + 1}.</span>
+                        ${jogo.map(n => `<span class="dezena">${n.toString().padStart(2, '0')}</span>`).join(' ')}
+                    `;
+                    jogosLista.appendChild(jogoDiv);
+                });
+                resultadosSection.style.display = 'block';
+            }
+
+            // Event Listener para gerar jogos
+            btnGerar.addEventListener('click', () => {
+                const quantidade = parseInt(quantidadeInput.value) || 1;
+                const selecoes = obterSelecoes();
+                
+                if (selecoes.length === 0) {
+                    alert('Selecione pelo menos um grupo!');
+                    return;
+                }
+
+                const validacao = validarSelecoes(selecoes);
+                if (!validacao.valido) {
+                    alert(validacao.mensagem);
+                    return;
+                }
+
+                const jogos = [];
+                for (let i = 0; i < quantidade; i++) {
+                    const jogo = gerarJogo(selecoes);
+                    jogos.push(jogo);
+                }
+
+                exibirJogos(jogos);
+            });
+
+            // Event Listener para limpar as seleções
+            btnLimpar.addEventListener('click', () => {
+                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                resultadosSection.style.display = 'none';
+                jogosLista.innerHTML = '';
+            });
+
+            // Event Listeners para download
+            document.querySelectorAll('.btn-download').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const formato = this.getAttribute('data-formato');
+                    const jogosArr = [];
+                    
+                    // Extrair números de cada jogo
+                    document.querySelectorAll('.jogo-item').forEach(jogoEl => {
+                        const dezenas = Array.from(jogoEl.querySelectorAll('.dezena'))
+                            .map(span => span.textContent);
+                        jogosArr.push(dezenas);
+                    });
+                    
+                    if (jogosArr.length === 0) {
+                        alert('Não há jogos para fazer download!');
+                        return;
+                    }
+                    
+                    if (formato === 'txt') {
+                        downloadTXT(jogosArr);
+                    } else if (formato === 'xlsx') {
+                        downloadXLSX(jogosArr);
+                    } else if (formato === 'html') {
+                        downloadHTML(jogosArr);
+                    }
+                });
+            });
+
+            // Funções de download
+            function downloadTXT(jogos) {
+                const content = jogos.map(jogo => jogo.join(' ')).join('\n');
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'jogos_dia_de_sorte.txt';
+                a.click();
+                
+                URL.revokeObjectURL(url);
+            }
+
+            function downloadXLSX(jogos) {
+                try {
+                    // Criar workbook
+                    const wb = XLSX.utils.book_new();
+                    
+                    // Converter jogos para array de arrays
+                    const data = jogos.map((jogo, index) => {
+                        return [index + 1, ...jogo];
+                    });
+                    
+                    // Adicionar cabeçalho
+                    data.unshift(['#', 'Nº 1', 'Nº 2', 'Nº 3', 'Nº 4', 'Nº 5', 'Nº 6', 'Nº 7']);
+                    
+                    // Criar worksheet
+                    const ws = XLSX.utils.aoa_to_sheet(data);
+                    
+                    // Adicionar worksheet ao workbook
+                    XLSX.utils.book_append_sheet(wb, ws, 'Jogos Dia de Sorte');
+                    
+                    // Salvar arquivo
+                    XLSX.writeFile(wb, 'jogos_dia_de_sorte.xlsx');
+                } catch (error) {
+                    console.error('Erro ao gerar arquivo Excel:', error);
+                    alert('Erro ao gerar o arquivo Excel. Verifique o console para mais detalhes.');
+                }
+            }
+
+            function downloadHTML(jogos) {
+                const htmlContent = `
+                <!DOCTYPE html>
+                <html lang="pt-BR">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Jogos Dia de Sorte</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        h1 { color: #4C9141; }
+                        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+                        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+                        tr:nth-child(even) { background-color: #f2f2f2; }
+                        .dezena {
+                            display: inline-block;
+                            width: 28px;
+                            height: 28px;
+                            line-height: 28px;
+                            text-align: center;
+                            background-color: #4C9141;
+                            color: white;
+                            border-radius: 50%;
+                            margin: 0 2px;
+                            font-weight: bold;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Jogos Gerados - Dia de Sorte</h1>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Dezenas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${jogos.map((jogo, index) => `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${jogo.map(n => `<span class="dezena">${n}</span>`).join(' ')}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <p><em>Total de jogos: ${jogos.length}</em></p>
+                </body>
+                </html>
+                `;
+                
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'jogos_dia_de_sorte.html';
+                a.click();
+                
+                URL.revokeObjectURL(url);
+            }
+
+            // Inicialização
+            criarGruposUI();
+        });
+    </script>
+</body>
+</html>
