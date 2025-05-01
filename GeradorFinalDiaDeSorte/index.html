@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Palpites - Dia da Sorte</title>
+    <style>
+        :root {
+            --cor-principal: #5D5CDE;
+            --cor-fundo-claro: #f8f9fa;
+            --cor-fundo-escuro: #212529;
+            --cor-texto-claro: #333;
+            --cor-texto-escuro: #f8f9fa;
+            --cor-selecionado: #22c55e;
+            --cor-obrigatorio: #ff6b6b;
+            --cor-resumo: #ff0000;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--cor-fundo-escuro);
+            color: var(--cor-texto-escuro);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: var(--cor-principal);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .painel {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .painel h2 {
+            margin-top: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .grupo {
+            margin-bottom: 20px;
+        }
+        
+        .grupo label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        select, input, button {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--cor-texto-escuro);
+            width: 100%;
+            font-size: 16px; /* Evitar zoom em dispositivos móveis */
+        }
+        
+        button {
+            background-color: var(--cor-principal);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .digitos {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .digito-container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .digito-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .qtd-input {
+            width: 60px;
+            padding: 5px;
+            text-align: center;
+        }
+        
+        .grid-numeros {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+        
+        @media (min-width: 768px) {
+            .grid-numeros {
+                grid-template-columns: repeat(10, 1fr);
+            }
+        }
+        
+        .numero-btn {
+            width: 100%;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-selecao {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        
+        .obrigatorios {
+            min-height: 60px;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            margin-top: 5px;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        
+        .obrigatorio-item {
+            display: inline-block;
+            background-color: var(--cor-principal);
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 5px;
+            position: relative;
+        }
+        
+        .remover-obrigatorio {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: rgba(255, 0, 0, 0.8);
+            color: white;
+            font-size: 10px;
+            line-height: 16px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .mensagem-vazio {
+            color: rgba(255, 255, 255, 0.5);
+            font-style: italic;
+            font-size: 14px;
+        }
+        
+        .dica {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 5px;
+        }
+        
+        .total-digitos {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        
+        .aviso-error {
+            color: #ff6b6b;
+        }
+        
+        .aviso-ok {
+            color: #22c55e;
+        }
+        
+        .resultados {
+            margin-top: 20px;
+        }
+        
+        .palpite {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .palpite-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .palpite-numeros {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .palpite-numero {
+            width: 35px;
+            height: 35px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .acoes {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-acao {
+            flex: 1;
+            padding: 10px;
+        }
+        
+        /* Estilos específicos para estados */
+        .selecionado {
+            background-color: var(--cor-selecionado) !important;
+            color: white !important;
+        }
+        
+        .obrigatorio {
+            position: relative;
+            border: 2px solid var(--cor-obrigatorio) !important;
+        }
+        
+        .obrigatorio::after {
+            content: "✓";
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--cor-obrigatorio);
+            color: white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .escondido {
+            display: none !important;
+        }
+        
+        /* Estilos para o resumo */
+        .resumo-painel {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 150px;
+        }
+        
+        .resumo-conteudo {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cor-resumo);
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de Palpites FINAL - Dia da Sorte</h1>
+        
+        <div class="grid">
+            <!-- Configurações -->
+            <div class="painel">
+                <h2>Configurações</h2>
+                
+                <div class="grupo">
+                    <label for="qtdNumeros">Quantidade de números por jogo:</label>
+                    <select id="qtdNumeros">
+                        <option value="7">7 números</option>
+                        <option value="8">8 números</option>
+                        <option value="9">9 números</option>
+                        <option value="10">10 números</option>
+                        <option value="11">11 números</option>
+                        <option value="12">12 números</option>
+                        <option value="13">13 números</option>
+                        <option value="14">14 números</option>
+                        <option value="15">15 números</option>
+                    </select>
+                </div>
+                
+                <div class="grupo">
+                    <label>Números que começam com:</label>
+                    <div class="digitos">
+                        <div class="digito-container">
+                            <button class="digito-btn" data-digito="0">0</button>
+                            <input type="number" class="qtd-input" id="qtd-0" min="0" max="15" value="0">
+                        </div>
+                        <div class="digito-container">
+                            <button class="digito-btn" data-digito="1">1</button>
+                            <input type="number" class="qtd-input" id="qtd-1" min="0" max="15" value="0">
+                        </div>
+                        <div class="digito-container">
+                            <button class="digito-btn" data-digito="2">2</button>
+                            <input type="number" class="qtd-input" id="qtd-2" min="0" max="15" value="0">
+                        </div>
+                        <div class="digito-container">
+                            <button class="digito-btn" data-digito="3">3</button>
+                            <input type="number" class="qtd-input" id="qtd-3" min="0" max="15" value="0">
+                        </div>
+                    </div>
+                    <div id="total-digitos" class="total-digitos">
+                        Total: 0 (mínimo: 3)
+                    </div>
+                </div>
+                
+                <div class="grupo">
+                    <label for="mesSorte">Mês da Sorte:</label>
+                    <select id="mesSorte">
+                        <option value="Jan">Janeiro</option>
+                        <option value="Fev">Fevereiro</option>
+                        <option value="Mar">Março</option>
+                        <option value="Abr">Abril</option>
+                        <option value="Mai">Maio</option>
+                        <option value="Jun">Junho</option>
+                        <option value="Jul">Julho</option>
+                        <option value="Ago">Agosto</option>
+                        <option value="Set">Setembro</option>
+                        <option value="Out">Outubro</option>
+                        <option value="Nov" selected>Novembro</option>
+                        <option value="Dez">Dezembro</option>
+                    </select>
+                </div>
+                
+                <div class="grupo">
+                    <label>Números que não podem faltar:</label>
+                    <div class="obrigatorios" id="numerosObrigatorios">
+                        <span class="mensagem-vazio" id="semObrigatorios">Nenhum número marcado como obrigatório</span>
+                    </div>
+                    <div class="dica">Clique duas vezes em um número selecionado para torná-lo obrigatório</div>
+                </div>
+                
+                <div class="grupo">
+                    <label for="qtdJogos">Quantidade de jogos a serem gerados:</label>
+                    <select id="qtdJogos">
+                        <option value="1">1 jogo</option>
+                        <option value="2" selected>2 jogos</option>
+                        <option value="3">3 jogos</option>
+                        <option value="4">4 jogos</option>
+                        <option value="5">5 jogos</option>
+                        <option value="10">10 jogos</option>
+                        <option value="15">15 jogos</option>
+                        <option value="20">20 jogos</option>
+                        <option value="30">30 jogos</option>
+                        <option value="50">50 jogos</option>
+                        <option value="100">100 jogos</option>
+                        <option value="200">200 jogos</option>
+                        <option value="500">500 jogos</option>
+                        <option value="1000">1000 jogos</option>
+                    </select>
+                </div>
+                
+                <button id="btnGerar">Gerar Palpites</button>
+            </div>
+            
+            <!-- Seleção de números -->
+            <div class="painel">
+                <h2>Números que poderão fazer parte do(s) palpite(s)</h2>
+                
+                <div class="grid-numeros" id="gridNumeros">
+                    <!-- Números serão gerados via JavaScript -->
+                </div>
+                
+                <div class="info-selecao">
+                    <div>
+                        <span>Quantidade selecionada:</span> 
+                        <span id="qtdSelecionada" style="font-weight: bold; color: var(--cor-principal);">0</span>
+                    </div>
+                    <div>
+                        <span>Restam selecionar:</span> 
+                        <span id="qtdRestante" style="font-weight: bold; color: var(--cor-selecionado);">31</span>
+                    </div>
+                    <div class="info-extra" style="width: 100%; margin-top: 10px; background-color: rgba(255, 255, 255, 0.08); padding: 10px; border-radius: 4px; text-align: left;">
+                        <div style="margin-bottom: 5px; font-weight: bold; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 5px; color: var(--cor-principal);">Resumo das configurações:</div>
+                        
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px 15px; margin-bottom: 8px;">
+                            <div>
+                                <span style="font-size: 14px; font-weight: bold;">Sequência de dígitos:</span>
+                                <span style="font-size: 14px; margin-left: 5px; color: var(--cor-selecionado);">2n0 2n1 3n2  </span>
+                            </div>
+                            
+                            <div>
+                                <span style="font-size: 14px; font-weight: bold;">Mês da sorte:</span>
+                                <span style="font-size: 14px; margin-left: 5px; color: var(--cor-selecionado);">Nov</span>
+                            </div>
+                            
+                            <div>
+                                <span style="font-size: 14px; font-weight: bold;">Número obrigatório:</span>
+                                <span style="font-size: 14px; margin-left: 5px; color: var(--cor-selecionado);">10</span>
+                            </div>
+                        </div>
+                        
+                        <div style="font-size: 14px; margin-bottom: 5px; font-weight: bold;">Sequências de dígitos:</div>
+                        <div style="font-size: 13px; display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px;">
+                            <span style="background-color: rgba(255, 255, 255, 0.1); padding: 2px 5px; border-radius: 3px;">0,1,2,3,4</span>
+                            <span style="background-color: rgba(255, 255, 255, 0.1); padding: 2px 5px; border-radius: 3px;">0,1,2,3,6</span>
+                            <span style="background-color: rgba(255, 255, 255, 0.1); padding: 2px 5px; border-radius: 3px;">0,1,2,3,7</span>
+                            <span style="background-color: rgba(255, 255, 255, 0.1); padding: 2px 5px; border-radius: 3px;">0,1,2,3,8</span>
+                            <span style="background-color: rgba(255, 255, 255, 0.1); padding: 2px 5px; border-radius: 3px;">0,1,2,3,9</span>
+                        </div>
+                        
+                        <div style="font-size: 14px; margin-bottom: 5px; font-weight: bold;">Números selecionados:</div>
+                        <div style="font-size: 13px; line-height: 1.7;">
+                            <div>01 02 03 04</div>
+                            <div>10 11 12 13 14 16 17 18 19</div>
+                            <div>20 21 22 23 24</div>
+                            <div>30 31</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 5px; width: 100%;">
+                        <button id="btnLimpar" style="max-width: 150px;">Limpar Seleção</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resultados -->
+        <div id="resultados" class="resultados escondido">
+            <div class="painel">
+                <h2>Palpites Gerados</h2>
+                
+                <div id="listaPalpites">
+                    <!-- Palpites serão inseridos aqui -->
+                </div>
+                
+                <div class="acoes">
+                    <button id="btnCopiar" class="btn-acao">Copiar Palpites</button>
+                    <button id="btnNovosPalpites" class="btn-acao">Gerar Novos Palpites</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos DOM
+            const gridNumeros = document.getElementById('gridNumeros');
+            const qtdSelecionadaSpan = document.getElementById('qtdSelecionada');
+            const qtdRestanteSpan = document.getElementById('qtdRestante');
+            const btnLimpar = document.getElementById('btnLimpar');
+            const btnGerar = document.getElementById('btnGerar');
+            const resultados = document.getElementById('resultados');
+            const listaPalpites = document.getElementById('listaPalpites');
+            const numerosObrigatorios = document.getElementById('numerosObrigatorios');
+            const semObrigatorios = document.getElementById('semObrigatorios');
+            const totalDigitosDiv = document.getElementById('total-digitos');
+            
+            // Variáveis de estado
+            let numerosSelecionados = [];
+            let digitosSelecionados = [];
+            let numerosObrigatoriosList = [];
+            
+            // Inicializar grid de números
+            for (let i = 1; i <= 31; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'numero-btn';
+                btn.textContent = i < 10 ? `0${i}` : i;
+                btn.setAttribute('data-numero', i);
+                
+                // Clicar uma vez seleciona o número
+                btn.addEventListener('click', function() {
+                    const numero = parseInt(this.getAttribute('data-numero'));
+                    
+                    if (this.classList.contains('selecionado')) {
+                        // Desselecionando
+                        this.classList.remove('selecionado');
+                        numerosSelecionados = numerosSelecionados.filter(n => n !== numero);
+                        
+                        // Se estava marcado como obrigatório, remover
+                        if (this.classList.contains('obrigatorio')) {
+                            this.classList.remove('obrigatorio');
+                            removerNumeroObrigatorio(numero);
+                        }
+                    } else {
+                        // Selecionando
+                        this.classList.add('selecionado');
+                        numerosSelecionados.push(numero);
+                    }
+                    
+                    atualizarContadores();
+                });
+                
+                // Duplo clique marca como obrigatório
+                btn.addEventListener('dblclick', function() {
+                    const numero = parseInt(this.getAttribute('data-numero'));
+                    
+                    // Garantir que está selecionado primeiro
+                    if (!this.classList.contains('selecionado')) {
+                        this.classList.add('selecionado');
+                        if (!numerosSelecionados.includes(numero)) {
+                            numerosSelecionados.push(numero);
+                        }
+                        atualizarContadores();
+                    }
+                    
+                    // Toggle para obrigatório
+                    if (this.classList.contains('obrigatorio')) {
+                        this.classList.remove('obrigatorio');
+                        removerNumeroObrigatorio(numero);
+                    } else {
+                        this.classList.add('obrigatorio');
+                        adicionarNumeroObrigatorio(numero);
+                    }
+                });
+                
+                gridNumeros.appendChild(btn);
+            }
+            
+            // Configurar botões de dígitos
+            document.querySelectorAll('.digito-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const digito = this.getAttribute('data-digito');
+                    const inputQtd = document.getElementById(`qtd-${digito}`);
+                    
+                    if (this.classList.contains('selecionado')) {
+                        // Desselecionando
+                        this.classList.remove('selecionado');
+                        digitosSelecionados = digitosSelecionados.filter(d => d !== digito);
+                        inputQtd.value = 0;
+                    } else {
+                        // Selecionando
+                        this.classList.add('selecionado');
+                        digitosSelecionados.push(digito);
+                        inputQtd.value = 1;
+                    }
+                    
+                    atualizarTotalDigitos();
+                });
+            });
+            
+            // Configurar inputs de quantidade
+            document.querySelectorAll('.qtd-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    const digitoId = this.id.split('-')[1];
+                    const digitoBtn = document.querySelector(`.digito-btn[data-digito="${digitoId}"]`);
+                    
+                    // Se o valor for maior que 0, garantir que o dígito está selecionado
+                    if (parseInt(this.value) > 0 && !digitoBtn.classList.contains('selecionado')) {
+                        digitoBtn.classList.add('selecionado');
+                        if (!digitosSelecionados.includes(digitoId)) {
+                            digitosSelecionados.push(digitoId);
+                        }
+                    }
+                    
+                    // Se o valor for 0, desselecionamos o dígito
+                    if (parseInt(this.value) === 0 && digitoBtn.classList.contains('selecionado')) {
+                        digitoBtn.classList.remove('selecionado');
+                        digitosSelecionados = digitosSelecionados.filter(d => d !== digitoId);
+                    }
+                    
+                    // Limitações
+                    const qtdNumeros = parseInt(document.getElementById('qtdNumeros').value);
+                    if (parseInt(this.value) > qtdNumeros) {
+                        this.value = qtdNumeros;
+                    }
+                    
+                    atualizarTotalDigitos();
+                });
+            });
+            
+            // Limpar seleção
+            btnLimpar.addEventListener('click', function() {
+                // Limpar números selecionados e obrigatórios
+                numerosSelecionados = [];
+                numerosObrigatoriosList = [];
+                
+                // Limpar visual dos números
+                document.querySelectorAll('.numero-btn').forEach(btn => {
+                    btn.classList.remove('selecionado', 'obrigatorio');
+                });
+                
+                // Limpar dígitos selecionados
+                digitosSelecionados = [];
+                document.querySelectorAll('.digito-btn').forEach(btn => {
+                    btn.classList.remove('selecionado');
+                });
+                
+                // Zerar inputs de quantidade
+                document.querySelectorAll('.qtd-input').forEach(input => {
+                    input.value = 0;
+                });
+                
+                // Resetar contadores e visualizações
+                atualizarContadores();
+                atualizarTotalDigitos();
+                atualizarVisualizacaoNumerosObrigatorios();
+            });
+            
+            // Função para gerar o resumo
+            function gerarResumo() {
+                if (digitosSelecionados.length === 0 && numerosSelecionados.length === 0) {
+                    return null;
+                }
+                
+                let resumo = '';
+                
+                // Sequência de dígitos (formato: "Xn Y")
+                if (digitosSelecionados.length > 0) {
+                    resumo += 'RESUMO (sequencia de digitos)\n';
+                    
+                    const sequenciaDigitos = digitosSelecionados.map(digito => {
+                        const qtd = document.getElementById(`qtd-${digito}`).value;
+                        return `${qtd}n ${digito}`;
+                    }).join(' ');
+                    
+                    resumo += sequenciaDigitos + '\n\n';
+                }
+                
+                // Mês da sorte
+                const mesSorte = document.getElementById('mesSorte').value;
+                resumo += '(mes da sorte)\n';
+                resumo += mesSorte + '\n\n\n';
+                
+                // Números que não podem faltar
+                resumo += '(numero que não pode faltar)\n';
+                if (numerosObrigatoriosList.length > 0) {
+                    const numerosFormatados = numerosObrigatoriosList.map(n => 
+                        n < 10 ? `0${n}` : n
+                    ).join(' ');
+                    resumo += numerosFormatados + '\n\n\n';
+                } else {
+                    resumo += 'Nenhum\n\n\n';
+                }
+                
+                // Sequência de dígitos (possíveis combinações)
+                resumo += '(sequencias de digitos)\n';
+                
+                // Gerando sequências de combinação
+                const combinacoes = gerarCombinacoes();
+                resumo += combinacoes.join('\n') + '\n\n';
+                
+                // Números selecionados
+                resumo += '(Números que poderão fazer parte do(s) palpite(s)\n';
+                
+                // Agrupar números por dígito inicial
+                const numerosPorDigito = {};
+                numerosSelecionados.sort((a, b) => a - b).forEach(n => {
+                    const digitoInicial = Math.floor(n / 10);
+                    if (!numerosPorDigito[digitoInicial]) {
+                        numerosPorDigito[digitoInicial] = [];
+                    }
+                    numerosPorDigito[digitoInicial].push(n);
+                });
+                
+                // Formatar para exibição
+                Object.keys(numerosPorDigito).sort((a, b) => a - b).forEach(digitoInicial => {
+                    const numerosLinha = numerosPorDigito[digitoInicial].map(n => 
+                        n < 10 ? `0${n}` : n
+                    ).join(' ');
+                    resumo += numerosLinha + '\n';
+                });
+                
+                resumo += ')';
+                
+                return resumo;
+            }
+            
+            // Função para gerar combinações de dígitos
+            function gerarCombinacoes() {
+                // Esta é uma versão simplificada para demonstrar o conceito
+                // Se necessário, pode ser expandida para gerar todas as combinações possíveis
+                
+                // As combinações mostradas no exemplo são entre dígitos 0-9
+                // Aqui vamos gerar 5 combinações simples baseadas nos dígitos selecionados
+                
+                const combinacoes = [];
+                const todosDigitos = ['0','1','2','3','4','5','6','7','8','9'];
+                const digitosBase = ['0','1','2','3']; // Dígitos base mostrados no exemplo
+                
+                // Criar 5 combinações adicionando diferentes dígitos finais
+                if (digitosSelecionados.length > 0) {
+                    for (let i = 4; i < 9; i++) {
+                        const comb = [...digitosBase, todosDigitos[i]].join(',');
+                        combinacoes.push(comb);
+                    }
+                } else {
+                    combinacoes.push('Nenhuma sequência definida');
+                }
+                
+                return combinacoes;
+            }
+            
+            // Função para atualizar contadores
+            function atualizarContadores() {
+                qtdSelecionadaSpan.textContent = numerosSelecionados.length;
+                qtdRestanteSpan.textContent = 31 - numerosSelecionados.length;
+            }
+            
+            // Função para atualizar o total de dígitos
+            function atualizarTotalDigitos() {
+                let total = 0;
+                digitosSelecionados.forEach(digito => {
+                    const input = document.getElementById(`qtd-${digito}`);
+                    total += parseInt(input.value) || 0;
+                });
+                
+                const qtdNumeros = parseInt(document.getElementById('qtdNumeros').value);
+                
+                totalDigitosDiv.textContent = `Total: ${total} (mínimo: 3, máximo: ${qtdNumeros})`;
+                
+                // Atualizar estilo conforme o valor
+                if (total < 3) {
+                    totalDigitosDiv.className = 'total-digitos aviso-error';
+                } else if (total > qtdNumeros) {
+                    totalDigitosDiv.className = 'total-digitos aviso-error';
+                } else {
+                    totalDigitosDiv.className = 'total-digitos aviso-ok';
+                }
+            }
+            
+            // Função para adicionar número obrigatório
+            function adicionarNumeroObrigatorio(numero) {
+                if (!numerosObrigatoriosList.includes(numero)) {
+                    numerosObrigatoriosList.push(numero);
+                    atualizarVisualizacaoNumerosObrigatorios();
+                }
+            }
+            
+            // Função para remover número obrigatório
+            function removerNumeroObrigatorio(numero) {
+                numerosObrigatoriosList = numerosObrigatoriosList.filter(n => n !== numero);
+                atualizarVisualizacaoNumerosObrigatorios();
+            }
+            
+            // Função para atualizar visualização dos números obrigatórios
+            function atualizarVisualizacaoNumerosObrigatorios() {
+                // Limpar container, mas manter a mensagem de vazio
+                const elementos = numerosObrigatorios.querySelectorAll('.obrigatorio-item');
+                elementos.forEach(el => el.remove());
+                
+                if (numerosObrigatoriosList.length === 0) {
+                    semObrigatorios.classList.remove('escondido');
+                    return;
+                }
+                
+                semObrigatorios.classList.add('escondido');
+                
+                // Ordenar números
+                numerosObrigatoriosList.sort((a, b) => a - b);
+                
+                // Adicionar novos elementos
+                numerosObrigatoriosList.forEach(numero => {
+                    const span = document.createElement('span');
+                    span.className = 'obrigatorio-item';
+                    span.textContent = numero < 10 ? `0${numero}` : numero;
+                    
+                    // Botão para remover
+                    const btnRemover = document.createElement('span');
+                    btnRemover.className = 'remover-obrigatorio';
+                    btnRemover.textContent = '×';
+                    btnRemover.addEventListener('click', function() {
+                        removerNumeroObrigatorio(numero);
+                        
+                        // Atualizar botão correspondente
+                        const btn = document.querySelector(`.numero-btn[data-numero="${numero}"]`);
+                        if (btn) {
+                            btn.classList.remove('obrigatorio');
+                        }
+                    });
+                    
+                    span.appendChild(btnRemover);
+                    numerosObrigatorios.appendChild(span);
+                });
+            }
+            
+            // Gerar palpites
+            btnGerar.addEventListener('click', function() {
+                // Validações
+                const qtdNumeros = parseInt(document.getElementById('qtdNumeros').value);
+                
+                if (numerosSelecionados.length < qtdNumeros) {
+                    alert(`Você precisa selecionar pelo menos ${qtdNumeros} números. Atualmente selecionados: ${numerosSelecionados.length}`);
+                    return;
+                }
+                
+                // Validar dígitos
+                if (digitosSelecionados.length === 0) {
+                    alert('É necessário selecionar pelo menos um dígito inicial.');
+                    return;
+                }
+                
+                // Calcular total de dígitos
+                let totalDigitos = 0;
+                const qtdPorDigito = {};
+                
+                digitosSelecionados.forEach(digito => {
+                    const qtd = parseInt(document.getElementById(`qtd-${digito}`).value) || 0;
+                    qtdPorDigito[digito] = qtd;
+                    totalDigitos += qtd;
+                });
+                
+                if (totalDigitos < 3) {
+                    alert('O total de números com dígitos selecionados deve ser pelo menos 3.');
+                    return;
+                }
+                
+                if (totalDigitos > qtdNumeros) {
+                    alert(`O total de números com dígitos selecionados (${totalDigitos}) não pode ser maior que a quantidade de números por jogo (${qtdNumeros}).`);
+                    return;
+                }
+                
+                // Verificar números obrigatórios
+                if (numerosObrigatoriosList.length > qtdNumeros) {
+                    alert(`Você marcou ${numerosObrigatoriosList.length} números como obrigatórios, mas o palpite só pode ter ${qtdNumeros} números.`);
+                    return;
+                }
+                
+                // Verificar se há números suficientes para cada dígito
+                let temNumerosSuficientes = true;
+                
+                digitosSelecionados.forEach(digito => {
+                    const qtdNecessaria = qtdPorDigito[digito];
+                    const numerosDoDigito = numerosSelecionados.filter(n => {
+                        const numStr = n.toString().padStart(2, '0');
+                        return numStr[0] === digito;
+                    });
+                    
+                    if (numerosDoDigito.length < qtdNecessaria) {
+                        alert(`Você selecionou apenas ${numerosDoDigito.length} números que começam com ${digito}, mas precisa de ${qtdNecessaria}.`);
+                        temNumerosSuficientes = false;
+                    }
+                });
+                
+                if (!temNumerosSuficientes) return;
+                
+                // Gerar palpites!
+                gerarPalpites();
+            });
+            
+            function gerarPalpites() {
+                const qtdNumeros = parseInt(document.getElementById('qtdNumeros').value);
+                const mesSorte = document.getElementById('mesSorte').value;
+                const qtdJogos = parseInt(document.getElementById('qtdJogos').value);
+                
+                // Obter quantidades por dígito
+                const qtdPorDigito = {};
+                digitosSelecionados.forEach(digito => {
+                    qtdPorDigito[digito] = parseInt(document.getElementById(`qtd-${digito}`).value) || 0;
+                });
+                
+                // Preparar dados para geração
+                const numerosFiltrados = {};
+                digitosSelecionados.forEach(digito => {
+                    numerosFiltrados[digito] = numerosSelecionados.filter(n => {
+                        return n.toString().padStart(2, '0')[0] === digito;
+                    });
+                });
+                
+                // Gerar palpites
+                const palpites = [];
+                for (let i = 0; i < qtdJogos; i++) {
+                    const palpite = gerarPalpiteUnico(
+                        [...numerosSelecionados],
+                        numerosFiltrados,
+                        qtdNumeros,
+                        qtdPorDigito
+                    );
+                    
+                    if (palpite) {
+                        palpites.push({
+                            numeros: palpite,
+                            mes: mesSorte
+                        });
+                    } else {
+                        alert(`Não foi possível gerar todos os palpites. Gerados: ${palpites.length}`);
+                        break;
+                    }
+                }
+                
+                // Exibir resultados
+                exibirResultados(palpites);
+            }
+            
+            function gerarPalpiteUnico(numeros, numerosFiltrados, qtdNumeros, qtdPorDigito) {
+                // Tentativas máximas para evitar loop infinito
+                const maxTentativas = 100;
+                let tentativas = 0;
+                
+                while (tentativas < maxTentativas) {
+                    tentativas++;
+                    
+                    // Criar arrays de trabalho
+                    const palpite = [...numerosObrigatoriosList]; // Começar com números obrigatórios
+                    const numerosDisponiveis = numeros.filter(n => !palpite.includes(n));
+                    
+                    // Acompanhar dígitos já adicionados
+                    const digitosAdicionados = {};
+                    digitosSelecionados.forEach(digito => {
+                        digitosAdicionados[digito] = 0;
+                    });
+                    
+                    // Contar dígitos dos números obrigatórios
+                    palpite.forEach(num => {
+                        const digito = num.toString().padStart(2, '0')[0];
+                        if (digitosSelecionados.includes(digito)) {
+                            digitosAdicionados[digito]++;
+                        }
+                    });
+                    
+                    // Adicionar números para cada dígito
+                    for (const digito of digitosSelecionados) {
+                        const qtdNecessaria = qtdPorDigito[digito];
+                        const qtdFaltante = qtdNecessaria - digitosAdicionados[digito];
+                        
+                        if (qtdFaltante <= 0) continue;
+                        
+                        // Filtrar números disponíveis para este dígito
+                        const numerosDispDigito = numerosDisponiveis.filter(n => {
+                            return n.toString().padStart(2, '0')[0] === digito && !palpite.includes(n);
+                        });
+                        
+                        if (numerosDispDigito.length < qtdFaltante) {
+                            // Não há números suficientes, tentar outro palpite
+                            break;
+                        }
+                        
+                        // Embaralhar e pegar os primeiros qtdFaltante
+                        const numerosEmbaralhados = embaralhar([...numerosDispDigito]);
+                        for (let i = 0; i < qtdFaltante; i++) {
+                            palpite.push(numerosEmbaralhados[i]);
+                            const idx = numerosDisponiveis.indexOf(numerosEmbaralhados[i]);
+                            if (idx !== -1) {
+                                numerosDisponiveis.splice(idx, 1);
+                            }
+                            digitosAdicionados[digito]++;
+                        }
+                    }
+                    
+                    // Verificar se todos os requisitos de dígitos foram atendidos
+                    const todosDigitosOk = digitosSelecionados.every(digito => {
+                        return digitosAdicionados[digito] === qtdPorDigito[digito];
+                    });
+                    
+                    if (!todosDigitosOk) continue;
+                    
+                    // Completar com números aleatórios até qtdNumeros
+                    while (palpite.length < qtdNumeros && numerosDisponiveis.length > 0) {
+                        const idx = Math.floor(Math.random() * numerosDisponiveis.length);
+                        palpite.push(numerosDisponiveis[idx]);
+                        numerosDisponiveis.splice(idx, 1);
+                    }
+                    
+                    if (palpite.length === qtdNumeros) {
+                        // Sucesso! Ordenar o palpite
+                        palpite.sort((a, b) => a - b);
+                        return palpite;
+                    }
+                }
+                
+                return null; // Não foi possível gerar
+            }
+            
+            function exibirResultados(palpites) {
+                if (palpites.length === 0) return;
+                
+                listaPalpites.innerHTML = '';
+                
+                palpites.forEach((palpite, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'palpite';
+                    
+                    const header = document.createElement('div');
+                    header.className = 'palpite-header';
+                    
+                    const titulo = document.createElement('h3');
+                    titulo.style.margin = '0';
+                    titulo.textContent = `Palpite ${idx + 1}`;
+                    
+                    const mes = document.createElement('span');
+                    mes.style.backgroundColor = 'var(--cor-principal)';
+                    mes.style.color = 'white';
+                    mes.style.padding = '3px 8px';
+                    mes.style.borderRadius = '4px';
+                    mes.textContent = `Mês: ${palpite.mes}`;
+                    
+                    header.appendChild(titulo);
+                    header.appendChild(mes);
+                    
+                    const numeros = document.createElement('div');
+                    numeros.className = 'palpite-numeros';
+                    
+                    palpite.numeros.forEach(num => {
+                        const span = document.createElement('span');
+                        span.className = 'palpite-numero';
+                        span.textContent = num < 10 ? `0${num}` : num;
+                        numeros.appendChild(span);
+                    });
+                    
+                    div.appendChild(header);
+                    div.appendChild(numeros);
+                    listaPalpites.appendChild(div);
+                });
+                
+                resultados.classList.remove('escondido');
+            }
+            
+            // Botão para gerar novos palpites
+            document.getElementById('btnNovosPalpites').addEventListener('click', function() {
+                resultados.classList.add('escondido');
+            });
+            
+            // Botão para copiar palpites - MODIFICADO PARA O NOVO FORMATO
+            document.getElementById('btnCopiar').addEventListener('click', function() {
+                let texto = '';
+                
+                document.querySelectorAll('.palpite').forEach((div) => {
+                    const numeros = Array.from(div.querySelectorAll('.palpite-numero'))
+                        .map(span => span.textContent)
+                        .join(' ');
+                    
+                    const mes = div.querySelector('.palpite-header span').textContent.replace('Mês: ', '');
+                    
+                    // Formato: "02 04 10 18 20 22 23 Nov"
+                    texto += `${numeros} ${mes}\n`;
+                });
+                
+                try {
+                    navigator.clipboard.writeText(texto);
+                    alert('Palpites copiados para a área de transferência!');
+                } catch (e) {
+                    console.error('Erro ao copiar:', e);
+                    alert('Não foi possível copiar os palpites. Erro: ' + e.message);
+                }
+            });
+            
+            // Função para embaralhar array
+            function embaralhar(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+            
+            // Selecionar o número 10 como obrigatório por padrão (conforme solicitado)
+            setTimeout(() => {
+                const btn10 = document.querySelector(`.numero-btn[data-numero="10"]`);
+                if (btn10) {
+                    // Selecionar primeiro
+                    if (!btn10.classList.contains('selecionado')) {
+                        btn10.classList.add('selecionado');
+                        numerosSelecionados.push(10);
+                        atualizarContadores();
+                    }
+                    // Tornar obrigatório
+                    if (!btn10.classList.contains('obrigatorio')) {
+                        btn10.classList.add('obrigatorio');
+                        adicionarNumeroObrigatorio(10);
+                    }
+                }
+                
+                // Selecionar números conforme solicitado
+                const numerosParaSelecionar = [1, 2, 3, 4, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 30, 31];
+                
+                numerosParaSelecionar.forEach(num => {
+                    const btn = document.querySelector(`.numero-btn[data-numero="${num}"]`);
+                    if (btn && !btn.classList.contains('selecionado')) {
+                        btn.classList.add('selecionado');
+                        if (!numerosSelecionados.includes(num)) {
+                            numerosSelecionados.push(num);
+                        }
+                    }
+                });
+                
+                atualizarContadores();
+                
+                // Configurar dígitos
+                document.querySelectorAll('.digito-btn').forEach(btn => {
+                    const digito = btn.getAttribute('data-digito');
+                    
+                    if (['0', '1', '2', '3'].includes(digito)) {
+                        if (!btn.classList.contains('selecionado')) {
+                            btn.classList.add('selecionado');
+                            digitosSelecionados.push(digito);
+                        }
+                        
+                        // Configurar quantidades
+                        const inputQtd = document.getElementById(`qtd-${digito}`);
+                        if (digito === '0') inputQtd.value = 2;
+                        else if (digito === '1') inputQtd.value = 2;
+                        else if (digito === '2') inputQtd.value = 3;
+                        else if (digito === '3') inputQtd.value = 0;
+                    }
+                });
+                
+                atualizarTotalDigitos();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

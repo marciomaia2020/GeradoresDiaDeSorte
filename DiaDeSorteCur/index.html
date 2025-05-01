@@ -1,0 +1,603 @@
+<!-- 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://kit.fontawesome.com/afb02bf9ac.js" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/2fa2c650ed.js" crossorigin="anonymous"></script>
+    <title>Resultados Dia de Sorte</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f0f0f0;
+    padding: 20px;
+}
+
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto; /* Centraliza horizontalmente */
+    text-align: center; /* Centraliza o conteúdo interno */
+}
+
+.input-section {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.result-info {
+    margin: 20px 0;
+    padding: 15px;
+    width: 90%;
+    align-items: center;
+}
+
+.column {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 35px;
+    flex-direction: column;
+    align-items: center;
+}
+
+.column-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.cell {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #cccccc;
+    color: #333;
+    margin: 2px 0;
+}
+
+.cell.highlight {
+    background-color: #209869;
+    color: white;
+    font-weight: bold;
+}
+
+.numbers-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+    margin-top: 20px;
+}
+
+.number-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    color: #333;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    font-weight: normal;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+}
+
+.number-cell.highlight {
+    background-color: #209869;
+    color: white;
+}
+
+button {
+    padding: 8px 16px;
+    background-color: #209869;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+button:hover {
+    background-color: #1a7d57;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.loading {
+    display: none;
+    margin: 20px 0;
+}
+
+.loading.active {
+    display: block;
+}
+
+.outros {
+    display: inline;
+    background-color: yellow;
+}
+
+/* Ajustes para telas pequenas */
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 10px;
+        box-shadow: none;
+    }
+
+    .result-info {
+        padding: 10px;
+    }
+
+    .column {
+        grid-template-columns: repeat(5, 1fr); /* Ajusta o número de colunas */
+        gap: 15px;
+    }
+
+    .numbers-grid {
+        grid-template-columns: repeat(5, 1fr); /* Ajusta o número de colunas */
+        gap: 10px;
+    }
+
+    .cell,
+    .number-cell {
+        width: 30px; /* Reduz o tamanho das células */
+        height: 30px; /* Reduz o tamanho das células */
+        font-size: 12px; /* Diminui o tamanho da fonte */
+    }
+
+    button {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+
+    .input-section label,
+    .input-section input {
+        font-size: 14px;
+    }
+
+    .outros ul li {
+        font-size: 14px;
+    }
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="input-section">
+            <h2>Resultados Dia de Sorte</h2>
+            <div>
+                <label>Concurso:</label>
+                <input type="number" id="concursoInput" placeholder="Nº do concurso">
+                <button onclick="buscarResultado()" id="searchButton">Buscar Resultado</button>
+            </div>
+            <div id="loading" class="loading">Buscando resultado...</div>
+        </div>
+
+        <!-- Exibe as dezenas sorteadas logo abaixo do botão 
+        <div id="resultInfo" class="result-info" style="display: none;">
+            <div id="resultadoConcursos" class="column"></div> <!-- Dezenas sorteadas 
+            <div id="numbersGrid" class="numbers-grid"></div> <!-- Números de 1 a 31 
+        </div>
+    </div>
+	
+	    <p>HISTÓRICO DE RESULTADOS...</p>
+
+    <div class="outros"> 
+        <ul>
+            <li><a href="./HistoricoDeResultados/index.html" target="_blank"><i class="fa-solid fa-arrow-right"></i></a> Histórico de Resultados - Vertical</li>
+            <li><a href="./HistoricoDeResultados/index1a.html"target="_blank"><i class="fa-solid fa-arrow-right"></i></a> Histórico de Resultados - Quadrantes com estatísticas</li>
+            <li><a href="./HistoricoDeResultados/index2.html"target="_blank"><i class="fa-solid fa-arrow-right"></i></a> Gerador de Combinações</li>
+            <li><a href="./HistoricoDeResultados/index3.html"target="_blank"><i class="fa-solid fa-arrow-right"></i></a> Resultados de todos os sorteios da Mega Sena</li>
+            <li><a href="./HistoricoDeResultados/index5.html"target="_blank"><i class="fa-solid fa-arrow-right"></i></a> Resultados de todos os sorteios da Mega Sena - com filtros</li>
+        </ul>
+    </div>
+
+	
+
+    <script>
+        // Função para buscar o resultado de um concurso específico
+        async function buscarResultado() {
+            const concursoInput = document.getElementById('concursoInput');
+            const concurso = concursoInput.value;
+            const loading = document.getElementById('loading');
+            const resultInfo = document.getElementById('resultInfo');
+            const gridDisplay = document.getElementById('resultadoConcursos');
+            const numbersGrid = document.getElementById('numbersGrid');
+
+            // Limpa os resultados anteriores e exibe o carregamento
+            loading.classList.add('active');
+            resultInfo.style.display = 'none';
+            gridDisplay.innerHTML = '';
+            numbersGrid.innerHTML = '';
+
+            try {
+                // URL base para a API do Dia de Sorte
+                const baseUrl = 'https://loteriascaixa-api.herokuapp.com/api';
+                const url = concurso 
+                    ? `${baseUrl}/diadesorte/${concurso}`
+                    : `${baseUrl}/diadesorte/latest`; // Carrega o último concurso se nenhum for informado
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error('Não foi possível encontrar o resultado deste concurso');
+                }
+
+                const data = await response.json();
+
+                // Verificar se os dados da API têm as dezenas
+                if (!data.dezenas || data.dezenas.length !== 7) {
+                    throw new Error('Resultado inválido ou incompleto.');
+                }
+
+                // Exibe o número do concurso
+                document.getElementById('concursoInput').value = data.concurso;
+
+                // Exibe as dezenas sorteadas logo abaixo do botão
+                gridDisplay.innerHTML = ''; // Limpa a grid anterior
+                const colunaDezenas = document.createElement('div');
+                colunaDezenas.classList.add('column');
+                const columnHeader = document.createElement('div');
+                columnHeader.textContent = `Dezenas Sorteadas`;
+                columnHeader.classList.add('column-header');
+                colunaDezenas.appendChild(columnHeader);
+
+                // Exibe os números sorteados na coluna
+                data.dezenas.forEach((numero) => {
+                    const cell = document.createElement('div');
+                    cell.textContent = numero;
+                    cell.classList.add('cell', 'highlight');
+                    colunaDezenas.appendChild(cell);
+                });
+
+                gridDisplay.appendChild(colunaDezenas);
+
+                // Exibe os números de 1 a 31 abaixo dos resultados
+                for (let i = 1; i <= 31; i++) {
+                    const numberCell = document.createElement('div');
+                    numberCell.textContent = i;
+                    numberCell.classList.add('number-cell');
+
+                    // Destaca o número se for sorteado
+                    if (data.dezenas.includes(i.toString())) {
+                        numberCell.classList.add('highlight');
+                    }
+
+                    numbersGrid.appendChild(numberCell);
+                }
+
+                // Exibe o resultado na tela
+                resultInfo.style.display = 'block';
+            } catch (err) {
+                alert(err.message || 'Erro ao buscar o resultado. Tente novamente.');
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        // Função para carregar o último resultado quando a página é carregada
+        window.onload = function() {
+            buscarResultado();
+        };
+    </script>
+</body>
+</html>  -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://kit.fontawesome.com/afb02bf9ac.js" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/2fa2c650ed.js" crossorigin="anonymous"></script>
+    <title>Resultados Dia de Sorte</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+            padding: 20px;
+            color: #000000;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto; /* Centraliza horizontalmente */
+            text-align: center; /* Centraliza o conteúdo interno */
+        }
+
+        .input-section {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result-info {
+            margin: 20px 0;
+            padding: 15px;
+            width: 90%;
+            align-items: center;
+        }
+
+        .column {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 35px;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .column-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #D1B513; /* Cor do cabeçalho */
+        }
+
+        .cell {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #cccccc;
+            color: #333;
+            margin: 2px 0;
+        }
+
+        .cell.highlight {
+            background-color: #D1B513; /* Cor de destaque */
+            color: white;
+            font-weight: bold;
+        }
+
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .number-cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            color: #333;
+            padding: 0;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            font-weight: normal;
+            width: 40px;
+            height: 40px;
+            margin: 0;
+        }
+
+        .number-cell.highlight {
+            background-color: #D1B513; /* Cor de destaque */
+            color: white;
+        }
+
+        button {
+            padding: 8px 16px;
+            background-color: #D1B513; /* Cor do botão */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        button:hover {
+            background-color: #B89A10;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .outros {
+            display: inline;
+            background-color: yellow; /* Manter o fundo amarelo */
+        }
+
+        /* Ajustes para telas pequenas */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 10px;
+                box-shadow: none;
+            }
+
+            .result-info {
+                padding: 10px;
+            }
+
+            .column {
+                grid-template-columns: repeat(5, 1fr); /* Ajusta o número de colunas */
+                gap: 15px;
+            }
+
+            .numbers-grid {
+                grid-template-columns: repeat(5, 1fr); /* Ajusta o número de colunas */
+                gap: 10px;
+            }
+
+            .cell,
+            .number-cell {
+                width: 30px; /* Reduz o tamanho das células */
+                height: 30px; /* Reduz o tamanho das células */
+                font-size: 12px; /* Diminui o tamanho da fonte */
+            }
+
+            button {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+
+            .input-section label,
+            .input-section input {
+                font-size: 14px;
+            }
+
+            .outros ul li {
+                font-size: 14px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="input-section">
+            <h2>Resultados Dia de Sorte</h2>
+            <div>
+                <label>Concurso:</label>
+                <input type="number" id="concursoInput" placeholder="Nº do concurso">
+                <button onclick="buscarResultado()" id="searchButton">Buscar Resultado</button>
+            </div>
+            <div id="loading" class="loading">Buscando resultado...</div>
+        </div>
+
+        <!-- Exibe as dezenas sorteadas logo abaixo do botão -->
+        <div id="resultInfo" class="result-info" style="display: none;">
+            <div id="resultadoConcursos" class="column"></div> <!-- Dezenas sorteadas -->
+            <div id="numbersGrid" class="numbers-grid"></div> <!-- Números de 1 a 31 -->
+        </div>
+    </div>
+	
+    <p>HISTÓRICO DE RESULTADOS...</p>
+
+    <div class="outros"> 
+        <ul>
+            <li><a href="./HistoricoDeResultados/index.html" target="_blank"><i class="fa-solid fa-arrow-right"></i></a> Histórico de Resultados - Vertical</li>
+            <li><a href="./HistoricoDeResultados/index1a.html"target="_blank"><i class="fa-solid fa-arrow-right"></i></a> Histórico de Resultados - Quadrantes com estatísticas</li>
+            <li><a href="./HistoricoDeResultados/index2.html"target="_blank"><i class="fa-solid fa-arrow-right"></i></a> Gerador de Combinações</li>
+            <li><a href="./HistoricoDeResultados/index3.html"target="_blank"><i class="fa-solid fa-arrow-right"></i></a> Resultados de todos os sorteios da Mega Sena</li>
+            <li><a href="./HistoricoDeResultados/index5.html"target="_blank"><i class="fa-solid fa-arrow-right"></i></a> Resultados de todos os sorteios da Mega Sena - com filtros</li>
+        </ul>
+    </div>
+
+    <script>
+        // Função para buscar o resultado de um concurso específico
+        async function buscarResultado() {
+            const concursoInput = document.getElementById('concursoInput');
+            const concurso = concursoInput.value;
+            const loading = document.getElementById('loading');
+            const resultInfo = document.getElementById('resultInfo');
+            const gridDisplay = document.getElementById('resultadoConcursos');
+            const numbersGrid = document.getElementById('numbersGrid');
+
+            // Limpa os resultados anteriores e exibe o carregamento
+            loading.classList.add('active');
+            resultInfo.style.display = 'none';
+            gridDisplay.innerHTML = '';
+            numbersGrid.innerHTML = '';
+
+            try {
+                // URL base para a API do Dia de Sorte
+                const baseUrl = 'https://loteriascaixa-api.herokuapp.com/api';
+                const url = concurso 
+                    ? `${baseUrl}/diadesorte/${concurso}`
+                    : `${baseUrl}/diadesorte/latest`; // Carrega o último concurso se nenhum for informado
+
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error('Não foi possível encontrar o resultado deste concurso');
+                }
+
+                const data = await response.json();
+
+                // Verificar se os dados da API têm as dezenas
+                if (!data.dezenas || data.dezenas.length !== 7) {
+                    throw new Error('Resultado inválido ou incompleto.');
+                }
+
+                // Exibe o número do concurso
+                document.getElementById('concursoInput').value = data.concurso;
+
+                // Exibe as dezenas sorteadas logo abaixo do botão
+                gridDisplay.innerHTML = ''; // Limpa a grid anterior
+                const colunaDezenas = document.createElement('div');
+                colunaDezenas.classList.add('column');
+                const columnHeader = document.createElement('div');
+                columnHeader.textContent = `Dezenas Sorteadas`;
+                columnHeader.classList.add('column-header');
+                colunaDezenas.appendChild(columnHeader);
+
+                // Exibe os números sorteados na coluna
+                data.dezenas.forEach((numero) => {
+                    const cell = document.createElement('div');
+                    cell.textContent = numero;
+                    cell.classList.add('cell', 'highlight');
+                    colunaDezenas.appendChild(cell);
+                });
+
+                gridDisplay.appendChild(colunaDezenas);
+
+                // Exibe os números de 1 a 31 abaixo dos resultados
+                for (let i = 1; i <= 31; i++) {
+                    const numberCell = document.createElement('div');
+                    numberCell.textContent = i;
+                    numberCell.classList.add('number-cell');
+
+                    // Destaca o número se for sorteado
+                    if (data.dezenas.includes(i.toString())) {
+                        numberCell.classList.add('highlight');
+                    }
+
+                    numbersGrid.appendChild(numberCell);
+                }
+
+                // Exibe o resultado na tela
+                resultInfo.style.display = 'block';
+            } catch (err) {
+                alert(err.message || 'Erro ao buscar o resultado. Tente novamente.');
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        // Função para carregar o último resultado quando a página é carregada
+        window.onload = function() {
+            buscarResultado();
+        };
+    </script>
+</body>
+</html>

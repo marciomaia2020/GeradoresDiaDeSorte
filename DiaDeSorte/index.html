@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dia de Sorte</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+  <h1>Dia de Sorte</h1>
+ 
+  <p>Selecione de 7 a 15 números dentre os 31 disponíveis</p>
+  <P>Também é possível criar um jogo aleatório.</P>
+
+  <div id="number-selector">
+    <label for="number-amount">Escolha a quantidade de números para selecionar: (7-15)</label>
+    <select id="number-amount">
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="11">11</option>
+      <option value="12">12</option>
+      <option value="13">13</option>
+      <option value="14">14</option>
+      <option value="15">15</option>
+    </select>
+  </div>
+  <div id="dia-de-sorte-numbers"></div>
+  <div class="buttons-container" id="dia-de-sorte-buttons"></div>
+  <div id="dia-de-sorte-saved-games"></div>
+
+  <footer>Feito por:  <i>Márcio Fernando Maia</i></footer>
+
+  <script defer src="./js/script.js"></script>
+</body>
+</html>
+

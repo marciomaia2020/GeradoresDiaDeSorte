@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dia da Sorte - Gerador de Palpites</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white dark:bg-gray-900 min-h-screen transition-colors duration-200">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">Dia da Sorte - 1 palpite manual</h1>
+		<hr />
+		<p><a href="index-4fixo3automatico.html" target="_blank">4 fixos e 3 manual</a></p>
+        
+        <div class="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">Gerador de Palpites</h2>
+            
+            <!-- Botão de teste de áudio -->
+            <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-lg mb-4">
+                <div class="flex justify-between items-center">
+                    <div class="text-sm text-blue-800 dark:text-blue-200">
+                        <span class="font-bold">Teste de áudio:</span> Clique no botão ao lado para verificar se o som está funcionando.
+                    </div>
+                    <button id="test-audio-btn" class="bg-blue-500 hover:bg-blue-600 text-white text-sm py-1 px-3 rounded">
+                        Testar Som
+                    </button>
+                </div>
+                <div id="audio-status" class="text-xs mt-1 text-blue-700 dark:text-blue-300"></div>
+            </div>
+            
+            <div class="mb-2">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="flex-1">
+                        <label class="text-sm text-gray-600 dark:text-gray-400 mb-1 block">Números</label>
+                        <div id="numbers-container" class="grid grid-cols-7 gap-2 w-full">
+                            <div class="number-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                            <div class="number-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                            <div class="number-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                            <div class="number-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                            <div class="number-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                            <div class="number-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                            <div class="number-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                        </div>
+                    </div>
+                    <div class="w-20">
+                        <label class="text-sm text-gray-600 dark:text-gray-400 mb-1 block">Mês</label>
+                        <div id="month-box" class="month-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                    </div>
+                </div>
+                <div id="match-info" class="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center hidden">
+                    Acertos: <span id="match-counter" class="text-green-600 dark:text-green-400">0</span>/7 + Mês: <span id="month-match" class="text-green-600 dark:text-green-400">não</span>
+                </div>
+                <div id="palpite-counter" class="mt-1 text-xs text-gray-500 dark:text-gray-400 text-center">
+                    Palpite: <span id="counter-value">0</span>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h3 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-3">Digite seu próprio palpite:</h3>
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="flex-1">
+                        <label class="text-sm text-gray-600 dark:text-gray-400 mb-1 block">Números</label>
+                        <div id="manual-input-container" class="grid grid-cols-7 gap-2 w-full">
+                            <input type="number" min="1" max="31" class="manual-number-input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-12 text-base font-bold text-gray-800 dark:text-white" placeholder="1">
+                            <input type="number" min="1" max="31" class="manual-number-input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-12 text-base font-bold text-gray-800 dark:text-white" placeholder="2">
+                            <input type="number" min="1" max="31" class="manual-number-input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-12 text-base font-bold text-gray-800 dark:text-white" placeholder="3">
+                            <input type="number" min="1" max="31" class="manual-number-input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-12 text-base font-bold text-gray-800 dark:text-white" placeholder="4">
+                            <input type="number" min="1" max="31" class="manual-number-input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-12 text-base font-bold text-gray-800 dark:text-white" placeholder="5">
+                            <input type="number" min="1" max="31" class="manual-number-input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-12 text-base font-bold text-gray-800 dark:text-white" placeholder="6">
+                            <input type="number" min="1" max="31" class="manual-number-input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-12 text-base font-bold text-gray-800 dark:text-white" placeholder="7">
+                        </div>
+                    </div>
+                    <div class="w-16">
+                        <label class="text-sm text-gray-600 dark:text-gray-400 mb-1 block">Mês</label>
+                        <input type="number" min="1" max="12" id="month-input" class="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-12 text-base font-bold text-gray-800 dark:text-white w-full" placeholder="1-12">
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <div id="error-message" class="text-red-500 text-sm mb-2 hidden"></div>
+                    <button id="apply-manual-btn" class="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md transition-colors duration-200 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        Aplicar Palpite
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="interval-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Intervalo de geração automática:</label>
+                <div class="flex gap-2">
+                    <select id="interval-select" class="flex-1 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                        <option value="0">Desativado</option>
+                        <option value="1">1 segundo</option>
+                        <option value="2">2 segundos</option>
+                        <option value="5">5 segundos</option>
+                        <option value="10">10 segundos</option>
+                        <option value="30">30 segundos</option>
+                        <option value="60">1 minuto</option>
+                    </select>
+                    <button id="toggle-auto-btn" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white py-2 px-4 rounded-md transition-colors duration-200 hidden">
+                        Parar
+                    </button>
+                </div>
+                <div id="countdown-display" class="mt-2 text-sm text-gray-600 dark:text-gray-400 hidden">
+                    Próximo palpite em: <span id="countdown">0</span>s
+                </div>
+            </div>
+            
+            <button id="generate-btn" class="w-full py-3 px-4 bg-primary hover:bg-primary/90 text-white font-medium rounded-md transition-colors duration-200 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                </svg>
+                Gerar Palpite
+            </button>
+        </div>
+        
+        <div class="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Como funciona</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-2">Clique no botão "Gerar Palpite" para obter 7 números aleatórios entre 1 e 31, sem repetições.</p>
+            <p class="text-gray-600 dark:text-gray-300 mb-2">Você também pode digitar seus próprios números nos campos de entrada e clicar em "Aplicar Palpite". Os números devem estar entre 1 e 31 e não podem se repetir.</p>
+            <p class="text-gray-600 dark:text-gray-300 mb-2">Para geração automática, selecione um intervalo de tempo no menu suspenso. Quando ativo, um contador mostrará o tempo restante para o próximo palpite.</p>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">Os números gerados são apenas sugestões e não garantem resultados em qualquer sorteio.</p>
+            
+            <div id="history-section" class="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Histórico de grandes acertos (5+)</h4>
+                    <!-- NOVO: Botão para exportar histórico -->
+                    <button id="export-history-btn" class="text-xs px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Exportar
+                    </button>
+                </div>
+                
+                <!-- NOVO: Seção para exportar histórico -->
+                <div id="export-options" class="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-md hidden">
+                    <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Exportar histórico completo:</h5>
+                    <div class="flex gap-2 mt-2">
+                        <button id="export-excel-btn" class="flex-1 py-1 px-2 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded transition-colors duration-200 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                            Excel (.xlsx)
+                        </button>
+                        <button id="export-html-btn" class="flex-1 py-1 px-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition-colors duration-200 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                            HTML
+                        </button>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                        Os arquivos exportados contêm o histórico completo de acertos.
+                    </div>
+                </div>
+                
+                <div id="history-container" class="text-sm text-gray-500 dark:text-gray-400">
+                    <!-- Os itens de histórico serão adicionados aqui dinamicamente -->
+                    <div class="text-center italic py-2">
+                        Os acertos com 5+ números aparecerão aqui.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de áudio - COMPLETAMENTE REFEITO
+        let audioContext = null;
+        let audioInitialized = false;
+
+        // Função para inicializar o contexto de áudio
+        function initAudio() {
+            try {
+                // Criar um contexto de áudio apenas se não existir
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    audioInitialized = true;
+                    document.getElementById('audio-status').textContent = 'Sistema de áudio inicializado.';
+                    return true;
+                }
+                return audioInitialized;
+            } catch (e) {
+                console.error("Erro ao inicializar áudio:", e);
+                document.getElementById('audio-status').textContent = 'Erro ao inicializar áudio: ' + e.message;
+                return false;
+            }
+        }
+
+        // Função de beep simples - usando Web Audio API diretamente
+        function playAlertSound() {
+            if (!initAudio()) {
+                console.error("Não foi possível tocar som: áudio não inicializado");
+                document.getElementById('audio-status').textContent = 'Não foi possível tocar som: áudio não inicializado';
+                return;
+            }
+            
+            try {
+                // Log para debug
+                console.log("Reproduzindo som de alerta");
+                document.getElementById('audio-status').textContent = 'Reproduzindo som de alerta...';
+                
+                // Criar oscilador e nó de ganho
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                // Configurar oscilador para um som agudo (alerta)
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(780, audioContext.currentTime);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Configurar volume
+                gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                
+                // Iniciar som
+                oscillator.start();
+                
+                // Controlar a duração do som (500ms)
+                setTimeout(() => {
+                    // Fade out suave
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    // Parar o oscilador após o fade out
+                    setTimeout(() => {
+                        oscillator.stop();
+                        document.getElementById('audio-status').textContent = 'Som de alerta reproduzido com sucesso!';
+                    }, 200);
+                }, 300);
+                
+                // Efeito visual de destaque quando um beep é tocado
+                highlightMatchCounter();
+                
+                return true;
+            } catch (e) {
+                console.error("Erro ao reproduzir som:", e);
+                document.getElementById('audio-status').textContent = 'Erro ao reproduzir som: ' + e.message;
+                return false;
+            }
+        }
+        
+        // Função para destacar visualmente o contador de acertos
+        function highlightMatchCounter() {
+            const matchCounter = document.getElementById('match-counter');
+            if (!matchCounter) return;
+            
+            // Adicionar classe de destaque (flash)
+            matchCounter.classList.add('flash-highlight');
+            
+            // Remover classe após animação
+            setTimeout(() => {
+                matchCounter.classList.remove('flash-highlight');
+            }, 1000);
+        }
+
+        // Função para testar o áudio (botão de teste)
+        document.getElementById('test-audio-btn').addEventListener('click', function() {
+            initAudio();
+            playAlertSound();
+        });
+
+        // Detectar modo escuro
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Variáveis para controle de intervalo
+        let intervalId = null;
+        let countdownValue = 0;
+        let currentIntervalValue = 0; 
+        
+        // Variáveis para armazenar os palpites manuais e histórico
+        let userGuessNumbers = [];
+        let userGuessMonth = null;
+        const historyLimit = 10; // Número máximo de itens no histórico visual
+        const monthNames = [
+            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        ];
+        
+        // Variáveis para armazenar o histórico completo
+        let completeHistoryData = [];
+        
+        // Variáveis para contadores e tempo
+        let palpiteCounter = 0;
+        let lastMatchDate = null;
+        let lastMatchPalpite = 0;
+        
+        // Controle de duplicação de registros
+        let lastMatchTimestamp = 0;
+        const MIN_TIME_BETWEEN_MATCHES = 500; // ms
+        
+        // Mapeamento dos valores de intervalo para textos legíveis
+        const intervalTexts = {
+            "0": "Desativado",
+            "1": "1 segundo",
+            "2": "2 segundos",
+            "5": "5 segundos",
+            "10": "10 segundos",
+            "30": "30 segundos",
+            "60": "1 minuto"
+        };
+        
+        // Carregar histórico se existir no localStorage
+        try {
+            const historicoSalvo = localStorage.getItem('diaDaSorteSimples');
+            if (historicoSalvo) {
+                completeHistoryData = JSON.parse(historicoSalvo);
+                console.log(`Histórico carregado: ${completeHistoryData.length} registros`);
+                
+                // Se houver registros, mostrar a seção de histórico
+                if (completeHistoryData.length > 0) {
+                    document.getElementById('history-section').classList.remove('hidden');
+                    
+                    // Exibir os últimos 8 registros
+                    const historyContainer = document.getElementById('history-container');
+                    historyContainer.innerHTML = ''; // Limpar o container
+                    
+                    // Exibir apenas os registros com 5+ acertos, limitado aos 8 mais recentes
+                    const grandesAcertos = completeHistoryData.filter(h => h.matchCount >= 5).slice(-8);
+                    
+                    if (grandesAcertos.length > 0) {
+                        // Adicionar os acertos em ordem reversa (mais recentes primeiro)
+                        grandesAcertos.reverse().forEach(acerto => displayHistoryItem(acerto));
+                    } else {
+                        // Se não houver grandes acertos, exibir mensagem padrão
+                        historyContainer.innerHTML = `
+                            <div class="text-center italic py-2">
+                                Os acertos com 5+ números aparecerão aqui.
+                            </div>
+                        `;
+                    }
+                }
+            }
+        } catch (e) {
+            console.log("Não foi possível carregar o histórico:", e);
+            completeHistoryData = [];
+        }
+        
+        // Função para calcular a diferença de tempo entre duas datas de maneira legível
+        function formatTimeDifference(prevDate, currentDate) {
+            if (!prevDate) return "Primeiro acerto";
+            
+            const diffInSeconds = Math.floor((currentDate - prevDate) / 1000);
+            
+            const days = Math.floor(diffInSeconds / 86400);
+            const hours = Math.floor((diffInSeconds % 86400) / 3600);
+            const minutes = Math.floor((diffInSeconds % 3600) / 60);
+            const seconds = diffInSeconds % 60;
+            
+            let result = "";
+            
+            if (days > 0) {
+                result += `${days} dia${days > 1 ? 's' : ''}`;
+            }
+            
+            if (hours > 0) {
+                if (result) result += ", ";
+                result += `${hours} hora${hours > 1 ? 's' : ''}`;
+            }
+            
+            if (minutes > 0) {
+                if (result) result += ", ";
+                result += `${minutes} minuto${minutes > 1 ? 's' : ''}`;
+            }
+            
+            if (seconds > 0 || result === "") {
+                if (result) result += " e ";
+                result += `${seconds} segundo${seconds !== 1 ? 's' : ''}`;
+            }
+            
+            return result;
+        }
+        
+        // Função para resetar o estilo do contador de acertos para o padrão (verde)
+        function resetMatchCounterStyle() {
+            const matchCounter = document.getElementById('match-counter');
+            // Remover qualquer classe de destaque existente
+            matchCounter.classList.remove('text-red-600', 'dark:text-red-400', 'font-bold', 'text-base');
+            // Adicionar de volta as classes padrão
+            matchCounter.classList.add('text-green-600', 'dark:text-green-400');
+        }
+        
+        // Função para gerar números aleatórios e verificar coincidências
+        function generateRandomNumbers() {
+            // Incrementar o contador de palpites
+            palpiteCounter++;
+            document.getElementById('counter-value').textContent = palpiteCounter;
+            
+            // Remover as marcações de correspondência anteriores
+            document.querySelectorAll('.number-box').forEach(box => {
+                box.classList.remove('match');
+            });
+            document.getElementById('month-box').classList.remove('match');
+            
+            // Resetar o estilo do contador de acertos para verde (padrão)
+            resetMatchCounterStyle();
+            
+            // Conjunto para armazenar números já utilizados
+            const usedNumbers = new Set();
+            const generatedNumbers = [];
+            
+            // Obter todas as caixas de números
+            const numberBoxes = document.querySelectorAll('.number-box');
+            
+            // Para cada coluna (caixa)
+            numberBoxes.forEach((box) => {
+                let randomNum;
+                // Gerar um número aleatório que ainda não foi usado
+                do {
+                    randomNum = Math.floor(Math.random() * 31) + 1;
+                } while(usedNumbers.has(randomNum));
+                
+                // Adicionar o número ao conjunto de usados
+                usedNumbers.add(randomNum);
+                generatedNumbers.push(randomNum);
+                
+                // Mostrar o número na caixa
+                box.textContent = randomNum;
+                
+                // Adicionar uma animação simples
+                box.classList.add('pop-in');
+                setTimeout(() => {
+                    box.classList.remove('pop-in');
+                }, 300);
+            });
+            
+            // Gerar um mês aleatório (1-12)
+            const randomMonth = Math.floor(Math.random() * 12) + 1;
+            const monthBox = document.getElementById('month-box');
+            monthBox.textContent = randomMonth;
+            monthBox.classList.add('pop-in');
+            setTimeout(() => {
+                monthBox.classList.remove('pop-in');
+            }, 300);
+            
+            // Verificar correspondências com o palpite do usuário se houver
+            if (userGuessNumbers.length === 7) {
+                let matchCount = 0;
+                const matchedIndices = [];
+                const matchedNumbers = [];
+                let monthMatch = false;
+                
+                // Verificar cada número do palpite do usuário
+                for (let i = 0; i < 7; i++) {
+                    if (generatedNumbers.includes(userGuessNumbers[i])) {
+                        // Registrar o índice correspondente
+                        const index = generatedNumbers.indexOf(userGuessNumbers[i]);
+                        matchedIndices.push(index);
+                        matchedNumbers.push(userGuessNumbers[i]);
+                        matchCount++;
+                        
+                        // Destacar imediatamente o número
+                        numberBoxes[index].classList.add('match');
+                    }
+                }
+                
+                // Verificar se o mês coincide
+                if (userGuessMonth && userGuessMonth === randomMonth) {
+                    monthMatch = true;
+                    monthBox.classList.add('match');
+                }
+                
+                // Atualizar o contador de correspondências
+                const matchCounter = document.getElementById('match-counter');
+                matchCounter.textContent = matchCount;
+                
+                // Atualizar o indicador de correspondência do mês
+                const monthMatchElement = document.getElementById('month-match');
+                monthMatchElement.textContent = monthMatch ? 'sim' : 'não';
+                
+                // Mostrar o contador de correspondências
+                document.getElementById('match-info').classList.remove('hidden');
+                
+                // Se houver 5 ou mais acertos
+                if (matchCount >= 5) {
+                    // Destacar o contador de acertos
+                    matchCounter.classList.add('text-red-600', 'dark:text-red-400', 'font-bold', 'text-base');
+                    
+                    // Obter a data atual para o cálculo de diferença de tempo
+                    const currentDate = new Date();
+                    
+                    // Tocar o som de alerta - usando o novo sistema
+                    playAlertSound();
+                    
+                    // Adicionar ao histórico
+                    addToHistory(matchCount, matchedNumbers, generatedNumbers, randomMonth, monthMatch, currentDate);
+                    
+                    // Atualizar a data do último acerto para cálculos futuros
+                    lastMatchDate = currentDate;
+                    lastMatchPalpite = palpiteCounter;
+                }
+            }
+        }
+        
+        // Função para atualizar o contador
+        function updateCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            countdownElement.textContent = countdownValue;
+            
+            if (countdownValue > 0) {
+                countdownValue--;
+            } else {
+                // Quando o contador chega a zero, gera novos números
+                generateRandomNumbers();
+                // Reinicia o contador com o valor do intervalo selecionado
+                const intervalValue = parseInt(document.getElementById('interval-select').value);
+                countdownValue = intervalValue - 1;
+            }
+        }
+        
+        // Função para iniciar a geração automática
+        function startAutoGeneration() {
+            // Obtém o valor do intervalo selecionado
+            const intervalValue = parseInt(document.getElementById('interval-select').value);
+            
+            // Se o intervalo for 0, não faz nada
+            if (intervalValue === 0) return;
+            
+            // Garantir que o áudio esteja inicializado
+            initAudio();
+            
+            // Armazenar o intervalo atual
+            currentIntervalValue = intervalValue;
+            
+            // Mostra o botão de parar e o contador
+            document.getElementById('toggle-auto-btn').classList.remove('hidden');
+            document.getElementById('countdown-display').classList.remove('hidden');
+            
+            // Define o valor inicial do contador
+            countdownValue = intervalValue;
+            
+            // Resetar o estilo do contador para verde
+            resetMatchCounterStyle();
+            
+            // Atualiza o contador imediatamente
+            updateCountdown();
+            
+            // Inicia o intervalo para atualizar o contador a cada segundo
+            intervalId = setInterval(updateCountdown, 1000);
+        }
+        
+        // Função para parar a geração automática
+        function stopAutoGeneration() {
+            // Limpa o intervalo
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+            
+            // Esconde o botão de parar e o contador
+            document.getElementById('toggle-auto-btn').classList.add('hidden');
+            document.getElementById('countdown-display').classList.add('hidden');
+            
+            // Reseta o select para "Desativado"
+            document.getElementById('interval-select').value = "0";
+            
+            // Resetar o valor do intervalo atual
+            currentIntervalValue = 0;
+        }
+        
+        // Função para exibir um item de histórico
+        function displayHistoryItem(historyItem) {
+            const historyContainer = document.getElementById('history-container');
+            
+            // Se for a primeira adição, remover a mensagem padrão
+            const defaultMsg = historyContainer.querySelector('.text-center.italic');
+            if (defaultMsg) {
+                historyContainer.innerHTML = '';
+            }
+            
+            // Criar elemento para o item de histórico
+            const itemElement = document.createElement('div');
+            itemElement.className = 'history-item mb-4 p-2 bg-gray-50 dark:bg-gray-800 rounded-md';
+            
+            // Ordenar os números para facilitar a visualização
+            const sortedMatches = [...historyItem.matchedNumbers].sort((a, b) => a - b);
+            const monthName = monthNames[historyItem.month - 1]; // Converter o número do mês para nome
+            
+            // Formatar conteúdo
+            itemElement.innerHTML = `
+                <div class="text-xs text-gray-500 dark:text-gray-400">${historyItem.timestamp}</div>
+                <div class="mt-1">
+                    <span class="font-medium">${historyItem.matchCount} acertos:</span> 
+                    <span class="history-numbers text-red-600 dark:text-red-400">${sortedMatches.join(', ')}</span>
+                </div>
+                <div class="text-xs">
+                    Mês: <span class="${historyItem.monthMatch ? 'text-green-600 dark:text-green-400 font-medium' : ''}">${monthName} (${historyItem.month})</span>
+                    ${historyItem.monthMatch ? ' ✓' : ''}
+                </div>
+                <div class="text-xs mt-1">
+                    <span class="font-medium">Palpite #${historyItem.palpiteCounter}</span>
+                </div>
+                ${historyItem.timeDiff ? `
+                <div class="text-xs text-gray-500 dark:text-gray-400">
+                    <span class="font-medium">Tempo desde o último acerto:</span> ${historyItem.timeDiff}
+                </div>` : ''}
+                ${historyItem.palpiteDiff > 0 ? `
+                <div class="text-xs text-gray-500 dark:text-gray-400">
+                    <span class="font-medium">Diferença de palpites:</span> ${historyItem.palpiteDiff} palpites
+                </div>` : ''}
+                <div class="text-xs text-gray-500 dark:text-gray-400">
+                    <span class="font-medium">Intervalo utilizado:</span> ${historyItem.intervaloTexto}
+                </div>
+            `;
+            
+            // Adicionar ao início do container
+            if (historyContainer.firstChild) {
+                historyContainer.insertBefore(itemElement, historyContainer.firstChild);
+            } else {
+                historyContainer.appendChild(itemElement);
+            }
+            
+            // Limitar o número de itens visíveis
+            const historyItems = historyContainer.querySelectorAll('.history-item');
+            if (historyItems.length > historyLimit) {
+                for (let i = historyLimit; i < historyItems.length; i++) {
+                    historyContainer.removeChild(historyItems[i]);
+                }
+            }
+        }
+        
+        // Função para adicionar ao histórico com proteção contra duplicação
+        function addToHistory(matchCount, matchedNumbers, generatedNumbers, month, monthMatch, currentDate) {
+            // Verificar se este acerto está sendo registrado muito rápido após o último (evitar duplicação)
+            const now = Date.now();
+            if (now - lastMatchTimestamp < MIN_TIME_BETWEEN_MATCHES) {
+                console.log("Ignorando registro duplicado (muito próximo do anterior)");
+                return false;
+            }
+            
+            // Atualizar o timestamp do último acerto registrado
+            lastMatchTimestamp = now;
+            
+            // Mostrar a seção de histórico
+            document.getElementById('history-section').classList.remove('hidden');
+            
+            // Calcular a diferença de tempo desde o último acerto
+            const timeDiff = formatTimeDifference(lastMatchDate, currentDate);
+            
+            // Calcular a diferença entre o palpite atual e o último palpite com acerto
+            const palpiteDiff = lastMatchPalpite > 0 ? palpiteCounter - lastMatchPalpite : 0;
+            
+            // Obter o texto do intervalo de tempo usado
+            const intervaloTexto = intervalTexts[currentIntervalValue.toString()] || "Geração manual";
+            
+            // Criar objeto de registro detalhado
+            const historyRecord = {
+                id: Date.now().toString(),
+                timestamp: currentDate.toLocaleString(),
+                matchCount: matchCount,
+                matchedNumbers: [...matchedNumbers],
+                generatedNumbers: [...generatedNumbers],
+                userNumbers: [...userGuessNumbers],
+                month: month,
+                userMonth: userGuessMonth,
+                monthMatch: monthMatch,
+                palpiteCounter: palpiteCounter,
+                timeDiff: timeDiff,
+                palpiteDiff: palpiteDiff,
+                intervalo: currentIntervalValue,
+                intervaloTexto: intervaloTexto
+            };
+            
+            // Adicionar ao histórico completo
+            completeHistoryData.push(historyRecord);
+            
+            // Salvar no localStorage
+            try {
+                localStorage.setItem('diaDaSorteSimples', JSON.stringify(completeHistoryData));
+                console.log("Histórico salvo com sucesso:", historyRecord);
+            } catch (e) {
+                console.error("Erro ao salvar histórico:", e);
+            }
+            
+            // Exibir no histórico visual
+            displayHistoryItem(historyRecord);
+            
+            return historyRecord;
+        }
+        
+        // Função para exportar histórico para Excel (.xlsx)
+        function exportToExcel() {
+            try {
+                // Garantir que temos dados para exportar
+                if (completeHistoryData.length === 0) {
+                    alert("Não há dados para exportar. Faça alguns acertos primeiro.");
+                    return;
+                }
+                
+                // Criar um nome de arquivo baseado na data atual
+                const fileName = `Dia_da_Sorte_Historico_${new Date().toISOString().slice(0, 10)}.xlsx`;
+                
+                // Preparar os dados para o formato de planilha
+                const worksheetData = completeHistoryData.map(record => {
+                    return {
+                        'Data/Hora': record.timestamp,
+                        'Acertos': record.matchCount,
+                        'Números Acertados': record.matchedNumbers.join(', '),
+                        'Números Sorteados': record.generatedNumbers.join(', '),
+                        'Números do Usuário': record.userNumbers.join(', '),
+                        'Mês Sorteado': record.month,
+                        'Mês do Usuário': record.userMonth,
+                        'Acertou Mês': record.monthMatch ? 'Sim' : 'Não',
+                        'Número do Palpite': record.palpiteCounter,
+                        'Tempo desde último acerto': record.timeDiff || 'N/A',
+                        'Diferença de palpites': record.palpiteDiff,
+                        'Intervalo': record.intervaloTexto
+                    };
+                });
+                
+                // Criar a planilha
+                const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+                
+                // Criar o workbook e adicionar a planilha
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Histórico de Acertos");
+                
+                // Converter para binário e fazer o download
+                XLSX.writeFile(workbook, fileName);
+                
+                console.log("Exportação para Excel concluída:", fileName);
+            } catch (error) {
+                console.error("Erro ao exportar para Excel:", error);
+                alert("Ocorreu um erro ao exportar os dados para Excel: " + error.message);
+            }
+        }
+        
+        // Função para exportar histórico para HTML
+        function exportToHTML() {
+            try {
+                // Garantir que temos dados para exportar
+                if (completeHistoryData.length === 0) {
+                    alert("Não há dados para exportar. Faça alguns acertos primeiro.");
+                    return;
+                }
+                
+                // Criar um nome de arquivo baseado na data atual
+                const fileName = `Dia_da_Sorte_Historico_${new Date().toISOString().slice(0, 10)}.html`;
+                
+                // Criar o conteúdo HTML
+                let htmlContent = `
+                <!DOCTYPE html>
+                <html lang="pt-BR">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Histórico de Acertos - Dia da Sorte</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            line-height: 1.6;
+                            color: #333;
+                            max-width: 1200px;
+                            margin: 0 auto;
+                            padding: 20px;
+                        }
+                        h1 {
+                            text-align: center;
+                            color: #5D5CDE;
+                            margin-bottom: 30px;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-bottom: 30px;
+                        }
+                        th, td {
+                            padding: 10px;
+                            border: 1px solid #ddd;
+                            text-align: left;
+                        }
+                        th {
+                            background-color: #f2f2f2;
+                            font-weight: bold;
+                        }
+                        tr:nth-child(even) {
+                            background-color: #f9f9f9;
+                        }
+                        .match-count-5 { color: #10B981; font-weight: bold; }
+                        .match-count-6 { color: #0EA5E9; font-weight: bold; }
+                        .match-count-7 { color: #EF4444; font-weight: bold; }
+                        .totals {
+                            margin-top: 20px;
+                            font-weight: bold;
+                        }
+                        .export-date {
+                            text-align: right;
+                            font-style: italic;
+                            margin-top: 40px;
+                            color: #666;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Histórico de Acertos - Dia da Sorte</h1>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Nº Palpite</th>
+                                <th>Acertos</th>
+                                <th>Números Acertados</th>
+                                <th>Mês Acertado</th>
+                                <th>Números Sorteados</th>
+                                <th>Números do Usuário</th>
+                                <th>Intervalo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                // Adicionar uma linha para cada registro, com formatação especial para 5, 6 e 7 acertos
+                completeHistoryData.forEach(record => {
+                    const matchCountClass = `match-count-${record.matchCount}`;
+                    
+                    htmlContent += `
+                        <tr>
+                            <td>${record.timestamp}</td>
+                            <td>${record.palpiteCounter || 'N/A'}</td>
+                            <td class="${matchCountClass}">${record.matchCount}</td>
+                            <td>${record.matchedNumbers.join(', ')}</td>
+                            <td>${record.monthMatch ? 'Sim' : 'Não'}</td>
+                            <td>${record.generatedNumbers.join(', ')}</td>
+                            <td>${record.userNumbers.join(', ')}</td>
+                            <td>${record.intervaloTexto}</td>
+                        </tr>
+                    `;
+                });
+                
+                // Calcular alguns totais
+                const acertos5 = completeHistoryData.filter(r => r.matchCount === 5).length;
+                const acertos6 = completeHistoryData.filter(r => r.matchCount === 6).length;
+                const acertos7 = completeHistoryData.filter(r => r.matchCount === 7).length;
+                
+                // Fechar a tabela e adicionar rodapé
+                htmlContent += `
+                        </tbody>
+                    </table>
+                    
+                    <div class="totals">
+                        <p>Total de registros: ${completeHistoryData.length}</p>
+                        <p>Acertos de 5 números: <span class="match-count-5">${acertos5}</span></p>
+                        <p>Acertos de 6 números: <span class="match-count-6">${acertos6}</span></p>
+                        <p>Acertos de 7 números: <span class="match-count-7">${acertos7}</span></p>
+                    </div>
+                    
+                    <div class="export-date">
+                        Exportado em: ${new Date().toLocaleString()}
+                    </div>
+                </body>
+                </html>
+                `;
+                
+                // Criar um objeto Blob com o conteúdo HTML
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                
+                // Criar um link para download e simular um clique
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                console.log("Exportação para HTML concluída:", fileName);
+            } catch (error) {
+                console.error("Erro ao exportar para HTML:", error);
+                alert("Ocorreu um erro ao exportar os dados para HTML: " + error.message);
+            }
+        }
+        
+        // Event listener para o botão de gerar números
+        document.getElementById('generate-btn').addEventListener('click', function() {
+            // Inicializar áudio primeiro (para garantir que uma interação do usuário ocorreu)
+            initAudio();
+            // Gerar números
+            generateRandomNumbers();
+        });
+        
+        // Event listener para o select de intervalo
+        document.getElementById('interval-select').addEventListener('change', function() {
+            // Se já existir um intervalo, para ele primeiro
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+            
+            // Resetar o estilo do contador para verde
+            resetMatchCounterStyle();
+            
+            // Se o valor selecionado for maior que 0, inicia a geração automática
+            if (parseInt(this.value) > 0) {
+                startAutoGeneration();
+            } else {
+                // Se o valor for 0, esconde o botão de parar e o contador
+                document.getElementById('toggle-auto-btn').classList.add('hidden');
+                document.getElementById('countdown-display').classList.add('hidden');
+                
+                // Resetar o valor do intervalo atual
+                currentIntervalValue = 0;
+            }
+        });
+        
+        // Event listener para o botão de parar a geração automática
+        document.getElementById('toggle-auto-btn').addEventListener('click', stopAutoGeneration);
+        
+        // Função para aplicar o palpite manual
+        document.getElementById('apply-manual-btn').addEventListener('click', function() {
+            // Inicializar áudio primeiro (para garantir que uma interação do usuário ocorreu)
+            initAudio();
+            
+            const inputs = document.querySelectorAll('.manual-number-input');
+            const monthInput = document.getElementById('month-input');
+            const numberBoxes = document.querySelectorAll('.number-box');
+            const monthBox = document.getElementById('month-box');
+            const errorMessage = document.getElementById('error-message');
+            
+            // Verificar se todos os campos estão preenchidos
+            let allFilled = true;
+            const numbers = [];
+            
+            inputs.forEach(input => {
+                if (!input.value) {
+                    allFilled = false;
+                } else {
+                    const num = parseInt(input.value);
+                    numbers.push(num);
+                }
+            });
+            
+            if (!allFilled) {
+                errorMessage.textContent = 'Por favor, preencha todos os 7 números.';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+            
+            // Verificar se o mês está preenchido
+            if (!monthInput.value) {
+                errorMessage.textContent = 'Por favor, preencha o mês (1-12).';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+            
+            // Verificar se o mês está entre 1 e 12
+            const monthValue = parseInt(monthInput.value);
+            if (monthValue < 1 || monthValue > 12) {
+                errorMessage.textContent = 'O mês deve estar entre 1 e 12.';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+            
+            // Verificar se todos os números estão entre 1 e 31
+            const validRange = numbers.every(num => num >= 1 && num <= 31);
+            if (!validRange) {
+                errorMessage.textContent = 'Todos os números devem estar entre 1 e 31.';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+            
+            // Verificar se existem números repetidos
+            const uniqueNumbers = new Set(numbers);
+            if (uniqueNumbers.size !== 7) {
+                errorMessage.textContent = 'Não pode haver números repetidos no palpite.';
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+            
+            // Se passou por todas as validações, esconde a mensagem de erro
+            errorMessage.classList.add('hidden');
+            
+            // Salvar o palpite do usuário
+            userGuessNumbers = [...numbers];
+            userGuessMonth = monthValue;
+            
+            // Resetar o contador de acertos
+            document.getElementById('match-counter').textContent = "0";
+            resetMatchCounterStyle(); // Garantir que o contador fique verde
+            document.getElementById('month-match').textContent = "não";
+            
+            // Limpar possíveis marcações de correspondência
+            document.querySelectorAll('.number-box').forEach(box => {
+                box.classList.remove('match');
+            });
+            monthBox.classList.remove('match');
+            
+            // Verificar se já existem números gerados
+            const currentBoxNumbers = [];
+            numberBoxes.forEach(box => {
+                if (box.textContent !== '-') {
+                    currentBoxNumbers.push(parseInt(box.textContent));
+                }
+            });
+            
+            // Se já existir números gerados, verificar coincidências
+            if (currentBoxNumbers.length === 7 && monthBox.textContent !== '-') {
+                let matchCount = 0;
+                const matchedNumbers = [];
+                const currentMonth = parseInt(monthBox.textContent);
+                let monthMatch = false;
+                
+                // Verificar cada número do palpite do usuário
+                for (let i = 0; i < 7; i++) {
+                    if (currentBoxNumbers.includes(userGuessNumbers[i])) {
+                        // Destacar a caixa correspondente
+                        const index = currentBoxNumbers.indexOf(userGuessNumbers[i]);
+                        numberBoxes[index].classList.add('match');
+                        matchedNumbers.push(userGuessNumbers[i]);
+                        matchCount++;
+                    }
+                }
+                
+                // Verificar se o mês coincide
+                if (userGuessMonth === currentMonth) {
+                    monthMatch = true;
+                    monthBox.classList.add('match');
+                }
+                
+                // Atualizar o contador de correspondências
+                const matchCounter = document.getElementById('match-counter');
+                matchCounter.textContent = matchCount;
+                
+                // Atualizar o indicador de correspondência do mês
+                const monthMatchElement = document.getElementById('month-match');
+                monthMatchElement.textContent = monthMatch ? 'sim' : 'não';
+                
+                // Mostrar o contador de correspondências
+                document.getElementById('match-info').classList.remove('hidden');
+                
+                // Se houver 5 ou mais acertos
+                if (matchCount >= 5) {
+                    // Tocar o som de alerta usando o novo sistema
+                    playAlertSound();
+                    
+                    // Destacar o contador de acertos
+                    matchCounter.classList.add('text-red-600', 'dark:text-red-400', 'font-bold', 'text-base');
+                    
+                    // Obter a data atual para o cálculo de diferença de tempo
+                    const currentDate = new Date();
+                    
+                    // Adicionar ao histórico
+                    addToHistory(matchCount, matchedNumbers, currentBoxNumbers, currentMonth, monthMatch, currentDate);
+                    
+                    // Atualizar a data do último acerto para cálculos futuros
+                    lastMatchDate = currentDate;
+                    lastMatchPalpite = palpiteCounter;
+                }
+            }
+        });
+        
+        // Configurar botões de exportação
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar áudio ao carregar a página
+            initAudio();
+            
+            // Botão para mostrar/esconder opções de exportação
+            const exportHistoryBtn = document.getElementById('export-history-btn');
+            const exportOptions = document.getElementById('export-options');
+            
+            if (exportHistoryBtn) {
+                exportHistoryBtn.addEventListener('click', function() {
+                    if (exportOptions.classList.contains('hidden')) {
+                        exportOptions.classList.remove('hidden');
+                        exportHistoryBtn.textContent = 'Ocultar Exportação';
+                    } else {
+                        exportOptions.classList.add('hidden');
+                        exportHistoryBtn.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                            Exportar`;
+                    }
+                });
+            }
+            
+            // Botões de exportação
+            const exportExcelBtn = document.getElementById('export-excel-btn');
+            const exportHtmlBtn = document.getElementById('export-html-btn');
+            
+            if (exportExcelBtn) {
+                exportExcelBtn.addEventListener('click', exportToExcel);
+            }
+            
+            if (exportHtmlBtn) {
+                exportHtmlBtn.addEventListener('click', exportToHTML);
+            }
+        });
+        
+        // Adicionar validação de input para limitar a 1-31 e evitar repetições
+        const manualInputs = document.querySelectorAll('.manual-number-input');
+        
+        manualInputs.forEach(input => {
+            // Garantir que o valor esteja dentro do intervalo 1-31
+            input.addEventListener('blur', function() {
+                const value = parseInt(this.value);
+                if (value < 1) this.value = 1;
+                if (value > 31) this.value = 31;
+            });
+            
+            // Destacar campo quando selecionado
+            input.addEventListener('focus', function() {
+                this.select();
+            });
+        });
+        
+        // Função para verificar acertos
+        function checkMatches() {
+            if (userGuessNumbers.length !== 7) return;
+            
+            const numberBoxes = document.querySelectorAll('.number-box');
+            const monthBox = document.getElementById('month-box');
+            
+            // Limpar todas as marcações anteriores
+            numberBoxes.forEach(box => {
+                box.classList.remove('match');
+            });
+            monthBox.classList.remove('match');
+            
+            // Resetar o estilo do contador para verde (padrão)
+            resetMatchCounterStyle();
+            
+            // Verificar se já existem números gerados
+            const generatedNumbers = [];
+            numberBoxes.forEach(box => {
+                if (box.textContent !== '-') {
+                    generatedNumbers.push(parseInt(box.textContent));
+                }
+            });
+            
+            if (generatedNumbers.length !== 7) return;
+            
+            const generatedMonth = parseInt(monthBox.textContent);
+            
+            // Verificar correspondências
+            let matchCount = 0;
+            const matchedNumbers = [];
+            
+            userGuessNumbers.forEach(num => {
+                if (generatedNumbers.includes(num)) {
+                    // Encontrar a caixa correspondente
+                    numberBoxes.forEach(box => {
+                        if (parseInt(box.textContent) === num) {
+                            box.classList.add('match');
+                        }
+                    });
+                    matchedNumbers.push(num);
+                    matchCount++;
+                }
+            });
+            
+            // Verificar o mês
+            let monthMatch = false;
+            if (userGuessMonth === generatedMonth) {
+                monthBox.classList.add('match');
+                monthMatch = true;
+            }
+            
+            // Atualizar o contador
+            const matchCounter = document.getElementById('match-counter');
+            matchCounter.textContent = matchCount;
+            
+            // Atualizar o indicador de mês
+            document.getElementById('month-match').textContent = monthMatch ? 'sim' : 'não';
+            
+            // Mostrar o contador
+            document.getElementById('match-info').classList.remove('hidden');
+            
+            // Se houver 5 ou mais acertos, tocar o beep e destacar
+            if (matchCount >= 5) {
+                // Tocar o beep para alertar o usuário (usando novo método)
+                playAlertSound();
+                
+                // Destacar o contador
+                matchCounter.classList.add('text-red-600', 'dark:text-red-400', 'font-bold', 'text-base');
+            }
+        }
+        
+        // Inicializar a aplicação quando a página carregar
+        window.onload = function() {
+            // Mostrar o contador de palpites
+            document.getElementById('palpite-counter').classList.remove('hidden');
+            
+            // Inicializar sistema de áudio
+            initAudio();
+            
+            // Gerar números iniciais
+            generateRandomNumbers();
+            
+            // Forçar a verificação inicial se houver palpites
+            if (userGuessNumbers.length === 7) {
+                checkMatches();
+            }
+        }
+    </script>
+    
+    <style>
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .pop-in {
+            animation: popIn 0.3s ease forwards;
+        }
+        
+        /* Destaque mais forte para acertos */
+        .number-box.match,
+        .month-box.match {
+            background-color: #10B981 !important;
+            color: white !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.6) !important;
+            border: 2px solid #059669 !important;
+        }
+        
+        .high-match {
+            background-color: #EF4444 !important;
+            color: white !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.4);
+        }
+        
+        /* Nova animação de flash para destacar acertos */
+        @keyframes flash {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 1; color: #ef4444; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .flash-highlight {
+            animation: flash 0.5s ease-in-out;
+        }
+        
+        #match-counter {
+            font-weight: bold;
+        }
+        
+        #history-section {
+            border-top: 1px dashed #ccc;
+            margin-top: 12px;
+            padding-top: 12px;
+            font-size: 0.85rem;
+        }
+        
+        .history-item {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dotted #eee;
+        }
+        
+        .history-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .history-numbers {
+            font-family: monospace;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Números Dia de Sorte</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://kit.fontawesome.com/2fa2c650ed.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de Números Dia de Sorte</h1>
+        <small>A caixa sorteia 10 números dentre os 80. Marque de 10 a 15 números.</small>
+
+        <p><small>Escolha pelo menos 3 números fixos</small></p>
+        <div class="number-selection">
+            <label for="fixed-number-1">Número Fixo 1:</label>
+            <input type="number" id="fixed-number-1" min="1" max="70" onchange="validateAndUpdateOptions()">
+            
+            <label for="fixed-number-2">Número Fixo 2:</label>
+            <input type="number" id="fixed-number-2" min="1" max="70" onchange="validateAndUpdateOptions()">
+            
+            <label for="fixed-number-3">Número Fixo 3:</label>
+            <input type="number" id="fixed-number-3" min="1" max="70" onchange="validateAndUpdateOptions()">
+        </div>
+        <button id="generate-btn" onclick="generateNumbers()" disabled>Gerar Números</button>
+        <button id="save-btn" onclick="saveGame()" disabled>Salvar Jogo</button>
+        <button id="export-btn" onclick="exportToExcel()">Exportar para Excel</button>
+        <div id="generated-numbers" class="numbers-display"></div>
+        <div id="saved-games" class="numbers-display"></div>
+        <h2>Desdobramento Dia de Sorte <a href="https://diadesortedes.netlify.app" target="_blank"><i class="fa-solid fa-right-long"></i></a></h2>
+    </div>
+    <script src="./js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados Dia de Sorte</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #F09300; /* Cor laranja do Dia de Sorte */
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin: 0 auto;
+        }
+
+        .concurso-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .concurso-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .card-header h3 {
+            color: #F09300; /* Cor laranja do Dia de Sorte */
+            font-size: 1.3em;
+        }
+
+        .data {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .numeros {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .numero {
+            width: 35px;
+            height: 35px;
+            background: #F09300; /* Cor laranja do Dia de Sorte */
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .mes-sorte-container {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .mes-sorte {
+            padding: 5px 15px;
+            background: #FFC866; /* Tom mais claro de laranja */
+            color: #8B4513; /* Marrom escuro */
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 1em;
+            text-align: center;
+            border: 2px dashed #F09300;
+        }
+
+        .status-premio {
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f8f8;
+            border-radius: 5px;
+        }
+
+        .acumulou-text {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #F09300; /* Cor laranja do Dia de Sorte */
+        }
+
+        .acumulou-text.acumulado {
+            color: #d32f2f;
+        }
+
+        .premio-principal {
+            font-size: 1em;
+            color: #333;
+            margin-top: 5px;
+        }
+
+        .premiacoes {
+            margin: 15px 0;
+        }
+
+        .premiacao-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+            font-size: 0.9em;
+        }
+
+        .premiacao-item i {
+            color: #F09300; /* Cor laranja do Dia de Sorte */
+            width: 20px;
+        }
+
+        .local {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 15px;
+        }
+
+        .local i {
+            margin-right: 5px;
+            color: #F09300; /* Cor laranja do Dia de Sorte */
+        }
+
+        .proximo-sorteio {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+            text-align: center;
+        }
+
+        .proximo-sorteio p {
+            margin: 5px 0;
+        }
+
+        .estimativa {
+            color: #F09300; /* Cor laranja do Dia de Sorte */
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+
+        .concurso-numero {
+            color: #FF5722; /* Cor laranja mais intenso que contrasta com o laranja principal */
+        }
+
+        @media (max-width: 1200px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 800px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Estilos para loader */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #F09300;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Estilos para notificações */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            z-index: 1001;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s, transform 0.3s;
+            max-width: 300px;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .notification.success {
+            background-color: #4CAF50;
+        }
+
+        .notification.error {
+            background-color: #f44336;
+        }
+
+        .notification.info {
+            background-color: #2196F3;
+        }
+
+        /* Paginação */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            gap: 10px;
+        }
+
+        .pagination-btn {
+            padding: 8px 16px;
+            background-color: #F09300;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .pagination-btn:hover {
+            background-color: #c47700;
+        }
+
+        .pagination-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Estilos para modo escuro */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #1a1a1a;
+                color: #f0f0f0;
+            }
+
+            .concurso-card {
+                background: #2a2a2a;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            }
+
+            .data, .premiacao-item, .local {
+                color: #bbb;
+            }
+
+            .status-premio {
+                background: #333;
+            }
+
+            .premio-principal {
+                color: #ddd;
+            }
+
+            .loading-overlay {
+                background-color: rgba(26, 26, 26, 0.8);
+            }
+
+            .loader {
+                border: 5px solid #333;
+                border-top: 5px solid #F09300;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Resultados do Dia de Sorte</h1>
+            <p>Últimos concursos e premiações</p>
+        </div>
+        
+        <div class="grid-container" id="resultados-container">
+            <!-- Os resultados serão carregados via JavaScript -->
+            <div class="concurso-card">
+                <div class="card-header">
+                    <h3>Carregando dados...</h3>
+                </div>
+            </div>
+        </div>
+        
+        <div class="pagination">
+            <button id="anterior-btn" class="pagination-btn" disabled>
+                <i class="fas fa-chevron-left"></i> Anteriores
+            </button>
+            <button id="proximo-btn" class="pagination-btn" disabled>
+                Próximos <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Configurações das APIs
+        const API_CONFIG = {
+            // APIs oficiais
+            CAIXA_URL: 'https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte',
+            HEROKU_URL: 'https://loteriascaixa-api.herokuapp.com/api/dia-de-sorte',
+            BRASIL_URL: 'https://brasilapi.com.br/api/loterias/v1/dia-de-sorte',
+            
+            // Serviços de proxy CORS
+            CORS_PROXY_URLS: [
+                'https://corsproxy.io/?',
+                'https://api.allorigins.win/raw?url=',
+                'https://cors-anywhere.herokuapp.com/'
+            ]
+        };
+
+        // Variáveis de controle
+        let ultimoConcursoCarregado = null;
+        let concursosExibidos = [];
+        let concursosPorPagina = 6;
+        let paginaAtual = 1;
+        let totalConcursos = 0;
+        
+        // DOM Elements
+        const resultadosContainer = document.getElementById('resultados-container');
+        const anteriorBtn = document.getElementById('anterior-btn');
+        const proximoBtn = document.getElementById('proximo-btn');
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarUltimosConcursos();
+            
+            // Event listeners para paginação
+            anteriorBtn.addEventListener('click', carregarConcursosAnteriores);
+            proximoBtn.addEventListener('click', carregarProximosConcursos);
+        });
+
+        // Função para formatar valores monetários
+        function formatarMoeda(valor) {
+            if (!valor) return 'R$ 0,00';
+            
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(valor);
+        }
+
+        // Função para formatar data
+        function formatarData(dataStr) {
+            if (!dataStr) return '';
+            
+            try {
+                // Verifica se a data já está no formato brasileiro (dd/mm/aaaa)
+                if (/^\d{2}\/\d{2}\/\d{4}$/.test(dataStr)) {
+                    return dataStr;
+                }
+                
+                // Se a data estiver no formato ISO (aaaa-mm-dd)
+                const data = new Date(dataStr);
+                return data.toLocaleDateString('pt-BR');
+            } catch (error) {
+                console.error('Erro ao formatar data:', error);
+                return dataStr;
+            }
+        }
+
+        // Função para obter o nome do dia da semana
+        function obterDiaSemana(dataStr) {
+            if (!dataStr) return '';
+            
+            try {
+                // Parse da data no formato brasileiro
+                const partes = dataStr.split('/');
+                if (partes.length !== 3) return '';
+                
+                const data = new Date(partes[2], partes[1] - 1, partes[0]);
+                const diasSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+                return diasSemana[data.getDay()];
+            } catch (error) {
+                console.error('Erro ao obter dia da semana:', error);
+                return '';
+            }
+        }
+
+        // Função para tentar carregar dados da API com fallbacks
+        async function carregarDadosAPI(url, usarProxy = false) {
+            try {
+                if (usarProxy) {
+                    // Tenta cada um dos proxies em sequência
+                    for (const proxyUrl of API_CONFIG.CORS_PROXY_URLS) {
+                        try {
+                            const response = await fetch(proxyUrl + encodeURIComponent(url));
+                            if (response.ok) {
+                                return await response.json();
+                            }
+                        } catch (error) {
+                            console.warn(`Erro ao usar proxy ${proxyUrl}:`, error);
+                            // Continua para o próximo proxy
+                        }
+                    }
+                    throw new Error('Todos os proxies falharam');
+                } else {
+                    const response = await fetch(url);
+                    if (response.ok) {
+                        return await response.json();
+                    } else {
+                        throw new Error(`Status: ${response.status}`);
+                    }
+                }
+            } catch (error) {
+                console.error(`Erro ao carregar dados de ${url}:`, error);
+                throw error;
+            }
+        }
+
+        // Carregar dados com fallbacks para múltiplas APIs
+        async function carregarConcurso(numero = null) {
+            showLoading();
+            
+            try {
+                // Tenta primeiro a API Heroku
+                try {
+                    const url = numero 
+                        ? `${API_CONFIG.HEROKU_URL}/${numero}`
+                        : `${API_CONFIG.HEROKU_URL}/latest`;
+                    
+                    const dados = await carregarDadosAPI(url);
+                    hideLoading();
+                    return processarDadosHeroku(dados);
+                } catch (error) {
+                    console.warn('API Heroku falhou, tentando BrasilAPI...');
+                    
+                    // Tenta a BrasilAPI como segunda opção
+                    try {
+                        const url = `${API_CONFIG.BRASIL_URL}/${numero || 'latest'}`;
+                        const dados = await carregarDadosAPI(url);
+                        hideLoading();
+                        return processarDadosBrasilAPI(dados);
+                    } catch (error2) {
+                        console.warn('BrasilAPI falhou, tentando API Caixa com proxy...');
+                        
+                        // Tenta a API oficial da Caixa com proxy como última opção
+                        try {
+                            const url = numero 
+                                ? `${API_CONFIG.CAIXA_URL}/${numero}`
+                                : API_CONFIG.CAIXA_URL;
+                            
+                            const dados = await carregarDadosAPI(url, true);
+                            hideLoading();
+                            return processarDadosCaixa(dados);
+                        } catch (error3) {
+                            throw new Error('Todas as APIs falharam');
+                        }
+                    }
+                }
+            } catch (error) {
+                hideLoading();
+                showNotification('Não foi possível carregar os dados. Tentando novamente...', 'error');
+                return carregarConcursoEmergencia(numero);
+            }
+        }
+
+        // Processadores para cada formato de API
+        function processarDadosHeroku(dados) {
+            // Extrai as premiações para um formato mais fácil de usar
+            const premiacoes = {};
+            dados.premiacoes.forEach(premio => {
+                const descricao = premio.descricao;
+                premiacoes[descricao] = {
+                    ganhadores: premio.ganhadores,
+                    valorPremio: premio.valorPremio
+                };
+            });
+            
+            // Captura o mês da sorte em diferentes formatos possíveis
+            // Registre no console o objeto de dados para depuração
+            console.log("Dados da API Heroku:", dados);
+            
+            let mesSorte = '';
+            if (dados.nomeTimeCoracaoMesSorte) {
+                mesSorte = dados.nomeTimeCoracaoMesSorte;
+            } else if (dados.mesDaSorte) {
+                mesSorte = dados.mesDaSorte;
+            } else if (dados.nomeMesSorte) {
+                mesSorte = dados.nomeMesSorte;
+            } else if (dados.mes) {
+                mesSorte = dados.mes;
+            } else if (dados.mesSort) {
+                mesSorte = dados.mesSort;
+            } else if (dados.mesDesort) {
+                mesSorte = dados.mesDesort;
+            }
+
+            return {
+                numero: dados.concurso,
+                data: formatarData(dados.data),
+                diaSemana: obterDiaSemana(formatarData(dados.data)),
+                numeros: dados.dezenas.map(d => parseInt(d, 10)),
+                mesSorte: mesSorte,
+                acumulou: dados.acumulou,
+                localSorteio: dados.local || 'Local não informado',
+                ganhadores: {
+                    seteAcertos: premiacoes['7 acertos']?.ganhadores || 0,
+                    seisAcertos: premiacoes['6 acertos']?.ganhadores || 0,
+                    cincoAcertos: premiacoes['5 acertos']?.ganhadores || 0,
+                    quatroAcertos: premiacoes['4 acertos']?.ganhadores || 0,
+                    mesDeSorte: premiacoes['Mês de Sorte']?.ganhadores || 0
+                },
+                premios: {
+                    seteAcertos: premiacoes['7 acertos']?.valorPremio || 0,
+                    seisAcertos: premiacoes['6 acertos']?.valorPremio || 0,
+                    cincoAcertos: premiacoes['5 acertos']?.valorPremio || 0,
+                    quatroAcertos: premiacoes['4 acertos']?.valorPremio || 0,
+                    mesDeSorte: premiacoes['Mês de Sorte']?.valorPremio || 0
+                },
+                proximoConcurso: {
+                    data: formatarData(dados.dataProximoConcurso),
+                    diaSemana: obterDiaSemana(formatarData(dados.dataProximoConcurso)),
+                    numero: dados.proximoConcurso,
+                    estimativaPremio: dados.valorEstimadoProximoConcurso || 0
+                }
+            };
+        }
+
+        function processarDadosBrasilAPI(dados) {
+            // Registre no console o objeto de dados para depuração
+            console.log("Dados da Brasil API:", dados);
+            
+            // Captura o mês da sorte em diferentes formatos possíveis
+            let mesSorte = '';
+            if (dados.nomeTimeCoracaoMesSorte) {
+                mesSorte = dados.nomeTimeCoracaoMesSorte;
+            } else if (dados.mesDaSorte) {
+                mesSorte = dados.mesDaSorte;
+            } else if (dados.nomeMesSorte) {
+                mesSorte = dados.nomeMesSorte;
+            } else if (dados.mes) {
+                mesSorte = dados.mes;
+            } else if (dados.mesSort) {
+                mesSorte = dados.mesSort;
+            } else if (dados.mesDesort) {
+                mesSorte = dados.mesDesort;
+            }
+            
+            // BrasilAPI tem um formato diferente, adaptamos para o nosso padrão
+            return {
+                numero: dados.concurso,
+                data: formatarData(dados.data),
+                diaSemana: obterDiaSemana(formatarData(dados.data)),
+                numeros: dados.numeros,
+                mesSorte: mesSorte,
+                acumulou: !dados.dezenasSorteadasOrdemSorteio || dados.dezenasSorteadasOrdemSorteio.length === 0,
+                localSorteio: 'Local não informado na API',
+                ganhadores: {
+                    seteAcertos: dados.quantidadeGanhadores || 0,
+                    seisAcertos: 0, // Brasil API não fornece esses dados 
+                    cincoAcertos: 0, // Brasil API não fornece esses dados
+                    quatroAcertos: 0, // Brasil API não fornece esses dados
+                    mesDeSorte: 0 // Brasil API não fornece esses dados
+                },
+                premios: {
+                    seteAcertos: dados.valorPremio || 0,
+                    seisAcertos: 0, // Brasil API não fornece esses dados
+                    cincoAcertos: 0, // Brasil API não fornece esses dados
+                    quatroAcertos: 0, // Brasil API não fornece esses dados
+                    mesDeSorte: 0 // Brasil API não fornece esses dados
+                },
+                proximoConcurso: {
+                    data: '', // Brasil API não fornece esses dados
+                    diaSemana: '',
+                    numero: dados.concurso + 1, // Estimativa
+                    estimativaPremio: 0 // Brasil API não fornece esses dados
+                }
+            };
+        }
+
+        function processarDadosCaixa(dados) {
+            // Registre no console o objeto de dados para depuração
+            console.log("Dados da API Caixa:", dados);
+            
+            // Captura o mês da sorte em diferentes formatos possíveis
+            let mesSorte = '';
+            if (dados.nomeTimeCoracaoMesSorte) {
+                mesSorte = dados.nomeTimeCoracaoMesSorte;
+            } else if (dados.nomeMesSorte) {
+                mesSorte = dados.nomeMesSorte;
+            } else if (dados.mesDaSorte) {
+                mesSorte = dados.mesDaSorte;
+            } else if (dados.mes) {
+                mesSorte = dados.mes;
+            } else if (dados.mesSort) {
+                mesSorte = dados.mesSort;
+            } else if (dados.mesDesort) {
+                mesSorte = dados.mesDesort;
+            } else if (dados.nomeDoMes) {
+                mesSorte = dados.nomeDoMes;
+            }
+            
+            // A API da Caixa tem um formato próprio, adaptamos para o nosso padrão
+            return {
+                numero: dados.numero,
+                data: formatarData(dados.dataApuracao),
+                diaSemana: obterDiaSemana(formatarData(dados.dataApuracao)),
+                numeros: dados.listaDezenas.map(d => parseInt(d, 10)),
+                mesSorte: mesSorte,
+                acumulou: dados.acumulado,
+                localSorteio: dados.localSorteio || 'Local não informado',
+                ganhadores: {
+                    seteAcertos: parseInt(dados.listaRateioPremio[0]?.numeroDeGanhadores || 0),
+                    seisAcertos: parseInt(dados.listaRateioPremio[1]?.numeroDeGanhadores || 0),
+                    cincoAcertos: parseInt(dados.listaRateioPremio[2]?.numeroDeGanhadores || 0),
+                    quatroAcertos: parseInt(dados.listaRateioPremio[3]?.numeroDeGanhadores || 0),
+                    mesDeSorte: parseInt(dados.listaRateioPremio[4]?.numeroDeGanhadores || 0)
+                },
+                premios: {
+                    seteAcertos: parseFloat(dados.listaRateioPremio[0]?.valorPremio || 0),
+                    seisAcertos: parseFloat(dados.listaRateioPremio[1]?.valorPremio || 0),
+                    cincoAcertos: parseFloat(dados.listaRateioPremio[2]?.valorPremio || 0),
+                    quatroAcertos: parseFloat(dados.listaRateioPremio[3]?.valorPremio || 0),
+                    mesDeSorte: parseFloat(dados.listaRateioPremio[4]?.valorPremio || 0)
+                },
+                proximoConcurso: {
+                    data: formatarData(dados.dataProximoConcurso),
+                    diaSemana: obterDiaSemana(formatarData(dados.dataProximoConcurso)),
+                    numero: dados.numeroConcursoProximo,
+                    estimativaPremio: dados.valorEstimadoProximoConcurso || 0
+                }
+            };
+        }
+
+        // Função para carregar os últimos concursos
+        async function carregarUltimosConcursos() {
+            try {
+                showLoading();
+                
+                // Carregar o concurso mais recente
+                const ultimoConcurso = await carregarConcurso();
+                ultimoConcursoCarregado = ultimoConcurso.numero;
+                totalConcursos = ultimoConcurso.numero;
+                
+                // Calcular quais concursos devem ser carregados
+                const concursosNecessarios = [];
+                for (let i = 0; i < concursosPorPagina; i++) {
+                    concursosNecessarios.push(ultimoConcursoCarregado - i);
+                }
+                
+                // Carregar os concursos simultaneamente
+                const promises = concursosNecessarios.map(num => carregarConcurso(num));
+                concursosExibidos = await Promise.all(promises);
+                
+                // Exibir os concursos
+                exibirConcursos(concursosExibidos);
+                
+                // Atualizar botões de paginação
+                atualizarBotoesPaginacao();
+                
+            } catch (error) {
+                console.error('Erro ao carregar últimos concursos:', error);
+                showNotification('Erro ao carregar concursos. Tentando novamente...', 'error');
+                
+                // Tentar novamente com abordagem alternativa
+                concursosExibidos = [];
+                for (let i = 0; i < concursosPorPagina; i++) {
+                    try {
+                        const concurso = await carregarConcursoEmergencia(1000 - i);
+                        if (concurso) concursosExibidos.push(concurso);
+                    } catch (e) {
+                        console.error('Falha na tentativa de emergência:', e);
+                    }
+                }
+                
+                exibirConcursos(concursosExibidos);
+                atualizarBotoesPaginacao();
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Carregar concursos anteriores
+        async function carregarConcursosAnteriores() {
+            try {
+                showLoading();
+                
+                // Obter o número do concurso mais antigo exibido atualmente
+                const concursoMaisAntigo = Math.min(...concursosExibidos.map(c => c.numero));
+                
+                // Calcular quais concursos devem ser carregados
+                const concursosNecessarios = [];
+                for (let i = 1; i <= concursosPorPagina; i++) {
+                    concursosNecessarios.push(concursoMaisAntigo - i);
+                }
+                
+                // Carregar os concursos simultaneamente
+                const promises = concursosNecessarios.map(num => carregarConcurso(num));
+                concursosExibidos = await Promise.all(promises);
+                
+                // Exibir os concursos
+                exibirConcursos(concursosExibidos);
+                
+                paginaAtual++;
+                atualizarBotoesPaginacao();
+                
+            } catch (error) {
+                console.error('Erro ao carregar concursos anteriores:', error);
+                showNotification('Erro ao carregar concursos anteriores', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Carregar próximos concursos (mais recentes)
+        async function carregarProximosConcursos() {
+            try {
+                showLoading();
+                
+                // Obter o número do concurso mais recente exibido atualmente
+                const concursoMaisRecente = Math.max(...concursosExibidos.map(c => c.numero));
+                
+                // Calcular quais concursos devem ser carregados
+                const concursosNecessarios = [];
+                for (let i = 1; i <= concursosPorPagina; i++) {
+                    // Não carregamos concursos futuros
+                    const numConcurso = concursoMaisRecente + i;
+                    if (numConcurso <= ultimoConcursoCarregado) {
+                        concursosNecessarios.push(numConcurso);
+                    }
+                }
+                
+                // Se não houver concursos a carregar, recarregamos os mais recentes
+                if (concursosNecessarios.length === 0) {
+                    await carregarUltimosConcursos();
+                    return;
+                }
+                
+                // Carregar os concursos simultaneamente
+                const promises = concursosNecessarios.map(num => carregarConcurso(num));
+                concursosExibidos = await Promise.all(promises);
+                
+                // Exibir os concursos
+                exibirConcursos(concursosExibidos);
+                
+                paginaAtual--;
+                atualizarBotoesPaginacao();
+                
+            } catch (error) {
+                console.error('Erro ao carregar próximos concursos:', error);
+                showNotification('Erro ao carregar próximos concursos', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Exibir concursos na interface
+        function exibirConcursos(concursos) {
+            // Limpar o container
+            resultadosContainer.innerHTML = '';
+            
+            // Ordenar concursos do mais recente para o mais antigo
+            concursos.sort((a, b) => b.numero - a.numero);
+            
+            // Exibir cada concurso
+            concursos.forEach(concurso => {
+                const card = document.createElement('div');
+                card.className = 'concurso-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h3>Concurso <span class="concurso-numero">${concurso.numero}</span></h3>
+                        <p class="data"><i class="far fa-calendar-alt"></i> ${concurso.data} (${concurso.diaSemana})</p>
+                    </div>
+                    
+                    <div class="numeros">
+                        ${concurso.numeros.map(num => `
+                            <div class="numero">${num.toString().padStart(2, '0')}</div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="mes-sorte-container">
+                        <div class="mes-sorte">
+                            <i class="fas fa-calendar-check"></i> ${concurso.mesSorte}
+                        </div>
+                    </div>
+                    
+                    <div class="status-premio">
+                        <p class="acumulou-text ${concurso.acumulou ? 'acumulado' : ''}">
+                            ${concurso.acumulou ? 'ACUMULOU!' : `${concurso.ganhadores.seteAcertos} GANHADOR${concurso.ganhadores.seteAcertos !== 1 ? 'ES' : ''}`}
+                        </p>
+                        <p class="premio-principal">
+                            ${concurso.acumulou ? 'Ninguém acertou os 7 números' : `Prêmio: ${formatarMoeda(concurso.premios.seteAcertos)}`}
+                        </p>
+                    </div>
+                    
+                    <div class="premiacoes">
+                        <div class="premiacao-item">
+                            <i class="fas fa-trophy"></i>
+                            <span>6 acertos: ${concurso.ganhadores.seisAcertos} apostas ganhadoras - ${formatarMoeda(concurso.premios.seisAcertos)}</span>
+                        </div>
+                        <div class="premiacao-item">
+                            <i class="fas fa-trophy"></i>
+                            <span>5 acertos: ${concurso.ganhadores.cincoAcertos} apostas ganhadoras - ${formatarMoeda(concurso.premios.cincoAcertos)}</span>
+                        </div>
+                        <div class="premiacao-item">
+                            <i class="fas fa-trophy"></i>
+                            <span>4 acertos: ${concurso.ganhadores.quatroAcertos} apostas ganhadoras - ${formatarMoeda(concurso.premios.quatroAcertos)}</span>
+                        </div>
+                        <div class="premiacao-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>Mês da Sorte: ${concurso.ganhadores.mesDeSorte} apostas ganhadoras - ${formatarMoeda(concurso.premios.mesDeSorte)}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="local">
+                        <i class="fas fa-map-marker-alt"></i> ${concurso.localSorteio}
+                    </div>
+                    
+                    <div class="proximo-sorteio">
+                        <p>Próximo Sorteio: Concurso ${concurso.proximoConcurso.numero}</p>
+                        <p>${concurso.proximoConcurso.data} (${concurso.proximoConcurso.diaSemana})</p>
+                        <p class="estimativa">Prêmio Estimado: ${formatarMoeda(concurso.proximoConcurso.estimativaPremio)}</p>
+                    </div>
+                `;
+                
+                resultadosContainer.appendChild(card);
+            });
+        }
+
+        // Atualizar estado dos botões de paginação
+        function atualizarBotoesPaginacao() {
+            // O botão "anterior" só é habilitado se houver concursos anteriores
+            anteriorBtn.disabled = concursosExibidos.length === 0 || 
+                                   Math.min(...concursosExibidos.map(c => c.numero)) <= 1;
+            
+            // O botão "próximo" só é habilitado se não estivermos na primeira página
+            proximoBtn.disabled = paginaAtual <= 1;
+        }
+
+        // Funções auxiliares para UI
+        function showLoading() {
+            let loadingOverlay = document.querySelector('.loading-overlay');
+            
+            if (!loadingOverlay) {
+                loadingOverlay = document.createElement('div');
+                loadingOverlay.className = 'loading-overlay';
+                
+                const loader = document.createElement('div');
+                loader.className = 'loader';
+                
+                loadingOverlay.appendChild(loader);
+                document.body.appendChild(loadingOverlay);
+            }
+            
+            loadingOverlay.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            const loadingOverlay = document.querySelector('.loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            let notification = document.querySelector('.notification');
+            
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.className = 'notification';
+                document.body.appendChild(notification);
+            }
+            
+            // Resetar classes
+            notification.className = 'notification';
+            
+            // Adicionar classe de tipo
+            if (type) {
+                notification.classList.add(type);
+            }
+            
+            notification.textContent = message;
+            
+            // Mostrar notificação
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Ocultar após alguns segundos
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        // Função para carregamento de emergência com outras URLs
+        async function carregarConcursoEmergencia(numero = null) {
+            try {
+                // Mapa de meses para garantir que sempre tenhamos um mês disponível
+                const mesesMap = {
+                    1: "JANEIRO",
+                    2: "FEVEREIRO", 
+                    3: "MARÇO",
+                    4: "ABRIL",
+                    5: "MAIO",
+                    6: "JUNHO",
+                    7: "JULHO",
+                    8: "AGOSTO",
+                    9: "SETEMBRO",
+                    10: "OUTUBRO",
+                    11: "NOVEMBRO",
+                    12: "DEZEMBRO"
+                };
+                
+                // URLs adicionais que podem ser tentadas
+                const urlsAlternativas = [
+                    `https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/${numero || ''}`,
+                    `https://results.service.loteria.net.br/api/dia-de-sorte/${numero || 'latest'}`,
+                    `https://webscrap-loteria-brasil.herokuapp.com/api/diadesorte/${numero || ''}`
+                ];
+                
+                // Tenta cada uma das URLs alternativas
+                for (const url of urlsAlternativas) {
+                    try {
+                        // Tenta usar cada proxy com a URL alternativa
+                        for (const proxyUrl of API_CONFIG.CORS_PROXY_URLS) {
+                            try {
+                                const fullUrl = proxyUrl + encodeURIComponent(url);
+                                const response = await fetch(fullUrl);
+                                
+                                if (response.ok) {
+                                    const dados = await response.json();
+                                    console.log("Dados de emergência obtidos:", dados);
+                                    
+                                    // Identifica o formato dos dados e processa adequadamente
+                                    if (dados.dezenas) {
+                                        return processarDadosHeroku(dados);
+                                    } else if (dados.listaDezenas) {
+                                        return processarDadosCaixa(dados);
+                                    } else if (dados.numeros) {
+                                        return processarDadosBrasilAPI(dados);
+                                    }
+                                }
+                            } catch (innerError) {
+                                console.warn(`Tentativa com ${proxyUrl} falhou:`, innerError);
+                                // Continua para o próximo proxy
+                            }
+                        }
+                    } catch (urlError) {
+                        console.warn(`Tentativa com URL ${url} falhou:`, urlError);
+                        // Continua para a próxima URL
+                    }
+                }
+                
+                // Se todas as tentativas falharem, retorna um objeto de concurso com o mês da sorte definido
+                // Usa o mês atual como fallback para o mês da sorte
+                const mesAtual = new Date().getMonth() + 1; // getMonth() retorna 0-11
+                
+                return {
+                    numero: numero || 0,
+                    data: "Carregando...",
+                    diaSemana: "",
+                    numeros: [0, 0, 0, 0, 0, 0, 0],
+                    mesSorte: mesesMap[mesAtual] || "JANEIRO", // Garante que sempre temos um mês
+                    acumulou: true,
+                    localSorteio: "Carregando...",
+                    ganhadores: {
+                        seteAcertos: 0,
+                        seisAcertos: 0,
+                        cincoAcertos: 0,
+                        quatroAcertos: 0,
+                        mesDeSorte: 0
+                    },
+                    premios: {
+                        seteAcertos: 0,
+                        seisAcertos: 0,
+                        cincoAcertos: 0,
+                        quatroAcertos: 0,
+                        mesDeSorte: 0
+                    },
+                    proximoConcurso: {
+                        data: "Carregando...",
+                        diaSemana: "",
+                        numero: (numero || 0) + 1,
+                        estimativaPremio: 0
+                    }
+                };
+            } catch (error) {
+                console.error("Erro fatal na função de emergência:", error);
+                throw error;
+            }
+        }
+
+        // Detectar preferência de cor do sistema
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+</body>
+</html>
