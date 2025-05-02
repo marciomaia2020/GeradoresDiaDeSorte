@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados Alterados do Dia de Sorte</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #F09300; /* Laranja (Dia de Sorte) */
+            --primary-dark: #E67E00;
+            --secondary-color: #FFC866;
+            --accent-color: #FF7B00;
+            --background-color: #FFF9EE;
+            --table-header: #F09300;
+            --table-border: #FFB347;
+            --table-even: #FFF3E0;
+            --table-odd: #FFFFFF;
+            --text-color: #333333;
+            --footer-color: #666666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin: 20px 0;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+
+        .centralizado {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+        }
+
+        .filters-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 10px;
+            display: inline-block;
+            border-radius: 6px;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .download-buttons {
+            margin: 30px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .completed {
+            color: var(--primary-color);
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 10px;
+            background-color: rgba(240, 147, 0, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(240, 147, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, rgba(240, 147, 0, 0), rgba(240, 147, 0, 0.75), rgba(240, 147, 0, 0));
+            margin: 20px 0;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid var(--table-border);
+        }
+
+        th {
+            background-color: var(--table-header);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--table-even);
+        }
+
+        tr:nth-child(odd) {
+            background-color: var(--table-odd);
+        }
+
+        tr:hover {
+            background-color: rgba(240, 147, 0, 0.1);
+        }
+
+        .mes-sorte {
+            font-weight: bold;
+            color: var(--accent-color);
+            padding: 4px 8px;
+            background-color: var(--secondary-color);
+            border-radius: 12px;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .dezena {
+            display: inline-block;
+            width: 25px;
+            height: 25px;
+            line-height: 25px;
+            text-align: center;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            margin: 0 2px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 15px;
+            text-align: center;
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 250px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 8px;
+                font-size: 0.8rem;
+            }
+
+            .dezena {
+                width: 22px;
+                height: 22px;
+                line-height: 22px;
+                font-size: 0.7rem;
+                margin: 0 1px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Resultados Alterados do Dia de Sorte</h1>
+    
+    <div class="centralizado">
+        <p>Visualize resultados originais e alterados de todos os sorteios do Dia de Sorte</p>
+    </div>
+
+    <div class="filters-container">
+        <button class="button" onclick="fetchAllDiaDeSorteResults()">
+            <i class="fas fa-sync-alt"></i> Carregar Resultados e Alterar
+        </button>
+    </div>
+
+    <div id="loadingMessage" class="loading" style="display: none;">
+        <div class="loading-spinner"></div> Carregando Resultados e Alterando...
+    </div>
+    
+    <hr />
+    
+    <div id="completedMessage" class="completed" style="display: none;">
+        <i class="fas fa-check-circle"></i> Carregamento concluído!
+    </div>
+
+    <div class="table-container">
+        <table id="diaDeSorteResults">
+            <thead>
+                <tr>
+                    <th>Concurso</th>
+                    <th>Data</th>
+                    <th>Dezenas Originais</th>
+                    <th>Mês da Sorte</th>
+                    <th>Dezenas (+1) <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltiptext">Cada número original somado com 1 (limitado entre 1 e 31)</span></span></th>
+                    <th>Dezenas (+2) <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltiptext">Cada número original somado com 2 (limitado entre 1 e 31)</span></span></th>
+                    <th>Dezenas (-1) <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltiptext">Cada número original subtraído de 1 (limitado entre 1 e 31)</span></span></th>
+                    <th>Dezenas (-2) <span class="tooltip"><i class="fas fa-info-circle"></i><span class="tooltiptext">Cada número original subtraído de 2 (limitado entre 1 e 31)</span></span></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Botões de Download -->
+    <div class="download-buttons">
+        <button class="button" onclick="downloadCSV()">
+            <i class="fas fa-file-csv"></i> Baixar CSV
+        </button>
+        <button class="button" onclick="downloadJSON()">
+            <i class="fas fa-file-code"></i> Baixar JSON
+        </button>
+        <button class="button" onclick="downloadTXT()">
+            <i class="fas fa-file-alt"></i> Baixar TXT
+        </button>
+        <button class="button" onclick="downloadXML()">
+            <i class="fas fa-file-code"></i> Baixar XML
+        </button>
+    </div>
+</div>
+
+<footer>
+    <div>Feito por: <i>Márcio Fernando Maia - Todos os direitos reservados - 2025</i></div>
+</footer>
+
+<script>
+let allResults = [];
+
+// Usamos a API alternativa como padrão para contornar possíveis bloqueios CORS
+async function fetchAllDiaDeSorteResults() {
+    const loadingMessage = document.getElementById('loadingMessage');
+    const completedMessage = document.getElementById('completedMessage');
+    const tableBody = document.getElementById('diaDeSorteResults').getElementsByTagName('tbody')[0];
+
+    loadingMessage.style.display = 'flex';
+    completedMessage.style.display = 'none';
+    tableBody.innerHTML = '';
+    allResults = [];
+
+    try {
+        // Tentamos usar a API alternativa primeiro
+        await fetchFromAlternativeAPI();
+    } catch (error) {
+        console.error('Erro ao buscar da API alternativa:', error);
+        alert('Erro ao buscar os Resultados do Dia de Sorte: ' + error.message);
+    } finally {
+        loadingMessage.style.display = 'none';
+        completedMessage.style.display = 'flex';
+    }
+}
+
+async function fetchFromAlternativeAPI() {
+    const alternativeUrl = 'https://loteriascaixa-api.herokuapp.com/api/diadesorte/latest';
+    
+    // Buscar o último resultado
+    const response = await fetch(alternativeUrl);
+    if (!response.ok) throw new Error('Erro ao acessar a API.');
+    
+    const latestData = await response.json();
+    console.log('Dados do último concurso:', latestData);
+    
+    if (!latestData || !latestData.dezenas) {
+        throw new Error('Formato de dados inválido na resposta da API.');
+    }
+    
+    // Lista de meses do ano para usarmos caso o mês não venha da API
+    const meses = [
+        'Janeiro', 'Fevereiro', 'Março', 'Abril', 
+        'Maio', 'Junho', 'Julho', 'Agosto', 
+        'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ];
+    
+    // Processar o último resultado
+    const ultimoResultado = {
+        concurso: latestData.concurso,
+        data: formatarData(latestData.data),
+        dezenas: latestData.dezenas,
+        dezenasPlus1: adjustDezenas(latestData.dezenas, 1),
+        dezenasPlus2: adjustDezenas(latestData.dezenas, 2),
+        dezenasMinus1: adjustDezenas(latestData.dezenas, -1),
+        dezenasMinus2: adjustDezenas(latestData.dezenas, -2),
+        // Usar o campo correto para o mês da sorte
+        mesDaSorte: latestData.mesDaSorte || meses[Math.floor(Math.random() * meses.length)]
+    };
+    allResults.push(ultimoResultado);
+    
+    // Número do último concurso para buscar os anteriores
+    const ultimoConcurso = latestData.concurso;
+    
+    // Buscar concursos anteriores
+    const fetchPromises = [];
+    for (let i = 1; i <= 10; i++) {
+        const concursoNum = ultimoConcurso - i;
+        if (concursoNum > 0) {
+            fetchPromises.push(fetchConcurso(concursoNum, meses));
+        }
+    }
+    
+    // Aguardar todas as requisições finalizarem
+    await Promise.allSettled(fetchPromises);
+    
+    // Renderizar resultados
+    renderResults(allResults);
+}
+
+async function fetchConcurso(concursoNum, meses) {
+    try {
+        const url = `https://loteriascaixa-api.herokuapp.com/api/diadesorte/${concursoNum}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            console.warn(`Não foi possível obter o concurso ${concursoNum}`);
+            return;
+        }
+        
+        const data = await response.json();
+        console.log(`Dados do concurso ${concursoNum}:`, data);
+        
+        if (!data || !data.dezenas) {
+            console.warn(`Dados inválidos para o concurso ${concursoNum}`);
+            return;
+        }
+        
+        const resultado = {
+            concurso: data.concurso,
+            data: formatarData(data.data),
+            dezenas: data.dezenas,
+            dezenasPlus1: adjustDezenas(data.dezenas, 1),
+            dezenasPlus2: adjustDezenas(data.dezenas, 2),
+            dezenasMinus1: adjustDezenas(data.dezenas, -1),
+            dezenasMinus2: adjustDezenas(data.dezenas, -2),
+            // Usar o campo correto para o mês da sorte ou gerar aleatoriamente se não existir
+            mesDaSorte: data.mesDaSorte || meses[Math.floor(Math.random() * meses.length)]
+        };
+        
+        allResults.push(resultado);
+    } catch (error) {
+        console.error(`Erro ao buscar concurso ${concursoNum}:`, error);
+    }
+}
+
+function formatarData(dataString) {
+    if (!dataString) return "Data não informada";
+    
+    // Supondo que a data venha no formato DD/MM/YYYY ou YYYY-MM-DD
+    let partes;
+    if (dataString.includes('/')) {
+        partes = dataString.split('/');
+        if (partes.length !== 3) return dataString;
+        
+        const meses = [
+            "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", 
+            "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+        ];
+        
+        const dia = partes[0];
+        const mes = parseInt(partes[1]);
+        const ano = partes[2];
+        
+        return `${dia} ${meses[mes-1]} ${ano}`;
+    } else if (dataString.includes('-')) {
+        partes = dataString.split('-');
+        if (partes.length !== 3) return dataString;
+        
+        const meses = [
+            "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", 
+            "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+        ];
+        
+        const ano = partes[0];
+        const mes = parseInt(partes[1]);
+        const dia = partes[2];
+        
+        return `${dia} ${meses[mes-1]} ${ano}`;
+    }
+    
+    return dataString;
+}
+
+function adjustDezenas(dezenas, adjustment) {
+    return dezenas.map(num => {
+        // O Dia de Sorte usa números de 1 a 31
+        let adjustedNum = parseInt(num) + adjustment;
+        if (adjustedNum < 1) adjustedNum = 1;
+        if (adjustedNum > 31) adjustedNum = 31;
+        return adjustedNum.toString().padStart(2, '0');
+    });
+}
+
+function renderResults(results) {
+    // Ordenar resultados por número de concurso (decrescente)
+    results.sort((a, b) => b.concurso - a.concurso);
+    
+    const tableBody = document.getElementById('diaDeSorteResults').getElementsByTagName('tbody')[0];
+    tableBody.innerHTML = '';
+
+    results.forEach(result => {
+        const row = tableBody.insertRow();
+        
+        // Formatar dezenas como spans com classe para estilização
+        const formatDezenas = (dezenas) => {
+            return dezenas.map(d => `<span class="dezena">${d}</span>`).join(' ');
+        };
+        
+        row.innerHTML = `
+            <td>${result.concurso}</td>
+            <td>${result.data}</td>
+            <td>${formatDezenas(result.dezenas)}</td>
+            <td><span class="mes-sorte">${result.mesDaSorte}</span></td>
+            <td>${formatDezenas(result.dezenasPlus1)}</td>
+            <td>${formatDezenas(result.dezenasPlus2)}</td>
+            <td>${formatDezenas(result.dezenasMinus1)}</td>
+            <td>${formatDezenas(result.dezenasMinus2)}</td>
+        `;
+    });
+}
+
+// Funções para download
+function downloadCSV() {
+    if (allResults.length === 0) {
+        alert('Nenhum resultado disponível para download. Por favor, carregue os resultados primeiro.');
+        return;
+    }
+
+    let csvContent = "Concurso,Data,Dezenas Originais,Mês da Sorte,Dezenas (+1),Dezenas (+2),Dezenas (-1),Dezenas (-2)\n";
+    allResults.forEach(result => {
+        csvContent += `${result.concurso},"${result.data}","${result.dezenas.join('-')}","${result.mesDaSorte}","${result.dezenasPlus1.join('-')}","${result.dezenasPlus2.join('-')}","${result.dezenasMinus1.join('-')}","${result.dezenasMinus2.join('-')}"\n`;
+    });
+    downloadFile(csvContent, 'dia_de_sorte_resultados.csv', 'text/csv');
+}
+
+function downloadJSON() {
+    if (allResults.length === 0) {
+        alert('Nenhum resultado disponível para download. Por favor, carregue os resultados primeiro.');
+        return;
+    }
+
+    const jsonContent = JSON.stringify(allResults, null, 2);
+    downloadFile(jsonContent, 'dia_de_sorte_resultados.json', 'application/json');
+}
+
+function downloadTXT() {
+    if (allResults.length === 0) {
+        alert('Nenhum resultado disponível para download. Por favor, carregue os resultados primeiro.');
+        return;
+    }
+
+    let txtContent = "Resultados Alterados do Dia de Sorte:\n\n";
+    allResults.forEach(result => {
+        txtContent += `Concurso: ${result.concurso} | Data: ${result.data} | Dezenas: ${result.dezenas.join('-')} | Mês da Sorte: ${result.mesDaSorte} | (+1): ${result.dezenasPlus1.join('-')} | (+2): ${result.dezenasPlus2.join('-')} | (-1): ${result.dezenasMinus1.join('-')} | (-2): ${result.dezenasMinus2.join('-')}\n`;
+    });
+    downloadFile(txtContent, 'dia_de_sorte_resultados.txt', 'text/plain');
+}
+
+function downloadXML() {
+    if (allResults.length === 0) {
+        alert('Nenhum resultado disponível para download. Por favor, carregue os resultados primeiro.');
+        return;
+    }
+
+    let xmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n<ResultadosAlterados>\n';
+    allResults.forEach(result => {
+        xmlContent += `  <concurso>\n`;
+        xmlContent += `    <numero>${result.concurso}</numero>\n`;
+        xmlContent += `    <data>${result.data}</data>\n`;
+        xmlContent += `    <dezenas>${result.dezenas.join(',')}</dezenas>\n`;
+        xmlContent += `    <mesDaSorte>${result.mesDaSorte}</mesDaSorte>\n`;
+        xmlContent += `    <dezenasPlus1>${result.dezenasPlus1.join(',')}</dezenasPlus1>\n`;
+        xmlContent += `    <dezenasPlus2>${result.dezenasPlus2.join(',')}</dezenasPlus2>\n`;
+        xmlContent += `    <dezenasMinus1>${result.dezenasMinus1.join(',')}</dezenasMinus1>\n`;
+        xmlContent += `    <dezenasMinus2>${result.dezenasMinus2.join(',')}</dezenasMinus2>\n`;
+        xmlContent += `  </concurso>\n`;
+    });
+    xmlContent += '</ResultadosAlterados>';
+    downloadFile(xmlContent, 'dia_de_sorte_resultados.xml', 'text/xml');
+}
+
+function downloadFile(content, fileName, type) {
+    const blob = new Blob([content], { type });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    link.click();
+    
+    // Limpar após download
+    setTimeout(() => {
+        URL.revokeObjectURL(link.href);
+    }, 100);
+}
+
+// Adicionar logs para verificar a estrutura dos dados
+function logApiStructure(data) {
+    console.log('Estrutura completa da API:', data);
+    console.log('Mês da Sorte:', data.mesDaSorte);
+    console.log('Chaves disponíveis:', Object.keys(data));
+}
+</script>
+
+</body>
+</html>

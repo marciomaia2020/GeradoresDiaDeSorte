@@ -4,27 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Desdobramento Dia de Sorte</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         :root {
             --primary-color: #F09300; /* Laranja (Dia de Sorte) */
-            --primary-dark: #D57E00;
-            --primary-light: #FFB847;
             --secondary-color: #FFC866;
             --accent-color: #FF7B00;
             --background-color: #FFF9EE;
-            --card-bg: #FFFFFF;
             --text-color: #333333;
             --border-color: #E0E0E0;
-            --success-color: #28a745;
-            --error-color: #dc3545;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
         }
 
         body {
@@ -32,6 +22,8 @@
             background-color: var(--background-color);
             color: var(--text-color);
             line-height: 1.6;
+            margin: 0;
+            padding: 0;
         }
 
         .container {
@@ -40,172 +32,27 @@
             padding: 20px;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 25px;
-            position: relative;
-            padding: 20px 0;
-        }
-
-        .logo {
-            width: 80px;
-            height: 80px;
-            background-color: var(--primary-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-
-        .logo i {
-            font-size: 40px;
-            color: white;
-        }
-
         h1 {
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            font-size: 2.5rem;
-            font-weight: 700;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-
-        h2, h3 {
-            color: var(--primary-dark);
-            margin-bottom: 15px;
-        }
-
-        .subtitle {
-            color: var(--primary-dark);
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-        }
-
-        .card-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 15px 20px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-body {
-            padding: 20px;
-        }
-
-        .instructions {
-            background-color: var(--card-bg);
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            color: var(--text-color);
-            line-height: 1.8;
-            border-left: 4px solid var(--primary-color);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .instructions h2 {
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            font-size: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .instructions ol, .instructions ul {
-            padding-left: 25px;
+            text-align: center;
             margin-bottom: 20px;
-        }
-
-        .instructions li {
-            margin-bottom: 10px;
-        }
-
-        .input-container {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .input-container label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--primary-dark);
-        }
-
-        .input-container input, .input-container select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .input-container input:focus, .input-container select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(240, 147, 0, 0.2);
-        }
-
-        .input-container small {
-            display: block;
-            color: #666;
-            margin-top: 5px;
-            font-size: 0.85rem;
-        }
-
-        .input-highlight {
-            color: var(--accent-color);
+            color: var(--primary-color);
             font-weight: bold;
         }
 
-        .erro {
-            color: var(--error-color);
-            font-size: 0.9rem;
-            margin-top: 8px;
-            display: none;
-            background-color: rgba(220, 53, 69, 0.1);
-            padding: 8px 12px;
-            border-radius: 6px;
-            border-left: 3px solid var(--error-color);
+        h3 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
         }
 
         .table-container {
             margin-bottom: 20px;
             overflow-x: auto;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        #numeros {
+        table {
             width: 100%;
             border-collapse: collapse;
-            background-color: white;
-            border-radius: 8px;
-            overflow: hidden;
+            margin-bottom: 20px;
         }
 
         #numeros td {
@@ -221,22 +68,18 @@
         }
 
         #numeros td:hover {
-            background-color: var(--secondary-color);
-            transform: scale(1.08);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #FFF0D4;
+            transform: scale(1.05);
         }
 
         #numeros td.selected {
             background-color: var(--primary-color);
             color: white;
-            transform: scale(1.05);
         }
 
         #numeros td.fixed {
             background-color: var(--accent-color);
             color: white;
-            transform: scale(1.05);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         #numeros td.excluded {
@@ -245,123 +88,131 @@
             text-decoration: line-through;
         }
 
+        .instructions {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .instructions p {
+            margin-bottom: 10px;
+        }
+
+        .instructions ol, .instructions ul {
+            padding-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .input-container {
+            margin-bottom: 15px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .input-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .input-container input, .input-container select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .input-container input:focus, .input-container select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(240, 147, 0, 0.2);
+        }
+
+        .erro {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
         .button-container {
             display: flex;
-            gap: 15px;
-            margin: 25px 0;
+            gap: 10px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            justify-content: center;
         }
 
         button {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 12px 20px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            min-width: 150px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: background-color 0.3s, transform 0.2s;
+            flex: 1;
+            min-width: 120px;
         }
 
         button:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
         }
 
         button:active {
-            transform: translateY(-1px);
+            transform: translateY(0);
         }
 
         .userInformation, .userInformationUnderstanding {
             background-color: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            font-size: 0.95rem;
-            line-height: 1.7;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         .userInformation p, .userInformationUnderstanding p {
             margin-bottom: 10px;
         }
 
-        .userInformationUnderstanding th {
-            text-align: left;
-            color: var(--primary-color);
-            font-size: 1.2rem;
-            padding-bottom: 10px;
-            display: block;
-        }
-
-        .userInformationUnderstanding ol {
-            padding-left: 25px;
-            margin-bottom: 15px;
-        }
-
-        .userInformationUnderstanding li {
-            margin-bottom: 8px;
-        }
-
         #jogosGerados {
-            margin-top: 30px;
-            padding: 20px;
+            margin-top: 20px;
+            padding: 10px;
             background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-height: 500px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            max-height: 400px;
             overflow-y: auto;
             display: none;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary-color) #f0f0f0;
-        }
-
-        #jogosGerados::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        #jogosGerados::-webkit-scrollbar-track {
-            background: #f0f0f0;
-            border-radius: 10px;
-        }
-
-        #jogosGerados::-webkit-scrollbar-thumb {
-            background-color: var(--primary-color);
-            border-radius: 10px;
         }
 
         .jogo {
-            padding: 15px;
-            margin-bottom: 10px;
-            background-color: rgba(240, 147, 0, 0.05);
-            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 5px;
+            background-color: #f8f9fa;
+            border-left: 3px solid var(--primary-color);
             display: flex;
             align-items: center;
-            border-left: 3px solid var(--primary-color);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .jogo:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            background-color: rgba(240, 147, 0, 0.1);
         }
 
         .numero-jogo {
-            margin-right: 15px;
+            margin-right: 10px;
             font-weight: bold;
             color: var(--primary-color);
             min-width: 30px;
-            font-size: 1.1rem;
         }
 
         .dezenas {
@@ -380,48 +231,36 @@
             color: white;
             border-radius: 50%;
             font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .mes-sorte {
             margin-left: auto;
-            padding: 5px 12px;
+            padding: 5px 10px;
             background-color: var(--secondary-color);
             color: var(--accent-color);
-            border-radius: 20px;
+            border-radius: 15px;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .mes-sorte i {
-            font-size: 0.8rem;
         }
 
         .info-container {
             background-color: white;
-            padding: 25px;
-            border-radius: 12px;
+            padding: 20px;
+            border-radius: 8px;
             margin-top: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .info-container h2 {
             color: var(--primary-color);
             margin-bottom: 15px;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 1.5em;
         }
 
         .info-container h3 {
             color: var(--accent-color);
-            margin-top: 20px;
+            margin-top: 15px;
             margin-bottom: 10px;
-            font-size: 1.2rem;
+            font-size: 1.2em;
         }
 
         .loading-overlay {
@@ -430,29 +269,34 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.5);
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            backdrop-filter: blur(5px);
         }
 
         .loading-spinner {
             width: 60px;
             height: 60px;
-            border: 6px solid rgba(255, 255, 255, 0.3);
+            border: 6px solid #f3f3f3;
             border-top: 6px solid var(--primary-color);
             border-radius: 50%;
             animation: spin 1.5s linear infinite;
-            margin-bottom: 20px;
         }
 
-        .loading-text {
+        #mensagemSucesso {
+            background-color: rgba(40, 167, 69, 0.9);
             color: white;
-            font-size: 1.2rem;
-            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 4px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+            max-width: 300px;
             text-align: center;
         }
 
@@ -461,53 +305,17 @@
             100% { transform: rotate(360deg); }
         }
 
-        #mensagemSucesso {
-            background-color: rgba(40, 167, 69, 0.9);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1001;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: opacity 0.3s, transform 0.3s;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        #mensagemSucesso.show {
-            opacity: 1;
-            transform: translateY(0);
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
         }
 
-        #mensagemSucesso i {
-            font-size: 1.2rem;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 50px;
-            padding: 20px 0;
-            color: #777;
-            border-top: 1px solid var(--border-color);
-            font-size: 0.9rem;
-        }
-
-        /* Responsividade */
         @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
             .button-container {
                 flex-direction: column;
             }
@@ -519,154 +327,98 @@
             #numeros td {
                 width: 35px;
                 height: 35px;
-                font-size: 0.9rem;
-            }
-
-            .jogo {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .mes-sorte {
-                margin-left: 0;
-                margin-top: 10px;
-                align-self: flex-end;
-            }
-
-            .logo {
-                width: 60px;
-                height: 60px;
-            }
-
-            .logo i {
-                font-size: 30px;
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <div class="logo">
-                <i class="fas fa-dice"></i>
-            </div>
-            <h1>Desdobramento Dia de Sorte</h1>
-            <p class="subtitle">Gerador inteligente de jogos com estratégia personalizada</p>
-        </header>
-
-        <div class="instructions card">
-            <div class="card-header">
-                <i class="fas fa-info-circle"></i> Instruções de Uso
-            </div>
-            <div class="card-body">
-                <p>No universo de <strong><i>31 dezenas</i></strong> do Dia de Sorte:</p>
-
-                <ol>
-                    <li>Selecione <strong><i>5 dezenas Pares</i></strong> e <strong><i>5 Ímpares</i></strong> para excluir.</li>
-                    <li>Selecione <strong><i>1 dezena</i></strong> para fixar (estará presente em todos os jogos).</li>
-                    <li>Escolha o <strong><i>Mês da Sorte</i></strong> que deseja fixar (ou deixe "Aleatório").</li>
-                    <li>Selecione a <strong><i>quantidade de jogos</i></strong> a ser gerado (até 4000).</li>
-                    <li>Selecione <strong><i>quantas dezenas</i></strong> quer adicionar (<span class="input-highlight">opcional</span>).</li>
-                    <li><strong><i>Salve</i></strong> o jogo para abrir no Bloco de Notas, "*.txt" ou exportar para o Excel *.xlxs".</li>
-                </ol>
-                
-                <ul>
-                    <li><i class="fas fa-exclamation-circle"></i> Para gerar vários jogos, o sistema precisará de alguns segundos.</li>
-                    <li><i class="fas fa-browser"></i> Se seu navegador travar, use outro como alternativa. Recomendado <span class="input-highlight">Mozilla Firefox</span>.</li>
-                    <li><i class="fas fa-dice-seven"></i> O Dia de Sorte exige a seleção de 7 números entre 1 e 31, mais o Mês da Sorte.</li>
-                </ul>
-            </div>
+        <h1>Desdobramento Dia de Sorte</h1>
+        <h3>Números disponíveis (Desdobramento para 15 dezenas)</h3>
+       
+        <div class="table-container">
+            <table id="numeros">
+                <tr>
+                    <!-- Os números serão inseridos aqui via JavaScript -->
+                </tr>
+            </table>
         </div>
+        <div class="instructions">
+            <p><strong>INSTRUÇÕES:</strong></p>
+            <p>No universo de <strong><i>31 dezenas</i></strong> do Dia de Sorte.</p>
 
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-calculator"></i> Números Disponíveis
-            </div>
-            <div class="card-body">
-                <h3>Selecione para excluir ou fixar (Desdobramento para 15 dezenas)</h3>
-                <div class="table-container">
-                    <table id="numeros">
-                        <tr>
-                            <!-- Os números serão inseridos aqui via JavaScript -->
-                        </tr>
-                    </table>
-                </div>
-            </div>
+            <ol>
+                <li>Selecione <strong><i>5 dezenas Pares</i></strong> e <strong><i>5 Ímpares</i></strong> para excluir.</li>
+                <li>Selecione <strong><i>1 dezena</i></strong> para fixar.</li>
+                <li>Escolha o <strong><i>Mês da Sorte</i></strong> que deseja fixar (ou deixe "Aleatório").</li>
+                <li>Selecione a <strong><i>quantidade de jogos</i></strong> a ser gerado. (Máximo 4000)</li>
+                <li>Selecione <strong><i>quantas dezenas</i></strong> quer adicionar (<span style="color: #FF7B00;">opcional</span>).</li>
+                <li><strong><i>Salve</i></strong> o jogo para abrir no Bloco de Notas, "*.txt" ou exportar para o Excel *.xlxs".</li>
+            </ol>
+            <ul>
+                <li>Obs: Para gerar vários jogos, o sistema precisará de alguns segundos.</li>
+                <li>Obs: Se seu navegador travar, use outro como alternativa. Recomendado <span style="color: #FF7B00;">"Mozilla Firefox"</span>.</li>
+                <li>Obs: O Dia de Sorte exige a seleção de 7 números entre 1 e 31, mais o Mês da Sorte.</li>
+            </ul>
         </div>
-
-        <div class="card">
-            <div class="card-header">
-                <i class="fas fa-cog"></i> Configuração do Desdobramento
-            </div>
-            <div class="card-body">
-                <div class="input-container">
-                    <label for="excluir-pares"><i class="fas fa-ban"></i> 1 - Dezenas pares a excluir:</label>
-                    <input type="text" id="excluir-pares" placeholder="Digite 5 dezenas pares separadas por vírgula (ex: 2,4,8,10,30)">
-                    <div id="erro-pares" class="erro"></div>
-                </div>
-                
-                <div class="input-container">
-                    <label for="excluir-impares"><i class="fas fa-ban"></i> 2 - Dezenas ímpares a excluir:</label>
-                    <input type="text" id="excluir-impares" placeholder="Digite 5 dezenas ímpares separadas por vírgula (ex: 1,3,9,15,31)">
-                    <div id="erro-impares" class="erro"></div>
-                </div>
-                
-                <div class="input-container">
-                    <label for="fixar"><i class="fas fa-thumbtack"></i> 3 - Dezena a fixar:</label>
-                    <input type="text" id="fixar" placeholder="Ex: 07">
-                    <div id="erro-fixar" class="erro"></div>
-                </div>
-                
-                <div class="input-container">
-                    <label for="mes-sorte"><i class="fas fa-calendar-alt"></i> 4 - Mês da Sorte:</label>
-                    <select id="mes-sorte">
-                        <option value="aleatorio">Aleatório</option>
-                        <option value="Janeiro">Janeiro</option>
-                        <option value="Fevereiro">Fevereiro</option>
-                        <option value="Março">Março</option>
-                        <option value="Abril">Abril</option>
-                        <option value="Maio">Maio</option>
-                        <option value="Junho">Junho</option>
-                        <option value="Julho">Julho</option>
-                        <option value="Agosto">Agosto</option>
-                        <option value="Setembro">Setembro</option>
-                        <option value="Outubro">Outubro</option>
-                        <option value="Novembro">Novembro</option>
-                        <option value="Dezembro">Dezembro</option>
-                    </select>
-                </div>
-                
-                <div class="input-container">
-                    <label for="jogos"><i class="fas fa-list-ol"></i> 5 - Quantidade de jogos:</label>
-                    <input type="number" id="jogos" min="1" max="4000" placeholder="Ex: 5">
-                    <small><span class="input-highlight">Até 4000</span> jogos permitidos</small>
-                    <div id="erro-jogos" class="erro"></div>
-                </div>
-                
-                <div class="input-container">
-                    <label for="dezenas-adicionais"><i class="fas fa-plus-circle"></i> 6 - Dezenas adicionais:</label>
-                    <input type="number" id="dezenas-adicionais" min="0" max="7" placeholder="Ex: entre 0 e 7">
-                    <small>Adicione entre 0 e 7 <span class="input-highlight">(opcional)</span></small>
-                    <div id="erro-dezenas-adicionais" class="erro"></div>
-                </div>
-            </div>
+        <div class="input-container">
+            <label for="excluir-pares">1 - Dezenas pares a excluir:</label>
+            <input type="text" id="excluir-pares" placeholder="Digite 5 dezenas pares separadas por vírgula (ex: 2,4,8,10,30)">
+            <div id="erro-pares" class="erro"></div>
         </div>
-
+        <div class="input-container">
+            <label for="excluir-impares">2 - Dezenas ímpares a excluir:</label>
+            <input type="text" id="excluir-impares" placeholder="Digite 5 dezenas ímpares separadas por vírgula (ex: 1,3,9,15,31)">
+            <div id="erro-impares" class="erro"></div>
+        </div>
+        <div class="input-container">
+            <label for="fixar">3 - Dezena a fixar:</label>
+            <input type="text" id="fixar" placeholder="Ex: 07">
+            <div id="erro-fixar" class="erro"></div>
+        </div>
+        <div class="input-container">
+            <label for="mes-sorte">4 - Mês da Sorte:</label>
+            <select id="mes-sorte">
+                <option value="aleatorio">Aleatório</option>
+                <option value="Janeiro">Janeiro</option>
+                <option value="Fevereiro">Fevereiro</option>
+                <option value="Março">Março</option>
+                <option value="Abril">Abril</option>
+                <option value="Maio">Maio</option>
+                <option value="Junho">Junho</option>
+                <option value="Julho">Julho</option>
+                <option value="Agosto">Agosto</option>
+                <option value="Setembro">Setembro</option>
+                <option value="Outubro">Outubro</option>
+                <option value="Novembro">Novembro</option>
+                <option value="Dezembro">Dezembro</option>
+            </select>
+        </div>
+        <div class="input-container">
+            <label for="jogos">5 - Quantidade de jogos: (<small><span style="color: #FF7B00;">Até 4000</span></small>)</label>
+            <input type="number" id="jogos" min="1" max="4000" placeholder="Ex: 5">
+            <div id="erro-jogos" class="erro"></div>
+        </div>
+        <div class="input-container">
+            <label for="dezenas-adicionais">6 - Dezenas adicionais: <small>Adicione entre 0 e 7</small> (<span style="color: #FF7B00;">opcional</span>)</label>
+            <input type="number" id="dezenas-adicionais" min="0" max="7" placeholder="Ex: entre 0 e 7">
+            <div id="erro-dezenas-adicionais" class="erro"></div>
+        </div>
         <div class="button-container">
-            <button onclick="gerarJogos()"><i class="fas fa-magic"></i> Gerar Jogos</button>
-            <button onclick="salvarJogo()"><i class="fas fa-save"></i> Salvar Jogo</button>
-            <button onclick="exportarParaExcel()"><i class="fas fa-file-excel"></i> Exportar para Excel</button>
-            <button onclick="resetarJogo()"><i class="fas fa-redo"></i> Resetar Jogo</button>
+            <button onclick="gerarJogos()">Gerar Jogos</button>
+            <button onclick="salvarJogo()">Salvar Jogo</button>
+            <button onclick="exportarParaExcel()">Exportar para Excel</button>
+            <button onclick="resetarJogo()">Resetar Jogo</button>
         </div>
-        
         <div class="userInformation">
-            <p><i class="fas fa-check-circle"></i> Os jogos serão gerados com no mínimo 7 dezenas (regra do Dia de Sorte). Caso não haja adição de dezenas (<span class="input-highlight">opcional</span>).</p>
-            <p><i class="fas fa-check-circle"></i> Os jogos gerados são checados automaticamente afim de não haver duplicidade.</p>
-            <p><i class="fas fa-check-circle"></i> O limite para a geração de jogos está setado para 4000.</p>
+            <p>Os jogos serão gerados com no mínimo 7 dezenas (regra do Dia de Sorte). Caso não haja adição de dezenas (<span style="color: #FF7B00;">opcional</span>).</p>
+            <p>Os jogos gerados são checados automaticamente afim de não haver duplicidade.</p>
+            <p>O limite para a geração de jogos está setado para 4000.</p>
         </div>
 
-        <!-- Elemento HTML onde a mensagem de sucesso será exibida -->
-        <div id="mensagemSucesso"></div>
+        <!-- Elemento HTML onde deseja que a mensagem seja exibida -->
+        <div id="mensagemSucesso" style="display: none;"></div>
 
         <div id="jogosGerados">
             <!-- Os jogos gerados serão inseridos aqui via JavaScript -->
@@ -677,7 +429,7 @@
             <ol>
                 <li>A <b>dezena à fixar</b> estará presente em todos os jogos gerados.</li>
                 <li>As <b>dezenas excluídas</b> serão removidas da lista de <i>números disponíveis</i>.</li>
-                <li>Ao <b>gerar jogos</b> o formato sempre será 01, 02, ...</li>
+                <li>Ao <b>gerar jogos</b> o formato sempre será 01, 02, ... </li>
                 <li>Cada jogo terá o <b>Mês da Sorte</b> definido (fixo ou aleatório).</li>
                 <li>Ao clicar em <b>salvar jogo</b> será gerado um arquivo *.txt para download.</li>
                 <li>O <i>formato do arquivo para download</i> virá pronto para usar no volante.</li>
@@ -685,8 +437,8 @@
         </div>
     
         <div class="info-container">
-            <h2><i class="fas fa-lightbulb"></i> Estratégia de Desdobramento para o Dia de Sorte</h2>
-            <p>A técnica utilizada para gerar os jogos é uma forma de desdobramento adaptada para o Dia de Sorte, considerando suas regras específicas:</p>
+            <h2>Resumo do Processo de Desdobramento para o Dia de Sorte</h2>
+            <p>A técnica utilizada para gerar os jogos é uma forma de desdobramento adaptada para o Dia de Sorte, considerando suas regras específicas. Veja como isso funciona:</p>
     
             <h3>Como Funciona o Desdobramento</h3>
             <ul>
@@ -712,18 +464,9 @@
                 <li>Gere entre 5 e 10 jogos com este sistema para ter uma boa cobertura.</li>
             </ul>
         </div>
-        
-        <footer>
-            <p>Desenvolvido por: <i>Márcio Fernando Maia</i> - Todos os direitos reservados &copy; 2025</p>
-        </footer>
     </div>
 
     <script>
-        /**
-         * Aplicação de Desdobramento para o Dia de Sorte
-         * Versão: 1.0.0
-         */
-        
         // Array com os meses para sorteio aleatório
         const mesesDaSorte = [
             'Janeiro', 'Fevereiro', 'Março', 'Abril', 
@@ -731,17 +474,15 @@
             'Setembro', 'Outubro', 'Novembro', 'Dezembro'
         ];
 
-        // Jogos gerados - irá armazenar todos os jogos criados
+        // Jogos gerados
         let jogosGerados = [];
 
-        // Inicialização da tabela de números ao carregar o documento
+        // Inicialização da tabela de números
         document.addEventListener('DOMContentLoaded', function() {
             inicializarTabela();
         });
 
-        /**
-         * Inicializa a tabela de números selecionáveis
-         */
+        // Função para inicializar a tabela de números
         function inicializarTabela() {
             const tabela = document.getElementById('numeros');
             const tr = tabela.getElementsByTagName('tr')[0];
@@ -757,9 +498,7 @@
             }
         }
 
-        /**
-         * Alterna a seleção de um número na tabela
-         */
+        // Função para alternar a seleção de um número
         function toggleNumero(event) {
             const td = event.target;
             const numero = parseInt(td.dataset.numero);
@@ -767,7 +506,6 @@
             // Verificar se já está excluído
             if (td.classList.contains('excluded')) {
                 td.classList.remove('excluded');
-                removerNumeroDoInput(numero);
             } 
             // Verificar se já está fixado
             else if (td.classList.contains('fixed')) {
@@ -786,47 +524,18 @@
                 // Determinar se é par ou ímpar e adicionar ao campo apropriado
                 const isPar = numero % 2 === 0;
                 const campo = isPar ? 'excluir-pares' : 'excluir-impares';
-                adicionarNumeroAoInput(numero, campo);
+                const input = document.getElementById(campo);
+                
+                // Adicionar à lista de excluídos
+                const valores = input.value ? input.value.split(',').map(num => parseInt(num.trim())) : [];
+                if (!valores.includes(numero)) {
+                    valores.push(numero);
+                    input.value = valores.join(', ');
+                }
             }
         }
 
-        /**
-         * Adiciona um número ao input apropriado
-         */
-        function adicionarNumeroAoInput(numero, campoId) {
-            const input = document.getElementById(campoId);
-            
-            // Obter valores atuais
-            const valoresAtuais = input.value ? input.value.split(',').map(n => parseInt(n.trim())) : [];
-            
-            // Verificar se o número já está na lista
-            if (!valoresAtuais.includes(numero)) {
-                valoresAtuais.push(numero);
-                input.value = valoresAtuais.join(', ');
-            }
-        }
-
-        /**
-         * Remove um número dos inputs de exclusão
-         */
-        function removerNumeroDoInput(numero) {
-            const isPar = numero % 2 === 0;
-            const campoId = isPar ? 'excluir-pares' : 'excluir-impares';
-            const input = document.getElementById(campoId);
-            
-            // Obter valores atuais
-            const valoresAtuais = input.value ? input.value.split(',').map(n => parseInt(n.trim())) : [];
-            
-            // Filtrar o número removido
-            const novosValores = valoresAtuais.filter(n => n !== numero);
-            
-            // Atualizar o campo
-            input.value = novosValores.join(', ');
-        }
-
-        /**
-         * Valida todas as entradas do formulário
-         */
+        // Função para validar entradas
         function validarEntradas() {
             let valido = true;
             
@@ -937,9 +646,7 @@
             return valido;
         }
 
-        /**
-         * Função principal para gerar jogos
-         */
+        // Função para gerar jogos
         function gerarJogos() {
             // Validar entradas
             if (!validarEntradas()) {
@@ -952,7 +659,7 @@
             // Executar a geração em uma função assíncrona para não travar a UI
             setTimeout(() => {
                 try {
-                    // Obter valores dos campos
+                    // Obter valores
                     const fixar = parseInt(document.getElementById('fixar').value.trim());
                     const excluirPares = document.getElementById('excluir-pares').value.trim() 
                         ? document.getElementById('excluir-pares').value.trim().split(',').map(num => parseInt(num.trim())) 
@@ -992,8 +699,6 @@
                     
                     // Gerar jogos
                     for (let i = 0; i < qtdJogos; i++) {
-                        atualizarMensagemCarregamento(`Gerando jogo ${i+1} de ${qtdJogos}...`);
-                        
                         let jogoValido = false;
                         let tentativas = 0;
                         let dezenasAleatorias = [];
@@ -1042,9 +747,9 @@
                     
                     // Mostrar mensagem de sucesso
                     if (jogosGerados.length === 1) {
-                        mostrarMensagemSucesso("1 jogo foi gerado com sucesso!");
+                        mostrarMensagem("1 jogo foi gerado com sucesso!");
                     } else {
-                        mostrarMensagemSucesso(`${jogosGerados.length} jogos foram gerados com sucesso!`);
+                        mostrarMensagem(`${jogosGerados.length} jogos foram gerados com sucesso!`);
                     }
                 } catch (error) {
                     console.error("Erro ao gerar jogos:", error);
@@ -1055,9 +760,7 @@
             }, 100);
         }
 
-        /**
-         * Obtém dezenas aleatórias do conjunto disponível
-         */
+        // Função para obter dezenas aleatórias
         function obterDezenasAleatorias(disponiveis, quantidade) {
             const resultado = [];
             const copiaDisponiveis = [...disponiveis];
@@ -1073,22 +776,12 @@
             return resultado;
         }
 
-        /**
-         * Exibe os jogos gerados na interface
-         */
+        // Função para exibir jogos gerados
         function exibirJogos() {
             const container = document.getElementById('jogosGerados');
             container.innerHTML = '';
             container.style.display = 'block';
             
-            // Título com contagem de jogos
-            const titulo = document.createElement('h2');
-            titulo.innerHTML = `<i class="fas fa-check-circle"></i> ${jogosGerados.length} Jogos Gerados`;
-            titulo.style.marginBottom = '20px';
-            titulo.style.color = '#28a745';
-            container.appendChild(titulo);
-            
-            // Renderizar cada jogo
             jogosGerados.forEach(jogo => {
                 const jogoDiv = document.createElement('div');
                 jogoDiv.className = 'jogo';
@@ -1115,19 +808,17 @@
                 // Mês da sorte
                 const mesSpan = document.createElement('span');
                 mesSpan.className = 'mes-sorte';
-                mesSpan.innerHTML = `<i class="fas fa-calendar-alt"></i> ${jogo.mes}`;
+                mesSpan.textContent = jogo.mes;
                 jogoDiv.appendChild(mesSpan);
                 
                 container.appendChild(jogoDiv);
             });
             
-            // Rolar até os jogos gerados
+            // Rolar para os jogos gerados
             container.scrollIntoView({ behavior: 'smooth' });
         }
 
-        /**
-         * Salva os jogos em formato TXT
-         */
+        // Função para salvar jogos em TXT
         function salvarJogo() {
             if (jogosGerados.length === 0) {
                 alert("Não há jogos para salvar. Por favor, gere jogos primeiro.");
@@ -1152,62 +843,40 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            mostrarMensagemSucesso("Arquivo TXT salvo com sucesso!");
+            mostrarMensagem("Arquivo TXT salvo com sucesso!");
         }
 
-        /**
-         * Exporta jogos para Excel
-         */
+        // Função para exportar para Excel
         function exportarParaExcel() {
             if (jogosGerados.length === 0) {
                 alert("Não há jogos para exportar. Por favor, gere jogos primeiro.");
                 return;
             }
             
-            try {
-                // Mostrar overlay de carregamento
-                mostrarLoading("Exportando para Excel...");
-                
-                setTimeout(() => {
-                    try {
-                        // Criar workbook
-                        const wb = XLSX.utils.book_new();
-                        
-                        // Preparar dados
-                        const data = [['Jogo', 'Dezena 1', 'Dezena 2', 'Dezena 3', 'Dezena 4', 'Dezena 5', 'Dezena 6', 'Dezena 7', 'Mês da Sorte']];
-                        
-                        jogosGerados.forEach(jogo => {
-                            const dezenas = jogo.dezenas.map(d => d < 10 ? '0' + d : '' + d);
-                            data.push([jogo.numero, ...dezenas, jogo.mes]);
-                        });
-                        
-                        // Criar worksheet
-                        const ws = XLSX.utils.aoa_to_sheet(data);
-                        
-                        // Adicionar ao workbook
-                        XLSX.utils.book_append_sheet(wb, ws, 'Dia de Sorte');
-                        
-                        // Salvar arquivo
-                        XLSX.writeFile(wb, 'jogos_dia_de_sorte.xlsx');
-                        
-                        mostrarMensagemSucesso("Arquivo Excel exportado com sucesso!");
-                    } catch (error) {
-                        console.error('Erro ao exportar para Excel:', error);
-                        alert('Ocorreu um erro ao exportar para Excel. Verifique o console para mais detalhes.');
-                    } finally {
-                        esconderLoading();
-                    }
-                }, 500);
-            } catch (error) {
-                esconderLoading();
-                alert('Ocorreu um erro ao exportar para Excel.');
-                console.error('Erro:', error);
-            }
+            // Criar workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Preparar dados
+            const data = [['Jogo', 'Dezena 1', 'Dezena 2', 'Dezena 3', 'Dezena 4', 'Dezena 5', 'Dezena 6', 'Dezena 7', 'Mês da Sorte']];
+            
+            jogosGerados.forEach(jogo => {
+                const dezenas = jogo.dezenas.map(d => d < 10 ? '0' + d : '' + d);
+                data.push([jogo.numero, ...dezenas, jogo.mes]);
+            });
+            
+            // Criar worksheet
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            
+            // Adicionar ao workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Dia de Sorte');
+            
+            // Salvar arquivo
+            XLSX.writeFile(wb, 'jogos_dia_de_sorte.xlsx');
+            
+            mostrarMensagem("Arquivo Excel exportado com sucesso!");
         }
 
-        /**
-         * Reseta o jogo, limpando todos os campos e seleções
-         */
+        // Função para resetar o jogo
         function resetarJogo() {
             // Limpar campos
             document.getElementById('excluir-pares').value = '';
@@ -1230,51 +899,23 @@
             // Reinicializar tabela
             inicializarTabela();
             
-            mostrarMensagemSucesso("Jogo resetado com sucesso!");
+            mostrarMensagem("Jogo resetado com sucesso!");
         }
 
-        /**
-         * Mostra overlay de carregamento
-         */
-        function mostrarLoading(mensagem = "Gerando jogos...") {
-            // Verificar se já existe um overlay
-            let loadingOverlay = document.getElementById('loading-overlay');
+        // Função para mostrar overlay de carregamento
+        function mostrarLoading() {
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.className = 'loading-overlay';
+            loadingOverlay.id = 'loading-overlay';
             
-            if (!loadingOverlay) {
-                loadingOverlay = document.createElement('div');
-                loadingOverlay.className = 'loading-overlay';
-                loadingOverlay.id = 'loading-overlay';
-                
-                const spinner = document.createElement('div');
-                spinner.className = 'loading-spinner';
-                
-                const text = document.createElement('div');
-                text.className = 'loading-text';
-                text.id = 'loading-text';
-                text.textContent = mensagem;
-                
-                loadingOverlay.appendChild(spinner);
-                loadingOverlay.appendChild(text);
-                
-                document.body.appendChild(loadingOverlay);
-            } else {
-                document.getElementById('loading-text').textContent = mensagem;
-            }
+            const spinner = document.createElement('div');
+            spinner.className = 'loading-spinner';
+            
+            loadingOverlay.appendChild(spinner);
+            document.body.appendChild(loadingOverlay);
         }
 
-        /**
-         * Atualiza a mensagem de carregamento
-         */
-        function atualizarMensagemCarregamento(mensagem) {
-            const textElement = document.getElementById('loading-text');
-            if (textElement) {
-                textElement.textContent = mensagem;
-            }
-        }
-
-        /**
-         * Esconde overlay de carregamento
-         */
+        // Função para esconder overlay de carregamento
         function esconderLoading() {
             const loadingOverlay = document.getElementById('loading-overlay');
             if (loadingOverlay) {
@@ -1282,17 +923,15 @@
             }
         }
 
-        /**
-         * Mostra mensagem de sucesso temporária
-         */
-        function mostrarMensagemSucesso(mensagem) {
+        // Função para mostrar mensagem de sucesso
+        function mostrarMensagem(mensagem) {
             const mensagemElement = document.getElementById('mensagemSucesso');
-            mensagemElement.innerHTML = `<i class="fas fa-check-circle"></i> ${mensagem}`;
-            mensagemElement.classList.add('show');
+            mensagemElement.textContent = mensagem;
+            mensagemElement.style.display = 'block';
             
             // Esconder a mensagem após 3 segundos
             setTimeout(() => {
-                mensagemElement.classList.remove('show');
+                mensagemElement.style.display = 'none';
             }, 3000);
         }
     </script>

@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador Estratégico - Dia de Sorte</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/afb02bf9ac.js" crossorigin="anonymous"></script>
+    <!-- SheetJS para exportação Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #F09300; /* Cor laranja do Dia de Sorte */
+            --primary-hover: #d67e00;
+            --secondary-color: #FFC866;
+            --tertiary-color: #ff7b00;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #ddd;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: Arial, sans-serif;
+            color: var(--text-color);
+            padding-bottom: 50px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: none;
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            padding: 15px;
+            border-bottom: none;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-reset {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+        }
+
+        .btn-reset:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-download {
+            background-color: #28a745;
+            color: white;
+            border: none;
+        }
+
+        .btn-download:hover {
+            background-color: #218838;
+        }
+
+        .numero-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .numero-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .numero-btn:hover {
+            background-color: #f1f1f1;
+        }
+
+        .numero-btn.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .numero-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .numero-btn.baixo {
+            border-color: #4CAF50;
+        }
+
+        .numero-btn.baixo.selected {
+            background-color: #4CAF50;
+        }
+
+        .numero-btn.medio {
+            border-color: #2196F3;
+        }
+
+        .numero-btn.medio.selected {
+            background-color: #2196F3;
+        }
+
+        .numero-btn.alto {
+            border-color: #FF5722;
+        }
+
+        .numero-btn.alto.selected {
+            background-color: #FF5722;
+        }
+
+        .jogo-item {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            transition: all 0.3s;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .jogo-item:hover {
+            background-color: #f1f1f1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .dezena {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .dezena.baixa {
+            background-color: #4CAF50;
+        }
+
+        .dezena.media {
+            background-color: #2196F3;
+        }
+
+        .dezena.alta {
+            background-color: #FF5722;
+        }
+
+        .mes-sorte {
+            margin-left: auto;
+            padding: 5px 12px;
+            border-radius: 15px;
+            background-color: var(--secondary-color);
+            color: var(--tertiary-color);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .legenda {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .legenda-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+        }
+
+        .legenda-cor {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .jogos-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #198754;
+            color: white;
+            z-index: 1001;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification.error {
+            background-color: #dc3545;
+        }
+
+        .strategy-info {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .form-section-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .numero-selector {
+                justify-content: center;
+            }
+            
+            .mes-sorte {
+                margin-left: 0;
+                margin-top: 5px;
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Estratégia I - Dia de Sorte</h1>
+            <p class="lead">Gerador inteligente com distribuição estratégica das dezenas</p>
+        </header>
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-sliders-h"></i> Configurações da Estratégia
+                    </div>
+                    <div class="card-body">
+                        <div class="strategy-info">
+                            <h5 class="mb-2"><i class="fas fa-info-circle"></i> Distribuição Estratégica</h5>
+                            <ul class="mb-0">
+                                <li>2 dezenas baixas (1-10)</li>
+                                <li>3 dezenas médias (11-20)</li>
+                                <li>2 dezenas altas (21-31)</li>
+                            </ul>
+                        </div>
+
+                        <form id="estrategiaForm">
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <i class="fas fa-thumbtack text-success"></i> Dezenas Baixas Fixas (Opcional)
+                                </div>
+                                <div class="numero-selector" id="dezenas-baixas">
+                                    <!-- Será preenchido via JavaScript -->
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <i class="fas fa-thumbtack text-primary"></i> Dezenas Médias Fixas (Opcional)
+                                </div>
+                                <div class="numero-selector" id="dezenas-medias">
+                                    <!-- Será preenchido via JavaScript -->
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <i class="fas fa-thumbtack text-danger"></i> Dezenas Altas Fixas (Opcional)
+                                </div>
+                                <div class="numero-selector" id="dezenas-altas">
+                                    <!-- Será preenchido via JavaScript -->
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <i class="fas fa-balance-scale"></i> Equilíbrio Par/Ímpar
+                                </div>
+                                <select class="form-select" id="equilibrio-paridade">
+                                    <option value="qualquer">Qualquer distribuição</option>
+                                    <option value="3-4" selected>3 pares e 4 ímpares</option>
+                                    <option value="4-3">4 pares e 3 ímpares</option>
+                                    <option value="balanced">Balanceado (3-4 ou 4-3)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <i class="fas fa-calendar-alt"></i> Mês da Sorte
+                                </div>
+                                <select class="form-select" id="mes-sorte">
+                                    <option value="Qualquer">Qualquer mês (aleatório)</option>
+                                    <option value="Janeiro">Janeiro</option>
+                                    <option value="Fevereiro">Fevereiro</option>
+                                    <option value="Março">Março</option>
+                                    <option value="Abril">Abril</option>
+                                    <option value="Maio">Maio</option>
+                                    <option value="Junho">Junho</option>
+                                    <option value="Julho">Julho</option>
+                                    <option value="Agosto">Agosto</option>
+                                    <option value="Setembro">Setembro</option>
+                                    <option value="Outubro">Outubro</option>
+                                    <option value="Novembro">Novembro</option>
+                                    <option value="Dezembro">Dezembro</option>
+                                </select>
+                            </div>
+
+                            <div class="form-section">
+                                <div class="form-section-title">
+                                    <i class="fas fa-hashtag"></i> Quantidade de Jogos
+                                </div>
+                                <input type="range" class="form-range mb-2" id="quantidade-jogos" min="1" max="100" value="10">
+                                <div class="d-flex justify-content-between">
+                                    <span>1</span>
+                                    <span id="valor-quantidade">10</span>
+                                    <span>100</span>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="button" id="btn-gerar" class="btn btn-primary">
+                                    <i class="fas fa-magic"></i> Gerar Jogos
+                                </button>
+                                <button type="button" id="btn-limpar" class="btn btn-reset">
+                                    <i class="fas fa-eraser"></i> Limpar Seleções
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-list-ol"></i> Jogos Gerados
+                    </div>
+                    <div class="card-body">
+                        <div class="jogos-header">
+                            <div class="alert alert-primary py-2 px-3 mb-0">
+                                <i class="fas fa-info-circle"></i> Total de jogos: <span id="total-jogos">0</span>
+                            </div>
+                            <div class="btn-group">
+                                <button id="btn-download-txt" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-file-alt"></i> TXT
+                                </button>
+                                <button id="btn-download-excel" class="btn btn-sm btn-outline-success">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="legenda">
+                            <div class="legenda-item">
+                                <div class="legenda-cor" style="background-color: #4CAF50;"></div>
+                                <span>Dezenas Baixas (1-10)</span>
+                            </div>
+                            <div class="legenda-item">
+                                <div class="legenda-cor" style="background-color: #2196F3;"></div>
+                                <span>Dezenas Médias (11-20)</span>
+                            </div>
+                            <div class="legenda-item">
+                                <div class="legenda-cor" style="background-color: #FF5722;"></div>
+                                <span>Dezenas Altas (21-31)</span>
+                            </div>
+                        </div>
+
+                        <div id="jogos-container" class="overflow-auto" style="max-height: 600px;">
+                            <div id="sem-jogos" class="alert alert-secondary text-center">
+                                <i class="fas fa-dice"></i> Defina suas preferências e clique em "Gerar Jogos"
+                            </div>
+                            <div id="lista-jogos">
+                                <!-- Jogos serão inseridos aqui via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let jogosGerados = [];
+        let dezenasBaixasSelecionadas = [];
+        let dezenasMedioSelecionadas = [];
+        let dezenasAltasSelecionadas = [];
+        const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+        // Inicialização quando o documento estiver carregado
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar seletores de dezenas
+            inicializarSeletoresDezenas();
+            
+            // Configurar listener para o slider de quantidade
+            const sliderQuantidade = document.getElementById('quantidade-jogos');
+            const valorQuantidade = document.getElementById('valor-quantidade');
+            
+            sliderQuantidade.addEventListener('input', () => {
+                valorQuantidade.textContent = sliderQuantidade.value;
+            });
+            
+            // Configurar botões
+            document.getElementById('btn-gerar').addEventListener('click', gerarJogos);
+            document.getElementById('btn-limpar').addEventListener('click', limparSelecoes);
+            document.getElementById('btn-download-txt').addEventListener('click', downloadTXT);
+            document.getElementById('btn-download-excel').addEventListener('click', downloadExcel);
+        });
+
+        // Função para inicializar os seletores de dezenas
+        function inicializarSeletoresDezenas() {
+            // Dezenas baixas (1-10)
+            const dezenasBaixasContainer = document.getElementById('dezenas-baixas');
+            for (let i = 1; i <= 10; i++) {
+                const btn = criarBotaoDezena(i, 'baixo');
+                btn.addEventListener('click', () => toggleDezena(i, 'baixa'));
+                dezenasBaixasContainer.appendChild(btn);
+            }
+            
+            // Dezenas médias (11-20)
+            const dezenasMediasContainer = document.getElementById('dezenas-medias');
+            for (let i = 11; i <= 20; i++) {
+                const btn = criarBotaoDezena(i, 'medio');
+                btn.addEventListener('click', () => toggleDezena(i, 'media'));
+                dezenasMediasContainer.appendChild(btn);
+            }
+            
+            // Dezenas altas (21-31)
+            const dezenasAltasContainer = document.getElementById('dezenas-altas');
+            for (let i = 21; i <= 31; i++) {
+                const btn = criarBotaoDezena(i, 'alto');
+                btn.addEventListener('click', () => toggleDezena(i, 'alta'));
+                dezenasAltasContainer.appendChild(btn);
+            }
+        }
+
+        // Função para criar um botão de dezena
+        function criarBotaoDezena(numero, tipo) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = `numero-btn ${tipo}`;
+            btn.dataset.numero = numero;
+            btn.textContent = numero;
+            return btn;
+        }
+
+        // Função para alternar a seleção de uma dezena
+        function toggleDezena(numero, tipo) {
+            // Determinar qual array devemos atualizar
+            let arrayAlvo;
+            let maxSelecoes;
+            
+            if (tipo === 'baixa') {
+                arrayAlvo = dezenasBaixasSelecionadas;
+                maxSelecoes = 2;
+            } else if (tipo === 'media') {
+                arrayAlvo = dezenasMedioSelecionadas;
+                maxSelecoes = 3;
+            } else { // alta
+                arrayAlvo = dezenasAltasSelecionadas;
+                maxSelecoes = 2;
+            }
+            
+            // Verificar se o número já está selecionado
+            const index = arrayAlvo.indexOf(numero);
+            
+            // Se já está selecionado, remover
+            if (index !== -1) {
+                arrayAlvo.splice(index, 1);
+                document.querySelector(`.numero-btn[data-numero="${numero}"]`).classList.remove('selected');
+            } 
+            // Se não está selecionado e não excedemos o limite, adicionar
+            else if (arrayAlvo.length < maxSelecoes) {
+                arrayAlvo.push(numero);
+                document.querySelector(`.numero-btn[data-numero="${numero}"]`).classList.add('selected');
+            }
+            // Se excedemos o limite, mostrar mensagem
+            else {
+                mostrarNotificacao(`Você pode selecionar no máximo ${maxSelecoes} dezenas ${tipo}s`, 'error');
+            }
+        }
+
+        // Função para limpar todas as seleções
+        function limparSelecoes() {
+            // Limpar arrays
+            dezenasBaixasSelecionadas = [];
+            dezenasMedioSelecionadas = [];
+            dezenasAltasSelecionadas = [];
+            
+            // Remover classes 'selected' de todos os botões
+            document.querySelectorAll('.numero-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Resetar select de paridade
+            document.getElementById('equilibrio-paridade').value = '3-4';
+            
+            // Resetar mês da sorte
+            document.getElementById('mes-sorte').value = 'Qualquer';
+            
+            // Resetar quantidade
+            document.getElementById('quantidade-jogos').value = 10;
+            document.getElementById('valor-quantidade').textContent = '10';
+            
+            // Limpar jogos gerados
+            jogosGerados = [];
+            document.getElementById('total-jogos').textContent = '0';
+            document.getElementById('lista-jogos').innerHTML = '';
+            document.getElementById('sem-jogos').style.display = 'block';
+            
+            mostrarNotificacao('Todas as seleções foram limpas', 'info');
+        }
+
+        // Função para gerar jogos baseados na estratégia
+        function gerarJogos() {
+            // Obter configurações
+            const quantidade = parseInt(document.getElementById('quantidade-jogos').value);
+            const equilibrioParidade = document.getElementById('equilibrio-paridade').value;
+            const mesSorte = document.getElementById('mes-sorte').value;
+            
+            // Arrays de dezenas disponíveis por faixa
+            const dezenasBaixasDisponiveis = Array.from({length: 10}, (_, i) => i + 1)
+                .filter(n => !dezenasBaixasSelecionadas.includes(n));
+            
+            const dezenasMediasDisponiveis = Array.from({length: 10}, (_, i) => i + 11)
+                .filter(n => !dezenasMedioSelecionadas.includes(n));
+            
+            const dezenasAltasDisponiveis = Array.from({length: 11}, (_, i) => i + 21)
+                .filter(n => !dezenasAltasSelecionadas.includes(n));
+            
+            // Validar se temos dezenas suficientes em cada faixa
+            if (dezenasBaixasDisponiveis.length + dezenasBaixasSelecionadas.length < 2) {
+                mostrarNotificacao('Não há dezenas baixas suficientes para formar jogos', 'error');
+                return;
+            }
+            
+            if (dezenasMediasDisponiveis.length + dezenasMedioSelecionadas.length < 3) {
+                mostrarNotificacao('Não há dezenas médias suficientes para formar jogos', 'error');
+                return;
+            }
+            
+            if (dezenasAltasDisponiveis.length + dezenasAltasSelecionadas.length < 2) {
+                mostrarNotificacao('Não há dezenas altas suficientes para formar jogos', 'error');
+                return;
+            }
+            
+            // Limpar jogos anteriores
+            jogosGerados = [];
+            
+            // Gerar jogos
+            const jogosSet = new Set(); // Para evitar duplicatas
+            let tentativas = 0;
+            const maxTentativas = quantidade * 100; // Limite para evitar loop infinito
+            
+            while (jogosGerados.length < quantidade && tentativas < maxTentativas) {
+                tentativas++;
+                
+                // Gerar um jogo seguindo a estratégia
+                const jogo = gerarJogoEstrategico(
+                    dezenasBaixasSelecionadas, dezenasBaixasDisponiveis,
+                    dezenasMedioSelecionadas, dezenasMediasDisponiveis,
+                    dezenasAltasSelecionadas, dezenasAltasDisponiveis,
+                    equilibrioParidade
+                );
+                
+                // Verificar se o jogo é válido e não é duplicado
+                if (jogo) {
+                    const jogoKey = jogo.sort((a, b) => a - b).join('-');
+                    
+                    if (!jogosSet.has(jogoKey)) {
+                        jogosSet.add(jogoKey);
+                        
+                        // Adicionar mês da sorte
+                        const jogoCompleto = {
+                            numeros: jogo.sort((a, b) => a - b),
+                            mes: mesSorte === 'Qualquer' ? 
+                                meses[Math.floor(Math.random() * meses.length)] : mesSorte
+                        };
+                        
+                        jogosGerados.push(jogoCompleto);
+                    }
+                }
+            }
+            
+            // Exibir os jogos gerados
+            exibirJogos();
+            
+            // Mostrar notificação com o resultado
+            mostrarNotificacao(`${jogosGerados.length} jogos gerados com sucesso!`, 'success');
+        }
+
+        // Função para gerar um jogo seguindo a estratégia
+        function gerarJogoEstrategico(baixasFixas, baixasDisp, mediasFixas, mediasDisp, altasFixas, altasDisp, equilibrio) {
+            // Inicializar o jogo com as dezenas fixas
+            const jogo = [...baixasFixas, ...mediasFixas, ...altasFixas];
+            
+            // Completar com dezenas aleatórias de cada faixa
+            const baixasFaltantes = 2 - baixasFixas.length;
+            const mediasFaltantes = 3 - mediasFixas.length;
+            const altasFaltantes = 2 - altasFixas.length;
+            
+            // Adicionar dezenas baixas faltantes
+            if (baixasFaltantes > 0) {
+                const dezenasBaixasAleatorias = obterDezenasAleatorias(baixasDisp, baixasFaltantes);
+                jogo.push(...dezenasBaixasAleatorias);
+            }
+            
+            // Adicionar dezenas médias faltantes
+            if (mediasFaltantes > 0) {
+                const dezenasMediasAleatorias = obterDezenasAleatorias(mediasDisp, mediasFaltantes);
+                jogo.push(...dezenasMediasAleatorias);
+            }
+            
+            // Adicionar dezenas altas faltantes
+            if (altasFaltantes > 0) {
+                const dezenasAltasAleatorias = obterDezenasAleatorias(altasDisp, altasFaltantes);
+                jogo.push(...dezenasAltasAleatorias);
+            }
+            
+            // Verificar equilíbrio de paridade
+            if (equilibrio !== 'qualquer') {
+                const pares = jogo.filter(n => n % 2 === 0).length;
+                const impares = jogo.length - pares;
+                
+                if (equilibrio === '3-4' && (pares !== 3 || impares !== 4)) {
+                    return null; // Não atende ao critério de paridade 3-4
+                }
+                
+                if (equilibrio === '4-3' && (pares !== 4 || impares !== 3)) {
+                    return null; // Não atende ao critério de paridade 4-3
+                }
+                
+                if (equilibrio === 'balanced' && !(
+                    (pares === 3 && impares === 4) || 
+                    (pares === 4 && impares === 3)
+                )) {
+                    return null; // Não atende ao critério de paridade balanceada
+                }
+            }
+            
+            return jogo;
+        }
+
+        // Função para obter dezenas aleatórias de um array
+        function obterDezenasAleatorias(array, quantidade) {
+            const resultado = [];
+            const copiaArray = [...array];
+            
+            for (let i = 0; i < quantidade; i++) {
+                if (copiaArray.length === 0) break;
+                
+                const indiceAleatorio = Math.floor(Math.random() * copiaArray.length);
+                resultado.push(copiaArray[indiceAleatorio]);
+                copiaArray.splice(indiceAleatorio, 1);
+            }
+            
+            return resultado;
+        }
+
+        // Função para exibir os jogos gerados
+        function exibirJogos() {
+            const listaJogos = document.getElementById('lista-jogos');
+            const semJogos = document.getElementById('sem-jogos');
+            const totalJogos = document.getElementById('total-jogos');
+            
+            // Atualizar contador
+            totalJogos.textContent = jogosGerados.length;
+            
+            // Esconder mensagem "sem jogos" se tivermos jogos
+            if (jogosGerados.length > 0) {
+                semJogos.style.display = 'none';
+            } else {
+                semJogos.style.display = 'block';
+                listaJogos.innerHTML = '';
+                return;
+            }
+            
+            // Limpar lista de jogos
+            listaJogos.innerHTML = '';
+            
+            // Adicionar cada jogo à lista
+            jogosGerados.forEach((jogo, index) => {
+                const jogoDiv = document.createElement('div');
+                jogoDiv.className = 'jogo-item';
+                
+                // Adicionar índice do jogo
+                const indexSpan = document.createElement('span');
+                indexSpan.textContent = `${index + 1}.`;
+                indexSpan.style.marginRight = '10px';
+                indexSpan.style.fontWeight = 'bold';
+                jogoDiv.appendChild(indexSpan);
+                
+                // Adicionar cada dezena com sua classe de cor
+                jogo.numeros.forEach(dezena => {
+                    const dezenaSpan = document.createElement('span');
+                    dezenaSpan.className = 'dezena';
+                    
+                    // Determinar a classe de cor baseada na faixa
+                    if (dezena <= 10) {
+                        dezenaSpan.classList.add('baixa');
+                    } else if (dezena <= 20) {
+                        dezenaSpan.classList.add('media');
+                    } else {
+                        dezenaSpan.classList.add('alta');
+                    }
+                    
+                    // Formatar com zero à esquerda se for menor que 10
+                    dezenaSpan.textContent = dezena < 10 ? `0${dezena}` : dezena;
+                    
+                    jogoDiv.appendChild(dezenaSpan);
+                });
+                
+                // Adicionar mês da sorte
+                const mesSpan = document.createElement('span');
+                mesSpan.className = 'mes-sorte';
+                mesSpan.textContent = jogo.mes;
+                jogoDiv.appendChild(mesSpan);
+                
+                listaJogos.appendChild(jogoDiv);
+            });
+        }
+
+        // Função para download TXT
+        function downloadTXT() {
+            if (jogosGerados.length === 0) {
+                mostrarNotificacao('Não há jogos para baixar', 'error');
+                return;
+            }
+            
+            let conteudo = "JOGOS ESTRATÉGIA I - DIA DE SORTE\n\n";
+            
+            jogosGerados.forEach((jogo, index) => {
+                conteudo += `Jogo ${index + 1}: `;
+                conteudo += jogo.numeros.map(n => n < 10 ? `0${n}` : n).join('-');
+                conteudo += ` | Mês: ${jogo.mes}\n`;
+            });
+            
+            // Criar blob e link para download
+            const blob = new Blob([conteudo], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'jogos_dia_de_sorte.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Mostrar mensagem de sucesso
+            mostrarNotificacao('Download em TXT concluído!', 'success');
+        }
+
+        // Função para download Excel
+        function downloadExcel() {
+            if (jogosGerados.length === 0) {
+                mostrarNotificacao('Não há jogos para baixar', 'error');
+                return;
+            }
+            
+            try {
+                // Preparar dados para Excel
+                const dados = jogosGerados.map((jogo, index) => {
+                    return [
+                        index + 1, // Número sequencial
+                        ...jogo.numeros.map(n => n < 10 ? `0${n}` : `${n}`), // Números formatados
+                        jogo.mes // Mês da sorte
+                    ];
+                });
+                
+                // Cabeçalho
+                const cabecalho = ['#', 'Nº 1', 'Nº 2', 'Nº 3', 'Nº 4', 'Nº 5', 'Nº 6', 'Nº 7', 'Mês da Sorte'];
+                
+                // Criar worksheet
+                const ws = XLSX.utils.aoa_to_sheet([cabecalho, ...dados]);
+                
+                // Criar workbook e adicionar worksheet
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Dia de Sorte');
+                
+                // Salvar arquivo
+                XLSX.writeFile(wb, 'jogos_dia_de_sorte.xlsx');
+                
+                // Mostrar mensagem de sucesso
+                mostrarNotificacao('Download em Excel concluído!', 'success');
+            } catch (error) {
+                console.error('Erro ao gerar Excel:', error);
+                mostrarNotificacao('Erro ao gerar arquivo Excel', 'error');
+            }
+        }
+
+        // Função para mostrar notificação
+        function mostrarNotificacao(mensagem, tipo = 'info') {
+            // Verificar se já existe uma notificação
+            let notificacao = document.querySelector('.notification');
+            
+            if (!notificacao) {
+                notificacao = document.createElement('div');
+                notificacao.className = 'notification';
+                document.body.appendChild(notificacao);
+            }
+            
+            // Resetar classes
+            notificacao.className = 'notification';
+            
+            // Adicionar classe de tipo
+            if (tipo) {
+                notificacao.classList.add(tipo);
+            }
+            
+            notificacao.textContent = mensagem;
+            
+            // Mostrar notificação
+            setTimeout(() => {
+                notificacao.classList.add('show');
+            }, 10);
+            
+            // Ocultar após alguns segundos
+            setTimeout(() => {
+                notificacao.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

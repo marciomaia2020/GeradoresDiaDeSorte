@@ -4,17 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Jogos - Dia de Sorte</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
             --primary-color: #4C9141; /* Verde Dia de Sorte */
+            --primary-dark: #3b7033;
             --secondary-color: #7AB800;
             --accent-color: #94C11F;
             --background-color: #F5F5F5;
+            --card-bg: #FFFFFF;
             --text-color: #333333;
-            --border-color: #DDDDDD;
+            --border-color: #E0E0E0;
             --success-color: #28a745;
             --error-color: #dc3545;
+            --group1-color: rgba(255, 99, 132, 0.2); /* Vermelho */
+            --group2-color: rgba(75, 192, 192, 0.2); /* Verde */
+            --group3-color: rgba(54, 162, 235, 0.2); /* Azul */
+            --group1-border: rgba(255, 99, 132, 1);
+            --group2-border: rgba(75, 192, 192, 1);
+            --group3-border: rgba(54, 162, 235, 1);
         }
 
         * {
@@ -24,10 +33,11 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             background-color: var(--background-color);
             color: var(--text-color);
+            padding-bottom: 30px;
         }
 
         .container {
@@ -39,187 +49,560 @@
         header {
             text-align: center;
             margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border-color);
+            position: relative;
         }
 
         header h1 {
             color: var(--primary-color);
             margin-bottom: 10px;
-        }
-        .type{
-            color:#dc3545;
-        }
-        .instrucaoes {
-          background-color: #f9f9f9;
-          border-radius: 12px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          padding: 20px;
-          text-align: left;
-          font-family: Arial, sans-serif;
-          color: #333;
-          line-height: 35px;
-          margin-top: 20px;
-          margin-bottom: 20px;
+            font-size: 2.2rem;
+            font-weight: 700;
         }
 
-        .group1 { background-color: rgba(255, 0, 0, 0.2); }  /* Vermelho transparente */
-        .group2 { background-color: rgba(0, 255, 0, 0.2); }  /* Verde transparente */
-        .group3 { background-color: rgba(0, 0, 255, 0.2); }  /* Azul transparente */
-        p span { padding: 2px 5px; border-radius: 4px; }
+        header p {
+            color: var(--text-color);
+            font-size: 1.1rem;
+        }
+
+        .header-icon {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            opacity: 0.8;
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .header-icon {
+                display: block;
+            }
+        }
+
+        .type {
+            color: var(--error-color);
+            font-weight: bold;
+        }
+
+        .instrucoes {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            text-align: left;
+            color: var(--text-color);
+            line-height: 1.8;
+            margin: 20px 0 30px;
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .instrucoes:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .instrucoes h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .instrucoes ol {
+            padding-left: 25px;
+            margin-bottom: 20px;
+        }
+
+        .instrucoes li {
+            margin-bottom: 10px;
+        }
+
+        .group1 { 
+            background-color: var(--group1-color);
+            border: 1px solid var(--group1-border);
+        }
+        
+        .group2 { 
+            background-color: var(--group2-color); 
+            border: 1px solid var(--group2-border);
+        }
+        
+        .group3 { 
+            background-color: var(--group3-color); 
+            border: 1px solid var(--group3-border);
+        }
+        
+        p span { 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            margin: 0 2px;
+            font-weight: bold;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
 
         .jogo-item {
             background-color: #f8f9fa;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .jogo-item:hover {
+            background-color: #f1f1f1;
+            transform: translateX(5px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
         }
 
         .jogo-numero {
             font-weight: bold;
+            font-size: 1.1rem;
             color: var(--primary-color);
             min-width: 30px;
         }
 
+        .dezenas-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
         .dezena {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            line-height: 30px;
-            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
             background-color: var(--primary-color);
             color: white;
             border-radius: 50%;
             margin: 0 2px;
             font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .dezena:hover {
+            transform: scale(1.1);
+        }
+
+        .mes-sorte {
+            margin-left: auto;
+            padding: 6px 12px;
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .mes-sorte i {
+            font-size: 0.8rem;
         }
 
         .grupos-container {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .grupos-container h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
         }
 
         .grupos-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 15px;
         }
 
         .grupo-card {
             border: 1px solid var(--border-color);
-            padding: 15px;
+            padding: 20px;
             border-radius: 8px;
             background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .grupo-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            transform: translateY(-3px);
+            border-color: var(--primary-color);
         }
 
         .grupo-card h3 {
             color: var(--primary-color);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grupo-card h3 i {
+            font-size: 0.9rem;
         }
 
         .tipo-select {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             align-items: center;
             flex-wrap: wrap;
         }
 
-        .tipo-select input[type="checkbox"] {
-            margin-right: 5px;
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .custom-checkbox {
+            position: relative;
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--primary-color);
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+
+        .custom-checkbox::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 5px;
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg) scale(0);
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+
+        input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"]:checked + .custom-checkbox {
+            background-color: var(--primary-color);
+        }
+
+        input[type="checkbox"]:checked + .custom-checkbox::after {
+            opacity: 1;
+            transform: rotate(45deg) scale(1);
         }
 
         .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .input-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-dark);
         }
 
         .input-group input {
             width: 100%;
-            padding: 8px;
+            padding: 12px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(76, 145, 65, 0.2);
+        }
+
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: white;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(76, 145, 65, 0.2);
         }
 
         .buttons {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 15px;
+            margin-top: 25px;
             justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-size: 1rem;
         }
 
         .btn-primary {
             background-color: var(--primary-color);
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
         .btn-secondary {
             background-color: #f8f9fa;
             color: var(--text-color);
-            padding: 10px 20px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
-            cursor: pointer;
         }
 
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
-        }
-
-        .resultados {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .download-options {
-            margin-top: 20px;
-        }
-
-        .download-options h3 {
-            margin-bottom: 10px;
-            text-align: center;
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .btn-download {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
+            padding: 10px 18px;
             background-color: var(--secondary-color);
             color: white;
+            border-radius: 6px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .btn-download:hover {
             background-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
+        .btn-download.txt { background-color: #6c757d; }
+        .btn-download.xlsx { background-color: #217346; }
+        .btn-download.html { background-color: #e44d26; }
+
+        .btn-download.txt:hover { background-color: #5a6268; }
+        .btn-download.xlsx:hover { background-color: #1e6e41; }
+        .btn-download.html:hover { background-color: #d13b17; }
+
+        .resultados {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .resultados h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .jogos-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .jogos-total {
+            padding: 10px 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 6px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .jogos-lista {
+            max-height: 500px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 10px;
+        }
+
+        .download-options {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .download-options h3 {
+            margin-bottom: 15px;
+            text-align: center;
+            color: var(--primary-dark);
+        }
+
+        /* Notificações */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification.success {
+            background-color: var(--success-color);
+        }
+
+        .notification.error {
+            background-color: var(--error-color);
+        }
+
+        /* Animações e Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsividade */
         @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            header {
+                padding: 15px 0;
+                margin-bottom: 20px;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .instrucoes {
+                padding: 20px;
+            }
+
             .jogo-item {
                 flex-wrap: wrap;
+                padding: 12px;
             }
             
             .dezena {
-                width: 25px;
-                height: 25px;
-                line-height: 25px;
-                font-size: 14px;
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
             }
             
             .grupos-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .mes-sorte {
+                margin-left: 0;
+                margin-top: 10px;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .grupos-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -227,20 +610,24 @@
 <body>
     <div class="container">
         <header>
+            <div class="header-icon">
+                <i class="fas fa-dice"></i>
+            </div>
             <h1>Gerador de Jogos - Dia de Sorte</h1>
-            <p>Quadras, Triplas e Duplas</p>
+            <p>Quadras, Triplas e Duplas para aumentar suas chances</p>
         </header>
 
-        <div class="instrucaoes">
-            <h2>Instruções de uso:</h2>
+        <div class="instrucoes">
+            <h2><i class="fas fa-info-circle"></i> Instruções de uso:</h2>
             <ol>
                 <li>Sempre aparece nos sorteios <span class="type">Quadra</span><span class="type">, Duplas</span> ou<span class="type"> Trincas</span>.</li>
-                <li>As dezenas que faltarem para a geração de um jogo será aleatória entre 1 e 31.</li>
+                <li>As dezenas que faltarem para a geração de um jogo serão aleatórias entre 1 e 31.</li>
                 <li>Selecione a quantidade de Quadra, Duplas ou Trincas desejada.</li>
-                <li>Ao clicar em gerar, será gerado jogos com 7 dezenas.</li>
-                <li>Faça o download do(s) jogo(s) (opcional).</li>
+                <li>Ao clicar em gerar, serão criados jogos com 7 dezenas para o Dia de Sorte.</li>
+                <li>Você pode escolher o mês da sorte ou deixar que seja gerado aleatoriamente.</li>
+                <li>Faça o download do(s) jogo(s) no formato que preferir (opcional).</li>
             </ol>
-            <li>EXEMPLO:</li>
+            <h3>EXEMPLO:</h3>
             <p><span class="group1">01-11</span>, <span class="group2">04-14</span>, <span class="group3">07-17</span></p>
             <p><span class="group1">02-12</span>, <span class="group2">05-15</span>, <span class="group3">08-28</span></p>
             <p><span class="group1">03-13</span>, <span class="group2">06-16</span>, <span class="group3">09-19</span></p>
@@ -248,35 +635,73 @@
         </div>
 
         <main>
-            <section class="gerador-form">
+            <section class="gerador-form card">
                 <div class="input-group">
-                    <label for="quantidade">Quantidade de Jogos: <small>Use somente se quiser vários jogos iguais.</small></label>
-                    <input type="number" id="quantidade" min="1" value="1">
+                    <label for="quantidade"><i class="fas fa-calculator"></i> Quantidade de Jogos:</label>
+                    <input type="number" id="quantidade" min="1" max="100" value="1">
+                    <small>Use somente se quiser vários jogos iguais (máximo 100)</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="mes-sorte"><i class="fas fa-calendar-alt"></i> Mês da Sorte:</label>
+                    <select id="mes-sorte">
+                        <option value="aleatorio">Aleatório</option>
+                        <option value="Janeiro">Janeiro</option>
+                        <option value="Fevereiro">Fevereiro</option>
+                        <option value="Março">Março</option>
+                        <option value="Abril">Abril</option>
+                        <option value="Maio">Maio</option>
+                        <option value="Junho">Junho</option>
+                        <option value="Julho">Julho</option>
+                        <option value="Agosto">Agosto</option>
+                        <option value="Setembro">Setembro</option>
+                        <option value="Outubro">Outubro</option>
+                        <option value="Novembro">Novembro</option>
+                        <option value="Dezembro">Dezembro</option>
+                    </select>
                 </div>
 
                 <div class="grupos-container">
-                    <h2>Selecione os Grupos</h2>
+                    <h2><i class="fas fa-layer-group"></i> Selecione os Grupos</h2>
                     <div class="grupos-grid" id="grupos-grid">
                         <!-- Grupos serão criados via JavaScript -->
                     </div>
                 </div>
 
                 <div class="buttons">
-                    <button id="gerar" class="btn-primary">Gerar Jogos</button>
-                    <button id="limpar" class="btn-secondary">Limpar Seleção</button>
+                    <button id="gerar" class="btn btn-primary">
+                        <i class="fas fa-magic"></i> Gerar Jogos
+                    </button>
+                    <button id="limpar" class="btn btn-secondary">
+                        <i class="fas fa-eraser"></i> Limpar Seleção
+                    </button>
                 </div>
             </section>
 
             <section class="resultados" style="display: none;" id="resultados">
-                <h2>Jogos Gerados</h2>
+                <h2><i class="fas fa-ticket-alt"></i> Jogos Gerados</h2>
+                
+                <div class="jogos-stats">
+                    <div class="jogos-total">
+                        <i class="fas fa-list-ol"></i>
+                        Total de jogos: <span id="total-jogos">0</span>
+                    </div>
+                </div>
+                
                 <div class="jogos-lista" id="jogos-lista"></div>
                 
                 <div class="download-options">
-                    <h3>Download</h3>
+                    <h3><i class="fas fa-download"></i> Download</h3>
                     <div class="buttons">
-                        <button class="btn-download" data-formato="txt">TXT</button>
-                        <button class="btn-download" data-formato="xlsx">XLSX</button>
-                        <button class="btn-download" data-formato="html">HTML</button>
+                        <button class="btn-download txt" data-formato="txt">
+                            <i class="fas fa-file-alt"></i> TXT
+                        </button>
+                        <button class="btn-download xlsx" data-formato="xlsx">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                        <button class="btn-download html" data-formato="html">
+                            <i class="fas fa-file-code"></i> HTML
+                        </button>
                     </div>
                 </div>
             </section>
@@ -299,37 +724,56 @@
                 10: { trinca: [10, 20, 30], duplas: [[10, 20], [10, 30], [20, 30]] }
             };
 
+            // Array de meses para sorteio aleatório
+            const meses = [
+                'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+            ];
+
             // Elementos do DOM
             const gruposGrid = document.getElementById('grupos-grid');
             const btnGerar = document.getElementById('gerar');
             const btnLimpar = document.getElementById('limpar');
             const quantidadeInput = document.getElementById('quantidade');
+            const mesSorteSelect = document.getElementById('mes-sorte');
             const resultadosSection = document.getElementById('resultados');
             const jogosLista = document.getElementById('jogos-lista');
+            const totalJogosSpan = document.getElementById('total-jogos');
 
-            // Criar a interface dos grupos
+            // Criar a interface dos grupos com novo design
             function criarGruposUI() {
                 for (let i = 1; i <= 10; i++) {
                     const grupoCard = document.createElement('div');
                     grupoCard.className = 'grupo-card';
                     grupoCard.dataset.grupo = i;
                     
-                    let html = `<h3>Grupo ${i}</h3>`;
+                    // Ícones para os grupos
+                    let icone = 'fas fa-layer-group';
+                    let html = `<h3><i class="${icone}"></i> Grupo ${i}</h3>`;
                     
                     if (i === 1) {
                         html += `
                             <div class="tipo-select">
-                                <input type="checkbox" id="quadra-${i}" value="quadra">
-                                <label for="quadra-${i}">Quadra</label>
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="quadra-${i}" value="quadra">
+                                    <span class="custom-checkbox"></span>
+                                    Quadra
+                                </label>
                             </div>
                         `;
                     } else {
                         html += `
                             <div class="tipo-select">
-                                <input type="checkbox" id="trinca-${i}" value="trinca">
-                                <label for="trinca-${i}">Trinca</label>
-                                <input type="checkbox" id="dupla-${i}" value="dupla">
-                                <label for="dupla-${i}">Dupla</label>
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="trinca-${i}" value="trinca">
+                                    <span class="custom-checkbox"></span>
+                                    Trinca
+                                </label>
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="dupla-${i}" value="dupla">
+                                    <span class="custom-checkbox"></span>
+                                    Dupla
+                                </label>
                             </div>
                         `;
                     }
@@ -345,7 +789,7 @@
                         const validacao = validarSelecoes(selecoes);
                         
                         if (!validacao.valido) {
-                            alert(validacao.mensagem);
+                            mostrarNotificacao(validacao.mensagem, 'error');
                             checkbox.checked = false; // Desmarca a última seleção
                         }
                     });
@@ -380,10 +824,7 @@
                         return `Grupo ${s.grupo} (${tipo})`;
                     }).join(', ');
 
-                    mensagemErro = `A combinação selecionada ultrapassa 7 dezenas!\n\n` +
-                                `Seleções atuais: ${combinacoes}\n` +
-                                `Total de números: ${totalNumeros}\n\n` +
-                                `Por favor, selecione uma combinação que totalize 7 ou menos números.`;
+                    mensagemErro = `A combinação selecionada ultrapassa 7 dezenas! (Total: ${totalNumeros})`;
                     return { valido: false, mensagem: mensagemErro };
                 }
 
@@ -462,42 +903,109 @@
             // Função para exibir os jogos gerados
             function exibirJogos(jogos) {
                 jogosLista.innerHTML = '';
+                totalJogosSpan.textContent = jogos.length;
+                
                 jogos.forEach((jogo, index) => {
                     const jogoDiv = document.createElement('div');
                     jogoDiv.className = 'jogo-item';
-                    jogoDiv.innerHTML = `
-                        <span class="jogo-numero">${index + 1}.</span>
-                        ${jogo.map(n => `<span class="dezena">${n.toString().padStart(2, '0')}</span>`).join(' ')}
-                    `;
+                    
+                    // Adicionar número do jogo
+                    const numeroSpan = document.createElement('span');
+                    numeroSpan.className = 'jogo-numero';
+                    numeroSpan.textContent = `${index + 1}.`;
+                    jogoDiv.appendChild(numeroSpan);
+                    
+                    // Adicionar container para dezenas
+                    const dezenasContainer = document.createElement('div');
+                    dezenasContainer.className = 'dezenas-container';
+                    
+                    // Adicionar dezenas
+                    jogo.numeros.forEach(numero => {
+                        const dezenaSpan = document.createElement('span');
+                        dezenaSpan.className = 'dezena';
+                        dezenaSpan.textContent = numero.toString().padStart(2, '0');
+                        dezenasContainer.appendChild(dezenaSpan);
+                    });
+                    
+                    jogoDiv.appendChild(dezenasContainer);
+                    
+                    // Adicionar mês da sorte
+                    const mesSpan = document.createElement('span');
+                    mesSpan.className = 'mes-sorte';
+                    mesSpan.innerHTML = `<i class="fas fa-calendar-alt"></i> ${jogo.mes}`;
+                    jogoDiv.appendChild(mesSpan);
+                    
                     jogosLista.appendChild(jogoDiv);
                 });
+                
                 resultadosSection.style.display = 'block';
+                
+                // Scroll para os resultados
+                resultadosSection.scrollIntoView({ behavior: 'smooth' });
             }
 
             // Event Listener para gerar jogos
             btnGerar.addEventListener('click', () => {
-                const quantidade = parseInt(quantidadeInput.value) || 1;
-                const selecoes = obterSelecoes();
+                // Desativar botão durante o processamento
+                btnGerar.disabled = true;
+                btnGerar.innerHTML = '<span class="loading"></span> Gerando...';
                 
+                // Verificar dados do formulário
+                const quantidade = parseInt(quantidadeInput.value) || 1;
+                if (quantidade < 1 || quantidade > 100) {
+                    mostrarNotificacao('A quantidade deve estar entre 1 e 100 jogos', 'error');
+                    resetarBotaoGerar();
+                    return;
+                }
+                
+                const selecoes = obterSelecoes();
                 if (selecoes.length === 0) {
-                    alert('Selecione pelo menos um grupo!');
+                    mostrarNotificacao('Selecione pelo menos um grupo!', 'error');
+                    resetarBotaoGerar();
                     return;
                 }
 
                 const validacao = validarSelecoes(selecoes);
                 if (!validacao.valido) {
-                    alert(validacao.mensagem);
+                    mostrarNotificacao(validacao.mensagem, 'error');
+                    resetarBotaoGerar();
                     return;
                 }
 
-                const jogos = [];
-                for (let i = 0; i < quantidade; i++) {
-                    const jogo = gerarJogo(selecoes);
-                    jogos.push(jogo);
-                }
+                // Obter o mês da sorte selecionado
+                const mesSorteValue = mesSorteSelect.value;
+                
+                // Usar setTimeout para não bloquear a UI
+                setTimeout(() => {
+                    const jogos = [];
+                    
+                    for (let i = 0; i < quantidade; i++) {
+                        // Gerar números do jogo
+                        const numeros = gerarJogo(selecoes);
+                        
+                        // Determinar mês da sorte (aleatório ou selecionado)
+                        let mes = mesSorteValue;
+                        if (mesSorteValue === 'aleatorio') {
+                            mes = meses[Math.floor(Math.random() * meses.length)];
+                        }
+                        
+                        jogos.push({
+                            numeros: numeros,
+                            mes: mes
+                        });
+                    }
 
-                exibirJogos(jogos);
+                    exibirJogos(jogos);
+                    mostrarNotificacao(`${jogos.length} jogo(s) gerado(s) com sucesso!`, 'success');
+                    resetarBotaoGerar();
+                }, 500); // Pequeno delay para feedback visual
             });
+
+            // Função para resetar o botão gerar
+            function resetarBotaoGerar() {
+                btnGerar.disabled = false;
+                btnGerar.innerHTML = '<i class="fas fa-magic"></i> Gerar Jogos';
+            }
 
             // Event Listener para limpar as seleções
             btnLimpar.addEventListener('click', () => {
@@ -506,23 +1014,35 @@
                 });
                 resultadosSection.style.display = 'none';
                 jogosLista.innerHTML = '';
+                mesSorteSelect.value = 'aleatorio';
+                quantidadeInput.value = 1;
+                
+                mostrarNotificacao('Seleções limpas!', 'success');
             });
 
             // Event Listeners para download
             document.querySelectorAll('.btn-download').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const formato = this.getAttribute('data-formato');
+                    
+                    // Coletar jogos como objetos com números e mês
                     const jogosArr = [];
                     
-                    // Extrair números de cada jogo
                     document.querySelectorAll('.jogo-item').forEach(jogoEl => {
                         const dezenas = Array.from(jogoEl.querySelectorAll('.dezena'))
                             .map(span => span.textContent);
-                        jogosArr.push(dezenas);
+                        
+                        const mesSorteEl = jogoEl.querySelector('.mes-sorte');
+                        const mes = mesSorteEl ? mesSorteEl.textContent.replace(/^\s*\S+\s+/, '') : ''; // Remove o ícone
+                        
+                        jogosArr.push({
+                            numeros: dezenas,
+                            mes: mes
+                        });
                     });
                     
                     if (jogosArr.length === 0) {
-                        alert('Não há jogos para fazer download!');
+                        mostrarNotificacao('Não há jogos para fazer download!', 'error');
                         return;
                     }
                     
@@ -538,7 +1058,12 @@
 
             // Funções de download
             function downloadTXT(jogos) {
-                const content = jogos.map(jogo => jogo.join(' ')).join('\n');
+                let content = "JOGOS - DIA DE SORTE\n\n";
+                
+                jogos.forEach((jogo, index) => {
+                    content += `Jogo ${index + 1}: ${jogo.numeros.join(' - ')} | Mês: ${jogo.mes}\n`;
+                });
+                
                 const blob = new Blob([content], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
                 
@@ -548,6 +1073,8 @@
                 a.click();
                 
                 URL.revokeObjectURL(url);
+                
+                mostrarNotificacao('Download TXT concluído!', 'success');
             }
 
             function downloadXLSX(jogos) {
@@ -557,11 +1084,11 @@
                     
                     // Converter jogos para array de arrays
                     const data = jogos.map((jogo, index) => {
-                        return [index + 1, ...jogo];
+                        return [index + 1, ...jogo.numeros, jogo.mes];
                     });
                     
                     // Adicionar cabeçalho
-                    data.unshift(['#', 'Nº 1', 'Nº 2', 'Nº 3', 'Nº 4', 'Nº 5', 'Nº 6', 'Nº 7']);
+                    data.unshift(['#', 'Nº 1', 'Nº 2', 'Nº 3', 'Nº 4', 'Nº 5', 'Nº 6', 'Nº 7', 'Mês da Sorte']);
                     
                     // Criar worksheet
                     const ws = XLSX.utils.aoa_to_sheet(data);
@@ -571,9 +1098,11 @@
                     
                     // Salvar arquivo
                     XLSX.writeFile(wb, 'jogos_dia_de_sorte.xlsx');
+                    
+                    mostrarNotificacao('Download Excel concluído!', 'success');
                 } catch (error) {
                     console.error('Erro ao gerar arquivo Excel:', error);
-                    alert('Erro ao gerar o arquivo Excel. Verifique o console para mais detalhes.');
+                    mostrarNotificacao('Erro ao gerar o arquivo Excel.', 'error');
                 }
             }
 
@@ -586,44 +1115,128 @@
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>Jogos Dia de Sorte</title>
                     <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; }
-                        h1 { color: #4C9141; }
-                        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-                        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
-                        tr:nth-child(even) { background-color: #f2f2f2; }
-                        .dezena {
-                            display: inline-block;
-                            width: 28px;
-                            height: 28px;
-                            line-height: 28px;
+                        :root {
+                            --primary-color: #4C9141;
+                        }
+                        
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            margin: 20px; 
+                            line-height: 1.6;
+                            color: #333;
+                        }
+                        
+                        h1 { 
+                            color: var(--primary-color);
                             text-align: center;
-                            background-color: #4C9141;
+                            border-bottom: 2px solid #eee;
+                            padding-bottom: 10px;
+                            margin-bottom: 20px;
+                        }
+                        
+                        .container {
+                            max-width: 800px;
+                            margin: 0 auto;
+                        }
+                        
+                        table { 
+                            border-collapse: collapse; 
+                            width: 100%; 
+                            margin-top: 20px;
+                            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                        }
+                        
+                        th, td { 
+                            padding: 12px 15px; 
+                            text-align: left; 
+                            border-bottom: 1px solid #ddd; 
+                        }
+                        
+                        th {
+                            background-color: var(--primary-color);
+                            color: white;
+                            font-weight: bold;
+                        }
+                        
+                        tr:nth-child(even) { 
+                            background-color: #f9f9f9; 
+                        }
+                        
+                        tr:hover {
+                            background-color: #f1f1f1;
+                        }
+                        
+                        .dezenas-container {
+                            display: flex;
+                            flex-wrap: wrap;
+                            gap: 5px;
+                        }
+                        
+                        .dezena {
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 32px;
+                            height: 32px;
+                            background-color: var(--primary-color);
                             color: white;
                             border-radius: 50%;
-                            margin: 0 2px;
                             font-weight: bold;
+                        }
+                        
+                        .mes {
+                            font-style: italic;
+                            color: var(--primary-color);
+                            font-weight: bold;
+                        }
+                        
+                        .footer {
+                            margin-top: 30px;
+                            text-align: center;
+                            font-size: 0.9em;
+                            color: #666;
+                        }
+                        
+                        @media (max-width: 600px) {
+                            th, td {
+                                padding: 10px;
+                            }
+                            
+                            .dezena {
+                                width: 28px;
+                                height: 28px;
+                                font-size: 0.9em;
+                            }
                         }
                     </style>
                 </head>
                 <body>
-                    <h1>Jogos Gerados - Dia de Sorte</h1>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Dezenas</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${jogos.map((jogo, index) => `
+                    <div class="container">
+                        <h1>Jogos Gerados - Dia de Sorte</h1>
+                        <table>
+                            <thead>
                                 <tr>
-                                    <td>${index + 1}</td>
-                                    <td>${jogo.map(n => `<span class="dezena">${n}</span>`).join(' ')}</td>
+                                    <th>#</th>
+                                    <th>Dezenas</th>
+                                    <th>Mês da Sorte</th>
                                 </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                    <p><em>Total de jogos: ${jogos.length}</em></p>
+                            </thead>
+                            <tbody>
+                                ${jogos.map((jogo, index) => `
+                                    <tr>
+                                        <td>${index + 1}</td>
+                                        <td>
+                                            <div class="dezenas-container">
+                                                ${jogo.numeros.map(n => `<span class="dezena">${n}</span>`).join('')}
+                                            </div>
+                                        </td>
+                                        <td class="mes">${jogo.mes}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        <p class="footer">Total de jogos: ${jogos.length}</p>
+                    </div>
                 </body>
                 </html>
                 `;
@@ -637,6 +1250,44 @@
                 a.click();
                 
                 URL.revokeObjectURL(url);
+                
+                mostrarNotificacao('Download HTML concluído!', 'success');
+            }
+
+            // Função para mostrar notificações
+            function mostrarNotificacao(mensagem, tipo = 'info') {
+                // Remover notificação anterior se existir
+                const notificacaoAnterior = document.querySelector('.notification');
+                if (notificacaoAnterior) {
+                    notificacaoAnterior.remove();
+                }
+                
+                // Criar nova notificação
+                const notificacao = document.createElement('div');
+                notificacao.className = `notification ${tipo}`;
+                
+                // Adicionar ícone baseado no tipo
+                let icone = 'fas fa-info-circle';
+                if (tipo === 'success') icone = 'fas fa-check-circle';
+                if (tipo === 'error') icone = 'fas fa-exclamation-circle';
+                
+                notificacao.innerHTML = `<i class="${icone}"></i> ${mensagem}`;
+                
+                document.body.appendChild(notificacao);
+                
+                // Exibir notificação com pequeno delay para efeito de animação
+                setTimeout(() => {
+                    notificacao.classList.add('show');
+                }, 10);
+                
+                // Remover notificação após 5 segundos
+                setTimeout(() => {
+                    notificacao.classList.remove('show');
+                    // Remover elemento após a animação terminar
+                    setTimeout(() => {
+                        notificacao.remove();
+                    }, 300);
+                }, 5000);
             }
 
             // Inicialização
