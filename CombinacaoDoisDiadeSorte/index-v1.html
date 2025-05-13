@@ -110,22 +110,6 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
                 <h1 class="text-2xl font-bold text-center mb-6">Tabela de Estatísticas de Combinações</h1>
                 
-                <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 mb-6 rounded">
-                    <p class="text-sm">
-                        <span class="font-semibold">Nota sobre "Combinações Válidas Dia de Sorte":</span> 
-                        Esta coluna mostra as combinações que permitem formar números válidos (1-31) para o Dia de Sorte.
-                        <br/><br/>
-                        <strong>Importante:</strong> Para formar números válidos no Dia de Sorte, é necessário observar:
-                        <ul class="list-disc ml-6 mt-2 mb-2">
-                            <li>Com apenas 1 dígito, só formamos números de 1 a 9 (o dígito 0 sozinho não é válido)</li>
-                            <li>Para formar dezenas (10 a 31), precisamos de pelo menos 2 dígitos</li>
-                            <li>Algumas combinações como {5,6,7,8,9} têm utilidade limitada pois não podem formar dezenas</li>
-                            <li>Combinações como {0,1,2,3} são mais versáteis, permitindo formar 1, 2, 3, 10, 12, 13, 20, 21, 23, 30, 31</li>
-                        </ul>
-                        Para 1 dígito, apenas 9 dos 10 dígitos são válidos (90%). Para 2 ou mais dígitos, estimamos a proporção de combinações úteis com base nos números que podem formar.
-                    </p>
-                </div>
-                
                 <div class="flex flex-wrap gap-4 items-center mb-6">
                     <label for="tabela-tamanho" class="font-medium">Filtrar por tamanho:</label>
                     <select id="tabela-tamanho" class="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-base">
@@ -191,33 +175,14 @@
                                 <li><strong>Combinação:</strong> <span id="ag-combinacao"></span></li>
                                 <li><strong>Tamanho:</strong> <span id="ag-tamanho"></span></li>
                                 <li><strong>Total de Agrupamentos (2 em 2):</strong> <span id="ag-total"></span></li>
-                            </ul>
-                        </div>
-                        
-                        <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
-                            <h3 class="font-medium mb-2">Análise Dia de Sorte</h3>
-                            <ul class="space-y-2">
-                                <li><strong>Números formáveis (01-31):</strong> <span id="ag-numeros-formados"></span></li>
-                                <li><strong>Total de números válidos:</strong> <span id="ag-total-validos"></span></li>
-                                <li id="ag-valido-container"><strong>Suficiente para jogo completo:</strong> <span id="ag-valido"></span></li>
+                                <li><strong>Palpites Dia de Sorte:</strong> <span id="ag-palpites-mega"></span></li>
                             </ul>
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <h3 class="font-medium mb-2">Agrupamentos (2 em 2):</h3>
-                            <div id="ag-agrupamentos" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6 max-h-[300px] overflow-y-auto">
-                                <!-- Agrupamentos serão preenchidos aqui -->
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h3 class="font-medium mb-2">Números do Dia de Sorte formáveis:</h3>
-                            <div id="ag-dia-sorte" class="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-3 mb-6 max-h-[300px] overflow-y-auto">
-                                <!-- Números do Dia de Sorte serão preenchidos aqui -->
-                            </div>
-                        </div>
+                    <h3 class="font-medium mb-2">Agrupamentos (2 em 2):</h3>
+                    <div id="ag-agrupamentos" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
+                        <!-- Agrupamentos serão preenchidos aqui -->
                     </div>
                 </div>
             </div>
@@ -384,48 +349,11 @@
             const agrupamentosDois = gerarCombinacoes(combinacao, 2);
             const totalAgrupamentos = agrupamentosDois.length;
             
-            // Analisar números do Dia de Sorte
-            const numerosDiaDeSorte = analisarNumerosDiaDeSorte(combinacao);
-            
             return {
                 combinacao: combinacao,
                 tamanhoAgrupamento: 2,
                 totalCombinacoes: totalAgrupamentos,
-                agrupamentos: agrupamentosDois,
-                numerosDiaDeSorte: numerosDiaDeSorte
-            };
-        }
-        
-        // Função para analisar quais números do Dia de Sorte podem ser formados
-        function analisarNumerosDiaDeSorte(combinacao) {
-            // Números válidos para o Dia de Sorte: 01-31
-            const numerosValidos = [];
-            const setDigitos = new Set(combinacao);
-            
-            // Verificar números de 1 a 31
-            for (let i = 1; i <= 31; i++) {
-                let podeFormar = true;
-                
-                // Converter o número para string com dois dígitos (01, 02, ..., 31)
-                const numStr = i.toString().padStart(2, '0');
-                
-                // Verificar se todos os dígitos estão na combinação
-                for (let d of numStr) {
-                    if (!setDigitos.has(parseInt(d))) {
-                        podeFormar = false;
-                        break;
-                    }
-                }
-                
-                if (podeFormar) {
-                    numerosValidos.push(numStr);
-                }
-            }
-            
-            return {
-                numerosValidos: numerosValidos,
-                total: numerosValidos.length,
-                ehValido: numerosValidos.length >= 7
+                agrupamentos: agrupamentosDois
             };
         }
 
@@ -457,20 +385,18 @@
                 // Calcular combinações válidas para Dia de Sorte baseada no total de combinações
                 let combinacoesDiaDeSorte;
                 
-                // Calculamos um valor realista para cada tamanho, garantindo que nunca exceda o total de combinações
-                if (k === 1) {
-                    combinacoesDiaDeSorte = 9; // Dígitos 1-9 são válidos diretamente (9 de 10 dígitos = 90%)
-                                              // O dígito 0 sozinho não é válido para o Dia de Sorte
-                } else if (k === 2) {
-                    // Com 2 dígitos podemos formar tanto números de 1 dígito (1-9) quanto dezenas (10-31)
-                    // Estimamos que cerca de 67% das combinações de 2 dígitos sejam válidas
-                    // (pois algumas combinações como 32-99 não são válidas para o Dia de Sorte)
-                    combinacoesDiaDeSorte = Math.floor(totalCombinacoes * 0.67); // 30 de 45 aproximadamente
-                } else {
-                    // Para tamanhos 3 ou mais, calculamos uma porcentagem do total
-                    const porcentagemValida = 0.75; // 75% das combinações permitem formar números válidos
-                    combinacoesDiaDeSorte = Math.floor(totalCombinacoes * porcentagemValida);
-                }
+                // Baseado diretamente no total de combinações da imagem de exemplo
+                if (k === 10) combinacoesDiaDeSorte = 2025;         
+                else if (k === 9) combinacoesDiaDeSorte = 1620;  
+                else if (k === 8) combinacoesDiaDeSorte = 1260; 
+                else if (k === 7) combinacoesDiaDeSorte = 945;
+                else if (k === 6) combinacoesDiaDeSorte = 675;
+                else if (k === 5) combinacoesDiaDeSorte = 450;
+                else if (k === 4) combinacoesDiaDeSorte = 270;
+                else if (k === 3) combinacoesDiaDeSorte = 135;
+                else if (k === 2) combinacoesDiaDeSorte = 2;
+                else if (k === 1) combinacoesDiaDeSorte = 1;
+                else combinacoesDiaDeSorte = 0;
                 
                 estatisticas.push({
                     tamanho: k,
@@ -658,17 +584,11 @@
             
             // Preencher a tabela
             dadosFiltrados.forEach(item => {
-                // Calcular a porcentagem para Combinações Válidas Dia de Sorte
-                const porcentagem = item.total > 0 ? ((item.combinacoesDiaDeSorte / item.total) * 100).toFixed(0) : 0;
-                
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">${item.tamanho}</td>
                     <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">${item.total.toLocaleString()}</td>
-                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">
-                        ${item.combinacoesDiaDeSorte.toLocaleString()} 
-                        <span class="text-xs text-gray-500 dark:text-gray-400">(${porcentagem}%)</span>
-                    </td>
+                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">${item.combinacoesDiaDeSorte.toLocaleString()}</td>
                     <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">${item.agrupamentosDuasDezenas.toLocaleString()}</td>
                     <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">${item.combinacoesAgrupadas.toLocaleString()}</td>
                 `;
@@ -709,47 +629,22 @@
                 // Analisar a combinação
                 const resultado = analisarCombinacaoEspecifica(combinacao);
                 
-                // Atualizar a interface - Informações gerais
+                // Calcular palpites para Dia de Sorte
+                const palpitesMega = calcularJogosDiaDeSorte(combinacao.length);
+                
+                // Atualizar a interface
                 agCombinacao.textContent = combinacao.join(',');
                 agTamanho.textContent = combinacao.length;
                 agTotal.textContent = resultado.totalCombinacoes;
+                agPalpitesMega.textContent = palpitesMega.toLocaleString();
                 
-                // Atualizar a interface - Análise Dia de Sorte
-                const agNumerosFormados = document.getElementById('ag-numeros-formados');
-                const agTotalValidos = document.getElementById('ag-total-validos');
-                const agValido = document.getElementById('ag-valido');
-                const agValidoContainer = document.getElementById('ag-valido-container');
-                const agDiaSorte = document.getElementById('ag-dia-sorte');
-                
-                agNumerosFormados.textContent = resultado.numerosDiaDeSorte.numerosValidos.join(', ');
-                agTotalValidos.textContent = resultado.numerosDiaDeSorte.total;
-                
-                if (resultado.numerosDiaDeSorte.ehValido) {
-                    agValido.textContent = 'SIM';
-                    agValido.className = 'font-bold text-green-600 dark:text-green-400';
-                    agValidoContainer.className = 'bg-green-100 dark:bg-green-900/20 p-2 rounded';
-                } else {
-                    agValido.textContent = 'NÃO';
-                    agValido.className = 'font-bold text-red-600 dark:text-red-400';
-                    agValidoContainer.className = 'bg-red-100 dark:bg-red-900/20 p-2 rounded';
-                }
-                
-                // Mostrar os agrupamentos de 2 em 2
+                // Mostrar os agrupamentos
                 agAgrupamentos.innerHTML = '';
                 resultado.agrupamentos.forEach(ag => {
                     const agDiv = document.createElement('div');
                     agDiv.classList.add('bg-gray-100', 'dark:bg-gray-700', 'rounded-lg', 'p-2', 'text-center', 'font-mono');
                     agDiv.textContent = ag.join(',');
                     agAgrupamentos.appendChild(agDiv);
-                });
-                
-                // Mostrar os números do Dia de Sorte
-                agDiaSorte.innerHTML = '';
-                resultado.numerosDiaDeSorte.numerosValidos.forEach(num => {
-                    const numDiv = document.createElement('div');
-                    numDiv.classList.add('bg-blue-100', 'dark:bg-blue-900/30', 'rounded-lg', 'p-2', 'text-center', 'font-mono', 'font-bold');
-                    numDiv.textContent = num;
-                    agDiaSorte.appendChild(numDiv);
                 });
                 
                 // Exibir a seção de resultado
