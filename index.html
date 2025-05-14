@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- SheetJS para exportação Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+	
     <script>
         tailwind.config = {
             theme: {
@@ -40,34 +41,38 @@
         <!-- Barra lateral com links -->
         <div class="w-full md:w-64 bg-gray-100 dark:bg-gray-800 p-4 md:min-h-screen">
             <div class="mb-6">
-                <h3 class="text-lg font-bold mb-3 text-primary dark:text-blue-400">Ferramentas Dia de Sorte</h3>
+                <h3 class="text-lg font-bold mb-3 text-primary dark:text-blue-400">Ferramentas Dia de Sorte </h3>
                 <div class="space-y-1">
-                    <a href="./index.html" class="block py-1 px-2 rounded bg-primary/10 text-primary dark:text-blue-400 font-medium">Gerador de Combinações</a>
+                    <a href="./index.html" class="block py-1 px-2 rounded bg-primary/10 text-primary dark:text-blue-400 font-bold">Gerador de Combinações</a>
                     
-                    <div class="mt-3 mb-1 text-sm font-medium text-gray-600 dark:text-gray-400">Dígitos</div>
+					<div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">ORDEM DE ANALISE</div>
+                    <a href="./ResultadosDigitosDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Resultados Digitos * </a>
+                    <a href="./CombinacaoDoisDiadeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Combinacao Digitos II *</a>
+					<a href="./AnaCombinDoisResulDigitos/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Análise de Combinações *</a>
+                    <a href="./ConfAutoMaisQue1DiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Conferidor Automático +1 * </a>
+                    <a href="./DiaDeSorteConferidor/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Conferidor *</a>
+					<a href="./ResumoDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Resumo *</a>
+                    <a href="./DiaDeSorteEstra/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Extratégias I *</a>
+                    <a href="./GeradorFinalDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Gerador Final *</a>
+
+					
+					<div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">DÍGITOS</div>
                     <a href="./GeradorBaseadoEmDigitosDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Baseado em Dígitos</a>
                     <a href="./CombinacaoUmDiadeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Combinacao Digitos I</a>
-                    <a href="./CombinacaoDoisDiadeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Combinacao Digitos II</a>
-                    <a href="./ResultadosDigitosDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Resultados Digitos</a>
-                    <a href="./GeradorFinalDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Gerador Final</a>
                     
-                    <div class="mt-3 mb-1 text-sm font-medium text-gray-600 dark:text-gray-400">Estratégias</div>
+                    <div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">ESTRATÉGIAS</div>
                     <a href="./CombinacaoUmDiadeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Combinação I</a>
                     <a href="./CombinacaoDoisDiadeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Combinação II</a>
-                    <a href="./DiaDeSorteEstra/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Extratégias I</a>
                     <a href="./QuadraDuplasTrincas/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Quadra Duplas & Trincas</a>
                     
-                    <div class="mt-3 mb-1 text-sm font-medium text-gray-600 dark:text-gray-400">Conferidores</div>
+                    <div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">CONFERIDOES</div>
                     <a href="./ConfAuto1DiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Conferidor Automático 1</a>
-                    <a href="./ConfAutoMaisQue1DiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Conferidor Automático +1</a>
                     
-                    <div class="mt-3 mb-1 text-sm font-medium text-gray-600 dark:text-gray-400">Análises</div>
-                    <a href="./DiaDeSorteConferidor/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Conferidor</a>
+                    <div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">ANÁLISES</div>
                     <a href="./DiaDeSorteDesdobramento/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Desdobramento</a>
                     <a href="./ResultadosAlteradosDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Resultados Alterados</a>
-                    <a href="./ResumoDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Resumo</a>
                     
-                    <div class="mt-3 mb-1 text-sm font-medium text-gray-600 dark:text-gray-400">Outros</div>
+                    <div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">OUTROS</div>
                     <a href="./DiaDeSorteCal/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Calculadora</a>
                     <a href="./DiaDeSorteCom/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Comissão</a>
                     <a href="./DiaDeSorteCur/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Curiosidades</a>
@@ -78,7 +83,7 @@
 
         <!-- Conteúdo principal -->
         <div class="flex-1 p-4">
-            <h1 class="text-2xl font-bold text-center mb-6">Gerador de Combinações - Dia de Sorte</h1>
+            <h1 class="text-2xl font-bold text-center mb-6">Gerador de Combinações - Dia de Sorte (5d)</h1>
             
             <!-- Tabela de referência de combinações -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
@@ -118,10 +123,10 @@
                 
                 <!-- Prévia das estatísticas -->
                 <div id="preview-stats" class="mb-4 p-3 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-md">
-                    <h3 class="font-medium mb-2">Prévia:</h3>
-                    <p>Dígitos selecionados: <span id="preview-selected-digits" class="font-medium">Nenhum</span> (<span id="preview-digit-count">0</span>/5)</p>
-                    <p>Números válidos possíveis: <span id="preview-valid-numbers" class="font-medium">0</span></p>
-                    <p>Combinações possíveis: <span id="preview-combinations" class="font-medium text-primary dark:text-blue-400">0</span></p>
+                    <h3 class="font-bold mb-2">Prévia:</h3>
+                    <p>Dígitos selecionados: <span id="preview-selected-digits" class="font-bold">Nenhum</span> (<span id="preview-digit-count">0</span>/5)</p>
+                    <p>Números válidos possíveis: <span id="preview-valid-numbers" class="font-bold">0</span></p>
+                    <p>Combinações possíveis: <span id="preview-combinations" class="font-bold text-primary dark:text-blue-400">0</span></p>
                 </div>
                 
                 <div class="grid grid-cols-5 gap-2 mb-6">
@@ -136,7 +141,7 @@
                 
                 <!-- Seletor de Mês da Sorte -->
                 <div class="mb-6">
-                    <label for="lucky-month" class="block text-sm font-medium mb-2">Mês da Sorte:</label>
+                    <label for="lucky-month" class="block text-sm font-bold mb-2">Mês da Sorte:</label>
                     <select id="lucky-month" class="w-full border dark:border-gray-700 rounded-md px-3 py-2 text-base focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-700">
                         <option value="Janeiro">Janeiro</option>
                         <option value="Fevereiro">Fevereiro</option>
@@ -155,7 +160,7 @@
                 
                 <div class="flex flex-col space-y-3">
                     <div id="error-message" class="hidden text-red-500 text-center"></div>
-                    <button id="generate-btn" class="bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-md font-medium transition">
+                    <button id="generate-btn" class="bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-md font-bold transition">
                         Gerar Combinações
                     </button>
                 </div>
@@ -165,8 +170,8 @@
                 <div class="mb-4">
                     <h3 class="text-lg font-semibold">Resumo:</h3>
                     <div class="p-3 mt-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
-                        <p><strong>Dígitos selecionados:</strong> <span id="selected-digits" class="font-medium"></span></p>
-                        <p><strong>Números válidos formados:</strong> <span id="valid-numbers-count" class="font-medium"></span> (entre 1 e 31)</p>
+                        <p><strong>Dígitos selecionados:</strong> <span id="selected-digits" class="font-bold"></span></p>
+                        <p><strong>Números válidos formados:</strong> <span id="valid-numbers-count" class="font-bold"></span> (entre 1 e 31)</p>
                         <p class="text-lg mt-2"><strong>Total de combinações possíveis:</strong> <span id="total-combinations" class="font-semibold text-primary dark:text-blue-400"></span></p>
                         <p class="text-xs mt-1 text-gray-600 dark:text-gray-400">
                             As combinações são formadas pegando 7 números dentre os números válidos que podem ser formados com os dígitos selecionados.
@@ -178,13 +183,13 @@
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="text-lg font-semibold">Combinações:</h3>
                         <div class="flex space-x-2">
-                            <button id="download-txt-btn" class="text-primary hover:text-primary/80 text-sm font-medium">
+                            <button id="download-txt-btn" class="text-primary hover:text-primary/80 text-sm font-bold">
                                 TXT
                             </button>
-                            <button id="download-excel-btn" class="text-green-600 hover:text-green-800 text-sm font-medium">
+                            <button id="download-excel-btn" class="text-green-600 hover:text-green-800 text-sm font-bold">
                                 Excel
                             </button>
-                            <button id="download-html-btn" class="text-orange-600 hover:text-orange-800 text-sm font-medium">
+                            <button id="download-html-btn" class="text-orange-600 hover:text-orange-800 text-sm font-bold">
                                 HTML
                             </button>
                         </div>
@@ -732,7 +737,7 @@
                 
                 // Coluna de combinações
                 const combinationsCell = document.createElement('td');
-                combinationsCell.className = 'py-2 px-3 border-t dark:border-gray-700 font-medium';
+                combinationsCell.className = 'py-2 px-3 border-t dark:border-gray-700 font-bold';
                 if (data.totalCombinations > 0) {
                     combinationsCell.textContent = data.totalCombinations.toLocaleString('pt-BR');
                     combinationsCell.classList.add('text-primary', 'dark:text-blue-400');
