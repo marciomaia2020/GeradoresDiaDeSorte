@@ -47,6 +47,12 @@
         .spinner {
             animation: spin 1s linear infinite;
         }
+
+        /* Highlight for search results */
+        .highlight {
+            background-color: rgba(93, 92, 222, 0.2);
+            border: 1px solid rgba(93, 92, 222, 0.5);
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
@@ -84,6 +90,17 @@
                     <button id="ver-estatisticas" disabled class="bg-gray-400 text-white px-4 py-2 rounded-lg font-medium opacity-70 cursor-not-allowed">
                         Ver Estatísticas
                     </button>
+                </div>
+                
+                <div class="search-container mb-6">
+                    <div class="relative">
+                        <input type="text" id="search-input" placeholder="Pesquisar combinações..." 
+                               class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-10 text-base">
+                        <button id="clear-search" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hidden">
+                            &times;
+                        </button>
+                    </div>
+                    <div id="search-results" class="text-sm text-gray-600 dark:text-gray-400 mt-2 hidden"></div>
                 </div>
                 
                 <div class="results">
@@ -486,7 +503,9 @@
 
         // Variáveis de controle da interface
         let todasCombinacoes = [];
+        let combinacoesFiltradas = [];
         let paginaAtual = 1;
+        let pesquisaAtiva = false;
         const itensPorPagina = 30;
 
         // Elementos DOM
@@ -499,6 +518,11 @@
         const proximoBtn = document.getElementById('proximo');
         const paginaInfo = document.getElementById('pagina-info');
         const verEstatisticasBtn = document.getElementById('ver-estatisticas');
+
+        // Elementos de busca
+        const searchInput = document.getElementById('search-input');
+        const clearSearchBtn = document.getElementById('clear-search');
+        const searchResults = document.getElementById('search-results');
 
         // Elementos de navegação por abas
         const tabs = {
@@ -548,23 +572,77 @@
 
         // Funções de interface
 
+        // Função para realizar a pesquisa
+        function pesquisarCombinacoes(termo) {
+            if (!termo.trim()) {
+                // Se o termo de pesquisa estiver vazio, mostrar todas as combinações
+                pesquisaAtiva = false;
+                combinacoesFiltradas = [...todasCombinacoes];
+                paginaAtual = 1;
+                searchResults.classList.add('hidden');
+                clearSearchBtn.classList.add('hidden');
+                mostrarCombinacoes();
+                return;
+            }
+
+            // Ativar a pesquisa
+            pesquisaAtiva = true;
+            clearSearchBtn.classList.remove('hidden');
+            
+            // Filtrar combinações com base no termo
+            combinacoesFiltradas = todasCombinacoes.filter(comb => {
+                const combStr = comb.join(',');
+                return combStr.includes(termo);
+            });
+            
+            // Atualizar a interface
+            paginaAtual = 1;
+            
+            // Mostrar resultados
+            searchResults.classList.remove('hidden');
+            searchResults.textContent = `Encontradas ${combinacoesFiltradas.length} combinações contendo "${termo}"`;
+            
+            mostrarCombinacoes();
+        }
+
+        // Função para limpar a pesquisa
+        function limparPesquisa() {
+            searchInput.value = '';
+            pesquisaAtiva = false;
+            combinacoesFiltradas = [...todasCombinacoes];
+            paginaAtual = 1;
+            searchResults.classList.add('hidden');
+            clearSearchBtn.classList.add('hidden');
+            mostrarCombinacoes();
+        }
+
         function mostrarCombinacoes() {
             combinacoesContainer.innerHTML = '';
             
+            // Usar a lista filtrada ou a lista completa
+            const listaCombinacoes = pesquisaAtiva ? combinacoesFiltradas : todasCombinacoes;
+            
             const inicio = (paginaAtual - 1) * itensPorPagina;
-            const fim = Math.min(inicio + itensPorPagina, todasCombinacoes.length);
+            const fim = Math.min(inicio + itensPorPagina, listaCombinacoes.length);
             
             for (let i = inicio; i < fim; i++) {
                 const combDiv = document.createElement('div');
                 combDiv.classList.add('bg-gray-100', 'dark:bg-gray-700', 'rounded-lg', 'p-2', 'text-center', 'font-mono');
-                combDiv.textContent = todasCombinacoes[i].join(',');
+                
+                // Adicionar classe de destaque se a pesquisa estiver ativa
+                if (pesquisaAtiva) {
+                    combDiv.classList.add('highlight');
+                }
+                
+                combDiv.textContent = listaCombinacoes[i].join(',');
                 combinacoesContainer.appendChild(combDiv);
             }
             
             // Atualizar informações de paginação
-            paginaInfo.textContent = `Página ${paginaAtual} de ${Math.ceil(todasCombinacoes.length / itensPorPagina)}`;
+            const totalPaginas = Math.ceil(listaCombinacoes.length / itensPorPagina);
+            paginaInfo.textContent = `Página ${paginaAtual} de ${totalPaginas > 0 ? totalPaginas : 1}`;
             anteriorBtn.disabled = paginaAtual === 1;
-            proximoBtn.disabled = paginaAtual === Math.ceil(todasCombinacoes.length / itensPorPagina);
+            proximoBtn.disabled = paginaAtual === totalPaginas || listaCombinacoes.length === 0;
             
             // Habilitar o botão de estatísticas quando houver combinações
             if (verEstatisticasBtn) {
@@ -840,9 +918,11 @@
             
             // Gerar todas as combinações
             todasCombinacoes = gerarCombinacoes(digitos, tamanho);
+            combinacoesFiltradas = [...todasCombinacoes];
             
-            // Resetar paginação
+            // Resetar paginação e pesquisa
             paginaAtual = 1;
+            limparPesquisa();
             
             // Atualizar interface
             resultadoTitulo.textContent = `Combinações com ${tamanho} dígito(s)`;
@@ -852,6 +932,13 @@
             mostrarCombinacoes();
         });
 
+        // Event listeners para a funcionalidade de busca
+        searchInput.addEventListener('input', (e) => {
+            pesquisarCombinacoes(e.target.value);
+        });
+
+        clearSearchBtn.addEventListener('click', limparPesquisa);
+
         anteriorBtn.addEventListener('click', () => {
             if (paginaAtual > 1) {
                 paginaAtual--;
@@ -860,7 +947,8 @@
         });
 
         proximoBtn.addEventListener('click', () => {
-            if (paginaAtual < Math.ceil(todasCombinacoes.length / itensPorPagina)) {
+            const listaCombinacoes = pesquisaAtiva ? combinacoesFiltradas : todasCombinacoes;
+            if (paginaAtual < Math.ceil(listaCombinacoes.length / itensPorPagina)) {
                 paginaAtual++;
                 mostrarCombinacoes();
             }
