@@ -245,13 +245,22 @@
             const dezenas = resultado.dezenasSorteadasOrdemSorteio || resultado.listaDezenas || [];
             const mesSorte = resultado.mesSorte || resultado.mesSorteado || '';
             
+            // Converter dezenas para números se vierem como strings
+            const dezenasNumeros = dezenas.map(d => parseInt(d));
+            
+            console.log('Dezenas sorteadas:', dezenasNumeros);
+            console.log('Mês sorte:', mesSorte);
+            
             jogosAnalisados = jogosFixos.map((jogo, index) => {
                 const numerosJogo = jogo.slice(0, 7);
                 const mesJogo = jogo[7];
                 
-                const acertosNumeros = numerosJogo.filter(num => dezenas.includes(num)).length;
+                const numerosAcertados = numerosJogo.filter(num => dezenasNumeros.includes(num));
+                const acertosNumeros = numerosAcertados.length;
                 const acertoMes = mesJogo === mesSorte ? 1 : 0;
                 const totalAcertos = acertosNumeros + acertoMes;
+                
+                console.log(`Jogo ${index + 1}:`, numerosJogo, 'vs', dezenasNumeros, '= acertos:', numerosAcertados);
                 
                 return {
                     id: index + 1,
@@ -260,7 +269,7 @@
                     acertosNumeros,
                     acertoMes,
                     totalAcertos,
-                    numerosAcertados: numerosJogo.filter(num => dezenas.includes(num)),
+                    numerosAcertados,
                     mesAcertado: acertoMes > 0
                 };
             });
