@@ -96,6 +96,102 @@
             </div>
         </div>
 
+        <!-- Resumo Estatístico -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-lg font-semibold mb-4">📊 Resumo Estatístico das Combinações</h2>
+            
+            <div id="statistics-summary" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-red-600 dark:text-red-400" id="stat-insuficiente">-</div>
+                    <div class="text-sm text-red-700 dark:text-red-300">Insuficientes</div>
+                    <div class="text-xs text-red-600 dark:text-red-400 mt-1">(0 jogos)</div>
+                </div>
+                
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400" id="stat-baixo">-</div>
+                    <div class="text-sm text-yellow-700 dark:text-yellow-300">Baixo Volume</div>
+                    <div class="text-xs text-yellow-600 dark:text-yellow-400 mt-1">(1-99 jogos)</div>
+                </div>
+                
+                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" id="stat-medio">-</div>
+                    <div class="text-sm text-blue-700 dark:text-blue-300">Médio Volume</div>
+                    <div class="text-xs text-blue-600 dark:text-blue-400 mt-1">(100-999 jogos)</div>
+                </div>
+                
+                <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-green-600 dark:text-green-400" id="stat-alto">-</div>
+                    <div class="text-sm text-green-700 dark:text-green-300">Alto Volume</div>
+                    <div class="text-xs text-green-600 dark:text-green-400 mt-1">(1000+ jogos)</div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                    <h3 class="font-semibold mb-3 text-primary dark:text-blue-400">🎯 Volumes por Números Válidos:</h3>
+                    <div class="space-y-2 text-sm" id="specific-volumes">
+                        <div class="flex justify-between">
+                            <span>16 números → 11.440 jogos:</span>
+                            <span class="font-bold text-green-600 dark:text-green-400" id="vol-16">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>15 números → 6.435 jogos:</span>
+                            <span class="font-bold text-green-600 dark:text-green-400" id="vol-15">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>14 números → 3.432 jogos:</span>
+                            <span class="font-bold text-blue-600 dark:text-blue-400" id="vol-14">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>11 números → 330 jogos:</span>
+                            <span class="font-bold text-blue-600 dark:text-blue-400" id="vol-11">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>10 números → 120 jogos:</span>
+                            <span class="font-bold text-yellow-600 dark:text-yellow-400" id="vol-10">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>9 números → 36 jogos:</span>
+                            <span class="font-bold text-yellow-600 dark:text-yellow-400" id="vol-9">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>≤ 6 números → Insuficiente:</span>
+                            <span class="font-bold text-red-500" id="vol-insuf">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                    <h3 class="font-semibold mb-3 text-primary dark:text-blue-400">🏆 Destaques:</h3>
+                    <div class="space-y-2 text-sm" id="highlights">
+                        <div class="flex justify-between">
+                            <span>Maior volume:</span>
+                            <span class="font-bold text-green-600 dark:text-green-400" id="max-volume">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Menor volume (válido):</span>
+                            <span class="font-bold text-blue-600 dark:text-blue-400" id="min-volume">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Média de jogos:</span>
+                            <span class="font-bold text-purple-600 dark:text-purple-400" id="avg-volume">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Total combinações:</span>
+                            <span class="font-bold" id="total-252">252</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
+                <p class="text-sm text-blue-800 dark:text-blue-200">
+                    <strong>💡 Dica:</strong> Use o filtro acima para encontrar combinações com o número ideal de jogos para sua estratégia.
+                    Volumes menores são mais econômicos, volumes maiores oferecem mais cobertura.
+                </p>
+            </div>
+        </div>
+
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
             <h2 class="text-lg font-semibold mb-3">Escolha 5 dígitos (0-9):</h2>
             
@@ -762,6 +858,98 @@
             return allCombinations;
         }
         
+        // Função para atualizar as estatísticas do resumo
+        function updateStatistics(combinationsData) {
+            // Categorizar as combinações
+            let insuficiente = 0;
+            let baixo = 0;
+            let medio = 0;
+            let alto = 0;
+            
+            // Contadores para números válidos específicos
+            const specificValidNumbers = {
+                16: 0,    // 11.440 jogos
+                15: 0,    // 6.435 jogos
+                14: 0,    // 3.432 jogos
+                11: 0,    // 330 jogos
+                10: 0,    // 120 jogos
+                9: 0,     // 36 jogos
+                insuf: 0  // ≤ 6 números = insuficiente
+            };
+            
+            let maxVolume = 0;
+            let minVolume = Infinity;
+            let totalVolume = 0;
+            let validCombinations = 0;
+            
+            combinationsData.forEach(data => {
+                const volume = data.totalCombinations;
+                const validCount = data.validNumbersCount;
+                
+                if (volume === 0) {
+                    insuficiente++;
+                } else if (volume < 100) {
+                    baixo++;
+                    validCombinations++;
+                    totalVolume += volume;
+                } else if (volume < 1000) {
+                    medio++;
+                    validCombinations++;
+                    totalVolume += volume;
+                } else {
+                    alto++;
+                    validCombinations++;
+                    totalVolume += volume;
+                }
+                
+                // Atualizar máximo e mínimo
+                if (volume > 0) {
+                    maxVolume = Math.max(maxVolume, volume);
+                    minVolume = Math.min(minVolume, volume);
+                }
+                
+                // Contabilizar combinações por número de números válidos
+                if (validCount === 16) {
+                    specificValidNumbers[16]++;
+                } else if (validCount === 15) {
+                    specificValidNumbers[15]++;
+                } else if (validCount === 14) {
+                    specificValidNumbers[14]++;
+                } else if (validCount === 11) {
+                    specificValidNumbers[11]++;
+                } else if (validCount === 10) {
+                    specificValidNumbers[10]++;
+                } else if (validCount === 9) {
+                    specificValidNumbers[9]++;
+                } else if (validCount <= 6) {
+                    specificValidNumbers.insuf++;
+                }
+            });
+            
+            // Calcular média
+            const avgVolume = validCombinations > 0 ? Math.round(totalVolume / validCombinations) : 0;
+            
+            // Atualizar elementos na UI
+            document.getElementById('stat-insuficiente').textContent = insuficiente;
+            document.getElementById('stat-baixo').textContent = baixo;
+            document.getElementById('stat-medio').textContent = medio;
+            document.getElementById('stat-alto').textContent = alto;
+            
+            // Volumes específicos por números válidos
+            document.getElementById('vol-16').textContent = specificValidNumbers[16] + ' combinações';
+            document.getElementById('vol-15').textContent = specificValidNumbers[15] + ' combinações';
+            document.getElementById('vol-14').textContent = specificValidNumbers[14] + ' combinações';
+            document.getElementById('vol-11').textContent = specificValidNumbers[11] + ' combinações';
+            document.getElementById('vol-10').textContent = specificValidNumbers[10] + ' combinações';
+            document.getElementById('vol-9').textContent = specificValidNumbers[9] + ' combinações';
+            document.getElementById('vol-insuf').textContent = specificValidNumbers.insuf + ' combinações';
+            
+            // Destaques
+            document.getElementById('max-volume').textContent = maxVolume > 0 ? maxVolume.toLocaleString('pt-BR') + ' jogos' : '-';
+            document.getElementById('min-volume').textContent = minVolume < Infinity ? minVolume.toLocaleString('pt-BR') + ' jogos' : '-';
+            document.getElementById('avg-volume').textContent = avgVolume > 0 ? avgVolume.toLocaleString('pt-BR') + ' jogos' : '-';
+        }
+        
         // Função para popular a tabela com todas as combinações
         function populateAllCombinationsTable() {
             const tableBody = document.getElementById('all-combinations-table-body');
@@ -807,6 +995,9 @@
             
             // Ordenar pelo maior número de combinações
             combinationsData.sort((a, b) => b.totalCombinations - a.totalCombinations);
+            
+            // Atualizar estatísticas do resumo
+            updateStatistics(combinationsData);
             
             // Função para filtrar e exibir dados
             function displayFilteredData(data = combinationsData) {
