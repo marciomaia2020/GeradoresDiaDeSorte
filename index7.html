@@ -210,14 +210,8 @@
                 <p>Combinações possíveis: <span id="preview-combinations" class="font-bold text-primary dark:text-blue-400">0</span></p>
             </div>
             
-            <div class="grid grid-cols-7 gap-2 mb-6">
-                <!-- Checkboxes para os dígitos 0-9 -->
-                <div v-for="digit in 10" class="flex items-center justify-center">
-                    <label class="flex items-center space-x-2 cursor-pointer">
-                        <input type="checkbox" id="digit-${digit}" value="${digit}" class="digit-checkbox w-5 h-5 accent-primary text-primary focus:ring-primary">
-                        <span class="text-lg">${digit}</span>
-                    </label>
-                </div>
+            <div class="grid grid-cols-7 gap-2 mb-6" id="digits-checkboxes">
+                <!-- Checkboxes serão criados dinamicamente via JavaScript -->
             </div>
             
             <!-- Seletor de Mês da Sorte -->
@@ -308,14 +302,6 @@
         
         // Variável global para armazenar as combinações atuais
         let currentCombinations = [];
-        
-        // Inicializar os checkboxes para os dígitos 0-9
-        for (let i = 0; i <= 9; i++) {
-            const checkbox = document.getElementById(`digit-${i}`);
-            if (checkbox) {
-                checkbox.value = i;
-            }
-        }
         
         // Função para gerar todas as combinações válidas para o Dia de Sorte (números de 1 a 31)
         function generateCombinations(digits) {
@@ -766,7 +752,7 @@
             const zeroCheckbox = document.getElementById('digit-0');
             
             // Se o dígito 0 é obrigatório, marcar e desabilitar
-            if (zeroRequired) {
+            if (zeroRequired && zeroCheckbox) {
                 zeroCheckbox.checked = true;
                 zeroCheckbox.disabled = true;
                 zeroCheckbox.parentElement.classList.add('opacity-75');
@@ -777,7 +763,7 @@
                     zeroMsg.id = 'zero-required-message';
                     zeroMsg.className = 'text-xs text-amber-600 dark:text-amber-400 mt-1 mb-2';
                     zeroMsg.textContent = 'O dígito 0 é necessário para formar números como 01, 02, etc.';
-                    document.querySelector('.grid.grid-cols-7').before(zeroMsg);
+                    document.querySelector('#digits-checkboxes').before(zeroMsg);
                 }
             }
             
@@ -810,28 +796,30 @@
             const previewValidNumbers = document.getElementById('preview-valid-numbers');
             const previewCombinations = document.getElementById('preview-combinations');
             
-            previewDigitCount.textContent = selectedDigits.length;
+            if (previewDigitCount) previewDigitCount.textContent = selectedDigits.length;
             
             if (selectedDigits.length === 0) {
-                previewSelectedDigits.textContent = 'Nenhum';
-                previewValidNumbers.textContent = '0';
-                previewCombinations.textContent = '0';
+                if (previewSelectedDigits) previewSelectedDigits.textContent = 'Nenhum';
+                if (previewValidNumbers) previewValidNumbers.textContent = '0';
+                if (previewCombinations) previewCombinations.textContent = '0';
                 return;
             }
             
-            previewSelectedDigits.textContent = selectedDigits.join(', ');
+            if (previewSelectedDigits) previewSelectedDigits.textContent = selectedDigits.join(', ');
             
             // Calcular estatísticas
             const stats = calculateCombinationStats(selectedDigits);
             
             // Atualizar números válidos
-            previewValidNumbers.textContent = stats.validNumbers.length;
+            if (previewValidNumbers) previewValidNumbers.textContent = stats.validNumbers.length;
             
             // Atualizar combinações possíveis
-            if (stats.totalCombinations) {
-                previewCombinations.textContent = stats.totalCombinations.toLocaleString('pt-BR');
-            } else {
-                previewCombinations.textContent = '0';
+            if (previewCombinations) {
+                if (stats.totalCombinations) {
+                    previewCombinations.textContent = stats.totalCombinations.toLocaleString('pt-BR');
+                } else {
+                    previewCombinations.textContent = '0';
+                }
             }
         }
         
@@ -930,24 +918,29 @@
             const avgVolume = validCombinations > 0 ? Math.round(totalVolume / validCombinations) : 0;
             
             // Atualizar elementos na UI
-            document.getElementById('stat-insuficiente').textContent = insuficiente;
-            document.getElementById('stat-baixo').textContent = baixo;
-            document.getElementById('stat-medio').textContent = medio;
-            document.getElementById('stat-alto').textContent = alto;
+            const statElements = {
+                'stat-insuficiente': insuficiente,
+                'stat-baixo': baixo,
+                'stat-medio': medio,
+                'stat-alto': alto,
+                'vol-16': specificValidNumbers[16] + ' combinações',
+                'vol-15': specificValidNumbers[15] + ' combinações',
+                'vol-14': specificValidNumbers[14] + ' combinações',
+                'vol-11': specificValidNumbers[11] + ' combinações',
+                'vol-10': specificValidNumbers[10] + ' combinações',
+                'vol-9': specificValidNumbers[9] + ' combinações',
+                'vol-insuf': specificValidNumbers.insuf + ' combinações',
+                'max-volume': maxVolume > 0 ? maxVolume.toLocaleString('pt-BR') + ' jogos' : '-',
+                'min-volume': minVolume < Infinity ? minVolume.toLocaleString('pt-BR') + ' jogos' : '-',
+                'avg-volume': avgVolume > 0 ? avgVolume.toLocaleString('pt-BR') + ' jogos' : '-'
+            };
             
-            // Volumes específicos por números válidos
-            document.getElementById('vol-16').textContent = specificValidNumbers[16] + ' combinações';
-            document.getElementById('vol-15').textContent = specificValidNumbers[15] + ' combinações';
-            document.getElementById('vol-14').textContent = specificValidNumbers[14] + ' combinações';
-            document.getElementById('vol-11').textContent = specificValidNumbers[11] + ' combinações';
-            document.getElementById('vol-10').textContent = specificValidNumbers[10] + ' combinações';
-            document.getElementById('vol-9').textContent = specificValidNumbers[9] + ' combinações';
-            document.getElementById('vol-insuf').textContent = specificValidNumbers.insuf + ' combinações';
-            
-            // Destaques
-            document.getElementById('max-volume').textContent = maxVolume > 0 ? maxVolume.toLocaleString('pt-BR') + ' jogos' : '-';
-            document.getElementById('min-volume').textContent = minVolume < Infinity ? minVolume.toLocaleString('pt-BR') + ' jogos' : '-';
-            document.getElementById('avg-volume').textContent = avgVolume > 0 ? avgVolume.toLocaleString('pt-BR') + ' jogos' : '-';
+            Object.keys(statElements).forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = statElements[id];
+                }
+            });
         }
         
         // Função para popular a tabela com todas as combinações
@@ -1034,7 +1027,8 @@
                 tableBody.innerHTML = '';
                 
                 // Atualizar contagem total
-                document.getElementById('total-digit-combinations').textContent = filteredData.length;
+                const totalElement = document.getElementById('total-digit-combinations');
+                if (totalElement) totalElement.textContent = filteredData.length;
                 
                 // Preencher tabela com dados filtrados
                 filteredData.forEach((data, displayIndex) => {
@@ -1106,7 +1100,8 @@
                         updatePreviewStats();
                         
                         // Rolar para a seção de seleção
-                        document.querySelector('#preview-stats').scrollIntoView({ behavior: 'smooth' });
+                        const previewStats = document.querySelector('#preview-stats');
+                        if (previewStats) previewStats.scrollIntoView({ behavior: 'smooth' });
                     });
                     
                     actionsDiv.appendChild(selectBtn);
@@ -1156,15 +1151,11 @@
             displayFilteredData();
         }
         
-        // Função para preencher a tabela de referência (mantida para compatibilidade)
-        function populateReferenceTable() {
-            // Esta função agora é substituída pela populateAllCombinationsTable
-            // Mas mantemos para não quebrar o código existente
-        }
-        
         // Preencher os checkboxes no HTML e adicionar eventos
         window.onload = function() {
-            const checkboxesContainer = document.querySelector('.grid.grid-cols-7');
+            const checkboxesContainer = document.querySelector('#digits-checkboxes');
+            if (!checkboxesContainer) return;
+            
             checkboxesContainer.innerHTML = '';
             
             for (let i = 0; i <= 9; i++) {
@@ -1196,31 +1187,37 @@
             
             // Adicionar evento para o botão "Gerar Todas"
             const generateAllBtn = document.getElementById('generate-all-btn');
-            generateAllBtn.addEventListener('click', () => {
-                // Mostrar loading na tabela
-                const tableBody = document.getElementById('all-combinations-table-body');
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="py-8 text-center">
-                            <div class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
-                            <p class="mt-2 text-sm">Gerando todas as combinações de 7 dígitos...</p>
-                            <p class="mt-1 text-xs text-gray-500">Calculando 120 combinações possíveis...</p>
-                        </td>
-                    </tr>
-                `;
-                
-                // Processar em background para não travar a UI
-                setTimeout(() => {
-                    populateAllCombinationsTable();
-                }, 100);
-            });
+            if (generateAllBtn) {
+                generateAllBtn.addEventListener('click', () => {
+                    // Mostrar loading na tabela
+                    const tableBody = document.getElementById('all-combinations-table-body');
+                    if (tableBody) {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="5" class="py-8 text-center">
+                                    <div class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
+                                    <p class="mt-2 text-sm">Gerando todas as combinações de 7 dígitos...</p>
+                                    <p class="mt-1 text-xs text-gray-500">Calculando 120 combinações possíveis...</p>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    
+                    // Processar em background para não travar a UI
+                    setTimeout(() => {
+                        populateAllCombinationsTable();
+                    }, 100);
+                });
+            }
             
             // Configurar evento de busca em tempo real
-            searchInput.addEventListener('input', (e) => {
-                if (currentCombinations.length > 0) {
-                    displayCombinations(currentCombinations, e.target.value);
-                }
-            });
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    if (currentCombinations.length > 0) {
+                        displayCombinations(currentCombinations, e.target.value);
+                    }
+                });
+            }
             
             // Gerar automaticamente todas as combinações ao carregar
             setTimeout(() => {
