@@ -20,6 +20,26 @@
             darkMode: 'class'
         }
     </script>
+	<style>
+    menu {
+        display: flex;
+        gap: 10px; /* espaço entre os itens (ajustável) */
+		justify-content: center; /* Centraliza horizontalmente */
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        align-items: center;
+    }
+
+    menu li::after {
+        content: " | ";
+        margin: 0 5px;
+    }
+
+    menu li:last-child::after {
+        content: ""; /* remove o último | */
+    }
+</style>
 </head>
 <body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
     <!-- Detecção de tema escuro -->
@@ -47,7 +67,6 @@
                     
 					
 					<div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">ORDEM DE ANALISE 1</div>
-					<a href="index2.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">B - Todas combinações (5d)</a>
 					<a href="./ResultadosDigitosDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">A - Resultados Digitos </a>
 					<a href="./AnalisePorCombinacao/" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">1- Análise por Combinação</a>
                     <a href="./AnalisadorCombinacoesJogos/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">2 - Analisador Combinações Jogos</a>
@@ -90,11 +109,31 @@
                 </div>
             </div>
         </div>
+		
+		
 
         <!-- Conteúdo principal -->
         <div class="flex-1 p-4">
-            <h1 class="text-2xl font-bold text-center mb-6">Gerador de Combinações - Dia de Sorte (5d)<a href="index2.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Todas combinações (5d)</a></h1>
+            <h1 class="text-2xl font-bold text-center mb-6">Gerador de Combinações - Dia de Sorte (5d)</h1>
             
+			<hr />
+				<menu>
+					<li><a href="index1.html/" target="_blank">1</a></li>
+					<li><a href="index2.html/" target="_blank">2</a></li>
+					<li><a href="index3.html/" target="_blank">3</a></li>
+					<li><a href="index4.html/" target="_blank">4</a></li>
+					<li><a href="index5.html" target="_blank">5</a></li>
+					<li><a href="index6.html" target="_blank">6</a></li>
+					<li><a href="index7.html/" target="_blank">7</a></li>
+					<li><a href="index8.html/" target="_blank">8</a></li>
+					<li><a href="index9.html/" target="_blank">9</a></li>
+					<li><a href="index10.html/" target="_blank">10</a></li>
+				</menu>
+			<hr />
+			
+			
+			
+			
             <!-- Tabela de referência de combinações -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
                 <h2 class="text-lg font-semibold mb-3">Tabela de Referência:</h2>
