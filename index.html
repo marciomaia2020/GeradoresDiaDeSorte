@@ -20,26 +20,48 @@
             darkMode: 'class'
         }
     </script>
-	<style>
-    menu {
-        display: flex;
-        gap: 10px; /* espaço entre os itens (ajustável) */
-		justify-content: center; /* Centraliza horizontalmente */
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        align-items: center;
-    }
+<style>
+	menu {
+		display: flex;
+		gap: 10px;
+		justify-content: center;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		align-items: center;
+	}
 
-    menu li::after {
-        content: " | ";
-        margin: 0 5px;
-    }
+	menu li::after {
+		content: " | ";
+		margin: 0 5px;
+	}
 
-    menu li:last-child::after {
-        content: ""; /* remove o último | */
-    }
+	menu li:last-child::after {
+		content: "";
+	}
+
+	menu a {
+		text-decoration: none;
+		color: black;
+		padding: 5px 10px;
+		border-radius: 5px;
+		transition: background-color 0.3s ease;
+	}
+
+	menu a:hover {
+		animation: alternaCores 1s infinite alternate;
+	}
+
+	@keyframes alternaCores {
+		0% {
+			background-color: #fff7e6;
+		}
+		100% {
+			background-color: #ffc34d;
+		}
+	}
 </style>
+
 </head>
 <body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
     <!-- Detecção de tema escuro -->
@@ -118,7 +140,6 @@
             
 			<hr />
 				<menu>
-				    <li><a href="index-resumo-geral.html/" target="_blank">Resumo Geral</a></li>
 					<li><a href="index10.html/" target="_blank">10</a></li>
 					<li><a href="index9.html/" target="_blank">9</a></li>
 					<li><a href="index8.html/" target="_blank">8</a></li>
@@ -129,6 +150,7 @@
 					<li><a href="index3.html/" target="_blank">3</a></li>
 					<li><a href="index2.html/" target="_blank">2</a></li>
 					<li><a href="index1.html/" target="_blank">1</a></li>
+					<li><a href="index-resumo-geral.html/" target="_blank">Resumo Geral</a></li>
 				</menu>
 			<hr />
 			
