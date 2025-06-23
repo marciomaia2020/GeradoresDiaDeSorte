@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Completa - Combinações de 1 a 10 Dígitos - Dia de Sorte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE'
+                    }
+                }
+            },
+            darkMode: 'class'
+        }
+    </script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
+    <!-- Detecção de tema escuro -->
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+
+    <!-- Header -->
+    <div class="gradient-bg text-white py-12">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">📊 Análise Completa</h1>
+            <h2 class="text-2xl md:text-3xl font-semibold mb-6">Combinações de 1 a 10 Dígitos - Dia de Sorte</h2>
+            <p class="text-lg opacity-90 max-w-3xl mx-auto">
+                Análise estatística completa de todas as configurações possíveis para otimizar suas estratégias no jogo Dia de Sorte
+            </p>
+        </div>
+    </div>
+
+    <!-- Resumo Geral -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-6 text-center">🎯 Resumo Executivo</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <div class="text-3xl font-bold text-green-600 dark:text-green-400" id="best-config">-</div>
+                    <div class="text-sm text-green-700 dark:text-green-300">Melhor Configuração</div>
+                    <div class="text-xs text-green-600 dark:text-green-400 mt-1">Maior volume de jogos</div>
+                </div>
+                
+                <div class="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <div class="text-3xl font-bold text-blue-600 dark:text-blue-400" id="optimal-range">-</div>
+                    <div class="text-sm text-blue-700 dark:text-blue-300">Faixa Ideal</div>
+                    <div class="text-xs text-blue-600 dark:text-blue-400 mt-1">Melhor custo-benefício</div>
+                </div>
+                
+                <div class="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <div class="text-3xl font-bold text-purple-600 dark:text-purple-400" id="total-possibilities">1023</div>
+                    <div class="text-sm text-purple-700 dark:text-purple-300">Total de Configurações</div>
+                    <div class="text-xs text-purple-600 dark:text-purple-400 mt-1">Soma de todas as possibilidades</div>
+                </div>
+            </div>
+
+            <!-- Gráfico Comparativo -->
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold mb-4 text-center">📈 Gráfico Comparativo - Volume de Combinações</h4>
+                <div class="h-64 md:h-80">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Análises Detalhadas por Configuração -->
+        <div id="detailed-analysis">
+            <!-- Será preenchido dinamicamente -->
+        </div>
+
+        <!-- Recomendações -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mt-8">
+            <h3 class="text-2xl font-bold mb-6 text-center">💡 Recomendações Estratégicas</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <h4 class="font-bold text-green-800 dark:text-green-200 mb-3">🎯 Para Máxima Cobertura:</h4>
+                    <ul class="text-sm text-green-700 dark:text-green-300 space-y-2">
+                        <li>• <strong>5-6 dígitos:</strong> Cobertura completa de todos os números 1-31</li>
+                        <li>• <strong>Volume máximo:</strong> Milhões de combinações possíveis</li>
+                        <li>• <strong>Ideal para:</strong> Estratégias agressivas e orçamentos maiores</li>
+                    </ul>
+                </div>
+                
+                <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <h4 class="font-bold text-blue-800 dark:text-blue-200 mb-3">⚖️ Para Equilíbrio:</h4>
+                    <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-2">
+                        <li>• <strong>3-4 dígitos:</strong> Boa cobertura com volume gerenciável</li>
+                        <li>• <strong>Volume médio:</strong> Milhares a centenas de milhares de jogos</li>
+                        <li>• <strong>Ideal para:</strong> Estratégias moderadas e orçamentos médios</li>
+                    </ul>
+                </div>
+                
+                <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <h4 class="font-bold text-yellow-800 dark:text-yellow-200 mb-3">🎲 Para Iniciantes:</h4>
+                    <ul class="text-sm text-yellow-700 dark:text-yellow-300 space-y-2">
+                        <li>• <strong>2-3 dígitos:</strong> Simplicidade com alguma variedade</li>
+                        <li>• <strong>Volume baixo:</strong> Dezenas a centenas de jogos</li>
+                        <li>• <strong>Ideal para:</strong> Primeiros testes e orçamentos limitados</li>
+                    </ul>
+                </div>
+                
+                <div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <h4 class="font-bold text-red-800 dark:text-red-200 mb-3">⚠️ Não Recomendado:</h4>
+                    <ul class="text-sm text-red-700 dark:text-red-300 space-y-2">
+                        <li>• <strong>1 dígito:</strong> Cobertura muito limitada</li>
+                        <li>• <strong>9-10 dígitos:</strong> Redundância desnecessária</li>
+                        <li>• <strong>Problema:</strong> Ineficiência no uso dos recursos</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados das configurações de 1 a 10 dígitos
+        const configurations = [
+            { digits: 1, totalCombinations: 10, name: "1 Dígito" },
+            { digits: 2, totalCombinations: 45, name: "2 Dígitos" },
+            { digits: 3, totalCombinations: 120, name: "3 Dígitos" },
+            { digits: 4, totalCombinations: 210, name: "4 Dígitos" },
+            { digits: 5, totalCombinations: 252, name: "5 Dígitos" },
+            { digits: 6, totalCombinations: 210, name: "6 Dígitos" },
+            { digits: 7, totalCombinations: 120, name: "7 Dígitos" },
+            { digits: 8, totalCombinations: 45, name: "8 Dígitos" },
+            { digits: 9, totalCombinations: 10, name: "9 Dígitos" },
+            { digits: 10, totalCombinations: 1, name: "10 Dígitos" }
+        ];
+
+        // Função para verificar se todos os dígitos de um número estão no conjunto permitido
+        function containsOnlyAllowedDigits(num, allowedDigits) {
+            const numStr = num.toString();
+            return numStr.split('').every(digit => allowedDigits.includes(parseInt(digit)));
+        }
+
+        // Função para calcular estatísticas detalhadas para uma configuração
+        function calculateDetailedStats(digitCount) {
+            // Gerar todas as combinações de dígitos
+            const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+            const allDigitCombinations = generateDigitCombinations(digits, digitCount);
+            
+            let totalGameCombinations = 0;
+            let validConfigurations = 0;
+            let insufficientConfigurations = 0;
+            let lowVolumeConfigurations = 0;
+            let mediumVolumeConfigurations = 0;
+            let highVolumeConfigurations = 0;
+            
+            const volumeDistribution = {
+                16: 0, 15: 0, 14: 0, 13: 0, 12: 0, 11: 0, 10: 0, 9: 0, insuf: 0
+            };
+            
+            let maxVolume = 0;
+            let minVolume = Infinity;
+            
+            allDigitCombinations.forEach(digitSet => {
+                // Calcular números válidos para esta combinação de dígitos
+                const validNumbers = [];
+                for (let i = 1; i <= 31; i++) {
+                    if (containsOnlyAllowedDigits(i, digitSet)) {
+                        validNumbers.push(i);
+                    }
+                }
+                
+                // Calcular combinações de jogos possíveis
+                let gameCombinations = 0;
+                if (validNumbers.length >= 7) {
+                    gameCombinations = combinations(validNumbers.length, 7);
+                    validConfigurations++;
+                    totalGameCombinations += gameCombinations;
+                    
+                    // Categorizar por volume
+                    if (gameCombinations < 100) {
+                        lowVolumeConfigurations++;
+                    } else if (gameCombinations < 1000) {
+                        mediumVolumeConfigurations++;
+                    } else {
+                        highVolumeConfigurations++;
+                    }
+                    
+                    // Atualizar min/max
+                    maxVolume = Math.max(maxVolume, gameCombinations);
+                    minVolume = Math.min(minVolume, gameCombinations);
+                } else {
+                    insufficientConfigurations++;
+                }
+                
+                // Contar por número de números válidos
+                if (validNumbers.length <= 6) {
+                    volumeDistribution.insuf++;
+                } else if (volumeDistribution[validNumbers.length] !== undefined) {
+                    volumeDistribution[validNumbers.length]++;
+                }
+            });
+            
+            const avgVolume = validConfigurations > 0 ? Math.round(totalGameCombinations / validConfigurations) : 0;
+            
+            return {
+                digitCount,
+                totalDigitCombinations: allDigitCombinations.length,
+                validConfigurations,
+                insufficientConfigurations,
+                lowVolumeConfigurations,
+                mediumVolumeConfigurations,
+                highVolumeConfigurations,
+                totalGameCombinations,
+                avgVolume,
+                maxVolume: maxVolume > 0 ? maxVolume : 0,
+                minVolume: minVolume < Infinity ? minVolume : 0,
+                volumeDistribution
+            };
+        }
+
+        // Função para gerar combinações de dígitos
+        function generateDigitCombinations(arr, k) {
+            const combinations = [];
+            
+            function backtrack(start, current) {
+                if (current.length === k) {
+                    combinations.push([...current]);
+                    return;
+                }
+                
+                for (let i = start; i < arr.length; i++) {
+                    current.push(arr[i]);
+                    backtrack(i + 1, current);
+                    current.pop();
+                }
+            }
+            
+            backtrack(0, []);
+            return combinations;
+        }
+
+        // Função para calcular combinações C(n,r)
+        function combinations(n, r) {
+            if (r > n) return 0;
+            if (r === 0 || r === n) return 1;
+            
+            function factorial(num) {
+                if (num <= 1) return 1;
+                return num * factorial(num - 1);
+            }
+            
+            return factorial(n) / (factorial(r) * factorial(n - r));
+        }
+
+        // Função para criar o gráfico comparativo
+        function createComparisonChart() {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            
+            // Calcular estatísticas básicas para cada configuração
+            const chartData = configurations.map(config => {
+                const stats = calculateDetailedStats(config.digits);
+                return {
+                    label: config.name,
+                    digitCombinations: config.totalCombinations,
+                    avgGameVolume: stats.avgVolume,
+                    maxGameVolume: stats.maxVolume
+                };
+            });
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.map(d => d.label),
+                    datasets: [
+                        {
+                            label: 'Combinações de Dígitos',
+                            data: chartData.map(d => d.digitCombinations),
+                            backgroundColor: 'rgba(93, 92, 222, 0.7)',
+                            borderColor: 'rgba(93, 92, 222, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Média de Jogos (milhares)',
+                            data: chartData.map(d => d.avgGameVolume / 1000),
+                            backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                            borderColor: 'rgba(34, 197, 94, 1)',
+                            borderWidth: 1,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Comparação entre Configurações'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Combinações de Dígitos'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Média de Jogos (milhares)'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    }
+                }
+            });
+        }
+
+        // Função para criar análise detalhada
+        function createDetailedAnalysis() {
+            const container = document.getElementById('detailed-analysis');
+            
+            configurations.forEach(config => {
+                const stats = calculateDetailedStats(config.digits);
+                
+                // Determinar classificação
+                let classification = '';
+                let classificationColor = '';
+                if (config.digits === 1) {
+                    classification = 'Muito Limitado';
+                    classificationColor = 'text-red-600 dark:text-red-400';
+                } else if (config.digits <= 2) {
+                    classification = 'Limitado';
+                    classificationColor = 'text-orange-600 dark:text-orange-400';
+                } else if (config.digits <= 4) {
+                    classification = 'Equilibrado';
+                    classificationColor = 'text-blue-600 dark:text-blue-400';
+                } else if (config.digits <= 6) {
+                    classification = 'Excelente';
+                    classificationColor = 'text-green-600 dark:text-green-400';
+                } else {
+                    classification = 'Redundante';
+                    classificationColor = 'text-purple-600 dark:text-purple-400';
+                }
+                
+                const cardHTML = `
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6 card-hover">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold">${config.name}</h3>
+                            <span class="px-3 py-1 rounded-full text-sm font-semibold ${classificationColor} bg-gray-100 dark:bg-gray-700">
+                                ${classification}
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                            <div class="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                                <div class="text-2xl font-bold text-red-600 dark:text-red-400">${stats.insufficientConfigurations}</div>
+                                <div class="text-xs text-red-700 dark:text-red-300">Insuficientes</div>
+                                <div class="text-xs text-red-600 dark:text-red-400 mt-1">(0 jogos)</div>
+                            </div>
+                            
+                            <div class="text-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                                <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">${stats.lowVolumeConfigurations}</div>
+                                <div class="text-xs text-yellow-700 dark:text-yellow-300">Baixo Volume</div>
+                                <div class="text-xs text-yellow-600 dark:text-yellow-400 mt-1">(1-99 jogos)</div>
+                            </div>
+                            
+                            <div class="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">${stats.mediumVolumeConfigurations}</div>
+                                <div class="text-xs text-blue-700 dark:text-blue-300">Médio Volume</div>
+                                <div class="text-xs text-blue-600 dark:text-blue-400 mt-1">(100-999 jogos)</div>
+                            </div>
+                            
+                            <div class="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                <div class="text-2xl font-bold text-green-600 dark:text-green-400">${stats.highVolumeConfigurations}</div>
+                                <div class="text-xs text-green-700 dark:text-green-300">Alto Volume</div>
+                                <div class="text-xs text-green-600 dark:text-green-400 mt-1">(1000+ jogos)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                                <h4 class="font-semibold mb-3 text-primary dark:text-blue-400">🎯 Volumes por Números Válidos:</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>→ 16 números:</span>
+                                        <span class="font-bold text-green-600 dark:text-green-400">${stats.volumeDistribution[16]} configurações</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>→ 15 números:</span>
+                                        <span class="font-bold text-green-600 dark:text-green-400">${stats.volumeDistribution[15]} configurações</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>→ 14 números:</span>
+                                        <span class="font-bold text-blue-600 dark:text-blue-400">${stats.volumeDistribution[14]} configurações</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>→ 11 números:</span>
+                                        <span class="font-bold text-blue-600 dark:text-blue-400">${stats.volumeDistribution[11]} configurações</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>→ 10 números:</span>
+                                        <span class="font-bold text-yellow-600 dark:text-yellow-400">${stats.volumeDistribution[10]} configurações</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>→ 9 números:</span>
+                                        <span class="font-bold text-yellow-600 dark:text-yellow-400">${stats.volumeDistribution[9]} configurações</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>→ Insuficiente:</span>
+                                        <span class="font-bold text-red-500">${stats.volumeDistribution.insuf} configurações</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                                <h4 class="font-semibold mb-3 text-primary dark:text-blue-400">🏆 Destaques:</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>Maior volume:</span>
+                                        <span class="font-bold text-green-600 dark:text-green-400">${stats.maxVolume > 0 ? stats.maxVolume.toLocaleString('pt-BR') + ' jogos' : '-'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Menor volume (válido):</span>
+                                        <span class="font-bold text-blue-600 dark:text-blue-400">${stats.minVolume > 0 ? stats.minVolume.toLocaleString('pt-BR') + ' jogos' : '-'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Média de jogos:</span>
+                                        <span class="font-bold text-purple-600 dark:text-purple-400">${stats.avgVolume > 0 ? stats.avgVolume.toLocaleString('pt-BR') + ' jogos' : '-'}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Total configurações:</span>
+                                        <span class="font-bold">${config.totalCombinations}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Configurações válidas:</span>
+                                        <span class="font-bold text-green-600 dark:text-green-400">${stats.validConfigurations}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
+                            <p class="text-sm text-blue-800 dark:text-blue-200">
+                                <strong>💡 Análise:</strong> ${getAnalysisText(config.digits, stats)}
+                            </p>
+                        </div>
+                    </div>
+                `;
+                
+                container.innerHTML += cardHTML;
+            });
+        }
+
+        // Função para gerar texto de análise personalizado
+        function getAnalysisText(digitCount, stats) {
+            if (digitCount === 1) {
+                return "Com apenas 1 dígito, existem 10 configurações possíveis, mas a cobertura é muito limitada. A maioria das configurações não consegue formar 7 números válidos.";
+            } else if (digitCount === 2) {
+                return "Com 2 dígitos, existem 45 configurações possíveis. Oferece mais opções que 1 dígito, mas ainda com cobertura limitada de números válidos.";
+            } else if (digitCount === 3) {
+                return "Com 3 dígitos, existem 120 configurações possíveis. Esta configuração oferece ainda mais opções, aumentando significativamente a cobertura de números válidos.";
+            } else if (digitCount === 4) {
+                return "Com 4 dígitos, existem 210 configurações possíveis. Esta configuração oferece excelente cobertura de números válidos, permitindo combinações muito robustas.";
+            } else if (digitCount === 5) {
+                return "Com 5 dígitos, existem 252 configurações possíveis. Esta é a configuração com maior número de possibilidades, oferecendo cobertura máxima e volume de jogos muito alto.";
+            } else if (digitCount === 6) {
+                return "Com 6 dígitos, existem 210 configurações possíveis. Oferece cobertura completa dos números válidos, mas com menos variedade que 5 dígitos.";
+            } else if (digitCount === 7) {
+                return "Com 7 dígitos, existem 120 configurações possíveis. Cobertura completa, mas com redundância crescente e menor variedade.";
+            } else if (digitCount === 8) {
+                return "Com 8 dígitos, existem 45 configurações possíveis. Alta redundância, pois exclui apenas 2 dígitos. Eficiência questionável.";
+            } else if (digitCount === 9) {
+                return "Com 9 dígitos, existem 10 configurações possíveis. Altíssima redundância, excluindo apenas 1 dígito. Não recomendado.";
+            } else {
+                return "Com 10 dígitos, existe apenas 1 configuração (todos os dígitos). Redundância máxima, incluindo dígitos desnecessários. Não recomendado.";
+            }
+        }
+
+        // Função para atualizar resumo executivo
+        function updateExecutiveSummary() {
+            // Encontrar melhor configuração (mais equilibrada)
+            const bestConfig = configurations.find(c => c.digits === 5);
+            document.getElementById('best-config').textContent = bestConfig.name;
+            
+            // Definir faixa ideal
+            document.getElementById('optimal-range').textContent = "3-6 Dígitos";
+            
+            // Total já está definido como 1023 (soma de todas as combinações)
+        }
+
+        // Inicializar página
+        window.onload = function() {
+            updateExecutiveSummary();
+            createDetailedAnalysis();
+            
+            // Criar gráfico após um pequeno delay para garantir que o DOM está pronto
+            setTimeout(() => {
+                createComparisonChart();
+            }, 100);
+        };
+    </script>
+</body>
+</html>
