@@ -130,34 +130,7 @@
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
                     <h3 class="font-semibold mb-3 text-primary dark:text-blue-400">🎯 Volumes de jogos por Números Válidos:</h3>
                     <div class="space-y-2 text-sm" id="specific-volumes">
-                        <div class="flex justify-between">
-                            <span>→ 11.440</span>
-                            <span class="font-bold text-green-600 dark:text-green-400" id="vol-16">-</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>→ 6.435</span>
-                            <span class="font-bold text-green-600 dark:text-green-400" id="vol-15">-</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>→ 3.432</span>
-                            <span class="font-bold text-blue-600 dark:text-blue-400" id="vol-14">-</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>→ 330</span>
-                            <span class="font-bold text-blue-600 dark:text-blue-400" id="vol-11">-</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>→ 120</span>
-                            <span class="font-bold text-yellow-600 dark:text-yellow-400" id="vol-10">-</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>→ 36</span>
-                            <span class="font-bold text-yellow-600 dark:text-yellow-400" id="vol-9">-</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>→ Insuficiente:</span>
-                            <span class="font-bold text-red-500" id="vol-insuf">-</span>
-                        </div>
+                        <!-- Conteúdo será gerado dinamicamente mostrando valores específicos -->
                     </div>
                 </div>
                 
@@ -832,16 +805,8 @@
             let medio = 0;
             let alto = 0;
             
-            // Contadores para números válidos específicos
-            const specificValidNumbers = {
-                16: 0,    // 11.440 jogos
-                15: 0,    // 6.435 jogos
-                14: 0,    // 3.432 jogos
-                11: 0,    // 330 jogos
-                10: 0,    // 120 jogos
-                9: 0,     // 36 jogos
-                insuf: 0  // ≤ 6 números = insuficiente
-            };
+            // Contador específico para cada valor exato de jogos
+            const exactGameCounts = {};
             
             let maxVolume = 0;
             let minVolume = Infinity;
@@ -850,45 +815,27 @@
             
             combinationsData.forEach(data => {
                 const volume = data.totalCombinations;
-                const validCount = data.validNumbersCount;
                 
                 if (volume === 0) {
                     insuficiente++;
-                } else if (volume < 100) {
-                    baixo++;
-                    validCombinations++;
-                    totalVolume += volume;
-                } else if (volume < 1000) {
-                    medio++;
-                    validCombinations++;
-                    totalVolume += volume;
+                    // Contar como "Insuficiente"
+                    exactGameCounts['insuficiente'] = (exactGameCounts['insuficiente'] || 0) + 1;
                 } else {
-                    alto++;
+                    // Contar o valor exato de jogos
+                    exactGameCounts[volume] = (exactGameCounts[volume] || 0) + 1;
+                    
+                    if (volume < 100) {
+                        baixo++;
+                    } else if (volume < 1000) {
+                        medio++;
+                    } else {
+                        alto++;
+                    }
+                    
                     validCombinations++;
                     totalVolume += volume;
-                }
-                
-                // Atualizar máximo e mínimo
-                if (volume > 0) {
                     maxVolume = Math.max(maxVolume, volume);
                     minVolume = Math.min(minVolume, volume);
-                }
-                
-                // Contabilizar combinações por número de números válidos
-                if (validCount === 16) {
-                    specificValidNumbers[16]++;
-                } else if (validCount === 15) {
-                    specificValidNumbers[15]++;
-                } else if (validCount === 14) {
-                    specificValidNumbers[14]++;
-                } else if (validCount === 11) {
-                    specificValidNumbers[11]++;
-                } else if (validCount === 10) {
-                    specificValidNumbers[10]++;
-                } else if (validCount === 9) {
-                    specificValidNumbers[9]++;
-                } else if (validCount <= 6) {
-                    specificValidNumbers.insuf++;
                 }
             });
             
@@ -901,13 +848,6 @@
                 'stat-baixo': baixo,
                 'stat-medio': medio,
                 'stat-alto': alto,
-                'vol-16': specificValidNumbers[16] + ' combinações',
-                'vol-15': specificValidNumbers[15] + ' combinações',
-                'vol-14': specificValidNumbers[14] + ' combinações',
-                'vol-11': specificValidNumbers[11] + ' combinações',
-                'vol-10': specificValidNumbers[10] + ' combinações',
-                'vol-9': specificValidNumbers[9] + ' combinações',
-                'vol-insuf': specificValidNumbers.insuf + ' combinações',
                 'max-volume': maxVolume > 0 ? maxVolume.toLocaleString('pt-BR') + ' jogos' : '-',
                 'min-volume': minVolume < Infinity ? minVolume.toLocaleString('pt-BR') + ' jogos' : '-',
                 'avg-volume': avgVolume > 0 ? avgVolume.toLocaleString('pt-BR') + ' jogos' : '-'
@@ -919,6 +859,73 @@
                     element.textContent = statElements[id];
                 }
             });
+
+            // Criar dinamicamente a lista detalhada de volumes específicos
+            const specificVolumesContainer = document.getElementById('specific-volumes');
+            if (specificVolumesContainer) {
+                specificVolumesContainer.innerHTML = '';
+
+                // Ordenar os valores de jogos em ordem decrescente (maiores primeiro)
+                const sortedGameValues = Object.keys(exactGameCounts)
+                    .filter(key => key !== 'insuficiente')
+                    .map(key => parseInt(key))
+                    .sort((a, b) => b - a);
+
+                // Adicionar valores válidos primeiro
+                sortedGameValues.forEach(gameValue => {
+                    const count = exactGameCounts[gameValue];
+                    if (count > 0) {
+                        const div = document.createElement('div');
+                        div.className = 'flex justify-between';
+                        
+                        const label = document.createElement('span');
+                        label.textContent = `→ ${gameValue.toLocaleString('pt-BR')}:`;
+                        
+                        const value = document.createElement('span');
+                        // Definir cor baseada no volume
+                        let colorClass = 'text-red-500'; // padrão
+                        if (gameValue >= 1000) {
+                            colorClass = 'text-green-600 dark:text-green-400';
+                        } else if (gameValue >= 100) {
+                            colorClass = 'text-blue-600 dark:text-blue-400';
+                        } else if (gameValue > 0) {
+                            colorClass = 'text-yellow-600 dark:text-yellow-400';
+                        }
+                        
+                        value.className = `font-bold ${colorClass}`;
+                        value.textContent = `${count} combinações`;
+                        
+                        div.appendChild(label);
+                        div.appendChild(value);
+                        specificVolumesContainer.appendChild(div);
+                    }
+                });
+
+                // Adicionar "Insuficiente" por último, se existir
+                if (exactGameCounts['insuficiente'] > 0) {
+                    const div = document.createElement('div');
+                    div.className = 'flex justify-between';
+                    
+                    const label = document.createElement('span');
+                    label.textContent = '→ Insuficiente:';
+                    
+                    const value = document.createElement('span');
+                    value.className = 'font-bold text-red-500';
+                    value.textContent = `${exactGameCounts['insuficiente']} combinações`;
+                    
+                    div.appendChild(label);
+                    div.appendChild(value);
+                    specificVolumesContainer.appendChild(div);
+                }
+
+                // Se nenhuma categoria tiver valores > 0, mostrar mensagem
+                if (specificVolumesContainer.children.length === 0) {
+                    const div = document.createElement('div');
+                    div.className = 'text-center text-gray-500 dark:text-gray-400 py-4';
+                    div.textContent = 'Nenhuma categoria de volume identificada';
+                    specificVolumesContainer.appendChild(div);
+                }
+            }
         }
         
         // Função para popular a tabela com todas as combinações

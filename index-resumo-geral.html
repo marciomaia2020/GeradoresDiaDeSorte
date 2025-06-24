@@ -98,6 +98,41 @@
             <!-- Será preenchido dinamicamente -->
         </div>
 
+        <!-- Tabela Resumo de Volumes -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mt-8">
+            <h3 class="text-2xl font-bold mb-6 text-center">📋 Tabela Resumo - Volumes de Jogos por Números Válidos</h3>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full border-collapse">
+                    <thead class="bg-gray-100 dark:bg-gray-700">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-sm font-semibold border dark:border-gray-600">Números Válidos</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">Volume de Jogos</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">1 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">2 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">3 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">4 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">5 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">6 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">7 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">8 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">9 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">10 Díg.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="volume-table-body">
+                        <!-- Será preenchido dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
+                <p class="text-sm text-blue-800 dark:text-blue-200">
+                    <strong>💡 Legenda:</strong> A tabela mostra quantas configurações de cada número de dígitos conseguem formar determinado número de números válidos (1-31) e seus respectivos volumes de jogos possíveis.
+                </p>
+            </div>
+        </div>
+
         <!-- Recomendações -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mt-8">
             <h3 class="text-2xl font-bold mb-6 text-center">💡 Recomendações Estratégicas</h3>
@@ -176,9 +211,7 @@
             let mediumVolumeConfigurations = 0;
             let highVolumeConfigurations = 0;
             
-            const volumeDistribution = {
-                16: 0, 15: 0, 14: 0, 13: 0, 12: 0, 11: 0, 10: 0, 9: 0, insuf: 0
-            };
+            const exactGameCounts = {};
             
             let maxVolume = 0;
             let minVolume = Infinity;
@@ -199,6 +232,9 @@
                     validConfigurations++;
                     totalGameCombinations += gameCombinations;
                     
+                    // Contar valores exatos de jogos
+                    exactGameCounts[gameCombinations] = (exactGameCounts[gameCombinations] || 0) + 1;
+                    
                     // Categorizar por volume
                     if (gameCombinations < 100) {
                         lowVolumeConfigurations++;
@@ -213,13 +249,7 @@
                     minVolume = Math.min(minVolume, gameCombinations);
                 } else {
                     insufficientConfigurations++;
-                }
-                
-                // Contar por número de números válidos
-                if (validNumbers.length <= 6) {
-                    volumeDistribution.insuf++;
-                } else if (volumeDistribution[validNumbers.length] !== undefined) {
-                    volumeDistribution[validNumbers.length]++;
+                    exactGameCounts['insuficiente'] = (exactGameCounts['insuficiente'] || 0) + 1;
                 }
             });
             
@@ -237,7 +267,8 @@
                 avgVolume,
                 maxVolume: maxVolume > 0 ? maxVolume : 0,
                 minVolume: minVolume < Infinity ? minVolume : 0,
-                volumeDistribution
+                exactGameCounts,
+                allDigitCombinations
             };
         }
 
@@ -273,6 +304,75 @@
             }
             
             return factorial(n) / (factorial(r) * factorial(n - r));
+        }
+
+        // Função para criar volumes específicos dinâmicos
+        function createSpecificVolumes(digitCount, exactGameCounts) {
+            const container = document.getElementById(`specific-volumes-${digitCount}`);
+            if (!container) return;
+            
+            container.innerHTML = '';
+
+            // Ordenar os valores de jogos em ordem decrescente
+            const sortedGameValues = Object.keys(exactGameCounts)
+                .filter(key => key !== 'insuficiente')
+                .map(key => parseInt(key))
+                .sort((a, b) => b - a);
+
+            // Adicionar valores válidos primeiro
+            sortedGameValues.forEach(gameValue => {
+                const count = exactGameCounts[gameValue];
+                if (count > 0) {
+                    const div = document.createElement('div');
+                    div.className = 'flex justify-between';
+                    
+                    const label = document.createElement('span');
+                    label.textContent = `→ ${gameValue.toLocaleString('pt-BR')}:`;
+                    
+                    const value = document.createElement('span');
+                    // Definir cor baseada no volume
+                    let colorClass = 'text-red-500';
+                    if (gameValue >= 1000) {
+                        colorClass = 'text-green-600 dark:text-green-400';
+                    } else if (gameValue >= 100) {
+                        colorClass = 'text-blue-600 dark:text-blue-400';
+                    } else if (gameValue > 0) {
+                        colorClass = 'text-yellow-600 dark:text-yellow-400';
+                    }
+                    
+                    value.className = `font-bold ${colorClass}`;
+                    value.textContent = `${count} configurações`;
+                    
+                    div.appendChild(label);
+                    div.appendChild(value);
+                    container.appendChild(div);
+                }
+            });
+
+            // Adicionar "Insuficiente" por último, se existir
+            if (exactGameCounts['insuficiente'] > 0) {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between';
+                
+                const label = document.createElement('span');
+                label.textContent = '→ Insuficiente:';
+                
+                const value = document.createElement('span');
+                value.className = 'font-bold text-red-500';
+                value.textContent = `${exactGameCounts['insuficiente']} configurações`;
+                
+                div.appendChild(label);
+                div.appendChild(value);
+                container.appendChild(div);
+            }
+
+            // Se nenhuma categoria tiver valores > 0, mostrar mensagem
+            if (container.children.length === 0) {
+                const div = document.createElement('div');
+                div.className = 'text-center text-gray-500 dark:text-gray-400 py-4';
+                div.textContent = 'Nenhuma categoria de volume identificada';
+                container.appendChild(div);
+            }
         }
 
         // Função para criar o gráfico comparativo
@@ -352,6 +452,151 @@
             });
         }
 
+        // Função para criar tabela de volumes
+        function createVolumeTable() {
+            const tableBody = document.getElementById('volume-table-body');
+            
+            // Calcular dados para todas as configurações
+            const allStats = configurations.map(config => calculateDetailedStats(config.digits));
+            
+            // Coleta todos os volumes únicos e números válidos
+            const allVolumes = new Set();
+            const allValidNumbers = new Set();
+            
+            allStats.forEach(stats => {
+                stats.allDigitCombinations.forEach(digitSet => {
+                    // Calcular números válidos para esta combinação
+                    const validNumbers = [];
+                    for (let i = 1; i <= 31; i++) {
+                        if (containsOnlyAllowedDigits(i, digitSet)) {
+                            validNumbers.push(i);
+                        }
+                    }
+                    
+                    allValidNumbers.add(validNumbers.length);
+                    
+                    if (validNumbers.length >= 7) {
+                        const volume = combinations(validNumbers.length, 7);
+                        allVolumes.add(volume);
+                    }
+                });
+            });
+            
+            // Converter para arrays ordenados
+            const sortedValidNumbers = Array.from(allValidNumbers).sort((a, b) => b - a);
+            const sortedVolumes = Array.from(allVolumes).sort((a, b) => b - a);
+            
+            // Criar matriz de contagem
+            const countMatrix = {};
+            
+            allStats.forEach((stats, configIndex) => {
+                stats.allDigitCombinations.forEach(digitSet => {
+                    const validNumbers = [];
+                    for (let i = 1; i <= 31; i++) {
+                        if (containsOnlyAllowedDigits(i, digitSet)) {
+                            validNumbers.push(i);
+                        }
+                    }
+                    
+                    const validCount = validNumbers.length;
+                    let volume = 0;
+                    
+                    if (validCount >= 7) {
+                        volume = combinations(validCount, 7);
+                    }
+                    
+                    const key = `${validCount}-${volume}`;
+                    if (!countMatrix[key]) {
+                        countMatrix[key] = new Array(10).fill(0);
+                    }
+                    countMatrix[key][configIndex]++;
+                });
+            });
+            
+            // Preencher tabela
+            sortedValidNumbers.forEach(validCount => {
+                if (validCount >= 7) {
+                    const volume = combinations(validCount, 7);
+                    const key = `${validCount}-${volume}`;
+                    const counts = countMatrix[key] || new Array(10).fill(0);
+                    
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700/50';
+                    
+                    // Coluna de números válidos
+                    const validCell = document.createElement('td');
+                    validCell.className = 'py-2 px-4 border dark:border-gray-600 font-semibold';
+                    validCell.textContent = `${validCount} números`;
+                    row.appendChild(validCell);
+                    
+                    // Coluna de volume
+                    const volumeCell = document.createElement('td');
+                    volumeCell.className = 'py-2 px-4 border dark:border-gray-600 text-center font-bold';
+                    
+                    // Colorir baseado no volume
+                    if (volume >= 1000) {
+                        volumeCell.classList.add('text-green-600', 'dark:text-green-400');
+                    } else if (volume >= 100) {
+                        volumeCell.classList.add('text-blue-600', 'dark:text-blue-400');
+                    } else {
+                        volumeCell.classList.add('text-yellow-600', 'dark:text-yellow-400');
+                    }
+                    
+                    volumeCell.textContent = volume.toLocaleString('pt-BR');
+                    row.appendChild(volumeCell);
+                    
+                    // Colunas para cada configuração
+                    counts.forEach((count, configIndex) => {
+                        const countCell = document.createElement('td');
+                        countCell.className = 'py-2 px-4 border dark:border-gray-600 text-center';
+                        
+                        if (count > 0) {
+                            countCell.textContent = count;
+                            countCell.classList.add('font-semibold', 'text-primary', 'dark:text-blue-400');
+                        } else {
+                            countCell.textContent = '-';
+                            countCell.classList.add('text-gray-400');
+                        }
+                        
+                        row.appendChild(countCell);
+                    });
+                    
+                    tableBody.appendChild(row);
+                }
+            });
+            
+            // Adicionar linha para insuficientes
+            const insufRow = document.createElement('tr');
+            insufRow.className = 'hover:bg-gray-50 dark:hover:bg-gray-700/50 bg-red-50 dark:bg-red-900/20';
+            
+            const insufValidCell = document.createElement('td');
+            insufValidCell.className = 'py-2 px-4 border dark:border-gray-600 font-semibold text-red-600 dark:text-red-400';
+            insufValidCell.textContent = '≤ 6 números';
+            insufRow.appendChild(insufValidCell);
+            
+            const insufVolumeCell = document.createElement('td');
+            insufVolumeCell.className = 'py-2 px-4 border dark:border-gray-600 text-center font-bold text-red-600 dark:text-red-400';
+            insufVolumeCell.textContent = 'Insuficiente';
+            insufRow.appendChild(insufVolumeCell);
+            
+            allStats.forEach(stats => {
+                const insufCell = document.createElement('td');
+                insufCell.className = 'py-2 px-4 border dark:border-gray-600 text-center';
+                
+                if (stats.insufficientConfigurations > 0) {
+                    insufCell.textContent = stats.insufficientConfigurations;
+                    insufCell.classList.add('font-semibold', 'text-red-600', 'dark:text-red-400');
+                } else {
+                    insufCell.textContent = '-';
+                    insufCell.classList.add('text-gray-400');
+                }
+                
+                insufRow.appendChild(insufCell);
+            });
+            
+            tableBody.appendChild(insufRow);
+        }
+
         // Função para criar análise detalhada
         function createDetailedAnalysis() {
             const container = document.getElementById('detailed-analysis');
@@ -416,36 +661,9 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                                <h4 class="font-semibold mb-3 text-primary dark:text-blue-400">🎯 Volumes por Números Válidos:</h4>
-                                <div class="space-y-2 text-sm">
-                                    <div class="flex justify-between">
-                                        <span>→ 16 números:</span>
-                                        <span class="font-bold text-green-600 dark:text-green-400">${stats.volumeDistribution[16]} configurações</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>→ 15 números:</span>
-                                        <span class="font-bold text-green-600 dark:text-green-400">${stats.volumeDistribution[15]} configurações</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>→ 14 números:</span>
-                                        <span class="font-bold text-blue-600 dark:text-blue-400">${stats.volumeDistribution[14]} configurações</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>→ 11 números:</span>
-                                        <span class="font-bold text-blue-600 dark:text-blue-400">${stats.volumeDistribution[11]} configurações</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>→ 10 números:</span>
-                                        <span class="font-bold text-yellow-600 dark:text-yellow-400">${stats.volumeDistribution[10]} configurações</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>→ 9 números:</span>
-                                        <span class="font-bold text-yellow-600 dark:text-yellow-400">${stats.volumeDistribution[9]} configurações</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>→ Insuficiente:</span>
-                                        <span class="font-bold text-red-500">${stats.volumeDistribution.insuf} configurações</span>
-                                    </div>
+                                <h4 class="font-semibold mb-3 text-primary dark:text-blue-400">🎯 Volumes de jogos por Números Válidos:</h4>
+                                <div class="space-y-2 text-sm" id="specific-volumes-${config.digits}">
+                                    <!-- Conteúdo será gerado dinamicamente -->
                                 </div>
                             </div>
                             
@@ -485,6 +703,9 @@
                 `;
                 
                 container.innerHTML += cardHTML;
+                
+                // Criar volumes específicos após adicionar o HTML
+                setTimeout(() => createSpecificVolumes(config.digits, stats.exactGameCounts), 100);
             });
         }
 
@@ -529,11 +750,12 @@
         window.onload = function() {
             updateExecutiveSummary();
             createDetailedAnalysis();
+            createVolumeTable();
             
             // Criar gráfico após um pequeno delay para garantir que o DOM está pronto
             setTimeout(() => {
                 createComparisonChart();
-            }, 100);
+            }, 200);
         };
     </script>
 </body>

@@ -148,34 +148,7 @@
                 <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
                     <h3 class="font-semibold mb-3 text-primary dark:text-blue-400">🎯 Volumes de jogos por Números Válidos:</h3>
                     <div class="space-y-2 text-sm" id="specific-volumes">
-                        <div class="flex justify-between">
-                            <span>→ 11.440</span>
-                            <span class="font-bold text-green-600 dark:text-green-400" id="vol-16">-</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>→ 6.435</span>
-                            <span class="font-bold text-green-600 dark:text-green-400" id="vol-15">-</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>→ 3.432</span>
-                            <span class="font-bold text-blue-600 dark:text-blue-400" id="vol-14">-</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>→ 330</span>
-                            <span class="font-bold text-blue-600 dark:text-blue-400" id="vol-11">-</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>→ 120</span>
-                            <span class="font-bold text-yellow-600 dark:text-yellow-400" id="vol-10">-</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>→ 36</span>
-                            <span class="font-bold text-yellow-600 dark:text-yellow-400" id="vol-9">-</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>→ Insuficiente:</span>
-                            <span class="font-bold text-red-500" id="vol-insuf">-</span>
-                        </div>
+                        <!-- Conteúdo será gerado dinamicamente apenas para categorias > 0 -->
                     </div>
                 </div>
                 
@@ -908,13 +881,6 @@
                 'stat-baixo': baixo,
                 'stat-medio': medio,
                 'stat-alto': alto,
-                'vol-16': specificValidNumbers[16] + ' combinações',
-                'vol-15': specificValidNumbers[15] + ' combinações',
-                'vol-14': specificValidNumbers[14] + ' combinações',
-                'vol-11': specificValidNumbers[11] + ' combinações',
-                'vol-10': specificValidNumbers[10] + ' combinações',
-                'vol-9': specificValidNumbers[9] + ' combinações',
-                'vol-insuf': specificValidNumbers.insuf + ' combinações',
                 'max-volume': maxVolume > 0 ? maxVolume.toLocaleString('pt-BR') + ' jogos' : '-',
                 'min-volume': minVolume < Infinity ? minVolume.toLocaleString('pt-BR') + ' jogos' : '-',
                 'avg-volume': avgVolume > 0 ? avgVolume.toLocaleString('pt-BR') + ' jogos' : '-'
@@ -926,6 +892,50 @@
                     element.textContent = statElements[id];
                 }
             });
+
+            // Criar dinamicamente apenas as linhas com valores > 0
+            const specificVolumesContainer = document.getElementById('specific-volumes');
+            if (specificVolumesContainer) {
+                specificVolumesContainer.innerHTML = '';
+
+                // Definir mapeamento de volumes para jogos e cores
+                const volumeMapping = [
+                    { validCount: 16, jogos: '11.440', count: specificValidNumbers[16], color: 'text-green-600 dark:text-green-400' },
+                    { validCount: 15, jogos: '6.435', count: specificValidNumbers[15], color: 'text-green-600 dark:text-green-400' },
+                    { validCount: 14, jogos: '3.432', count: specificValidNumbers[14], color: 'text-blue-600 dark:text-blue-400' },
+                    { validCount: 11, jogos: '330', count: specificValidNumbers[11], color: 'text-blue-600 dark:text-blue-400' },
+                    { validCount: 10, jogos: '120', count: specificValidNumbers[10], color: 'text-yellow-600 dark:text-yellow-400' },
+                    { validCount: 9, jogos: '36', count: specificValidNumbers[9], color: 'text-yellow-600 dark:text-yellow-400' },
+                    { validCount: 'insuf', jogos: 'Insuficiente', count: specificValidNumbers.insuf, color: 'text-red-500' }
+                ];
+
+                // Mostrar apenas categorias com count > 0
+                volumeMapping.forEach(item => {
+                    if (item.count > 0) {
+                        const div = document.createElement('div');
+                        div.className = 'flex justify-between';
+                        
+                        const label = document.createElement('span');
+                        label.textContent = `→ ${item.jogos}:`;
+                        
+                        const value = document.createElement('span');
+                        value.className = `font-bold ${item.color}`;
+                        value.textContent = `${item.count} combinações`;
+                        
+                        div.appendChild(label);
+                        div.appendChild(value);
+                        specificVolumesContainer.appendChild(div);
+                    }
+                });
+
+                // Se nenhuma categoria tiver valores > 0, mostrar mensagem
+                if (specificVolumesContainer.children.length === 0) {
+                    const div = document.createElement('div');
+                    div.className = 'text-center text-gray-500 dark:text-gray-400 py-4';
+                    div.textContent = 'Nenhuma categoria de volume identificada';
+                    specificVolumesContainer.appendChild(div);
+                }
+            }
         }
         
         // Função para popular a tabela com todas as combinações
@@ -934,7 +944,7 @@
             const filterSelect = document.getElementById('filter-by-combinations');
             const searchInput = document.getElementById('digits-search');
             
-            // Gerar todas as combinações de 1 dígito
+            // Gerar todas as combinações de 3 dígitos
             const allDigitCombinations = generateAllDigitCombinations();
             
             // Calcular estatísticas para cada combinação

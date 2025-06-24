@@ -47,6 +47,27 @@
         .number-ball.impar {
             background: linear-gradient(135deg, #ef4444, #dc2626);
         }
+        .dezena-ball {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .dezena-ball.repetida {
+            border: 3px solid #fbbf24;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
+            animation: pulse-gold 2s infinite;
+        }
+        @keyframes pulse-gold {
+            0%, 100% { box-shadow: 0 0 15px rgba(251, 191, 36, 0.6); }
+            50% { box-shadow: 0 0 25px rgba(251, 191, 36, 0.9); }
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
@@ -255,10 +276,68 @@
 
     <!-- Últimos Resultados -->
     <div id="ultimos-resultados-section" class="container mx-auto px-4 py-8 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-            <h3 class="text-2xl font-bold mb-6 text-center">📅 Últimos 10 Resultados</h3>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-6 text-center">📅 Últimos 10 Resultados - Pares vs Ímpares</h3>
             <div id="ultimos-resultados" class="space-y-4">
                 <!-- Será preenchido dinamicamente -->
+            </div>
+        </div>
+        
+        <!-- Últimos Resultados - Dezenas Finais -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <h3 class="text-2xl font-bold mb-6 text-center">🎯 Últimos 10 Resultados - Dezenas Finais Repetidas</h3>
+            <div id="ultimos-resultados-dezenas" class="space-y-4">
+                <!-- Será preenchido dinamicamente -->
+            </div>
+            
+            <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
+                <h4 class="font-semibold mb-2 text-blue-800 dark:text-blue-200">📋 Legenda das Cores:</h4>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(0, 70%, 60%)"></div>
+                        <span>Dígito 0</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(36, 70%, 60%)"></div>
+                        <span>Dígito 1</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(72, 70%, 60%)"></div>
+                        <span>Dígito 2</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(108, 70%, 60%)"></div>
+                        <span>Dígito 3</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(144, 70%, 60%)"></div>
+                        <span>Dígito 4</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(180, 70%, 60%)"></div>
+                        <span>Dígito 5</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(216, 70%, 60%)"></div>
+                        <span>Dígito 6</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(252, 70%, 60%)"></div>
+                        <span>Dígito 7</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(288, 70%, 60%)"></div>
+                        <span>Dígito 8</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(324, 70%, 60%)"></div>
+                        <span>Dígito 9</span>
+                    </div>
+                </div>
+                <p class="text-xs text-blue-700 dark:text-blue-300 mt-2">
+                    <strong>Números com a mesma cor terminam com o mesmo dígito.</strong> 
+                    Quando há repetições, elas são destacadas com bordas douradas e efeito de brilho.
+                </p>
             </div>
         </div>
     </div>
@@ -441,6 +520,7 @@
             exibirAnaliseDigitosFinais();
             exibirEstatisticasExtras();
             exibirUltimosResultados();
+            exibirUltimosResultadosDezenas();
         }
 
         // Função para exibir resumo geral
@@ -659,7 +739,7 @@
             }
         }
 
-        // Função para exibir últimos resultados
+        // Função para exibir últimos resultados (pares vs ímpares)
         function exibirUltimosResultados() {
             const ultimos10 = estatisticas.concursos.slice(-10).reverse();
             const container = document.getElementById('ultimos-resultados');
@@ -691,6 +771,75 @@
             });
 
             document.getElementById('ultimos-resultados-section').classList.remove('hidden');
+        }
+
+        // Função para exibir últimos resultados com destaque para dezenas finais
+        function exibirUltimosResultadosDezenas() {
+            const ultimos10 = estatisticas.concursos.slice(-10).reverse();
+            const container = document.getElementById('ultimos-resultados-dezenas');
+            container.innerHTML = '';
+
+            ultimos10.forEach(concurso => {
+                // Analisar repetições de dígitos finais
+                const digitosFinais = {};
+                const repeticoes = {};
+                
+                concurso.numeros.forEach(num => {
+                    const digitoFinal = num % 10;
+                    if (!digitosFinais[digitoFinal]) {
+                        digitosFinais[digitoFinal] = [];
+                    }
+                    digitosFinais[digitoFinal].push(num);
+                });
+
+                // Identificar quais dígitos se repetem
+                Object.entries(digitosFinais).forEach(([digito, numeros]) => {
+                    if (numeros.length > 1) {
+                        repeticoes[digito] = numeros;
+                    }
+                });
+
+                const div = document.createElement('div');
+                div.className = 'p-4 bg-gray-50 dark:bg-gray-700 rounded-lg';
+                
+                const numerosHTML = concurso.numeros.map(num => {
+                    const digitoFinal = num % 10;
+                    const cor = `hsl(${digitoFinal * 36}, 70%, 60%)`;
+                    const isRepetida = repeticoes[digitoFinal] !== undefined;
+                    const repetidaClass = isRepetida ? 'repetida' : '';
+                    
+                    return `<div class="dezena-ball ${repetidaClass}" style="background: ${cor}">${num.toString().padStart(2, '0')}</div>`;
+                }).join('');
+
+                // Criar resumo das repetições
+                let resumoRepeticoes = '';
+                if (Object.keys(repeticoes).length > 0) {
+                    const repeticoesTexto = Object.entries(repeticoes).map(([digito, numeros]) => {
+                        return `Dígito ${digito}: ${numeros.map(n => n.toString().padStart(2, '0')).join(', ')}`;
+                    }).join(' | ');
+                    resumoRepeticoes = `<div class="text-xs text-amber-600 dark:text-amber-400 font-semibold mt-2">✨ ${repeticoesTexto}</div>`;
+                } else {
+                    resumoRepeticoes = `<div class="text-xs text-gray-500 mt-2">Nenhuma repetição de dígito final</div>`;
+                }
+
+                div.innerHTML = `
+                    <div class="flex flex-col md:flex-row items-center justify-between">
+                        <div class="text-center md:text-left mb-2 md:mb-0">
+                            <div class="font-bold">Concurso #${concurso.numero}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">${concurso.data}</div>
+                        </div>
+                        <div class="flex gap-2 mb-2 md:mb-0">
+                            ${numerosHTML}
+                        </div>
+                        <div class="text-center text-sm">
+                            <div>Repetições: ${Object.keys(repeticoes).length}</div>
+                            <div class="text-xs text-gray-500">${concurso.mes || ''}</div>
+                        </div>
+                    </div>
+                    ${resumoRepeticoes}
+                `;
+                container.appendChild(div);
+            });
         }
 
         // Função para criar gráfico de pares vs ímpares
@@ -790,7 +939,14 @@
             const exemplos = [
                 { numero: 1, data: "2023-05-29", numeros: [1, 5, 6, 19, 26, 29, 31] },
                 { numero: 2, data: "2023-05-30", numeros: [15, 18, 25, 27, 29, 30, 31] },
-                { numero: 3, data: "2023-05-31", numeros: [2, 3, 4, 13, 19, 20, 24] }
+                { numero: 3, data: "2023-05-31", numeros: [2, 3, 4, 13, 19, 20, 24] },
+                { numero: 4, data: "2023-06-01", numeros: [1, 11, 21, 3, 13, 23, 7] },
+                { numero: 5, data: "2023-06-02", numeros: [2, 12, 22, 4, 14, 24, 8] },
+                { numero: 6, data: "2023-06-03", numeros: [5, 15, 25, 6, 16, 26, 9] },
+                { numero: 7, data: "2023-06-04", numeros: [7, 17, 27, 8, 18, 28, 10] },
+                { numero: 8, data: "2023-06-05", numeros: [1, 3, 5, 7, 9, 11, 13] },
+                { numero: 9, data: "2023-06-06", numeros: [2, 4, 6, 8, 10, 12, 14] },
+                { numero: 10, data: "2023-06-07", numeros: [1, 2, 3, 4, 5, 6, 7] }
             ];
             
             todosResultados = exemplos;
