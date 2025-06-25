@@ -21,46 +21,51 @@
         }
     </script>
 <style>
-	menu {
-		display: flex;
-		gap: 10px;
-		justify-content: center;
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		align-items: center;
-	}
+ body, html {
+        height: 100%;
+        margin: 0;
+    }
 
-	menu li::after {
-		content: " | ";
-		margin: 0 5px;
-	}
+    .menu-centro {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 65vh; /* altura total da tela */
+    }
 
-	menu li:last-child::after {
-		content: "";
-	}
+    menu {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
 
-	menu a {
-		text-decoration: none;
-		color: black;
-		padding: 5px 10px;
-		border-radius: 5px;
-		transition: background-color 0.3s ease;
-	}
+    menu li {
+        margin: 6px 0;
+    }
 
-	menu a:hover {
-		animation: alternaCores 1s infinite alternate;
-	}
+    menu a {
+        text-decoration: none;
+        color: black;
+        padding: 8px 16px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
 
-	@keyframes alternaCores {
-		0% {
-			background-color: #fff7e6;
-		}
-		100% {
-			background-color: #ffc34d;
-		}
-	}
-</style>
+    menu a:hover {
+        animation: alternaCores 1s infinite alternate;
+    }
+
+    @keyframes alternaCores {
+        0% {
+            background-color: #fff7e6;
+        }
+        100% {
+            background-color: #ffc34d;
+        }
+    }</style>
 
 </head>
 <body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
@@ -139,20 +144,23 @@
             <h1 class="text-2xl font-bold text-center mb-6">Gerador de Combinações - Dia de Sorte (5d)</h1>
             
 			<hr />
-				<menu>
-					<li><a href="index10.html/" target="_blank">10</a></li>
-					<li><a href="index9.html/" target="_blank">9</a></li>
-					<li><a href="index8.html/" target="_blank">8</a></li>
-					<li><a href="index7.html/" target="_blank">7</a></li>
-					<li><a href="index6.html" target="_blank">6</a></li>
-					<li><a href="index5.html" target="_blank">5</a></li>
-					<li><a href="index4.html/" target="_blank">4</a></li>
-					<li><a href="index3.html/" target="_blank">3</a></li>
-					<li><a href="index2.html/" target="_blank">2</a></li>
-					<li><a href="index1.html/" target="_blank">1</a></li>
-					<li><a href="index-resumo-geral.html/" target="_blank">Resumo Geral</a></li>
-					<li><a href="index-pares-impares-df.html/" target="_blank">Pares Vs Impares - DF</a></li>
-				</menu>
+				<div class="menu-centro">
+					<menu>
+						<li><a href="index10.html/" target="_blank">10</a></li>
+						<li><a href="index9.html/" target="_blank">9</a></li>
+						<li><a href="index8.html/" target="_blank">8</a></li>
+						<li><a href="index7.html/" target="_blank">7</a></li>
+						<li><a href="index6.html" target="_blank">6</a></li>
+						<li><a href="index5.html" target="_blank">5</a></li>
+						<li><a href="index4.html/" target="_blank">4</a></li>
+						<li><a href="index3.html/" target="_blank">3</a></li>
+						<li><a href="index2.html/" target="_blank">2</a></li>
+						<li><a href="index1.html/" target="_blank">1</a></li>
+						<li><a href="index-analisecompleta.html/" target="_blank">Análise Completa</a></li>
+						<li><a href="index-melhorescombinacoes.html/" target="_blank">Melhores Combinações</a></li>
+						<li><a href="index-pares-impares-df.html/" target="_blank">Pares Vs Impares - DF</a></li>
+					</menu>
+				</div>
 			<hr />
 			
 			

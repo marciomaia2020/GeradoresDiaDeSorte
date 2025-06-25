@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking das Melhores Combinações de Dígitos - Dia de Sorte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE'
+                    }
+                }
+            },
+            darkMode: 'class'
+        }
+    </script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .ranking-card {
+            transition: all 0.3s ease;
+        }
+        .ranking-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .medal-gold { background: linear-gradient(135deg, #FFD700, #FFA500); }
+        .medal-silver { background: linear-gradient(135deg, #C0C0C0, #808080); }
+        .medal-bronze { background: linear-gradient(135deg, #CD7F32, #8B4513); }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
+    <!-- Detecção de tema escuro -->
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+
+    <!-- Header -->
+    <div class="gradient-bg text-white py-12">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">🏆 Ranking das Melhores Combinações</h1>
+            <h2 class="text-2xl md:text-3xl font-semibold mb-6">Dígitos Mais Utilizados - Dia de Sorte</h2>
+            <p class="text-lg opacity-90 max-w-3xl mx-auto">
+                Análise completa das combinações de dígitos mais frequentes nos sorteios históricos e quantos jogos são possíveis com cada combinação
+            </p>
+        </div>
+    </div>
+
+    <!-- Loading / Status -->
+    <div id="loading-section" class="container mx-auto px-4 py-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 text-center">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mb-4"></div>
+            <h3 class="text-xl font-semibold mb-2">Analisando Dados Históricos...</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4" id="loading-status">Conectando com a API da Caixa...</p>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div id="progress-bar" class="bg-primary h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-500 mt-2" id="progress-text">0%</p>
+        </div>
+    </div>
+
+    <!-- Resumo Geral -->
+    <div id="summary-section" class="container mx-auto px-4 py-8 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-6 text-center">📊 Resumo da Análise</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <div class="text-3xl font-bold text-blue-600 dark:text-blue-400" id="total-concursos">-</div>
+                    <div class="text-sm text-blue-700 dark:text-blue-300">Concursos Analisados</div>
+                </div>
+                
+                <div class="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <div class="text-3xl font-bold text-green-600 dark:text-green-400" id="total-combinacoes-unicas">-</div>
+                    <div class="text-sm text-green-700 dark:text-green-300">Combinações Únicas</div>
+                </div>
+                
+                <div class="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <div class="text-3xl font-bold text-purple-600 dark:text-purple-400" id="combinacao-mais-frequente">-</div>
+                    <div class="text-sm text-purple-700 dark:text-purple-300">Mais Frequente</div>
+                </div>
+                
+                <div class="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                    <div class="text-3xl font-bold text-orange-600 dark:text-orange-400" id="maior-potencial-jogos">-</div>
+                    <div class="text-sm text-orange-700 dark:text-orange-300">Maior Potencial</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div id="filters-section" class="container mx-auto px-4 py-4 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-lg font-semibold mb-4">🔍 Filtros de Análise</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Quantidade de Dígitos:</label>
+                    <select id="filter-qtd-digitos" class="w-full border dark:border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-700">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Frequência Mínima:</label>
+                    <input type="number" id="filter-freq-min" placeholder="Ex: 5" min="1" 
+                        class="w-full border dark:border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-700">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Jogos Mínimos:</label>
+                    <input type="number" id="filter-jogos-min" placeholder="Ex: 1000" min="1" 
+                        class="w-full border dark:border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-700">
+                </div>
+                
+                <div class="flex items-end">
+                    <button id="apply-filters" class="w-full bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-md font-bold text-sm">
+                        Aplicar Filtros
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top 3 Destaque -->
+    <div id="top3-section" class="container mx-auto px-4 py-8 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-6 text-center">🥇 Top 3 Combinações Mais Utilizadas</h3>
+            
+            <div id="top3-container" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Será preenchido dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div id="charts-section" class="container mx-auto px-4 py-8 hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Gráfico de Frequência -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold mb-4 text-center">📈 Frequência das Combinações</h3>
+                <div class="h-64">
+                    <canvas id="frequencyChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Gráfico de Potencial de Jogos -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold mb-4 text-center">🎯 Potencial de Jogos</h3>
+                <div class="h-64">
+                    <canvas id="jogosChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ranking Completo -->
+    <div id="ranking-section" class="container mx-auto px-4 py-8 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">📋 Ranking Completo das Combinações</h3>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                    Mostrando <span id="total-showing" class="font-bold text-primary">0</span> combinações
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-100 dark:bg-gray-700">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-sm font-semibold">Posição</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold">Combinação de Dígitos</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold">Qtd. Dígitos</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold">Frequência</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold">Números Válidos</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold">Jogos Possíveis</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold">Eficiência</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ranking-table-body">
+                        <!-- Será preenchido dinamicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes -->
+    <div id="details-modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold" id="modal-title">Detalhes da Combinação</h3>
+                    <button id="close-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div id="modal-content">
+                    <!-- Será preenchido dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let todosResultados = [];
+        let rankingCombinacoes = [];
+        let rankingFiltrado = [];
+        
+        // Elementos do DOM
+        const loadingSection = document.getElementById('loading-section');
+        const summarySection = document.getElementById('summary-section');
+        const filtersSection = document.getElementById('filters-section');
+        const top3Section = document.getElementById('top3-section');
+        const chartsSection = document.getElementById('charts-section');
+        const rankingSection = document.getElementById('ranking-section');
+        
+        // Função para atualizar status do loading
+        function updateLoadingStatus(text, percent) {
+            document.getElementById('loading-status').textContent = text;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+            document.getElementById('progress-text').textContent = `${Math.round(percent)}%`;
+        }
+
+        // Função para buscar dados da API da Caixa
+        async function buscarDadosCaixa() {
+            try {
+                updateLoadingStatus("Conectando com a API da Caixa...", 10);
+                
+                // Primeiro, buscar o último concurso
+                const ultimoConcursoResponse = await fetch('https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/');
+                const ultimoConcurso = await ultimoConcursoResponse.json();
+                
+                if (!ultimoConcurso || !ultimoConcurso.numero) {
+                    throw new Error('Não foi possível obter informações do último concurso');
+                }
+
+                const numeroUltimoConcurso = ultimoConcurso.numero;
+                updateLoadingStatus(`Encontrados ${numeroUltimoConcurso} concursos. Iniciando download...`, 20);
+
+                // Buscar todos os concursos
+                const resultados = [];
+                const loteSize = 50;
+                const totalLotes = Math.ceil(numeroUltimoConcurso / loteSize);
+                
+                for (let lote = 0; lote < totalLotes; lote++) {
+                    const inicio = lote * loteSize + 1;
+                    const fim = Math.min((lote + 1) * loteSize, numeroUltimoConcurso);
+                    
+                    const progressPercent = 20 + (lote / totalLotes) * 60;
+                    updateLoadingStatus(`Baixando concursos ${inicio}-${fim}...`, progressPercent);
+                    
+                    // Buscar concursos deste lote em paralelo
+                    const promises = [];
+                    for (let i = inicio; i <= fim; i++) {
+                        promises.push(buscarConcursoEspecifico(i));
+                    }
+                    
+                    const resultadosLote = await Promise.allSettled(promises);
+                    
+                    // Processar resultados do lote
+                    resultadosLote.forEach((resultado) => {
+                        if (resultado.status === 'fulfilled' && resultado.value) {
+                            resultados.push(resultado.value);
+                        }
+                    });
+                    
+                    // Pequena pausa para não sobrecarregar a API
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+
+                updateLoadingStatus("Analisando combinações de dígitos...", 90);
+                
+                // Processar e analisar os dados
+                todosResultados = resultados.sort((a, b) => a.numero - b.numero);
+                analisarCombinacoes();
+                
+                updateLoadingStatus("Finalizando...", 100);
+                
+                // Exibir resultados
+                setTimeout(() => {
+                    loadingSection.classList.add('hidden');
+                    exibirResultados();
+                }, 500);
+
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+                updateLoadingStatus(`Erro: ${error.message}`, 0);
+            }
+        }
+
+        // Função para buscar um concurso específico
+        async function buscarConcursoEspecifico(numero) {
+            try {
+                const response = await fetch(`https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/${numero}`);
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
+                
+                const dados = await response.json();
+                
+                if (dados && dados.listaDezenas && dados.listaDezenas.length === 7) {
+                    return {
+                        numero: dados.numero,
+                        data: dados.dataApuracao,
+                        dezenas: dados.listaDezenas.map(n => parseInt(n))
+                    };
+                }
+                return null;
+            } catch (error) {
+                return null;
+            }
+        }
+
+        // Função para analisar as combinações de dígitos
+        function analisarCombinacoes() {
+            const combinacoes = {};
+            
+            todosResultados.forEach(concurso => {
+                // Extrair dígitos únicos das dezenas
+                const digitosUnicos = new Set();
+                concurso.dezenas.forEach(dezena => {
+                    const dezenaStr = dezena.toString().padStart(2, '0');
+                    dezenaStr.split('').forEach(digito => digitosUnicos.add(parseInt(digito)));
+                });
+                
+                const digitosArray = Array.from(digitosUnicos).sort((a, b) => a - b);
+                const chave = digitosArray.join(',');
+                
+                if (!combinacoes[chave]) {
+                    combinacoes[chave] = {
+                        digitos: digitosArray,
+                        chave: chave,
+                        frequencia: 0,
+                        concursos: [],
+                        numerosValidos: calcularNumerosValidos(digitosArray),
+                        jogosPossiveis: 0
+                    };
+                }
+                
+                combinacoes[chave].frequencia++;
+                combinacoes[chave].concursos.push(concurso.numero);
+            });
+            
+            // Calcular jogos possíveis para cada combinação
+            Object.values(combinacoes).forEach(combo => {
+                combo.jogosPossiveis = calcularJogosPossiveis(combo.numerosValidos.length);
+                combo.eficiencia = combo.jogosPossiveis > 0 ? (combo.frequencia / combo.jogosPossiveis * 1000000).toFixed(2) : 0;
+            });
+            
+            // Ordenar por frequência (decrescente)
+            rankingCombinacoes = Object.values(combinacoes)
+                .sort((a, b) => b.frequencia - a.frequencia);
+                
+            rankingFiltrado = [...rankingCombinacoes];
+        }
+
+        // Função para calcular números válidos que podem ser formados com os dígitos
+        function calcularNumerosValidos(digitos) {
+            const numerosValidos = [];
+            
+            for (let i = 1; i <= 31; i++) {
+                const numStr = i.toString().padStart(2, '0');
+                const digitosDoNumero = numStr.split('').map(d => parseInt(d));
+                
+                if (digitosDoNumero.every(d => digitos.includes(d))) {
+                    numerosValidos.push(i);
+                }
+            }
+            
+            return numerosValidos;
+        }
+
+        // Função para calcular quantos jogos são possíveis (C(n,7))
+        function calcularJogosPossiveis(totalNumeros) {
+            if (totalNumeros < 7) return 0;
+            
+            // Fórmula de combinação C(n,7) = n! / (7! * (n-7)!)
+            function factorial(n) {
+                if (n <= 1) return 1;
+                return n * factorial(n - 1);
+            }
+            
+            function combination(n, r) {
+                if (r > n) return 0;
+                return factorial(n) / (factorial(r) * factorial(n - r));
+            }
+            
+            return combination(totalNumeros, 7);
+        }
+
+        // Função para exibir todos os resultados
+        function exibirResultados() {
+            exibirResumoGeral();
+            criarFiltros();
+            exibirTop3();
+            criarGraficos();
+            exibirRankingCompleto();
+            
+            // Mostrar todas as seções
+            summarySection.classList.remove('hidden');
+            filtersSection.classList.remove('hidden');
+            top3Section.classList.remove('hidden');
+            chartsSection.classList.remove('hidden');
+            rankingSection.classList.remove('hidden');
+        }
+
+        // Função para exibir resumo geral
+        function exibirResumoGeral() {
+            document.getElementById('total-concursos').textContent = todosResultados.length.toLocaleString('pt-BR');
+            document.getElementById('total-combinacoes-unicas').textContent = rankingCombinacoes.length.toLocaleString('pt-BR');
+            
+            if (rankingCombinacoes.length > 0) {
+                document.getElementById('combinacao-mais-frequente').textContent = 
+                    `${rankingCombinacoes[0].digitos.join(',')} (${rankingCombinacoes[0].frequencia}x)`;
+                
+                const maiorPotencial = rankingCombinacoes.reduce((max, combo) => 
+                    combo.jogosPossiveis > max.jogosPossiveis ? combo : max
+                );
+                document.getElementById('maior-potencial-jogos').textContent = 
+                    maiorPotencial.jogosPossiveis.toLocaleString('pt-BR');
+            }
+        }
+
+        // Função para criar filtros
+        function criarFiltros() {
+            const filterQtdDigitos = document.getElementById('filter-qtd-digitos');
+            
+            // Obter quantidades únicas de dígitos
+            const qtdDigitos = [...new Set(rankingCombinacoes.map(c => c.digitos.length))].sort((a, b) => a - b);
+            
+            qtdDigitos.forEach(qtd => {
+                const option = document.createElement('option');
+                option.value = qtd;
+                option.textContent = `${qtd} dígitos`;
+                filterQtdDigitos.appendChild(option);
+            });
+            
+            // Event listener para aplicar filtros
+            document.getElementById('apply-filters').addEventListener('click', aplicarFiltros);
+        }
+
+        // Função para aplicar filtros
+        function aplicarFiltros() {
+            const qtdDigitos = document.getElementById('filter-qtd-digitos').value;
+            const freqMin = parseInt(document.getElementById('filter-freq-min').value) || 0;
+            const jogosMin = parseInt(document.getElementById('filter-jogos-min').value) || 0;
+            
+            rankingFiltrado = rankingCombinacoes.filter(combo => {
+                if (qtdDigitos && combo.digitos.length != qtdDigitos) return false;
+                if (combo.frequencia < freqMin) return false;
+                if (combo.jogosPossiveis < jogosMin) return false;
+                return true;
+            });
+            
+            // Atualizar exibições
+            exibirTop3();
+            exibirRankingCompleto();
+            criarGraficos();
+        }
+
+        // Função para exibir Top 3
+        function exibirTop3() {
+            const container = document.getElementById('top3-container');
+            container.innerHTML = '';
+            
+            const top3 = rankingFiltrado.slice(0, 3);
+            const medals = ['medal-gold', 'medal-silver', 'medal-bronze'];
+            const positions = ['🥇', '🥈', '🥉'];
+            
+            top3.forEach((combo, index) => {
+                const card = document.createElement('div');
+                card.className = `ranking-card p-6 rounded-lg shadow-lg text-center ${medals[index]} text-white`;
+                
+                card.innerHTML = `
+                    <div class="text-4xl mb-2">${positions[index]}</div>
+                    <div class="text-xl font-bold mb-2">Posição ${index + 1}</div>
+                    <div class="text-lg font-semibold mb-3">[${combo.digitos.join(', ')}]</div>
+                    <div class="space-y-2 text-sm">
+                        <div><strong>${combo.digitos.length}</strong> dígitos</div>
+                        <div><strong>${combo.frequencia}</strong> aparições</div>
+                        <div><strong>${combo.numerosValidos.length}</strong> números válidos</div>
+                        <div><strong>${combo.jogosPossiveis.toLocaleString('pt-BR')}</strong> jogos possíveis</div>
+                    </div>
+                    <button onclick="mostrarDetalhes('${combo.chave}')" 
+                        class="mt-4 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded font-semibold">
+                        Ver Detalhes
+                    </button>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Função para criar gráficos
+        function criarGraficos() {
+            criarGraficoFrequencia();
+            criarGraficoJogos();
+        }
+
+        function criarGraficoFrequencia() {
+            const ctx = document.getElementById('frequencyChart').getContext('2d');
+            
+            // Destruir gráfico anterior se existir
+            if (window.frequencyChartInstance) {
+                window.frequencyChartInstance.destroy();
+            }
+            
+            const top10 = rankingFiltrado.slice(0, 10);
+            
+            window.frequencyChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top10.map(c => `[${c.digitos.join(',')}]`),
+                    datasets: [{
+                        label: 'Frequência',
+                        data: top10.map(c => c.frequencia),
+                        backgroundColor: 'rgba(93, 92, 222, 0.7)',
+                        borderColor: 'rgba(93, 92, 222, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Número de Aparições'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function criarGraficoJogos() {
+            const ctx = document.getElementById('jogosChart').getContext('2d');
+            
+            // Destruir gráfico anterior se existir
+            if (window.jogosChartInstance) {
+                window.jogosChartInstance.destroy();
+            }
+            
+            const top10 = rankingFiltrado.slice(0, 10);
+            
+            window.jogosChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: top10.map(c => `[${c.digitos.join(',')}]`),
+                    datasets: [{
+                        label: 'Jogos Possíveis',
+                        data: top10.map(c => c.jogosPossiveis),
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        borderColor: 'rgba(34, 197, 94, 1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Número de Jogos Possíveis'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Função para exibir ranking completo
+        function exibirRankingCompleto() {
+            const tbody = document.getElementById('ranking-table-body');
+            tbody.innerHTML = '';
+            
+            document.getElementById('total-showing').textContent = rankingFiltrado.length.toLocaleString('pt-BR');
+            
+            rankingFiltrado.forEach((combo, index) => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700 border-b dark:border-gray-700';
+                
+                // Determinar cor da posição
+                let positionClass = '';
+                if (index < 3) positionClass = 'text-yellow-600 font-bold';
+                else if (index < 10) positionClass = 'text-blue-600 font-semibold';
+                
+                row.innerHTML = `
+                    <td class="py-3 px-4 ${positionClass}">${index + 1}º</td>
+                    <td class="py-3 px-4 font-mono font-semibold">[${combo.digitos.join(', ')}]</td>
+                    <td class="py-3 px-4 text-center">${combo.digitos.length}</td>
+                    <td class="py-3 px-4 text-center font-bold text-primary">${combo.frequencia}</td>
+                    <td class="py-3 px-4 text-center">${combo.numerosValidos.length}</td>
+                    <td class="py-3 px-4 text-center font-semibold text-green-600">${combo.jogosPossiveis.toLocaleString('pt-BR')}</td>
+                    <td class="py-3 px-4 text-center text-sm">${combo.eficiencia}</td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="mostrarDetalhes('${combo.chave}')" 
+                            class="bg-primary hover:bg-primary/90 text-white px-3 py-1 rounded text-sm">
+                            Detalhes
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Função para mostrar detalhes de uma combinação
+        function mostrarDetalhes(chave) {
+            const combo = rankingCombinacoes.find(c => c.chave === chave);
+            if (!combo) return;
+            
+            const modal = document.getElementById('details-modal');
+            const title = document.getElementById('modal-title');
+            const content = document.getElementById('modal-content');
+            
+            title.textContent = `Detalhes da Combinação [${combo.digitos.join(', ')}]`;
+            
+            content.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                        <h4 class="font-semibold mb-3">📊 Estatísticas</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Quantidade de dígitos:</span>
+                                <span class="font-semibold">${combo.digitos.length}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Frequência de aparição:</span>
+                                <span class="font-semibold text-primary">${combo.frequencia} vezes</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Números válidos formados:</span>
+                                <span class="font-semibold">${combo.numerosValidos.length}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Jogos possíveis:</span>
+                                <span class="font-semibold text-green-600">${combo.jogosPossiveis.toLocaleString('pt-BR')}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Eficiência:</span>
+                                <span class="font-semibold">${combo.eficiencia}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                        <h4 class="font-semibold mb-3">🎯 Números Válidos</h4>
+                        <div class="grid grid-cols-6 gap-2 text-sm">
+                            ${combo.numerosValidos.map(num => 
+                                `<span class="bg-primary text-white px-2 py-1 rounded text-center">${num.toString().padStart(2, '0')}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <h4 class="font-semibold mb-3">📅 Concursos que utilizaram esta combinação</h4>
+                    <div class="grid grid-cols-8 md:grid-cols-12 gap-2 text-sm max-h-32 overflow-y-auto">
+                        ${combo.concursos.map(concurso => 
+                            `<span class="bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-center">${concurso}</span>`
+                        ).join('')}
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">
+                        Total: ${combo.concursos.length} concursos de ${todosResultados.length} analisados 
+                        (${((combo.frequencia / todosResultados.length) * 100).toFixed(2)}%)
+                    </p>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        // Event listeners
+        document.getElementById('close-modal').addEventListener('click', () => {
+            document.getElementById('details-modal').classList.add('hidden');
+        });
+
+        // Fechar modal clicando fora
+        document.getElementById('details-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'details-modal') {
+                document.getElementById('details-modal').classList.add('hidden');
+            }
+        });
+
+        // Inicializar aplicação
+        window.onload = function() {
+            buscarDadosCaixa();
+        };
+    </script>
+</body>
+</html>
