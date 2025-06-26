@@ -281,15 +281,126 @@
                 </div>
             </div>
             
-            <!-- Preview dos Jogos -->
+            <!-- Verificação de Acertos -->
+            <div class="mb-8">
+                <h4 class="font-semibold mb-4">🔍 Verificação de Acertos - Último Concurso</h4>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 border">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Dezenas Sorteadas (separadas por espaço):</label>
+                            <input type="text" id="dezenas-sorteadas" placeholder="Ex: 01 07 09 17 20 21 27" 
+                                class="w-full border dark:border-gray-600 rounded-md px-3 py-2 text-base focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-600">
+                            <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                <span id="contador-numeros">0/7 números</span> | 
+                                <span id="contador-jogos-destacados">0 jogos destacados</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Mês de Sorte:</label>
+                            <select id="mes-sorteado" class="w-full border dark:border-gray-600 rounded-md px-3 py-2 text-base focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-600">
+                                <option value="">Selecione o mês</option>
+                                <option value="Jan">Janeiro</option>
+                                <option value="Fev">Fevereiro</option>
+                                <option value="Mar">Março</option>
+                                <option value="Abr">Abril</option>
+                                <option value="Mai">Maio</option>
+                                <option value="Jun">Junho</option>
+                                <option value="Jul">Julho</option>
+                                <option value="Ago">Agosto</option>
+                                <option value="Set">Setembro</option>
+                                <option value="Out">Outubro</option>
+                                <option value="Nov">Novembro</option>
+                                <option value="Dez">Dezembro</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-end">
+                            <button id="verificar-acertos" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md font-bold text-sm">
+                                🎯 Verificar Acertos
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Resultados da verificação -->
+                    <div id="resultado-verificacao" class="hidden mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <!-- Será preenchido dinamicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Todos os 120 Jogos -->
             <div class="mb-6">
-                <h4 class="font-semibold mb-3">👀 Preview dos Jogos (Primeiros 20)</h4>
-                <div id="jogos-preview" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 max-h-64 overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="font-semibold">🎲 Todos os 120 Jogos Gerados</h4>
+                    <div class="flex gap-2">
+                        <button id="toggle-jogos-view" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm">
+                            📋 Visualização Compacta
+                        </button>
+                        <button id="limpar-filtros" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">
+                            🗑️ Limpar Filtros
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Filtros de visualização -->
+                <div class="mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Filtrar por Mês:</label>
+                            <select id="filtro-mes" class="w-full border dark:border-gray-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-600">
+                                <option value="">Todos os meses</option>
+                                <option value="Jan">Janeiro</option>
+                                <option value="Fev">Fevereiro</option>
+                                <option value="Mar">Março</option>
+                                <option value="Abr">Abril</option>
+                                <option value="Mai">Maio</option>
+                                <option value="Jun">Junho</option>
+                                <option value="Jul">Julho</option>
+                                <option value="Ago">Agosto</option>
+                                <option value="Set">Setembro</option>
+                                <option value="Out">Outubro</option>
+                                <option value="Nov">Novembro</option>
+                                <option value="Dez">Dezembro</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Ordenar por:</label>
+                            <select id="ordenacao" class="w-full border dark:border-gray-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-600">
+                                <option value="numero">Número do Jogo</option>
+                                <option value="mes">Mês de Sorte</option>
+                                <option value="acertos">Maior Acerto</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Jogos por página:</label>
+                            <select id="jogos-por-pagina" class="w-full border dark:border-gray-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-600">
+                                <option value="20">20 jogos</option>
+                                <option value="40">40 jogos</option>
+                                <option value="60">60 jogos</option>
+                                <option value="120">Todos (120)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-end">
+                            <button id="aplicar-filtros-jogos" class="w-full bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-md font-bold text-sm">
+                                Aplicar Filtros
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lista de jogos -->
+                <div id="lista-jogos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                     <!-- Será preenchido dinamicamente -->
                 </div>
-                <p class="text-center text-sm text-gray-500 mt-3">
-                    Exibindo apenas os primeiros 20 jogos. Use os botões de download para obter todos os 120 jogos.
-                </p>
+                
+                <!-- Paginação -->
+                <div id="paginacao" class="flex justify-center items-center mt-6 gap-2">
+                    <!-- Será preenchido dinamicamente -->
+                </div>
             </div>
         </div>
     </div>
@@ -319,6 +430,14 @@
         let todosResultados = [];
         let rankingCombinacoes = [];
         let rankingFiltrado = [];
+        let jogosGerados = [];
+        
+        // Variáveis para controle da visualização dos jogos
+        let jogosFiltrados = [];
+        let paginaAtual = 1;
+        let jogosPorPagina = 20;
+        let viewCompacta = false;
+        let ultimaVerificacao = null;
         
         // Elementos do DOM
         const loadingSection = document.getElementById('loading-section');
@@ -566,9 +685,6 @@
             
             return combination(totalNumeros, 7);
         }
-
-        // Variável global para armazenar os jogos gerados
-        let jogosGerados = [];
 
         // Função para exibir todos os resultados
         function exibirResultados() {
@@ -908,6 +1024,12 @@
                     return;
                 }
                 
+                // Lista dos 12 meses para o Dia de Sorte
+                const mesesDiaDeSorte = [
+                    'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+                    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+                ];
+                
                 jogosGerados = [];
                 const jogosSet = new Set(); // Para evitar duplicatas
                 
@@ -916,6 +1038,7 @@
                 const restante = 120 % melhoresCombinacoes.length;
                 
                 let numerosUtilizados = new Set();
+                let jogoIndex = 0;
                 
                 melhoresCombinacoes.forEach((combo, index) => {
                     const quantidadeJogos = jogosPorCombinacao + (index < restante ? 1 : 0);
@@ -928,12 +1051,23 @@
                         let tentativas = 0;
                         while (tentativas < 100) { // Máximo 100 tentativas para evitar loop infinito
                             // Gerar jogo aleatório com 7 números desta combinação
-                            const jogo = gerarJogoAleatorio(numerosDisponiveis);
-                            const jogoStr = jogo.join(' ');
+                            const dezenas = gerarJogoAleatorio(numerosDisponiveis);
+                            const jogoStr = dezenas.join(' ');
                             
                             if (!jogosSet.has(jogoStr)) {
                                 jogosSet.add(jogoStr);
-                                jogosGerados.push(jogo);
+                                
+                                // Determinar o mês baseado na posição do jogo (10 jogos por mês)
+                                const mesIndex = Math.floor(jogoIndex / 10);
+                                const mes = mesesDiaDeSorte[mesIndex % 12];
+                                
+                                jogosGerados.push({
+                                    dezenas: dezenas,
+                                    mes: mes,
+                                    numeroJogo: jogoIndex + 1
+                                });
+                                
+                                jogoIndex++;
                                 break;
                             }
                             tentativas++;
@@ -941,8 +1075,19 @@
                         
                         // Se não conseguiu gerar um jogo único, força um jogo mesmo que seja repetido
                         if (tentativas >= 100) {
-                            const jogo = gerarJogoAleatorio(numerosDisponiveis);
-                            jogosGerados.push(jogo);
+                            const dezenas = gerarJogoAleatorio(numerosDisponiveis);
+                            
+                            // Determinar o mês baseado na posição do jogo
+                            const mesIndex = Math.floor(jogoIndex / 10);
+                            const mes = mesesDiaDeSorte[mesIndex % 12];
+                            
+                            jogosGerados.push({
+                                dezenas: dezenas,
+                                mes: mes,
+                                numeroJogo: jogoIndex + 1
+                            });
+                            
+                            jogoIndex++;
                         }
                     }
                 });
@@ -950,8 +1095,19 @@
                 // Completar com jogos aleatórios se necessário
                 while (jogosGerados.length < 120) {
                     const todosNumeros = Array.from(numerosUtilizados);
-                    const jogo = gerarJogoAleatorio(todosNumeros);
-                    jogosGerados.push(jogo);
+                    const dezenas = gerarJogoAleatorio(todosNumeros);
+                    
+                    // Determinar o mês baseado na posição do jogo
+                    const mesIndex = Math.floor(jogoIndex / 10);
+                    const mes = mesesDiaDeSorte[mesIndex % 12];
+                    
+                    jogosGerados.push({
+                        dezenas: dezenas,
+                        mes: mes,
+                        numeroJogo: jogoIndex + 1
+                    });
+                    
+                    jogoIndex++;
                 }
                 
                 // Garantir que temos exatamente 120 jogos
@@ -961,8 +1117,8 @@
                 document.getElementById('jogos-baseados-em').textContent = melhoresCombinacoes.length;
                 document.getElementById('total-numeros-utilizados').textContent = numerosUtilizados.size;
                 
-                // Exibir preview
-                exibirPreviewJogos();
+                // Exibir todos os jogos
+                exibirTodosJogos();
                 
                 // Configurar downloads
                 configurarDownloads();
@@ -1004,25 +1160,375 @@
             return jogo.sort((a, b) => a - b).map(n => n.toString().padStart(2, '0'));
         }
         
-        // Função para exibir preview dos jogos
-        function exibirPreviewJogos() {
-            const previewContainer = document.getElementById('jogos-preview');
-            previewContainer.innerHTML = '';
+        // Função para exibir todos os jogos
+        function exibirTodosJogos() {
+            configurarEventListenersJogos();
+            jogosFiltrados = [...jogosGerados];
+            atualizarVisualizacaoJogos();
+        }
+
+        // Função para configurar event listeners dos jogos
+        function configurarEventListenersJogos() {
+            // Verificação de acertos
+            document.getElementById('verificar-acertos').addEventListener('click', verificarAcertos);
             
-            // Mostrar apenas os primeiros 20 jogos
-            const jogosParaPreview = jogosGerados.slice(0, 20);
+            // Busca inteligente em tempo real
+            document.getElementById('dezenas-sorteadas').addEventListener('input', buscarJogosTempoReal);
+            document.getElementById('mes-sorteado').addEventListener('change', buscarJogosTempoReal);
             
-            jogosParaPreview.forEach((jogo, index) => {
-                const jogoDiv = document.createElement('div');
-                jogoDiv.className = 'bg-gray-50 dark:bg-gray-700 p-3 rounded-lg border';
-                jogoDiv.innerHTML = `
-                    <div class="text-xs text-gray-500 mb-1">Jogo ${index + 1}</div>
-                    <div class="font-mono font-semibold text-primary">${jogo.join(' ')}</div>
-                `;
-                previewContainer.appendChild(jogoDiv);
+            // Filtros e visualização
+            document.getElementById('aplicar-filtros-jogos').addEventListener('click', aplicarFiltrosJogos);
+            document.getElementById('toggle-jogos-view').addEventListener('click', alternarVisualizacao);
+            document.getElementById('limpar-filtros').addEventListener('click', limparFiltrosJogos);
+            
+            // Controle de paginação
+            document.getElementById('jogos-por-pagina').addEventListener('change', (e) => {
+                jogosPorPagina = parseInt(e.target.value);
+                paginaAtual = 1;
+                atualizarVisualizacaoJogos();
             });
         }
-        
+
+        // Função para verificar acertos
+        function verificarAcertos() {
+            const dezenasInput = document.getElementById('dezenas-sorteadas').value.trim();
+            const mesSorteado = document.getElementById('mes-sorteado').value;
+            const resultadoDiv = document.getElementById('resultado-verificacao');
+            
+            if (!dezenasInput || !mesSorteado) {
+                alert('Por favor, preencha as dezenas sorteadas e o mês de sorte.');
+                return;
+            }
+            
+            // Processar dezenas
+            const dezenasSorteadas = dezenasInput.split(/\s+/)
+                .map(n => n.padStart(2, '0'))
+                .filter(n => n.match(/^\d{2}$/))
+                .sort();
+            
+            if (dezenasSorteadas.length !== 7) {
+                alert('Por favor, insira exatamente 7 dezenas válidas (01-31).');
+                return;
+            }
+            
+            // Verificar cada jogo
+            const resultados = jogosGerados.map((jogo, index) => {
+                const acertos = contarAcertos(jogo.dezenas, dezenasSorteadas);
+                const acertouMes = jogo.mes === mesSorteado;
+                
+                return {
+                    numeroJogo: jogo.numeroJogo,
+                    dezenas: jogo.dezenas,
+                    mes: jogo.mes,
+                    acertos: acertos,
+                    acertouMes: acertouMes,
+                    pontuacao: acertos + (acertouMes ? 1 : 0)
+                };
+            });
+            
+            // Ordenar por pontuação (acertos + mês)
+            resultados.sort((a, b) => b.pontuacao - a.pontuacao);
+            
+            ultimaVerificacao = {
+                dezenasSorteadas,
+                mesSorteado,
+                resultados
+            };
+            
+            exibirResultadoVerificacao(resultados, dezenasSorteadas, mesSorteado);
+            
+            // Atualizar visualização dos jogos para destacar acertos
+            atualizarVisualizacaoJogos();
+        }
+
+        // Função para contar acertos entre duas listas de dezenas
+        function contarAcertos(dezenas1, dezenas2) {
+            return dezenas1.filter(d => dezenas2.includes(d)).length;
+        }
+
+        // Função para exibir resultado da verificação
+        function exibirResultadoVerificacao(resultados, dezenasSorteadas, mesSorteado) {
+            const resultadoDiv = document.getElementById('resultado-verificacao');
+            
+            // Estatísticas gerais
+            const maxAcertos = Math.max(...resultados.map(r => r.acertos));
+            const jogosComMes = resultados.filter(r => r.acertouMes).length;
+            const melhoresJogos = resultados.filter(r => r.acertos === maxAcertos);
+            
+            // Distribuição de acertos
+            const distribuicao = {};
+            for (let i = 0; i <= 7; i++) {
+                distribuicao[i] = resultados.filter(r => r.acertos === i).length;
+            }
+            
+            resultadoDiv.innerHTML = `
+                <h5 class="font-bold text-lg mb-4">🎯 Resultado da Verificação</h5>
+                
+                <!-- Dezenas sorteadas -->
+                <div class="mb-4">
+                    <h6 class="font-semibold mb-2">Dezenas Sorteadas:</h6>
+                    <div class="flex flex-wrap gap-2">
+                        ${dezenasSorteadas.map(d => 
+                            `<span class="bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200 px-3 py-1 rounded font-mono font-bold">${d}</span>`
+                        ).join('')}
+                        <span class="bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 px-3 py-1 rounded font-bold">${mesSorteado}</span>
+                    </div>
+                </div>
+                
+                <!-- Estatísticas -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="text-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                        <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">${maxAcertos}</div>
+                        <div class="text-xs text-yellow-700 dark:text-yellow-300">Máximo de Acertos</div>
+                    </div>
+                    
+                    <div class="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                        <div class="text-2xl font-bold text-green-600 dark:text-green-400">${melhoresJogos.length}</div>
+                        <div class="text-xs text-green-700 dark:text-green-300">Jogos com ${maxAcertos} Acertos</div>
+                    </div>
+                    
+                    <div class="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">${jogosComMes}</div>
+                        <div class="text-xs text-blue-700 dark:text-blue-300">Acertaram o Mês</div>
+                    </div>
+                    
+                    <div class="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                        <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">${resultados.filter(r => r.pontuacao >= 4).length}</div>
+                        <div class="text-xs text-purple-700 dark:text-purple-300">4+ Pontos Total</div>
+                    </div>
+                </div>
+                
+                <!-- Distribuição de acertos -->
+                <div class="mb-6">
+                    <h6 class="font-semibold mb-3">📊 Distribuição de Acertos:</h6>
+                    <div class="grid grid-cols-4 md:grid-cols-8 gap-2 text-sm">
+                        ${Object.entries(distribuicao).map(([acertos, quantidade]) => 
+                            `<div class="text-center p-2 bg-gray-100 dark:bg-gray-700 rounded">
+                                <div class="font-bold text-primary">${quantidade}</div>
+                                <div class="text-xs">${acertos} acertos</div>
+                            </div>`
+                        ).join('')}
+                    </div>
+                </div>
+                
+                <!-- Top 10 melhores jogos -->
+                <div class="mb-4">
+                    <h6 class="font-semibold mb-3">🏆 Top 10 Melhores Jogos:</h6>
+                    <div class="space-y-2">
+                        ${resultados.slice(0, 10).map((resultado, index) => {
+                            const medalClass = index < 3 ? ['text-yellow-500', 'text-gray-500', 'text-orange-500'][index] : 'text-gray-400';
+                            const bgClass = resultado.acertos >= 4 ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : 
+                                           resultado.acertos >= 2 ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800' : 
+                                           'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600';
+                            
+                            return `<div class="flex items-center justify-between p-3 ${bgClass} border rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <span class="font-bold ${medalClass}">#${index + 1}</span>
+                                    <span class="text-sm text-gray-500">Jogo ${resultado.numeroJogo}:</span>
+                                    <span class="font-mono font-bold">${resultado.dezenas.join(' ')}</span>
+                                    <span class="text-sm font-bold text-blue-600">${resultado.mes}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-primary text-white px-2 py-1 rounded text-xs font-bold">
+                                        ${resultado.acertos} acertos
+                                    </span>
+                                    ${resultado.acertouMes ? '<span class="bg-blue-500 text-white px-2 py-1 rounded text-xs">✓ Mês</span>' : ''}
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+            
+            resultadoDiv.classList.remove('hidden');
+        }
+
+        // Função para aplicar filtros nos jogos
+        function aplicarFiltrosJogos() {
+            const filtroMes = document.getElementById('filtro-mes').value;
+            const ordenacao = document.getElementById('ordenacao').value;
+            
+            // Filtrar jogos
+            jogosFiltrados = jogosGerados.filter(jogo => {
+                if (filtroMes && jogo.mes !== filtroMes) return false;
+                return true;
+            });
+            
+            // Ordenar jogos
+            if (ordenacao === 'numero') {
+                jogosFiltrados.sort((a, b) => a.numeroJogo - b.numeroJogo);
+            } else if (ordenacao === 'mes') {
+                const mesesOrdem = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+                jogosFiltrados.sort((a, b) => {
+                    const indexA = mesesOrdem.indexOf(a.mes);
+                    const indexB = mesesOrdem.indexOf(b.mes);
+                    return indexA - indexB || a.numeroJogo - b.numeroJogo;
+                });
+            } else if (ordenacao === 'acertos' && ultimaVerificacao) {
+                jogosFiltrados.sort((a, b) => {
+                    const resultA = ultimaVerificacao.resultados.find(r => r.numeroJogo === a.numeroJogo);
+                    const resultB = ultimaVerificacao.resultados.find(r => r.numeroJogo === b.numeroJogo);
+                    return (resultB ? resultB.pontuacao : 0) - (resultA ? resultA.pontuacao : 0);
+                });
+            }
+            
+            paginaAtual = 1;
+            atualizarVisualizacaoJogos();
+        }
+
+        // Função para limpar filtros
+        function limparFiltrosJogos() {
+            document.getElementById('filtro-mes').value = '';
+            document.getElementById('ordenacao').value = 'numero';
+            document.getElementById('jogos-por-pagina').value = '20';
+            jogosPorPagina = 20;
+            jogosFiltrados = [...jogosGerados];
+            paginaAtual = 1;
+            atualizarVisualizacaoJogos();
+        }
+
+        // Função para alternar visualização
+        function alternarVisualizacao() {
+            viewCompacta = !viewCompacta;
+            const btn = document.getElementById('toggle-jogos-view');
+            btn.textContent = viewCompacta ? '📋 Visualização Expandida' : '📋 Visualização Compacta';
+            atualizarVisualizacaoJogos();
+        }
+
+        // Função para atualizar visualização dos jogos
+        function atualizarVisualizacaoJogos() {
+            const container = document.getElementById('lista-jogos');
+            const paginacaoContainer = document.getElementById('paginacao');
+            
+            // Calcular paginação
+            const totalJogos = jogosFiltrados.length;
+            const totalPaginas = Math.ceil(totalJogos / jogosPorPagina);
+            const inicio = (paginaAtual - 1) * jogosPorPagina;
+            const fim = Math.min(inicio + jogosPorPagina, totalJogos);
+            const jogosParaExibir = jogosFiltrados.slice(inicio, fim);
+            
+            // Limpar container
+            container.innerHTML = '';
+            
+            // Exibir jogos
+            jogosParaExibir.forEach(jogo => {
+                const jogoDiv = document.createElement('div');
+                
+                // Verificar se tem resultado de verificação para este jogo
+                let resultadoVerificacao = null;
+                if (ultimaVerificacao) {
+                    resultadoVerificacao = ultimaVerificacao.resultados.find(r => r.numeroJogo === jogo.numeroJogo);
+                }
+                
+                // Classes para destacar acertos
+                let borderClass = 'border-gray-200 dark:border-gray-600';
+                let bgClass = 'bg-gray-50 dark:bg-gray-700';
+                
+                if (resultadoVerificacao) {
+                    if (resultadoVerificacao.acertos >= 4) {
+                        borderClass = 'border-green-500';
+                        bgClass = 'bg-green-50 dark:bg-green-900/20';
+                    } else if (resultadoVerificacao.acertos >= 2) {
+                        borderClass = 'border-yellow-500';
+                        bgClass = 'bg-yellow-50 dark:bg-yellow-900/20';
+                    }
+                }
+                
+                if (viewCompacta) {
+                    jogoDiv.className = `${bgClass} p-2 rounded border ${borderClass} text-sm`;
+                    jogoDiv.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-500">#${jogo.numeroJogo}</span>
+                            <span class="font-mono font-bold text-primary">${jogo.dezenas.join(' ')}</span>
+                            <span class="text-xs font-bold text-blue-600">${jogo.mes}</span>
+                            ${resultadoVerificacao ? `<span class="text-xs bg-primary text-white px-1 rounded">${resultadoVerificacao.acertos}</span>` : ''}
+                        </div>
+                    `;
+                } else {
+                    jogoDiv.className = `${bgClass} p-4 rounded-lg border ${borderClass}`;
+                    jogoDiv.innerHTML = `
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-500">Jogo ${jogo.numeroJogo}</span>
+                            ${resultadoVerificacao ? `
+                                <div class="flex gap-2">
+                                    <span class="bg-primary text-white px-2 py-1 rounded text-xs">${resultadoVerificacao.acertos} acertos</span>
+                                    ${resultadoVerificacao.acertouMes ? '<span class="bg-blue-500 text-white px-2 py-1 rounded text-xs">✓ Mês</span>' : ''}
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="font-mono font-bold text-lg text-primary mb-2">${jogo.dezenas.join(' ')}</div>
+                        <div class="text-sm font-bold text-blue-600">Mês: ${jogo.mes}</div>
+                        ${resultadoVerificacao ? `
+                            <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                                Dezenas acertadas: ${resultadoVerificacao.acertos > 0 ? 
+                                    jogo.dezenas.filter(d => ultimaVerificacao.dezenasSorteadas.includes(d)).join(', ') : 
+                                    'Nenhuma'
+                                }
+                            </div>
+                        ` : ''}
+                    `;
+                }
+                
+                container.appendChild(jogoDiv);
+            });
+            
+            // Atualizar paginação
+            atualizarPaginacao(totalPaginas, paginacaoContainer);
+        }
+
+        // Função para atualizar paginação
+        function atualizarPaginacao(totalPaginas, container) {
+            container.innerHTML = '';
+            
+            if (totalPaginas <= 1) return;
+            
+            // Botão anterior
+            const btnAnterior = document.createElement('button');
+            btnAnterior.textContent = '← Anterior';
+            btnAnterior.className = `px-3 py-2 text-sm rounded ${paginaAtual === 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90'}`;
+            btnAnterior.disabled = paginaAtual === 1;
+            btnAnterior.addEventListener('click', () => {
+                if (paginaAtual > 1) {
+                    paginaAtual--;
+                    atualizarVisualizacaoJogos();
+                }
+            });
+            container.appendChild(btnAnterior);
+            
+            // Números das páginas
+            const maxBotoes = 5;
+            let inicio = Math.max(1, paginaAtual - Math.floor(maxBotoes / 2));
+            let fim = Math.min(totalPaginas, inicio + maxBotoes - 1);
+            
+            if (fim - inicio < maxBotoes - 1) {
+                inicio = Math.max(1, fim - maxBotoes + 1);
+            }
+            
+            for (let i = inicio; i <= fim; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.className = `px-3 py-2 text-sm rounded ${i === paginaAtual ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500'}`;
+                btn.addEventListener('click', () => {
+                    paginaAtual = i;
+                    atualizarVisualizacaoJogos();
+                });
+                container.appendChild(btn);
+            }
+            
+            // Botão próxima
+            const btnProxima = document.createElement('button');
+            btnProxima.textContent = 'Próxima →';
+            btnProxima.className = `px-3 py-2 text-sm rounded ${paginaAtual === totalPaginas ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-primary text-white hover:bg-primary/90'}`;
+            btnProxima.disabled = paginaAtual === totalPaginas;
+            btnProxima.addEventListener('click', () => {
+                if (paginaAtual < totalPaginas) {
+                    paginaAtual++;
+                    atualizarVisualizacaoJogos();
+                }
+            });
+            container.appendChild(btnProxima);
+        }
+
         // Função para configurar os downloads
         function configurarDownloads() {
             // Download HTML
@@ -1056,6 +1562,7 @@
                         .jogo { display: inline-block; margin: 5px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; background-color: #f9f9f9; font-family: monospace; font-weight: bold; }
                         .header { text-align: center; margin-bottom: 30px; }
                         .data { text-align: center; margin-bottom: 20px; font-size: 14px; color: #666; }
+                        .mes { color: #5D5CDE; font-weight: bold; }
                         @media (prefers-color-scheme: dark) {
                             body { background-color: #1a1a1a; color: #e0e0e0; }
                             .jogo { background-color: #333; border-color: #555; color: #fff; }
@@ -1069,13 +1576,14 @@
                     </div>
                     <div class="data">
                         Gerado em: ${new Date().toLocaleString('pt-BR')}<br>
-                        Total de concursos analisados: ${todosResultados.length}
+                        Total de concursos analisados: ${todosResultados.length}<br>
+                        Distribuição: 10 jogos por mês de sorte
                     </div>
                     <div class="jogos">
                 `;
                 
                 jogosGerados.forEach((jogo) => {
-                    htmlContent += `<div class="jogo">${jogo.join(' ')}</div>\n`;
+                    htmlContent += `<div class="jogo">${jogo.dezenas.join(' ')} <span class="mes">${jogo.mes}</span></div>\n`;
                 });
                 
                 htmlContent += `
@@ -1102,7 +1610,7 @@
                 let txtContent = '';
                 
                 jogosGerados.forEach((jogo) => {
-                    txtContent += `${jogo.join(' ')}\n`;
+                    txtContent += `${jogo.dezenas.join(' ')} ${jogo.mes}\n`;
                 });
                 
                 const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
@@ -1122,13 +1630,24 @@
             try {
                 let xlsxContent = `
                 <table border="1">
+                    <tr>
+                        <th>Número 1</th>
+                        <th>Número 2</th>
+                        <th>Número 3</th>
+                        <th>Número 4</th>
+                        <th>Número 5</th>
+                        <th>Número 6</th>
+                        <th>Número 7</th>
+                        <th>Mês de Sorte</th>
+                    </tr>
                 `;
                 
                 jogosGerados.forEach((jogo) => {
                     xlsxContent += `<tr>`;
-                    jogo.forEach(numero => {
+                    jogo.dezenas.forEach(numero => {
                         xlsxContent += `<td>${numero}</td>`;
                     });
+                    xlsxContent += `<td>${jogo.mes}</td>`;
                     xlsxContent += `</tr>\n`;
                 });
                 
@@ -1144,6 +1663,62 @@
                 console.error('Erro ao gerar XLSX:', error);
                 alert('Erro ao gerar arquivo XLSX.');
             }
+        }
+
+        // Função para busca inteligente em tempo real
+        function buscarJogosTempoReal() {
+            const dezenasInput = document.getElementById('dezenas-sorteadas').value.trim();
+            const mesSorteado = document.getElementById('mes-sorteado').value;
+            
+            // Processar números digitados
+            const numerosDigitados = dezenasInput.split(/\s+/)
+                .map(n => n.padStart(2, '0'))
+                .filter(n => n.match(/^\d{2}$/) && parseInt(n) >= 1 && parseInt(n) <= 31);
+            
+            // Atualizar contadores
+            document.getElementById('contador-numeros').textContent = `${numerosDigitados.length}/7 números`;
+            
+            // Se não há números digitados, limpar destaque
+            if (numerosDigitados.length === 0 && !mesSorteado) {
+                document.getElementById('contador-jogos-destacados').textContent = '0 jogos destacados';
+                atualizarVisualizacaoJogos();
+                return;
+            }
+            
+            // Criar verificação temporária para destaque
+            let verificacaoTemporaria = null;
+            
+            if (numerosDigitados.length > 0 || mesSorteado) {
+                const resultados = jogosGerados.map((jogo) => {
+                    const acertos = numerosDigitados.length > 0 ? contarAcertos(jogo.dezenas, numerosDigitados) : 0;
+                    const acertouMes = mesSorteado ? jogo.mes === mesSorteado : false;
+                    
+                    return {
+                        numeroJogo: jogo.numeroJogo,
+                        dezenas: jogo.dezenas,
+                        mes: jogo.mes,
+                        acertos: acertos,
+                        acertouMes: acertouMes,
+                        pontuacao: acertos + (acertouMes ? 0.5 : 0) // Meio ponto para mês para não interferir muito
+                    };
+                });
+                
+                // Contar jogos com pelo menos 1 acerto ou mês correto
+                const jogosDestacados = resultados.filter(r => r.acertos > 0 || r.acertouMes).length;
+                document.getElementById('contador-jogos-destacados').textContent = `${jogosDestacados} jogos destacados`;
+                
+                verificacaoTemporaria = {
+                    dezenasSorteadas: numerosDigitados,
+                    mesSorteado: mesSorteado,
+                    resultados: resultados
+                };
+            }
+            
+            // Usar verificação temporária para destacar
+            const verificacaoOriginal = ultimaVerificacao;
+            ultimaVerificacao = verificacaoTemporaria;
+            atualizarVisualizacaoJogos();
+            ultimaVerificacao = verificacaoOriginal; // Restaurar verificação oficial
         }
 
         // Inicializar aplicação
