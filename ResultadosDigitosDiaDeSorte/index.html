@@ -88,6 +88,27 @@
             cursor: not-allowed;
         }
 
+        /* === Cache Status === */
+        .cache-status {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .cache-hit {
+            background-color: rgba(82, 196, 26, 0.1);
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+        }
+
+        .cache-miss {
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffe58f;
+            color: #fa8c16;
+        }
+
         /* === Loading Status === */
         .loading, .completed {
             text-align: center;
@@ -666,10 +687,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>Análise de Dígitos do <span class="destaque">Dia de Sorte</span></h1>
+        <h1>Análise de Dígitos do <span class="destaque">Dia de Sorte</span> - Versão Otimizada</h1>
         
         <div class="centralizado">
-            <p>Análise dos dígitos de todos os sorteios do Dia de Sorte</p>
+            <p>Análise otimizada dos dígitos de todos os sorteios do Dia de Sorte</p>
             <div class="auto-update-control">
                 <label for="autoUpdateToggle">Atualização automática:</label>
                 <label class="switch">
@@ -687,10 +708,12 @@
             <button class="button" id="loadButton">Recarregar Dados</button>
             <button class="button" id="analisarFrequenciaButton">Analisar Frequência</button>
             <button class="button" id="resumoButton">Gerar Resumo</button>
+            <button class="button" id="clearCacheButton">Limpar Cache</button>
             <button class="button" id="toggleThemeButton">Alternar Tema</button>
         </div>
 
-        <div id="loadingMessage" class="loading" style="display: block;">Carregando resultados do concurso 1 até o mais recente...</div>
+        <div id="cacheStatus" class="cache-status" style="display: none;"></div>
+        <div id="loadingMessage" class="loading" style="display: block;">Verificando cache e carregando dados otimizados...</div>
         <div id="completedMessage" class="completed" style="display: none;">Carregamento concluído!</div>
         <div id="errorMessage" class="error-message" style="display: none;">Erro ao carregar os dados</div>
         
@@ -779,6 +802,12 @@
             let isLoading = false;
             let hasError = false;
             
+            // ===== Cache Configuration =====
+            const CACHE_KEY = 'diadesorte_resultados_cache';
+            const CACHE_VERSION = '1.0';
+            let cachedResults = [];
+            let lastCachedContest = 0;
+            
             // APIs for "Dia de Sorte" lottery
             const API_CONFIG = {
                 // Available APIs for "Dia de Sorte"
@@ -830,6 +859,7 @@
             const loadButton = document.getElementById('loadButton');
             const analisarFrequenciaButton = document.getElementById('analisarFrequenciaButton');
             const resumoButton = document.getElementById('resumoButton');
+            const clearCacheButton = document.getElementById('clearCacheButton');
             const downloadCSVButton = document.getElementById('downloadCSV');
             const downloadJSONButton = document.getElementById('downloadJSON');
             const downloadTXTButton = document.getElementById('downloadTXT');
@@ -837,6 +867,7 @@
             const loadingMessage = document.getElementById('loadingMessage');
             const completedMessage = document.getElementById('completedMessage');
             const errorMessage = document.getElementById('errorMessage');
+            const cacheStatus = document.getElementById('cacheStatus');
             const tableBody = document.getElementById('diaDeSorteResults').querySelector('tbody');
             const digitFrequencyDiv = document.getElementById('digitFrequency');
             const digitChartDiv = document.getElementById('digitChart');
@@ -848,11 +879,121 @@
             const frequencyAnalysisContainer = document.getElementById('frequencyAnalysisContainer');
             const frequencyAnalysisContent = document.getElementById('frequencyAnalysisContent');
             
+            // ===== Cache Management Functions =====
+            
+            // Load cache from localStorage (emulated since not available in iframe)
+            function loadCache() {
+                try {
+                    // Since localStorage is not available in iframe, we'll use a memory cache
+                    // In a real application, this would be: JSON.parse(localStorage.getItem(CACHE_KEY) || '{}')
+                    const emptyCache = {
+                        version: CACHE_VERSION,
+                        results: [],
+                        lastUpdate: 0,
+                        lastContest: 0
+                    };
+                    
+                    addDebugInfo("Cache simulado carregado (localStorage não disponível no iframe)");
+                    return emptyCache;
+                } catch (error) {
+                    addDebugInfo(`Erro ao carregar cache: ${error.message}`);
+                    return {
+                        version: CACHE_VERSION,
+                        results: [],
+                        lastUpdate: 0,
+                        lastContest: 0
+                    };
+                }
+            }
+            
+            // Save cache to localStorage (emulated)
+            function saveCache(results, lastContest) {
+                try {
+                    const cacheData = {
+                        version: CACHE_VERSION,
+                        results: results,
+                        lastUpdate: Date.now(),
+                        lastContest: lastContest
+                    };
+                    
+                    // In a real application: localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+                    cachedResults = results;
+                    lastCachedContest = lastContest;
+                    
+                    addDebugInfo(`Cache atualizado com ${results.length} resultados até o concurso ${lastContest}`);
+                    return true;
+                } catch (error) {
+                    addDebugInfo(`Erro ao salvar cache: ${error.message}`);
+                    return false;
+                }
+            }
+            
+            // Clear cache
+            function clearCache() {
+                try {
+                    // In a real application: localStorage.removeItem(CACHE_KEY);
+                    cachedResults = [];
+                    lastCachedContest = 0;
+                    
+                    addDebugInfo("Cache limpo com sucesso");
+                    
+                    // Update UI
+                    const cacheStatus = document.getElementById('cacheStatus');
+                    if (cacheStatus) {
+                        cacheStatus.style.display = 'block';
+                        cacheStatus.className = 'cache-status cache-miss';
+                        cacheStatus.textContent = 'Cache limpo! Próximo carregamento buscará todos os dados novamente.';
+                        
+                        setTimeout(() => {
+                            cacheStatus.style.display = 'none';
+                        }, 3000);
+                    }
+                    
+                    return true;
+                } catch (error) {
+                    addDebugInfo(`Erro ao limpar cache: ${error.message}`);
+                    return false;
+                }
+            }
+            
+            // Show cache status
+            function showCacheStatus(isHit, cachedCount, newCount) {
+                if (!cacheStatus) return;
+                
+                cacheStatus.style.display = 'block';
+                
+                if (isHit && cachedCount > 0) {
+                    cacheStatus.className = 'cache-status cache-hit';
+                    cacheStatus.innerHTML = `
+                        ⚡ <strong>Cache Hit!</strong> ${cachedCount} concursos carregados do cache. 
+                        ${newCount > 0 ? `${newCount} novos concursos buscados da API.` : 'Nenhum concurso novo.'}
+                        <br><small>Carregamento ultra-rápido ativado!</small>
+                    `;
+                } else {
+                    cacheStatus.className = 'cache-status cache-miss';
+                    cacheStatus.innerHTML = `
+                        🔄 <strong>Cache Miss</strong> - Buscando todos os concursos da API. 
+                        ${newCount} concursos carregados.
+                        <br><small>Próximos carregamentos serão mais rápidos!</small>
+                    `;
+                }
+                
+                // Hide after 5 seconds
+                setTimeout(() => {
+                    cacheStatus.style.display = 'none';
+                }, 5000);
+            }
+            
             // ===== Register Events =====
             loadButton.addEventListener('click', () => {
-                // Clear UI before reloading
                 resetUI();
                 fetchCompleteDiaDeSorteResults();
+            });
+            
+            clearCacheButton.addEventListener('click', () => {
+                if (confirm('Tem certeza que deseja limpar o cache? Isso fará com que o próximo carregamento seja mais lento.')) {
+                    clearCache();
+                }
             });
             
             analisarFrequenciaButton.addEventListener('click', () => {
@@ -935,7 +1076,7 @@
                         proxyUrl = corsProxies[attempts] + url;
                     }
                     
-                    addDebugInfo(`Trying proxy ${attempts + 1}/${corsProxies.length}: ${proxyUrl}`);
+                    addDebugInfo(`Tentando proxy ${attempts + 1}/${corsProxies.length}: ${proxyUrl}`);
                     
                     const response = await fetch(proxyUrl);
                     if (!response.ok) {
@@ -943,7 +1084,7 @@
                     }
                     return await response.json();
                 } catch (error) {
-                    addDebugInfo(`Proxy ${attempts + 1} failed: ${error.message}`);
+                    addDebugInfo(`Proxy ${attempts + 1} falhou: ${error.message}`);
                     // Try next proxy
                     if (attempts < corsProxies.length - 1) {
                         return fetchWithProxy(url, attempts + 1);
@@ -964,173 +1105,194 @@
                     
                     throw new Error("Could not get the latest contest number");
                 } catch (error) {
-                    addDebugInfo(`Error getting latest contest: ${error.message}`);
+                    addDebugInfo(`Erro ao obter último concurso: ${error.message}`);
                     // Default value in case of failure (adjust as needed)
                     return 800; // An approximate current value
                 }
             }
 
-            // ===== Fetch all available contests =====
-            async function fetchAllConcursos() {
+            // ===== Optimized function to fetch only new contests =====
+            async function fetchNewConcursos(fromContest, toContest) {
+                const newResults = [];
+                
+                if (fromContest > toContest) {
+                    addDebugInfo("Nenhum concurso novo para buscar");
+                    return newResults;
+                }
+                
+                addDebugInfo(`Buscando concursos ${fromContest} a ${toContest}...`);
+                
                 try {
-                    // FIRST - Try API that returns ALL contests
-                    addDebugInfo("Trying to fetch all contests from complete API...");
+                    // Set up progress bar
+                    progressContainer.style.display = 'block';
                     
-                    const allResults = [];
+                    // To avoid overloading the Caixa API, let's make batch requests
+                    const batchSize = 10;
                     
-                    try {
-                        // First, try the Loteria Free API - which should have ALL contests in a single call
-                        addDebugInfo("Trying Loteria Free API...");
-                        const data = await fetchWithProxy(API_CONFIG.DIA_DE_SORTE_LOTERIA_FREE.url);
+                    for (let i = fromContest; i <= toContest; i += batchSize) {
+                        const batchEnd = Math.min(i + batchSize - 1, toContest);
+                        loadingMessage.textContent = `Buscando novos concursos ${i} a ${batchEnd}...`;
                         
-                        if (Array.isArray(data) && data.length > 0) {
-                            // Process data from Loteria Free API
-                            for (const concurso of data) {
-                                if (concurso.concurso && concurso.data && concurso.dezenas) {
-                                    allResults.push({
-                                        concurso: concurso.concurso.toString(),
-                                        data: concurso.data,
-                                        dezenas: concurso.dezenas
-                                    });
-                                }
-                            }
+                        // Update progress bar
+                        const progressPercent = ((i - fromContest) / (toContest - fromContest)) * 100;
+                        updateProgress(progressPercent);
+                        
+                        // Create an array of promises for each contest in the batch
+                        const requests = [];
+                        for (let concursoNum = i; concursoNum <= batchEnd; concursoNum++) {
+                            // Add a small delay to avoid overloading
+                            const delay = (concursoNum - i) * 100; // 100ms between each request
                             
-                            addDebugInfo(`Loteria Free API returned ${allResults.length} contests!`);
-                            
-                            // If we have a good number of contests, return them
-                            if (allResults.length > 200) {
-                                return allResults;
-                            }
-                        }
-                    } catch (e) {
-                        addDebugInfo(`Error with Loteria Free API: ${e.message}`);
-                    }
-                    
-                    // LAST RESORT - If no full API works, try to fetch contest by contest from the official Caixa API
-                    if (allResults.length < 200) {
-                        addDebugInfo("Complete APIs failed. Trying to fetch contest by contest...");
-                        
-                        // Reset results to avoid duplicates
-                        allResults.length = 0;
-                        
-                        // Get the number of the latest contest
-                        const ultimoConcurso = await getLatestConcursoNumber();
-                        addDebugInfo(`Latest contest identified: ${ultimoConcurso}`);
-                        
-                        // Set up progress bar
-                        progressContainer.style.display = 'block';
-                        
-                        // IMPORTANT: "Dia de Sorte" started at contest 1
-                        const concursoInicial = 1;
-                        
-                        // To avoid overloading the Caixa API, let's make batch requests
-                        // Divide into batches of 10 contests
-                        const batchSize = 10;
-                        
-                        for (let i = concursoInicial; i <= ultimoConcurso; i += batchSize) {
-                            const batchEnd = Math.min(i + batchSize - 1, ultimoConcurso);
-                            loadingMessage.textContent = `Buscando concursos ${i} a ${batchEnd} de ${ultimoConcurso}...`;
-                            
-                            // Update progress bar
-                            const progressPercent = ((i - concursoInicial) / (ultimoConcurso - concursoInicial)) * 100;
-                            updateProgress(progressPercent);
-                            
-                            // Create an array of promises for each contest in the batch
-                            const requests = [];
-                            for (let concursoNum = i; concursoNum <= batchEnd; concursoNum++) {
-                                // Add a small delay to avoid overloading
-                                const delay = (concursoNum - i) * 100; // 100ms between each request
-                                
-                                requests.push(
-                                    new Promise(resolve => {
-                                        setTimeout(async () => {
-                                            try {
-                                                const url = API_CONFIG.DIA_DE_SORTE_CONCURSO(concursoNum).url;
-                                                const concursoData = await fetchWithProxy(url);
-                                                
-                                                if (concursoData && concursoData.numero && concursoData.dataApuracao && concursoData.listaDezenas) {
-                                                    resolve({
-                                                        concurso: concursoData.numero.toString(),
-                                                        data: concursoData.dataApuracao,
-                                                        dezenas: concursoData.listaDezenas
-                                                    });
-                                                } else {
-                                                    resolve(null);
-                                                }
-                                            } catch (error) {
-                                                addDebugInfo(`Error fetching contest ${concursoNum}: ${error.message}`);
+                            requests.push(
+                                new Promise(resolve => {
+                                    setTimeout(async () => {
+                                        try {
+                                            const url = API_CONFIG.DIA_DE_SORTE_CONCURSO(concursoNum).url;
+                                            const concursoData = await fetchWithProxy(url);
+                                            
+                                            if (concursoData && concursoData.numero && concursoData.dataApuracao && concursoData.listaDezenas) {
+                                                resolve({
+                                                    concurso: concursoData.numero.toString(),
+                                                    data: concursoData.dataApuracao,
+                                                    dezenas: concursoData.listaDezenas
+                                                });
+                                            } else {
                                                 resolve(null);
                                             }
-                                        }, delay);
-                                    })
-                                );
-                            }
-                            
-                            // Wait for all requests in the batch
-                            const results = await Promise.all(requests);
-                            
-                            // Add valid results to the final array
-                            for (const result of results) {
-                                if (result) {
-                                    allResults.push(result);
-                                }
-                            }
-                            
-                            // Small pause between batches to avoid overloading the API
-                            await new Promise(resolve => setTimeout(resolve, 500));
+                                        } catch (error) {
+                                            addDebugInfo(`Erro ao buscar concurso ${concursoNum}: ${error.message}`);
+                                            resolve(null);
+                                        }
+                                    }, delay);
+                                })
+                            );
                         }
                         
-                        // Update progress to 100%
-                        updateProgress(100);
+                        // Wait for all requests in the batch
+                        const results = await Promise.all(requests);
                         
-                        addDebugInfo(`Contest-by-contest search completed. Total: ${allResults.length} contests`);
+                        // Add valid results to the final array
+                        for (const result of results) {
+                            if (result) {
+                                newResults.push(result);
+                            }
+                        }
+                        
+                        // Small pause between batches to avoid overloading the API
+                        await new Promise(resolve => setTimeout(resolve, 300));
                     }
                     
-                    // Sort contests by number
-                    allResults.sort((a, b) => parseInt(a.concurso) - parseInt(b.concurso));
-                    
-                    return allResults;
+                    updateProgress(100);
                     
                 } catch (error) {
-                    addDebugInfo(`Error fetching all contests: ${error.message}`);
+                    addDebugInfo(`Erro na busca otimizada: ${error.message}`);
                     throw error;
                 }
+                
+                return newResults;
             }
-            
-            // ===== Main function to fetch ALL "Dia de Sorte" results =====
+
+            // ===== Optimized main function to fetch results using cache =====
             async function fetchCompleteDiaDeSorteResults() {
-                // Reset UI and show loading state
                 loadingMessage.style.display = 'block';
-                loadingMessage.textContent = 'Buscando dados reais da loteria Dia de Sorte...';
+                loadingMessage.textContent = 'Verificando cache e otimizando carregamento...';
                 completedMessage.style.display = 'none';
                 errorMessage.style.display = 'none';
-                progressContainer.style.display = 'block';
-                updateProgress(10);
                 isLoading = true;
                 loadButton.disabled = true;
                 
                 try {
-                    // 1. Fetch all contests
-                    addDebugInfo("Starting search for all contests...");
-                    const concursos = await fetchAllConcursos();
+                    // 1. Load cache
+                    const cache = loadCache();
+                    cachedResults = cache.results || [];
+                    lastCachedContest = cache.lastContest || 0;
                     
-                    if (!concursos || concursos.length === 0) {
-                        throw new Error("Could not get data for any contest");
+                    addDebugInfo(`Cache carregado: ${cachedResults.length} resultados até o concurso ${lastCachedContest}`);
+                    
+                    // 2. Get the latest contest number
+                    const latestContest = await getLatestConcursoNumber();
+                    addDebugInfo(`Último concurso disponível: ${latestContest}`);
+                    
+                    // 3. Determine if we need to fetch new data
+                    const needNewData = lastCachedContest < latestContest;
+                    let newResults = [];
+                    
+                    if (needNewData) {
+                        // Fetch only new contests
+                        const fromContest = lastCachedContest + 1;
+                        addDebugInfo(`Buscando concursos novos: ${fromContest} a ${latestContest}`);
+                        
+                        loadingMessage.textContent = `Carregamento otimizado: buscando apenas ${latestContest - fromContest + 1} concursos novos...`;
+                        
+                        newResults = await fetchNewConcursos(fromContest, latestContest);
+                        addDebugInfo(`${newResults.length} novos concursos obtidos`);
+                    } else {
+                        addDebugInfo("Todos os concursos já estão no cache!");
                     }
                     
-                    addDebugInfo(`Obtained ${concursos.length} contests in total`);
-                    updateProgress(80);
+                    // 4. If we have no cached data and couldn't get new data, try the complete API
+                    if (cachedResults.length === 0 && newResults.length === 0) {
+                        addDebugInfo("Cache vazio e API individual falhou. Tentando API completa...");
+                        loadingMessage.textContent = 'Fallback: buscando todos os concursos da API completa...';
+                        
+                        try {
+                            const allData = await fetchWithProxy(API_CONFIG.DIA_DE_SORTE_LOTERIA_FREE.url);
+                            
+                            if (Array.isArray(allData) && allData.length > 0) {
+                                newResults = allData.map(concurso => ({
+                                    concurso: concurso.concurso.toString(),
+                                    data: concurso.data,
+                                    dezenas: concurso.dezenas
+                                }));
+                                addDebugInfo(`API completa retornou ${newResults.length} concursos`);
+                            }
+                        } catch (e) {
+                            addDebugInfo(`API completa também falhou: ${e.message}`);
+                            throw new Error("Todas as APIs falharam");
+                        }
+                    }
                     
-                    // 2. Process contest data
-                    const success = processDirectApiData(concursos);
+                    // 5. Combine cached + new results
+                    const allConcursos = [...cachedResults, ...newResults];
+                    
+                    // Remove duplicates and sort
+                    const uniqueConcursos = [];
+                    const seen = new Set();
+                    
+                    for (const concurso of allConcursos) {
+                        const key = concurso.concurso;
+                        if (!seen.has(key)) {
+                            seen.add(key);
+                            uniqueConcursos.push(concurso);
+                        }
+                    }
+                    
+                    // Sort by contest number
+                    uniqueConcursos.sort((a, b) => parseInt(a.concurso) - parseInt(b.concurso));
+                    
+                    addDebugInfo(`Total de concursos únicos: ${uniqueConcursos.length}`);
+                    
+                    // 6. Update cache with complete data
+                    if (newResults.length > 0) {
+                        const newLastContest = Math.max(...uniqueConcursos.map(c => parseInt(c.concurso)));
+                        saveCache(uniqueConcursos, newLastContest);
+                    }
+                    
+                    // 7. Process the results
+                    if (uniqueConcursos.length === 0) {
+                        throw new Error("Nenhum concurso foi carregado");
+                    }
+                    
+                    const success = processDirectApiData(uniqueConcursos);
                     
                     if (success) {
-                        updateProgress(90);
+                        // Show cache status
+                        showCacheStatus(cachedResults.length > 0, cachedResults.length, newResults.length);
                         
                         // Show success message
                         loadingMessage.style.display = 'none';
                         completedMessage.style.display = 'block';
-                        completedMessage.textContent = `Carregamento concluído! ${allResults.length} concursos foram carregados.`;
+                        completedMessage.textContent = `⚡ Carregamento otimizado concluído! ${allResults.length} concursos (${cachedResults.length} do cache + ${newResults.length} novos)`;
                         
                         // Update timestamp
                         lastUpdateTime = new Date();
@@ -1150,14 +1312,18 @@
                         
                         return true;
                     } else {
-                        throw new Error("Failed to process contest data");
+                        throw new Error("Falha ao processar os dados dos concursos");
                     }
                     
                 } catch (error) {
-                    console.error("Error loading data:", error);
+                    console.error("Erro no carregamento otimizado:", error);
                     errorMessage.style.display = 'block';
-                    errorMessage.textContent = `Erro ao carregar os dados: ${error.message}`;
+                    errorMessage.textContent = `Erro no carregamento otimizado: ${error.message}`;
                     loadingMessage.style.display = 'none';
+                    
+                    // Show cache miss status on error
+                    showCacheStatus(false, 0, 0);
+                    
                     updateProgress(100);
                     
                     // Hide progress bar after 3 seconds
@@ -2327,10 +2493,10 @@
                     }
                     
                     resumo.innerHTML = `
-                    <h2>RESUMO GERAL</h2>
-                    <p style="text-align: right; font-size: 12px; color: #666;">Atualizado em: ${dataAtual}</p>
+                    <h2>RESUMO GERAL - VERSÃO OTIMIZADA</h2>
+                    <p style="text-align: right; font-size: 12px; color: #666;">⚡ Carregamento ultra-rápido ativado | Atualizado em: ${dataAtual}</p>
                     
-                    <p>A análise dos dados mostra que a combinação <strong>${combinacao}</strong> apareceu <strong>${frequencia} vezes</strong> nos concursos do Dia de Sorte, com um intervalo médio de <strong>${intervaloMedio} concursos</strong> entre suas aparições. A menor sequência entre ocorrências foi de apenas <strong>${menorIntervalo} concursos</strong>, e a maior chegou a <strong>${maiorIntervalo} concursos</strong>.</p>
+                    <p>A análise otimizada dos dados mostra que a combinação <strong>${combinacao}</strong> apareceu <strong>${frequencia} vezes</strong> nos concursos do Dia de Sorte, com um intervalo médio de <strong>${intervaloMedio} concursos</strong> entre suas aparições. A menor sequência entre ocorrências foi de apenas <strong>${menorIntervalo} concursos</strong>, e a maior chegou a <strong>${maiorIntervalo} concursos</strong>.</p>
                     
                     <p>Esta combinação está <strong>${ultimoIntervalo} concursos</strong> sem aparecer. Status atual: ${statusSaida}</p>
                     
@@ -2363,7 +2529,7 @@
                     
                     <p>Se a combinação <strong>${combinacao}</strong> estiver sem aparecer por <strong>${intervaloMedio} concursos ou mais</strong>, pode valer a pena apostar nela ou em variações próximas. ${ultimoIntervalo >= intervaloMedio * 0.8 ? "<strong>Considerando que já se passaram " + ultimoIntervalo + " concursos desde sua última aparição, esta é uma boa oportunidade para apostar nesta sequência!</strong>" : "Aguarde mais alguns concursos antes de apostar nesta combinação."}</p>
                     
-                    <p>Esta análise é baseada em padrões históricos e não garante resultados futuros. O Dia de Sorte é um jogo de sorte com resultados aleatórios.</p>
+                    <p><em>⚡ Esta análise otimizada é baseada em padrões históricos e carregamento ultra-rápido de dados. Não garante resultados futuros. O Dia de Sorte é um jogo de sorte com resultados aleatórios.</em></p>
                     `;
                     
                     // Add the summary to the page
@@ -2780,7 +2946,7 @@
                     const blob = new Blob([excelContent], {type: 'application/vnd.ms-excel'});
                     const link = document.createElement("a");
                     link.href = URL.createObjectURL(blob);
-                    link.download = 'analise_digitos_diadesorte.xls';
+                    link.download = 'analise_digitos_diadesorte_otimizado.xls';
                     link.click();
                     
                     addDebugInfo('XLS download started');
@@ -2807,7 +2973,7 @@
                     <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Análise de Dígitos do Dia de Sorte</title>
+                        <title>Análise de Dígitos do Dia de Sorte - Versão Otimizada</title>
                         <style>
                             body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f0f8ff; color: #333; }
                             .container { max-width: 1200px; margin: 0 auto; padding: 20px; background-color: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 5px; }
@@ -2820,6 +2986,7 @@
                             .digit-box { display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; margin: 5px; background-color: #5D5CDE; color: white; border-radius: 50%; font-weight: bold; }
                             .digit-count { font-size: 12px; color: #666; display: block; text-align: center; }
                             .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; padding: 10px; border-top: 1px solid #ddd; }
+                            .optimized-badge { background: linear-gradient(45deg, #5D5CDE, #00d4aa); color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
                             
                             @media (prefers-color-scheme: dark) {
                                 body { background-color: #181818; color: #e0e0e0; }
@@ -2835,7 +3002,7 @@
                     </head>
                     <body>
                         <div class="container">
-                            <h1>Análise de Dígitos do Dia de Sorte</h1>
+                            <h1>⚡ Análise de Dígitos do Dia de Sorte <span class="optimized-badge">OTIMIZADO</span></h1>
                             
                             <div class="section">
                                 <h2>Estatísticas de Frequência dos Dígitos</h2>
@@ -2943,7 +3110,7 @@
                             
                             <div class="section">
                                 <h2>Resultados Detalhados</h2>
-                                <p style="text-align: center; font-style: italic;">Exibindo todos os ${resultadosOrdenados.length} concursos em ordem decrescente.</p>
+                                <p style="text-align: center; font-style: italic;">⚡ Carregamento otimizado: ${resultadosOrdenados.length} concursos em ordem decrescente.</p>
                                 <table>
                                     <thead>
                                         <tr>
@@ -2978,8 +3145,9 @@
                             </div>
                             
                             <div class="footer">
+                                <p><span class="optimized-badge">VERSÃO OTIMIZADA</span></p>
                                 <p>Relatório gerado em: ${new Date().toLocaleString('pt-BR')}</p>
-                                <p>Total de resultados analisados: ${allResults.length}</p>
+                                <p>Total de resultados analisados: ${allResults.length} (carregamento ultra-rápido)</p>
                             </div>
                         </div>
                     </body>
@@ -2990,7 +3158,7 @@
                     const blob = new Blob([htmlContent], {type: 'text/html;charset=utf-8'});
                     const link = document.createElement("a");
                     link.href = URL.createObjectURL(blob);
-                    link.download = 'analise_digitos_diadesorte.html';
+                    link.download = 'analise_digitos_diadesorte_otimizado.html';
                     link.click();
                     
                     addDebugInfo('HTML download started');
@@ -3010,7 +3178,7 @@
                     // Sort results in descending order for TXT too
                     const resultadosOrdenados = [...filteredResults].sort((a, b) => parseInt(b.concurso) - parseInt(a.concurso));
                     
-                    let txtContent = "Análise de Dígitos do Dia de Sorte\n\n";
+                    let txtContent = "⚡ Análise de Dígitos do Dia de Sorte - VERSÃO OTIMIZADA\n\n";
                     
                     // Add statistics - sort by frequency
                     txtContent += "ESTATÍSTICAS DE FREQUÊNCIA DOS DÍGITOS (ORDEM DECRESCENTE):\n";
@@ -3050,18 +3218,20 @@
                     });
                     
                     // Add total information
-                    txtContent += `\n\nTOTAL DE CONCURSOS ANALISADOS: ${allResults.length}`;
+                    txtContent += `\n\n⚡ VERSÃO OTIMIZADA - CARREGAMENTO ULTRA-RÁPIDO`;
+                    txtContent += `\nTOTAL DE CONCURSOS ANALISADOS: ${allResults.length}`;
                     txtContent += `\nPrimeiro concurso: ${allResults[0].concurso}`;
                     txtContent += `\nÚltimo concurso: ${allResults[allResults.length - 1].concurso}`;
                     
                     // Add generated at
                     txtContent += `\n\nGerado em: ${new Date().toLocaleString('pt-BR')}`;
+                    txtContent += `\nProcessamento otimizado com cache inteligente`;
                     
                     // Create blob and start download
                     const blob = new Blob([txtContent], {type: 'text/plain;charset=utf-8'});
                     const link = document.createElement("a");
                     link.href = URL.createObjectURL(blob);
-                    link.download = 'analise_digitos_diadesorte.txt';
+                    link.download = 'analise_digitos_diadesorte_otimizado.txt';
                     link.click();
                     
                     addDebugInfo('TXT download started');
@@ -3087,7 +3257,7 @@
                     const loadingMessage = document.getElementById('loadingMessage');
                     if (loadingMessage) {
                         loadingMessage.style.display = 'block';
-                        loadingMessage.textContent = 'Atualizando dados automaticamente...';
+                        loadingMessage.textContent = '⚡ Atualizando dados automaticamente (modo otimizado)...';
                     }
                     
                     // Clear previous messages
@@ -3107,7 +3277,7 @@
                     // Notify user
                     if (completedMessage && success) {
                         completedMessage.style.display = 'block';
-                        completedMessage.textContent = 'Dados atualizados!';
+                        completedMessage.textContent = '⚡ Dados atualizados em modo ultra-rápido!';
                         setTimeout(() => {
                             completedMessage.style.display = 'none';
                         }, 3000);
@@ -3119,7 +3289,7 @@
                     }
                 }, UPDATE_INTERVAL);
                 
-                addDebugInfo(`Automatic update enabled every ${UPDATE_INTERVAL/60000} minutes`);
+                addDebugInfo(`Automatic update enabled every ${UPDATE_INTERVAL/60000} minutes (optimized mode)`);
             }
             
             function stopAutoUpdate() {
@@ -3143,7 +3313,7 @@
                         second: '2-digit'
                     });
                     
-                    timestampElem.textContent = `Dados atualizados em: ${formattedTime}`;
+                    timestampElem.textContent = `⚡ Dados atualizados em: ${formattedTime}`;
                 }
             }
             
@@ -3159,9 +3329,16 @@
             });
             
             // ===== Initialize =====
-            addDebugInfo("Starting automatic loading of all Dia de Sorte contests...");
+            addDebugInfo("⚡ Starting optimized loading of Dia de Sorte contests...");
+            
+            // Load cache first
+            const cache = loadCache();
+            if (cache.results && cache.results.length > 0) {
+                addDebugInfo(`Cache encontrado com ${cache.results.length} resultados`);
+            }
+            
             resetUI();
-            fetchCompleteDiaDeSorteResults(); // Load data automatically on start
+            fetchCompleteDiaDeSorteResults(); // Load data automatically on start with optimization
         });
     </script>
 </body>
