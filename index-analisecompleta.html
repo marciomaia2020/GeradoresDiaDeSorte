@@ -100,7 +100,28 @@
 
         <!-- Tabela Resumo de Volumes -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mt-8">
-            <h3 class="text-2xl font-bold mb-6 text-center">📋 Tabela Resumo - Volumes de Jogos por Números Válidos</h3>
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-center md:text-left mb-4 md:mb-0">📋 Tabela Resumo - Volumes de Jogos por Números Válidos</h3>
+                
+                <!-- Campo para valor do jogo -->
+                <div class="flex items-center space-x-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+                    <label for="gameValue" class="text-sm font-semibold text-blue-800 dark:text-blue-200">
+                        💰 Valor por jogo:
+                    </label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-600 dark:text-blue-400 font-bold">R$</span>
+                        <input 
+                            type="number" 
+                            id="gameValue" 
+                            value="2.50" 
+                            step="0.01" 
+                            min="0.01" 
+                            class="w-24 pl-8 pr-3 py-2 text-base border border-blue-300 dark:border-blue-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                            onchange="updateGameCosts()"
+                        >
+                    </div>
+                </div>
+            </div>
             
             <div class="overflow-x-auto">
                 <table class="min-w-full border-collapse">
@@ -128,7 +149,7 @@
             
             <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
                 <p class="text-sm text-blue-800 dark:text-blue-200">
-                    <strong>💡 Legenda:</strong> A tabela mostra quantas configurações de cada número de dígitos conseguem formar determinado número de números válidos (1-31) e seus respectivos volumes de jogos possíveis.
+                    <strong>💡 Legenda:</strong> A tabela mostra quantas configurações de cada número de dígitos conseguem formar determinado número de números válidos (1-31), seus respectivos volumes de jogos possíveis e o custo total baseado no valor por jogo. Os badges verdes mostram o custo para cada quantidade de configurações.
                 </p>
             </div>
         </div>
@@ -178,6 +199,51 @@
     </div>
 
     <script>
+        // Sistema de Cache para otimização
+        class GameCache {
+            constructor() {
+                this.cacheKey = 'diadasorte_analysis_cache';
+                this.cacheVersion = '1.0';
+                this.cache = this.loadCache();
+            }
+            
+            loadCache() {
+                try {
+                    // Simular cache usando uma variável global já que localStorage não está disponível
+                    if (window.gameAnalysisCache) {
+                        return window.gameAnalysisCache;
+                    }
+                    return {};
+                } catch (e) {
+                    return {};
+                }
+            }
+            
+            saveCache() {
+                try {
+                    window.gameAnalysisCache = this.cache;
+                } catch (e) {
+                    console.warn('Cache não pôde ser salvo');
+                }
+            }
+            
+            get(key) {
+                return this.cache[key];
+            }
+            
+            set(key, value) {
+                this.cache[key] = value;
+                this.saveCache();
+            }
+            
+            has(key) {
+                return key in this.cache;
+            }
+        }
+        
+        // Instância global do cache
+        const gameCache = new GameCache();
+        
         // Dados das configurações de 1 a 10 dígitos
         const configurations = [
             { digits: 1, totalCombinations: 10, name: "1 Dígito" },
@@ -198,8 +264,15 @@
             return numStr.split('').every(digit => allowedDigits.includes(parseInt(digit)));
         }
 
-        // Função para calcular estatísticas detalhadas para uma configuração
+        // Função para calcular estatísticas detalhadas para uma configuração (com cache)
         function calculateDetailedStats(digitCount) {
+            const cacheKey = `stats_${digitCount}`;
+            
+            // Verificar se já está em cache
+            if (gameCache.has(cacheKey)) {
+                return gameCache.get(cacheKey);
+            }
+            
             // Gerar todas as combinações de dígitos
             const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
             const allDigitCombinations = generateDigitCombinations(digits, digitCount);
@@ -255,7 +328,7 @@
             
             const avgVolume = validConfigurations > 0 ? Math.round(totalGameCombinations / validConfigurations) : 0;
             
-            return {
+            const result = {
                 digitCount,
                 totalDigitCombinations: allDigitCombinations.length,
                 validConfigurations,
@@ -270,6 +343,10 @@
                 exactGameCounts,
                 allDigitCombinations
             };
+            
+            // Salvar no cache
+            gameCache.set(cacheKey, result);
+            return result;
         }
 
         // Função para gerar combinações de dígitos
@@ -304,6 +381,49 @@
             }
             
             return factorial(n) / (factorial(r) * factorial(n - r));
+        }
+
+        // Função para atualizar custos dos jogos
+        function updateGameCosts() {
+            const gameValue = parseFloat(document.getElementById('gameValue').value) || 2.50;
+            
+            // Atualizar todas as células com badges de custo das configurações
+            const cells = document.querySelectorAll('.cost-badge');
+            cells.forEach(cell => {
+                const count = parseInt(cell.dataset.count);
+                const volume = parseInt(cell.dataset.volume);
+                if (count && volume) {
+                    const cost = count * gameValue;
+                    const costFormatted = cost.toLocaleString('pt-BR', { 
+                        style: 'currency', 
+                        currency: 'BRL' 
+                    });
+                    
+                    // Encontrar o badge de custo dentro da célula
+                    const costBadge = cell.querySelector('.cost-value');
+                    if (costBadge) {
+                        costBadge.textContent = costFormatted;
+                    }
+                }
+            });
+            
+            // Atualizar custos dos volumes de jogos
+            const volumeCells = document.querySelectorAll('.volume-cost-cell');
+            volumeCells.forEach(cell => {
+                const volume = parseInt(cell.dataset.volume);
+                if (volume) {
+                    const totalCost = volume * gameValue;
+                    const totalCostFormatted = totalCost.toLocaleString('pt-BR', { 
+                        style: 'currency', 
+                        currency: 'BRL' 
+                    });
+                    
+                    const costDiv = cell.querySelector('.volume-cost');
+                    if (costDiv) {
+                        costDiv.textContent = totalCostFormatted;
+                    }
+                }
+            });
         }
 
         // Função para criar volumes específicos dinâmicos
@@ -531,28 +651,83 @@
                     
                     // Coluna de volume
                     const volumeCell = document.createElement('td');
-                    volumeCell.className = 'py-2 px-4 border dark:border-gray-600 text-center font-bold';
+                    volumeCell.className = 'py-2 px-4 border dark:border-gray-600 text-center';
+                    
+                    // Criar container para volume e custo
+                    const volumeContainer = document.createElement('div');
+                    volumeContainer.className = 'flex flex-col items-center space-y-1';
+                    
+                    // Número de jogos
+                    const volumeDiv = document.createElement('div');
+                    volumeDiv.className = 'font-bold text-sm';
                     
                     // Colorir baseado no volume
                     if (volume >= 1000) {
-                        volumeCell.classList.add('text-green-600', 'dark:text-green-400');
+                        volumeDiv.classList.add('text-green-600', 'dark:text-green-400');
                     } else if (volume >= 100) {
-                        volumeCell.classList.add('text-blue-600', 'dark:text-blue-400');
+                        volumeDiv.classList.add('text-blue-600', 'dark:text-blue-400');
                     } else {
-                        volumeCell.classList.add('text-yellow-600', 'dark:text-yellow-400');
+                        volumeDiv.classList.add('text-yellow-600', 'dark:text-yellow-400');
                     }
                     
-                    volumeCell.textContent = volume.toLocaleString('pt-BR');
+                    volumeDiv.textContent = volume.toLocaleString('pt-BR');
+                    
+                    // Custo total para este volume
+                    const gameValue = parseFloat(document.getElementById('gameValue').value) || 2.50;
+                    const totalCost = volume * gameValue;
+                    const totalCostFormatted = totalCost.toLocaleString('pt-BR', { 
+                        style: 'currency', 
+                        currency: 'BRL' 
+                    });
+                    
+                    const costDiv = document.createElement('div');
+                    costDiv.className = 'text-xs font-semibold px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 volume-cost';
+                    costDiv.textContent = totalCostFormatted;
+                    
+                    // Adicionar classe para atualização dinâmica
+                    volumeCell.classList.add('volume-cost-cell');
+                    volumeCell.dataset.volume = volume;
+                    
+                    volumeContainer.appendChild(volumeDiv);
+                    volumeContainer.appendChild(costDiv);
+                    volumeCell.appendChild(volumeContainer);
                     row.appendChild(volumeCell);
                     
                     // Colunas para cada configuração
                     counts.forEach((count, configIndex) => {
                         const countCell = document.createElement('td');
-                        countCell.className = 'py-2 px-4 border dark:border-gray-600 text-center';
+                        countCell.className = 'py-2 px-4 border dark:border-gray-600 text-center relative';
                         
                         if (count > 0) {
-                            countCell.textContent = count;
-                            countCell.classList.add('font-semibold', 'text-primary', 'dark:text-blue-400');
+                            // Adicionar classe para identificar células com custo
+                            countCell.classList.add('cost-badge');
+                            countCell.dataset.count = count;
+                            countCell.dataset.volume = volume;
+                            
+                            // Criar container para número de configurações e custo
+                            const container = document.createElement('div');
+                            container.className = 'flex flex-col items-center space-y-1';
+                            
+                            // Número de configurações
+                            const countDiv = document.createElement('div');
+                            countDiv.className = 'font-semibold text-primary dark:text-blue-400';
+                            countDiv.textContent = count;
+                            
+                            // Badge de custo
+                            const gameValue = parseFloat(document.getElementById('gameValue').value) || 2.50;
+                            const cost = count * gameValue;
+                            const costFormatted = cost.toLocaleString('pt-BR', { 
+                                style: 'currency', 
+                                currency: 'BRL' 
+                            });
+                            
+                            const costBadge = document.createElement('div');
+                            costBadge.className = 'px-2 py-1 text-xs font-bold rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 cost-value';
+                            costBadge.textContent = costFormatted;
+                            
+                            container.appendChild(countDiv);
+                            container.appendChild(costBadge);
+                            countCell.appendChild(container);
                         } else {
                             countCell.textContent = '-';
                             countCell.classList.add('text-gray-400');
@@ -584,6 +759,7 @@
                 insufCell.className = 'py-2 px-4 border dark:border-gray-600 text-center';
                 
                 if (stats.insufficientConfigurations > 0) {
+                    // Apenas mostrar o número, sem badge de custo
                     insufCell.textContent = stats.insufficientConfigurations;
                     insufCell.classList.add('font-semibold', 'text-red-600', 'dark:text-red-400');
                 } else {
