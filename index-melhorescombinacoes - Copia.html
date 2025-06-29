@@ -41,14 +41,6 @@
         .medal-gold { background: linear-gradient(135deg, #FFD700, #FFA500); }
         .medal-silver { background: linear-gradient(135deg, #C0C0C0, #808080); }
         .medal-bronze { background: linear-gradient(135deg, #CD7F32, #8B4513); }
-        .cache-info {
-            background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
-            border-left: 4px solid #0288d1;
-        }
-        .dark .cache-info {
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
-            border-left-color: #3b82f6;
-        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
@@ -74,19 +66,6 @@
             <p class="text-lg opacity-90 max-w-3xl mx-auto">
                 Análise completa das combinações de dígitos mais frequentes nos sorteios históricos e quantos jogos são possíveis com cada combinação
             </p>
-        </div>
-    </div>
-
-    <!-- Info do Cache -->
-    <div id="cache-info" class="container mx-auto px-4 py-4 hidden">
-        <div class="cache-info rounded-lg p-4 text-sm">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="text-lg">💾</span>
-                <span class="font-semibold">Sistema de Cache em Memória</span>
-            </div>
-            <div id="cache-details" class="text-gray-700 dark:text-gray-300">
-                Cache otimizado para acelerar consultas durante esta sessão. Dados são mantidos em memória para evitar recarregamentos desnecessários.
-            </div>
         </div>
     </div>
 
@@ -454,13 +433,6 @@
         let rankingFiltrado = [];
         let jogosGerados = [];
         
-        // Cache em memória para sessão atual
-        let cacheMemoria = {
-            concursos: new Map(),
-            ultimoConcursoCarregado: 0,
-            dataUltimaConsulta: null
-        };
-        
         // Variáveis para controle da visualização dos jogos
         let jogosFiltrados = [];
         let paginaAtual = 1;
@@ -483,29 +455,12 @@
             document.getElementById('progress-text').textContent = `${Math.round(percent)}%`;
         }
 
-        // Função para exibir informações do cache
-        function exibirInfoCache() {
-            const cacheInfo = document.getElementById('cache-info');
-            const cacheDetails = document.getElementById('cache-details');
-            
-            if (cacheMemoria.concursos.size > 0) {
-                cacheDetails.textContent = `${cacheMemoria.concursos.size} concursos em cache de memória. Cache ativo durante esta sessão para otimizar performance.`;
-                cacheInfo.classList.remove('hidden');
-            }
-        }
-        
-        // Função para buscar dados da API da Caixa com cache em memória otimizado
+        // Função para buscar dados da API da Caixa
         async function buscarDadosCaixa() {
             try {
-                updateLoadingStatus("Conectando com a API da Caixa...", 5);
+                updateLoadingStatus("Conectando com a API da Caixa...", 10);
                 
-                // Verificar se já temos dados em cache
-                if (cacheMemoria.concursos.size > 0) {
-                    updateLoadingStatus(`Cache em memória encontrado: ${cacheMemoria.concursos.size} concursos`, 10);
-                    exibirInfoCache();
-                }
-                
-                // Buscar o último concurso disponível na API
+                // Primeiro, buscar o último concurso
                 const ultimoConcursoResponse = await fetch('https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/');
                 const ultimoConcurso = await ultimoConcursoResponse.json();
                 
@@ -514,114 +469,79 @@
                 }
 
                 const numeroUltimoConcurso = ultimoConcurso.numero;
-                const novosParaBuscar = numeroUltimoConcurso - cacheMemoria.ultimoConcursoCarregado;
-                
-                // Se cache está atualizado, usar dados em memória
-                if (novosParaBuscar === 0 && cacheMemoria.concursos.size > 0) {
-                    updateLoadingStatus("Cache atualizado! Carregando dados em memória...", 90);
-                    
-                    todosResultados = Array.from(cacheMemoria.concursos.values())
-                        .sort((a, b) => a.numero - b.numero);
-                    
-                    analisarCombinacoes();
-                    updateLoadingStatus(`Carregamento concluído! ${todosResultados.length} concursos do cache.`, 100);
-                    
-                    setTimeout(() => {
-                        loadingSection.classList.add('hidden');
-                        exibirResultados();
-                    }, 1000);
-                    return;
-                }
-                
-                updateLoadingStatus(`${novosParaBuscar > 0 ? `${novosParaBuscar} novos concursos encontrados` : `Buscando ${numeroUltimoConcurso} concursos`}. Iniciando download...`, 15);
+                updateLoadingStatus(`Encontrados ${numeroUltimoConcurso} concursos. Iniciando download completo...`, 15);
 
+                // Buscar TODOS os concursos com retry para garantir completude
+                const resultados = [];
                 const concursosFalharam = [];
                 
-                // Definir range de concursos para buscar
-                const iniciarBusca = cacheMemoria.ultimoConcursoCarregado + 1;
-                const totalParaBuscar = numeroUltimoConcurso - iniciarBusca + 1;
+                // Primeira tentativa - buscar todos os concursos
+                updateLoadingStatus("Primeira varredura: baixando todos os concursos...", 20);
                 
-                if (totalParaBuscar > 0) {
-                    updateLoadingStatus(`Buscando concursos ${iniciarBusca} a ${numeroUltimoConcurso}...`, 20);
+                for (let concurso = 1; concurso <= numeroUltimoConcurso; concurso++) {
+                    const progressPercent = 20 + ((concurso / numeroUltimoConcurso) * 50);
                     
-                    // Primeira tentativa - buscar novos concursos
-                    for (let concurso = iniciarBusca; concurso <= numeroUltimoConcurso; concurso++) {
-                        const progressoConcurso = concurso - iniciarBusca + 1;
-                        const progressPercent = 20 + ((progressoConcurso / totalParaBuscar) * 50);
-                        
-                        if (progressoConcurso % 50 === 0 || concurso === numeroUltimoConcurso) {
-                            updateLoadingStatus(`Baixando concurso ${concurso} de ${numeroUltimoConcurso} (${progressoConcurso}/${totalParaBuscar} novos)...`, progressPercent);
+                    if (concurso % 50 === 0 || concurso === numeroUltimoConcurso) {
+                        updateLoadingStatus(`Baixando concurso ${concurso} de ${numeroUltimoConcurso}...`, progressPercent);
+                    }
+                    
+                    try {
+                        const resultado = await buscarConcursoEspecifico(concurso);
+                        if (resultado) {
+                            resultados.push(resultado);
+                        } else {
+                            concursosFalharam.push(concurso);
                         }
+                    } catch (error) {
+                        concursosFalharam.push(concurso);
+                    }
+                    
+                    // Pequena pausa a cada 10 concursos para não sobrecarregar a API
+                    if (concurso % 10 === 0) {
+                        await new Promise(resolve => setTimeout(resolve, 50));
+                    }
+                }
+
+                // Segunda tentativa - retry para concursos que falharam
+                if (concursosFalharam.length > 0) {
+                    updateLoadingStatus(`Retry: tentando novamente ${concursosFalharam.length} concursos que falharam...`, 75);
+                    
+                    for (let i = 0; i < concursosFalharam.length; i++) {
+                        const concurso = concursosFalharam[i];
+                        const progressPercent = 75 + ((i / concursosFalharam.length) * 10);
+                        
+                        updateLoadingStatus(`Retry concurso ${concurso} (${i + 1}/${concursosFalharam.length})...`, progressPercent);
                         
                         try {
                             const resultado = await buscarConcursoEspecifico(concurso);
                             if (resultado) {
-                                cacheMemoria.concursos.set(concurso, resultado);
-                            } else {
-                                concursosFalharam.push(concurso);
+                                resultados.push(resultado);
                             }
                         } catch (error) {
-                            concursosFalharam.push(concurso);
+                            console.warn(`Concurso ${concurso} falhou mesmo no retry:`, error);
                         }
                         
-                        // Pequena pausa a cada 10 concursos para não sobrecarregar a API
-                        if (concurso % 10 === 0) {
-                            await new Promise(resolve => setTimeout(resolve, 50));
-                        }
+                        await new Promise(resolve => setTimeout(resolve, 100));
                     }
-
-                    // Segunda tentativa - retry para concursos que falharam
-                    if (concursosFalharam.length > 0) {
-                        updateLoadingStatus(`Retry: tentando novamente ${concursosFalharam.length} concursos que falharam...`, 75);
-                        
-                        for (let i = 0; i < concursosFalharam.length; i++) {
-                            const concurso = concursosFalharam[i];
-                            const progressPercent = 75 + ((i / concursosFalharam.length) * 10);
-                            
-                            updateLoadingStatus(`Retry concurso ${concurso} (${i + 1}/${concursosFalharam.length})...`, progressPercent);
-                            
-                            try {
-                                const resultado = await buscarConcursoEspecifico(concurso);
-                                if (resultado) {
-                                    cacheMemoria.concursos.set(concurso, resultado);
-                                }
-                            } catch (error) {
-                                console.warn(`Concurso ${concurso} falhou mesmo no retry:`, error);
-                            }
-                            
-                            await new Promise(resolve => setTimeout(resolve, 100));
-                        }
-                    }
-                    
-                    // Atualizar cache metadata
-                    cacheMemoria.ultimoConcursoCarregado = numeroUltimoConcurso;
-                    cacheMemoria.dataUltimaConsulta = new Date().toISOString();
                 }
 
-                // Converter cache para array
-                todosResultados = Array.from(cacheMemoria.concursos.values())
-                    .sort((a, b) => a.numero - b.numero);
-
-                const concursosObtidos = todosResultados.length;
+                // Verificar se conseguimos todos os concursos
+                const concursosObtidos = resultados.length;
                 const concursosPerdidos = numeroUltimoConcurso - concursosObtidos;
                 
-                updateLoadingStatus(`Obtidos ${concursosObtidos}/${numeroUltimoConcurso} concursos total. Analisando...`, 85);
+                updateLoadingStatus(`Obtidos ${concursosObtidos}/${numeroUltimoConcurso} concursos. Analisando...`, 85);
                 
                 if (concursosPerdidos > 0) {
                     console.warn(`Atenção: ${concursosPerdidos} concursos não puderam ser obtidos da API`);
                 }
 
-                updateLoadingStatus("Atualizando cache em memória...", 88);
-                exibirInfoCache();
+                // Processar e analisar os dados
+                todosResultados = resultados.sort((a, b) => a.numero - b.numero);
                 
                 updateLoadingStatus(`Analisando ${todosResultados.length} concursos válidos...`, 90);
                 analisarCombinacoes();
                 
-                const statusFinal = novosParaBuscar > 0 ? 
-                    `Cache atualizado! ${novosParaBuscar} novos concursos adicionados. Total: ${todosResultados.length} concursos.` :
-                    `Carregamento concluído! ${todosResultados.length} concursos analisados.`;
-                
-                updateLoadingStatus(statusFinal, 100);
+                updateLoadingStatus(`Carregamento concluído! ${todosResultados.length} concursos analisados.`, 100);
                 
                 // Exibir resultados
                 setTimeout(() => {
@@ -632,22 +552,6 @@
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
                 updateLoadingStatus(`Erro: ${error.message}`, 0);
-                
-                // Em caso de erro, tentar usar cache mesmo que desatualizado
-                if (cacheMemoria.concursos.size > 0) {
-                    console.warn('Erro na API, usando dados do cache em memória...');
-                    updateLoadingStatus(`Erro na API, carregando ${cacheMemoria.concursos.size} concursos do cache...`, 50);
-                    
-                    todosResultados = Array.from(cacheMemoria.concursos.values())
-                        .sort((a, b) => a.numero - b.numero);
-                    analisarCombinacoes();
-                    updateLoadingStatus(`Dados do cache carregados! ${todosResultados.length} concursos (pode estar desatualizado).`, 100);
-                    
-                    setTimeout(() => {
-                        loadingSection.classList.add('hidden');
-                        exibirResultados();
-                    }, 1000);
-                }
             }
         }
 
@@ -683,6 +587,7 @@
                     
                     // Se chegou aqui, os dados estão incompletos
                     if (tentativa < tentativas) {
+                        console.warn(`Concurso ${numero}: dados incompletos, tentativa ${tentativa}/${tentativas}`);
                         await new Promise(resolve => setTimeout(resolve, 200 * tentativa)); // Delay progressivo
                         continue;
                     }
@@ -691,6 +596,7 @@
                     
                 } catch (error) {
                     if (tentativa < tentativas) {
+                        console.warn(`Concurso ${numero}: erro na tentativa ${tentativa}/${tentativas}:`, error.message);
                         await new Promise(resolve => setTimeout(resolve, 500 * tentativa)); // Delay progressivo maior para erros
                         continue;
                     }
@@ -1137,6 +1043,79 @@
                         Total: ${combo.concursos.length} concursos de ${todosResultados.length} analisados 
                         (${((combo.frequencia / todosResultados.length) * 100).toFixed(2)}%)
                     </p>
+                    
+                    ${combo.intervalos && combo.intervalos.length > 0 ? `
+                    <div class="mt-4 pt-4 border-t border-gray-300 dark:border-gray-600">
+                        <div class="flex justify-between items-center mb-3">
+                            <h5 class="font-semibold text-sm">⏱️ Intervalos Detalhados Entre Concursos</h5>
+                            <button onclick="toggleIntervalosDetalhados('${combo.chave}')" 
+                                id="btn-intervalos-${combo.chave}" 
+                                class="bg-primary text-white px-3 py-1 rounded text-xs hover:bg-primary/90">
+                                Ver Detalhes
+                            </button>
+                        </div>
+                        <div id="intervalos-detalhados-${combo.chave}" class="hidden">
+                            <div class="space-y-2 max-h-64 overflow-y-auto">
+                                ${combo.concursos.map((concurso, index) => {
+                                    if (index === 0) {
+                                        return `<div class="flex justify-between items-center py-2 px-3 bg-green-100 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
+                                            <span class="font-semibold text-green-700 dark:text-green-300">Concurso ${concurso}</span>
+                                            <span class="text-xs text-green-600 dark:text-green-400 font-medium">PRIMEIRO REGISTRO</span>
+                                        </div>`;
+                                    } else {
+                                        const intervalo = combo.intervalos[index - 1];
+                                        const concursoAnterior = combo.concursos[index - 1];
+                                        
+                                        // Determinar cor baseada no intervalo
+                                        let colorClass = '';
+                                        if (intervalo <= 10) {
+                                            colorClass = 'bg-green-100 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300';
+                                        } else if (intervalo <= 30) {
+                                            colorClass = 'bg-yellow-100 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-300';
+                                        } else if (intervalo <= 60) {
+                                            colorClass = 'bg-orange-100 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300';
+                                        } else {
+                                            colorClass = 'bg-red-100 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300';
+                                        }
+                                        
+                                        return `<div class="flex justify-between items-center py-2 px-3 ${colorClass} rounded border">
+                                            <div class="flex items-center gap-3">
+                                                <span class="font-semibold">Concurso ${concurso}</span>
+                                                <span class="text-xs opacity-75">(anterior: ${concursoAnterior})</span>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="font-bold text-lg">${intervalo}</div>
+                                                <div class="text-xs opacity-75">concursos depois</div>
+                                            </div>
+                                        </div>`;
+                                    }
+                                }).join('')}
+                            </div>
+                            
+                            <div class="mt-4 p-3 bg-blue-100 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                                <h6 class="font-semibold text-blue-800 dark:text-blue-200 text-sm mb-2">📊 Resumo dos Intervalos:</h6>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                                    <div class="text-center">
+                                        <div class="font-bold text-blue-600 dark:text-blue-400">${combo.intervaloMedio}</div>
+                                        <div class="text-blue-700 dark:text-blue-300">Média</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="font-bold text-green-600 dark:text-green-400">${combo.intervaloMinimo}</div>
+                                        <div class="text-green-700 dark:text-green-300">Mínimo</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="font-bold text-red-600 dark:text-red-400">${combo.intervaloMaximo}</div>
+                                        <div class="text-red-700 dark:text-red-300">Máximo</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="font-bold text-purple-600 dark:text-purple-400">${combo.intervalos.length}</div>
+                                        <div class="text-purple-700 dark:text-purple-300">Total</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
                 </div>
             `;
             
@@ -1863,6 +1842,20 @@
             ultimaVerificacao = verificacaoTemporaria;
             atualizarVisualizacaoJogos();
             ultimaVerificacao = verificacaoOriginal; // Restaurar verificação oficial
+        }
+
+        // Função para toggle dos intervalos detalhados
+        function toggleIntervalosDetalhados(chave) {
+            const div = document.getElementById(`intervalos-detalhados-${chave}`);
+            const btn = document.getElementById(`btn-intervalos-${chave}`);
+            
+            if (div.classList.contains('hidden')) {
+                div.classList.remove('hidden');
+                btn.textContent = 'Ocultar Detalhes';
+            } else {
+                div.classList.add('hidden');
+                btn.textContent = 'Ver Detalhes';
+            }
         }
 
         // Inicializar aplicação
