@@ -229,7 +229,33 @@
                 <p id="progressText" class="text-sm mt-1">Preparando análise...</p>
             </div>
             
-
+            <!-- Análise dos números válidos -->
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6">
+                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 00-2-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Análise dos Números Válidos (1-31)
+                </h3>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-medium mb-3">Números que nunca saíram:</h4>
+                        <div id="numerosNuncaSairam" class="grid grid-cols-5 gap-2 mb-4">
+                            <!-- Será preenchido via JavaScript -->
+                            <div class="col-span-5 text-center py-4 text-gray-500">Aguardando análise...</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium mb-3">Números mais frequentes:</h4>
+                        <div id="numerosMaisFrequentes" class="space-y-2 max-h-60 overflow-y-auto">
+                            <!-- Será preenchido via JavaScript -->
+                            <div class="text-center py-4 text-gray-500">Aguardando análise...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Campo de pesquisa de dígitos -->
             <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6">
@@ -310,67 +336,9 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Resumo das combinações mais frequentes por tamanho de dígito -->
-            <div id="resumoGeral" class="hidden bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mt-8">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                    <h3 class="text-xl font-semibold flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Combinações Mais Frequentes por Tamanho de Dígito
-                    </h3>
-                    
-                    <div class="flex gap-2">
-                        <button id="btnImprimirResumo" class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-4 py-2 text-sm flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                            </svg>
-                            Imprimir
-                        </button>
-                        <button id="btnDownloadExcelResumo" class="bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg px-4 py-2 text-sm flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            Download Excel
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Tabela consolidada das combinações mais frequentes -->
-                <div class="overflow-x-auto">
-                    <table id="tabelaResumoFinal" class="w-full text-sm text-left text-gray-700 dark:text-gray-300 border">
-                        <thead class="text-xs uppercase bg-gray-100 dark:bg-gray-700">
-                            <tr>
-                                <th scope="col" class="px-4 py-3 border font-semibold">Tamanho</th>
-                                <th scope="col" class="px-4 py-3 border font-semibold">1ª Mais Frequente</th>
-                                <th scope="col" class="px-4 py-3 border font-semibold text-center">Aparições</th>
-                                <th scope="col" class="px-4 py-3 border font-semibold">2ª Mais Frequente</th>
-                                <th scope="col" class="px-4 py-3 border font-semibold text-center">Aparições</th>
-                                <th scope="col" class="px-4 py-3 border font-semibold">3ª Mais Frequente</th>
-                                <th scope="col" class="px-4 py-3 border font-semibold text-center">Aparições</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpoTabelaResumoFinal">
-                            <!-- Será preenchido via JavaScript -->
-                            <tr>
-                                <td colspan="7" class="px-4 py-8 text-center text-gray-500">
-                                    Analise pelo menos um tamanho de dígito para ver o resumo consolidado
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="mt-6 text-sm text-gray-600 dark:text-gray-400 text-center">
-                    <p><strong>Observação:</strong> Este resumo é gerado automaticamente conforme você analisa cada tamanho de dígito. As combinações mostradas são baseadas nos dados históricos dos sorteios do Dia de Sorte.</p>
-                </div>
-            </div>
         </div>
     </div>
 
-    <!-- Biblioteca para geração de Excel -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         // Variáveis globais
         let todosSorteios = [];
@@ -435,11 +403,9 @@
         const combinacoesNaoSorteadasEl = document.getElementById('combinacoesNaoSorteadas');
         const combinacoesMaisFrequentesEl = document.getElementById('combinacoesMaisFrequentes');
         
-        // Elementos para o resumo geral
-        const resumoGeralEl = document.getElementById('resumoGeral');
-        const corpoTabelaResumoFinal = document.getElementById('corpoTabelaResumoFinal');
-        const btnImprimirResumo = document.getElementById('btnImprimirResumo');
-        const btnDownloadExcelResumo = document.getElementById('btnDownloadExcelResumo');
+        // Novos elementos para análise dos números válidos
+        const numerosNuncaSairamEl = document.getElementById('numerosNuncaSairam');
+        const numerosMaisFrequentesEl = document.getElementById('numerosMaisFrequentes');
         
         // Elementos para pesquisa de dígitos
         const pesquisaDigitosEl = document.getElementById('pesquisaDigitos');
@@ -675,12 +641,12 @@
             if (sorteiosEncontrados.length > 0) {
                 resultado += `
                     <div>
-                        <h5 class="font-medium mb-2">Todas as aparições (${aparicoes} vezes):</h5>
+                        <h5 class="font-medium mb-2">Últimas aparições:</h5>
                         <div class="space-y-2 max-h-40 overflow-y-auto">
                 `;
                 
-                // Mostrar TODAS as aparições da combinação (não apenas as últimas 5)
-                const ultimosEncontrados = sorteiosEncontrados.reverse();
+                // Mostrar os últimos 5 sorteios onde apareceu
+                const ultimosEncontrados = sorteiosEncontrados.slice(-5).reverse();
                 ultimosEncontrados.forEach(sorteio => {
                     resultado += `
                         <div class="bg-gray-100 dark:bg-gray-600 p-2 rounded text-sm">
@@ -1221,8 +1187,10 @@
             progressDetails.textContent = 'Iniciando análise completa...';
 
             try {
-                // Pular a análise dos números válidos (removida)
-                atualizarProgresso(15, 'Iniciando análise', 'Preparando análise das combinações...', 'Calculando...');
+                // PRIMEIRO: Analisar os números válidos (1-31) se ainda não foi feito
+                if (!analiseNumerosRealizada) {
+                    await analisarNumerosValidos();
+                }
 
                 // Verificar se há análise em cache para as combinações de dígitos
                 const cacheKey = `diaDeSorte_analise_validas_${tamanho}`;
@@ -1412,12 +1380,6 @@
                         // Exibir resultados
                         exibirCombinacoes(nuncaSorteadas, maisFrequentes);
                         
-                        // Salvar dados do resumo ANTES de gerar
-                        dadosResumoGeral[tamanho] = maisFrequentes.slice(0, 3);
-                        
-                        // Gerar resumo geral após análise
-                        exibirResumoGeral();
-                        
                         // Concluir o progresso
                         atualizarProgresso(
                             100,
@@ -1455,34 +1417,6 @@
         
         // Exibir as combinações analisadas
         function exibirCombinacoes(nuncaSorteadas, maisFrequentes) {
-            // Atualizar títulos com contadores baseados na tabela de estatísticas
-            const estatisticasTamanho = combinacoesValidasPorTamanho[tamanhoGrupoAtual];
-            const totalCombinacoesValidas = estatisticasTamanho.validas; // Número fixo da tabela
-            const totalNuncaSairam = nuncaSorteadas.length;
-            const totalJaSairam = maisFrequentes.length;
-            
-            // Atualizar título da seção "nunca saíram"
-            const tituloNuncaSairam = document.querySelector('h3:has(+ div #combinacoesNaoSorteadas)');
-            if (tituloNuncaSairam) {
-                tituloNuncaSairam.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    Combinações válidas que nunca saíram - ${totalNuncaSairam} de ${totalCombinacoesValidas} válidas
-                `;
-            }
-            
-            // Atualizar título da seção "mais frequentes"
-            const tituloMaisFrequentes = document.querySelector('h3:has(+ div #combinacoesMaisFrequentes)');
-            if (tituloMaisFrequentes) {
-                tituloMaisFrequentes.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                    Combinações válidas mais frequentes - ${totalJaSairam} de ${totalCombinacoesValidas} válidas
-                `;
-            }
-            
             // Exibir combinações nunca sorteadas
             combinacoesNaoSorteadasEl.innerHTML = '';
             
@@ -1504,8 +1438,9 @@
             if (maisFrequentes.length === 0) {
                 combinacoesMaisFrequentesEl.innerHTML = '<div class="text-center py-8">Nenhuma combinação válida deste tamanho foi sorteada ainda.</div>';
             } else {
-                // Mostrar todas as combinações mais frequentes
-                maisFrequentes.forEach((item, index) => {
+                // Pegar as 20 mais frequentes (ou menos, se não houver 20)
+                const quantidadeMostrar = Math.min(20, maisFrequentes.length);
+                maisFrequentes.slice(0, quantidadeMostrar).forEach((item, index) => {
                     const div = document.createElement('div');
                     div.className = 'bg-gray-100 dark:bg-gray-600 p-3 rounded-lg flex justify-between items-center';
                     
@@ -1526,245 +1461,8 @@
             }
         }
         
-        // Variável global para armazenar dados do resumo
-        let dadosResumoGeral = {};
-        
-        // Função para gerar o resumo geral após analisar um tamanho
-        async function gerarResumoGeral() {
-            // Verificar se já temos análises para todos os tamanhos
-            const todosOsTamanhos = [3, 4, 5, 6, 7, 8, 9, 10];
-            let analisesProntas = 0;
-            
-            for (const tamanho of todosOsTamanhos) {
-                const cacheKey = `diaDeSorte_analise_validas_${tamanho}`;
-                const cacheAnalise = localStorage.getItem(cacheKey);
-                
-                if (cacheAnalise) {
-                    try {
-                        const dados = JSON.parse(cacheAnalise);
-                        const top3 = dados.maisFrequentes.slice(0, 3);
-                        dadosResumoGeral[tamanho] = top3;
-                        analisesProntas++;
-                    } catch (error) {
-                        console.error(`Erro ao processar análise do tamanho ${tamanho}:`, error);
-                    }
-                }
-            }
-            
-            // Se temos pelo menos algumas análises, mostrar o resumo
-            if (analisesProntas > 0) {
-                exibirResumoGeral();
-            }
-        }
-        
-        // Função para exibir o resumo geral em TABELA
-        function exibirResumoGeral() {
-            corpoTabelaResumoFinal.innerHTML = '';
-            
-            const todosOsTamanhos = [3, 4, 5, 6, 7, 8, 9, 10];
-            
-            todosOsTamanhos.forEach(tamanho => {
-                const estatisticas = combinacoesValidasPorTamanho[tamanho];
-                const dados = dadosResumoGeral[tamanho] || [];
-                const maisFrequentes = dados.slice(0, 3); // Top 3
-                
-                // Criar a linha da tabela
-                const row = document.createElement('tr');
-                row.className = 'bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700';
-                
-                let rowHtml = `<td class="px-4 py-3 border font-semibold">${tamanho} dígitos</td>`;
-                
-                // Adicionar as 3 combinações mais frequentes
-                for (let i = 0; i < 3; i++) {
-                    if (i < maisFrequentes.length) {
-                        const item = maisFrequentes[i];
-                        rowHtml += `
-                            <td class="px-4 py-3 border font-mono">${item.combinacao.join(',')}</td>
-                            <td class="px-4 py-3 border text-center font-bold text-green-600 dark:text-green-400">${item.frequencia} <span class="text-xs text-gray-500">(${item.percentual}%)</span></td>
-                        `;
-                    } else {
-                        rowHtml += `
-                            <td class="px-4 py-3 border text-center text-gray-400">-</td>
-                            <td class="px-4 py-3 border text-center text-gray-400">-</td>
-                        `;
-                    }
-                }
-                
-                row.innerHTML = rowHtml;
-                corpoTabelaResumoFinal.appendChild(row);
-            });
-            
-            // Mostrar o resumo geral
-            resumoGeralEl.classList.remove('hidden');
-        }
-        
-        // Função para imprimir o resumo
-        function imprimirResumo() {
-            const dataAtual = new Date().toLocaleDateString('pt-BR');
-            const todosOsTamanhos = [3, 4, 5, 6, 7, 8, 9, 10];
-            
-            // Gerar HTML para a tabela de impressão
-            let tabelaHtml = `
-                <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-                    <thead>
-                        <tr style="background-color: #f5f5f5;">
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Tamanho</th>
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Nunca Saíram</th>
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">1ª Mais Frequente</th>
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Aparições</th>
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">2ª Mais Frequente</th>
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Aparições</th>
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">3ª Mais Frequente</th>
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Aparições</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            todosOsTamanhos.forEach(tamanho => {
-                const estatisticas = combinacoesValidasPorTamanho[tamanho];
-                const dados = dadosResumoGeral[tamanho] || [];
-                const maisFrequentes = dados.slice(0, 3);
-                const totalValidas = estatisticas.validas;
-                const totalSairam = dados.length;
-                const totalNuncaSairam = totalValidas - totalSairam;
-                
-                tabelaHtml += `
-                    <tr>
-                        <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-weight: bold;">${tamanho} dígitos</td>
-                        <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${totalNuncaSairam} de ${totalValidas}</td>
-                `;
-                
-                // Adicionar as 3 combinações mais frequentes
-                for (let i = 0; i < 3; i++) {
-                    if (i < maisFrequentes.length) {
-                        const item = maisFrequentes[i];
-                        tabelaHtml += `
-                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${item.combinacao.join(',')}</td>
-                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-weight: bold;">${item.frequencia}</td>
-                        `;
-                    } else {
-                        tabelaHtml += `
-                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center; color: #999;">-</td>
-                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center; color: #999;">-</td>
-                        `;
-                    }
-                }
-                
-                tabelaHtml += '</tr>';
-            });
-            
-            tabelaHtml += '</tbody></table>';
-            
-            const conteudoImpressao = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Resumo - Dia de Sorte</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; }
-                        h1 { text-align: center; color: #16A34A; margin-bottom: 30px; }
-                        .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #666; }
-                        @media print {
-                            body { margin: 0; }
-                            .footer { page-break-inside: avoid; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <h1>Combinações Mais Frequentes por Tamanho de Dígito</h1>
-                    <p style="text-align: center; margin-bottom: 20px;">Análise do Dia de Sorte - ${dataAtual}</p>
-                    ${tabelaHtml}
-                    <div class="footer">
-                        <p>Gerado automaticamente em ${dataAtual} às ${new Date().toLocaleTimeString('pt-BR')}</p>
-                        <p>Baseado nos dados históricos dos sorteios do Dia de Sorte</p>
-                    </div>
-                </body>
-                </html>
-            `;
-            
-            const janelaImpressao = window.open('', '_blank');
-            janelaImpressao.document.write(conteudoImpressao);
-            janelaImpressao.document.close();
-            janelaImpressao.focus();
-            janelaImpressao.print();
-        }
-        
-        // Função para fazer download em Excel
-        function downloadExcel() {
-            // Verificar se a biblioteca XLSX está disponível
-            if (typeof XLSX === 'undefined') {
-                alert('Biblioteca Excel não carregada. Tente recarregar a página.');
-                return;
-            }
-            
-            // Preparar os dados para o Excel
-            const dadosExcel = [];
-            
-            // Cabeçalho
-            dadosExcel.push([
-                'Tamanho',
-                '1ª Mais Frequente',
-                'Aparições',
-                '2ª Mais Frequente', 
-                'Aparições',
-                '3ª Mais Frequente',
-                'Aparições'
-            ]);
-            
-            // Dados das linhas
-            const todosOsTamanhos = [3, 4, 5, 6, 7, 8, 9, 10];
-            
-            todosOsTamanhos.forEach(tamanho => {
-                const top3 = dadosResumoGeral[tamanho] || [];
-                const linha = [`${tamanho} dígitos`];
-                
-                // Adicionar as 3 combinações mais frequentes
-                for (let i = 0; i < 3; i++) {
-                    if (i < top3.length) {
-                        const item = top3[i];
-                        linha.push(item.combinacao.join(','));
-                        linha.push(item.frequencia);
-                    } else {
-                        linha.push('-');
-                        linha.push('-');
-                    }
-                }
-                
-                dadosExcel.push(linha);
-            });
-            
-            // Criar workbook e worksheet
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(dadosExcel);
-            
-            // Definir largura das colunas
-            const larguraColunas = [
-                { wch: 15 }, // Tamanho
-                { wch: 20 }, // 1ª Combinação
-                { wch: 12 }, // Aparições
-                { wch: 20 }, // 2ª Combinação
-                { wch: 12 }, // Aparições
-                { wch: 20 }, // 3ª Combinação
-                { wch: 12 }  // Aparições
-            ];
-            ws['!cols'] = larguraColunas;
-            
-            // Adicionar worksheet ao workbook
-            XLSX.utils.book_append_sheet(wb, ws, 'Resumo Dia de Sorte');
-            
-            // Gerar nome do arquivo com data
-            const dataAtual = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
-            const nomeArquivo = `Resumo_Dia_de_Sorte_${dataAtual}.xlsx`;
-            
-            // Fazer download
-            XLSX.writeFile(wb, nomeArquivo);
-        }
-        
         // Event Listeners
         btnAnalisar.addEventListener('click', analisarCombinacoes);
-        btnImprimirResumo.addEventListener('click', imprimirResumo);
-        btnDownloadExcelResumo.addEventListener('click', downloadExcel);
         
         btnAtualizarDados.addEventListener('click', () => {
             // Limpar o cache

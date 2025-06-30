@@ -229,52 +229,6 @@
                 <p id="progressText" class="text-sm mt-1">Preparando análise...</p>
             </div>
             
-
-
-            <!-- Campo de pesquisa de dígitos -->
-            <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6">
-                <h3 class="text-xl font-semibold mb-4 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    Pesquisar Status dos Dígitos
-                </h3>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                        <label for="pesquisaDigitos" class="block text-sm font-medium mb-2">
-                            Digite a combinação de dígitos para análise:
-                        </label>
-                        <div class="flex gap-2">
-                            <input 
-                                type="text" 
-                                id="pesquisaDigitos" 
-                                placeholder="Ex: 0,1,2,3,4,5,6,7 ou 01234567"
-                                class="flex-1 px-4 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                            >
-                            <button 
-                                id="btnPesquisarDigitos" 
-                                class="bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg px-4 py-2 text-base"
-                            >
-                                Pesquisar
-                            </button>
-                        </div>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                            Aceita formatos: "0,1,2,3,4,5,6,7" ou "01234567" (até 8 dígitos)
-                        </p>
-                    </div>
-                    
-                    <div>
-                        <h4 class="text-sm font-medium mb-2">Resultado da Pesquisa:</h4>
-                        <div id="resultadoPesquisa" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg min-h-[100px]">
-                            <div class="text-center text-gray-500 py-4">
-                                Digite uma combinação de dígitos e clique em "Pesquisar"
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <div>
                     <h3 class="text-xl font-semibold mb-4 flex items-center">
@@ -310,76 +264,16 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Resumo das combinações mais frequentes por tamanho de dígito -->
-            <div id="resumoGeral" class="hidden bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mt-8">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                    <h3 class="text-xl font-semibold flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Combinações Mais Frequentes por Tamanho de Dígito
-                    </h3>
-                    
-                    <div class="flex gap-2">
-                        <button id="btnImprimirResumo" class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-4 py-2 text-sm flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                            </svg>
-                            Imprimir
-                        </button>
-                        <button id="btnDownloadExcelResumo" class="bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg px-4 py-2 text-sm flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            Download Excel
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Tabela consolidada das combinações mais frequentes -->
-                <div class="overflow-x-auto">
-                    <table id="tabelaResumoFinal" class="w-full text-sm text-left text-gray-700 dark:text-gray-300 border">
-                        <thead class="text-xs uppercase bg-gray-100 dark:bg-gray-700">
-                            <tr>
-                                <th scope="col" class="px-4 py-3 border font-semibold">Tamanho</th>
-                                <th scope="col" class="px-4 py-3 border font-semibold">1ª Mais Frequente</th>
-                                <th scope="col" class="px-4 py-3 border font-semibold text-center">Aparições</th>
-                                <th scope="col" class="px-4 py-3 border font-semibold">2ª Mais Frequente</th>
-                                <th scope="col" class="px-4 py-3 border font-semibold text-center">Aparições</th>
-                                <th scope="col" class="px-4 py-3 border font-semibold">3ª Mais Frequente</th>
-                                <th scope="col" class="px-4 py-3 border font-semibold text-center">Aparições</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpoTabelaResumoFinal">
-                            <!-- Será preenchido via JavaScript -->
-                            <tr>
-                                <td colspan="7" class="px-4 py-8 text-center text-gray-500">
-                                    Analise pelo menos um tamanho de dígito para ver o resumo consolidado
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="mt-6 text-sm text-gray-600 dark:text-gray-400 text-center">
-                    <p><strong>Observação:</strong> Este resumo é gerado automaticamente conforme você analisa cada tamanho de dígito. As combinações mostradas são baseadas nos dados históricos dos sorteios do Dia de Sorte.</p>
-                </div>
-            </div>
         </div>
     </div>
 
-    <!-- Biblioteca para geração de Excel -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         // Variáveis globais
         let todosSorteios = [];
         const digitosPossiveis = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-        const numerosValidos = Array.from({length: 31}, (_, i) => i + 1); // 1 a 31
         let dadosCarregados = false;
         let tamanhoGrupoAtual = 7; // Valor padrão
         let tempoInicioAnalise = null; // Para calcular tempo estimado
-        let analiseNumerosRealizada = false; // Controle da análise dos números
         
         // Definição das combinações válidas por tamanho
         // Estas são as combinações que você especificou como válidas
@@ -434,17 +328,6 @@
         // Resultados
         const combinacoesNaoSorteadasEl = document.getElementById('combinacoesNaoSorteadas');
         const combinacoesMaisFrequentesEl = document.getElementById('combinacoesMaisFrequentes');
-        
-        // Elementos para o resumo geral
-        const resumoGeralEl = document.getElementById('resumoGeral');
-        const corpoTabelaResumoFinal = document.getElementById('corpoTabelaResumoFinal');
-        const btnImprimirResumo = document.getElementById('btnImprimirResumo');
-        const btnDownloadExcelResumo = document.getElementById('btnDownloadExcelResumo');
-        
-        // Elementos para pesquisa de dígitos
-        const pesquisaDigitosEl = document.getElementById('pesquisaDigitos');
-        const btnPesquisarDigitos = document.getElementById('btnPesquisarDigitos');
-        const resultadoPesquisaEl = document.getElementById('resultadoPesquisa');
         
         // Elementos de informação da análise
         const tamanhoGrupoAtualEl = document.getElementById('tamanhoGrupoAtual');
@@ -517,186 +400,6 @@
                 const minutos = Math.floor((segundosRestantes % 3600) / 60);
                 return `${horas} h ${minutos} min`;
             }
-        }
-
-        // Nova função para analisar os números válidos (1-31)
-        function analisarNumerosValidos() {
-            return new Promise((resolve) => {
-                if (!dadosCarregados || todosSorteios.length === 0) {
-                    resolve();
-                    return;
-                }
-
-                atualizarProgresso(5, 'Analisando números válidos', 'Contando frequência dos números 1-31...', 'Calculando...');
-
-                // Contar frequência de cada número
-                const frequenciaNumerosValidos = {};
-                numerosValidos.forEach(num => frequenciaNumerosValidos[num] = 0);
-
-                todosSorteios.forEach(sorteio => {
-                    sorteio.numeros.forEach(numero => {
-                        if (numero >= 1 && numero <= 31) {
-                            frequenciaNumerosValidos[numero]++;
-                        }
-                    });
-                });
-
-                // Separar números que nunca saíram e os mais frequentes
-                const numerosNuncaSairamArray = [];
-                const numerosMaisFrequentesArray = [];
-
-                for (const [numero, frequencia] of Object.entries(frequenciaNumerosValidos)) {
-                    const num = parseInt(numero);
-                    if (frequencia === 0) {
-                        numerosNuncaSairamArray.push(num);
-                    } else {
-                        numerosMaisFrequentesArray.push({
-                            numero: num,
-                            frequencia: frequencia,
-                            percentual: (frequencia / todosSorteios.length * 100).toFixed(2)
-                        });
-                    }
-                }
-
-                // Ordenar os mais frequentes
-                numerosMaisFrequentesArray.sort((a, b) => b.frequencia - a.frequencia);
-
-                // Exibir números que nunca saíram
-                numerosNuncaSairamEl.innerHTML = '';
-                if (numerosNuncaSairamArray.length === 0) {
-                    numerosNuncaSairamEl.innerHTML = '<div class="col-span-5 text-center py-4 text-green-600">Todos os números de 1 a 31 já saíram pelo menos uma vez!</div>';
-                } else {
-                    numerosNuncaSairamArray.sort((a, b) => a - b);
-                    numerosNuncaSairamArray.forEach(numero => {
-                        const div = document.createElement('div');
-                        div.className = 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 p-2 rounded text-center font-bold';
-                        div.textContent = numero;
-                        numerosNuncaSairamEl.appendChild(div);
-                    });
-                }
-
-                // Exibir números mais frequentes
-                numerosMaisFrequentesEl.innerHTML = '';
-                const quantidadeMostrar = Math.min(10, numerosMaisFrequentesArray.length);
-                numerosMaisFrequentesArray.slice(0, quantidadeMostrar).forEach((item, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'bg-green-100 dark:bg-green-900 p-3 rounded-lg flex justify-between items-center';
-                    
-                    // Destacar os 3 primeiros
-                    if (index < 3) {
-                        div.classList.add('border-2', 'border-green-500', 'dark:border-green-400');
-                    }
-                    
-                    div.innerHTML = `
-                        <span class="font-bold text-green-800 dark:text-green-200">${item.numero}</span>
-                        <span class="text-sm text-green-700 dark:text-green-300">
-                            ${item.frequencia} vezes (${item.percentual}%)
-                        </span>
-                    `;
-                    numerosMaisFrequentesEl.appendChild(div);
-                });
-
-                analiseNumerosRealizada = true;
-                atualizarProgresso(15, 'Números válidos analisados', 'Análise dos números 1-31 concluída', calcularTempoRestante(15));
-                
-                setTimeout(() => resolve(), 500);
-            });
-        }
-
-        // Função para pesquisar status de dígitos específicos
-        function pesquisarDigitos() {
-            const input = pesquisaDigitosEl.value.trim();
-            
-            if (!input) {
-                resultadoPesquisaEl.innerHTML = '<div class="text-center text-red-500 py-4">Por favor, digite uma combinação de dígitos</div>';
-                return;
-            }
-
-            if (!dadosCarregados || todosSorteios.length === 0) {
-                resultadoPesquisaEl.innerHTML = '<div class="text-center text-red-500 py-4">Dados dos sorteios não estão carregados</div>';
-                return;
-            }
-
-            // Processar o input para extrair os dígitos
-            let digitos = [];
-            
-            // Verificar se contém vírgulas (formato: 0,1,2,3)
-            if (input.includes(',')) {
-                digitos = input.split(',').map(d => parseInt(d.trim())).filter(d => !isNaN(d) && d >= 0 && d <= 9);
-            } else {
-                // Formato sem vírgulas (01234567)
-                digitos = input.split('').map(d => parseInt(d)).filter(d => !isNaN(d) && d >= 0 && d <= 9);
-            }
-
-            if (digitos.length === 0) {
-                resultadoPesquisaEl.innerHTML = '<div class="text-center text-red-500 py-4">Nenhum dígito válido encontrado. Use apenas dígitos de 0 a 9.</div>';
-                return;
-            }
-
-            if (digitos.length > 8) {
-                resultadoPesquisaEl.innerHTML = '<div class="text-center text-red-500 py-4">Máximo de 8 dígitos permitidos</div>';
-                return;
-            }
-
-            // Remover duplicatas e ordenar
-            digitos = [...new Set(digitos)].sort((a, b) => a - b);
-
-            // Analisar a combinação nos sorteios
-            let aparicoes = 0;
-            const sorteiosEncontrados = [];
-
-            todosSorteios.forEach(sorteio => {
-                if (contemCombinacaoDigitos(sorteio, digitos)) {
-                    aparicoes++;
-                    sorteiosEncontrados.push(sorteio);
-                }
-            });
-
-            const percentual = (aparicoes / todosSorteios.length * 100).toFixed(2);
-
-            // Exibir resultado
-            let resultado = `
-                <div class="space-y-4">
-                    <div class="text-center">
-                        <h4 class="font-bold text-lg mb-2">Combinação: ${digitos.join(', ')}</h4>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded">
-                                <div class="text-2xl font-bold text-blue-800 dark:text-blue-200">${aparicoes}</div>
-                                <div class="text-sm text-blue-600 dark:text-blue-400">Aparições</div>
-                            </div>
-                            <div class="bg-green-100 dark:bg-green-900 p-3 rounded">
-                                <div class="text-2xl font-bold text-green-800 dark:text-green-200">${percentual}%</div>
-                                <div class="text-sm text-green-600 dark:text-green-400">Frequência</div>
-                            </div>
-                        </div>
-                    </div>
-            `;
-
-            if (sorteiosEncontrados.length > 0) {
-                resultado += `
-                    <div>
-                        <h5 class="font-medium mb-2">Todas as aparições (${aparicoes} vezes):</h5>
-                        <div class="space-y-2 max-h-40 overflow-y-auto">
-                `;
-                
-                // Mostrar TODAS as aparições da combinação (não apenas as últimas 5)
-                const ultimosEncontrados = sorteiosEncontrados.reverse();
-                ultimosEncontrados.forEach(sorteio => {
-                    resultado += `
-                        <div class="bg-gray-100 dark:bg-gray-600 p-2 rounded text-sm">
-                            <strong>Concurso ${sorteio.numero}</strong> (${sorteio.data})<br>
-                            Números: ${sorteio.numeros.join(', ')}
-                        </div>
-                    `;
-                });
-                
-                resultado += '</div></div>';
-            } else {
-                resultado += '<div class="text-center text-red-500 font-medium">Esta combinação nunca apareceu nos sorteios!</div>';
-            }
-
-            resultado += '</div>';
-            resultadoPesquisaEl.innerHTML = resultado;
         }
         
         // Verificar se há dados em cache
@@ -1198,8 +901,8 @@
             return true;
         }
         
-        // Analisar combinações de dígitos (modificada para incluir análise dos números válidos)
-        async function analisarCombinacoes() {
+        // Analisar combinações de dígitos
+        function analisarCombinacoes() {
             const tamanho = tamanhoGrupoAtual;
             
             if (!dadosCarregados || todosSorteios.length === 0) {
@@ -1218,232 +921,213 @@
             progressBarText.textContent = 'Iniciando...';
             progressStage.textContent = 'Etapa: Preparando dados';
             progressTimeRemaining.textContent = 'Tempo restante: Calculando...';
-            progressDetails.textContent = 'Iniciando análise completa...';
-
-            try {
-                // Pular a análise dos números válidos (removida)
-                atualizarProgresso(15, 'Iniciando análise', 'Preparando análise das combinações...', 'Calculando...');
-
-                // Verificar se há análise em cache para as combinações de dígitos
-                const cacheKey = `diaDeSorte_analise_validas_${tamanho}`;
-                const cacheAnalise = localStorage.getItem(cacheKey);
-                
-                if (cacheAnalise) {
-                    try {
-                        const { combinacoesValidas, nuncaSorteadas, maisFrequentes, estatisticas } = JSON.parse(cacheAnalise);
-                        
-                        // Simular progresso mesmo usando cache (para feedback visual)
-                        let progresso = 15; // Começar de onde parou a análise dos números
-                        const intervalo = setInterval(() => {
-                            progresso += 5;
-                            if (progresso <= 100) {
-                                atualizarProgresso(
-                                    progresso, 
-                                    'Carregando do cache', 
-                                    'Usando análise armazenada localmente...', 
-                                    calcularTempoRestante(progresso)
-                                );
-                            } else {
-                                clearInterval(intervalo);
+            progressDetails.textContent = 'Gerando combinações possíveis...';
+            
+            // Verificar se há análise em cache
+            const cacheKey = `diaDeSorte_analise_validas_${tamanho}`;
+            const cacheAnalise = localStorage.getItem(cacheKey);
+            
+            if (cacheAnalise) {
+                try {
+                    const { combinacoesValidas, nuncaSorteadas, maisFrequentes, estatisticas } = JSON.parse(cacheAnalise);
+                    
+                    // Simular progresso mesmo usando cache (para feedback visual)
+                    let progresso = 0;
+                    const intervalo = setInterval(() => {
+                        progresso += 5;
+                        if (progresso <= 100) {
+                            atualizarProgresso(
+                                progresso, 
+                                'Carregando do cache', 
+                                'Usando análise armazenada localmente...', 
+                                calcularTempoRestante(progresso)
+                            );
+                        } else {
+                            clearInterval(intervalo);
+                            
+                            // Concluir o processo
+                            atualizarProgresso(100, 'Concluído', 'Análise carregada do cache com sucesso', '0 segundos');
+                            
+                            setTimeout(() => {
+                                listaCombinacoesValidas[tamanho] = combinacoesValidas;
+                                atualizarEstatisticasAnalise(estatisticas);
+                                exibirCombinacoes(nuncaSorteadas, maisFrequentes);
                                 
-                                // Concluir o processo
-                                atualizarProgresso(100, 'Concluído', 'Análise carregada do cache com sucesso', '0 segundos');
-                                
+                                // Esconder a barra de progresso após a conclusão
                                 setTimeout(() => {
-                                    listaCombinacoesValidas[tamanho] = combinacoesValidas;
-                                    atualizarEstatisticasAnalise(estatisticas);
-                                    exibirCombinacoes(nuncaSorteadas, maisFrequentes);
-                                    
-                                    // Esconder a barra de progresso após a conclusão
-                                    setTimeout(() => {
-                                        progressContainer.classList.add('hidden');
-                                    }, 1000);
-                                }, 500);
-                            }
-                        }, 50);
+                                    progressContainer.classList.add('hidden');
+                                }, 1000);
+                            }, 500);
+                        }
+                    }, 50);
+                    
+                    return;
+                } catch (error) {
+                    console.error('Erro ao recuperar análise do cache:', error);
+                    atualizarProgresso(0, 'Erro', 'Erro ao carregar do cache, realizando nova análise...', 'Calculando...');
+                }
+            }
+            
+            // Analisar em lotes para não travar a interface
+            setTimeout(() => {
+                // Etapa 1: Gerar todas as combinações possíveis
+                atualizarProgresso(5, 'Gerando combinações', 'Calculando todas as combinações possíveis...', 'Calculando...');
+                
+                const todasCombinacoesPossiveis = gerarCombinacoes(digitosPossiveis, tamanho);
+                console.log(`Geradas ${todasCombinacoesPossiveis.length} combinações possíveis de ${tamanho} dígitos`);
+                
+                // Etapa 2: Identificar combinações válidas
+                atualizarProgresso(10, 'Identificando válidas', 'Filtrando combinações válidas conforme critérios...', calcularTempoRestante(10));
+                
+                // Filtrar para obter apenas o número exato de combinações válidas
+                // Para simplificar, vamos pegar as primeiras N combinações (onde N é o número de válidas)
+                const numCombinacoesPossiveis = todasCombinacoesPossiveis.length;
+                const numCombinacoesValidas = combinacoesValidasPorTamanho[tamanho].validas;
+                
+                // Para simular as combinações válidas, vamos selecionar uma amostra do total
+                // Em uma implementação real, você teria uma lista específica de quais são as válidas
+                const todasCombinacoesValidas = todasCombinacoesPossiveis.slice(0, numCombinacoesValidas);
+                
+                // Armazenar para uso posterior
+                listaCombinacoesValidas[tamanho] = todasCombinacoesValidas;
+                
+                // Etapa 3: Inicializar contagem
+                atualizarProgresso(15, 'Preparando análise', 'Inicializando contadores para análise...', calcularTempoRestante(15));
+                
+                // Inicializar contagem para cada combinação
+                const combinacoesFrequencia = {};
+                todasCombinacoesValidas.forEach(combo => {
+                    combinacoesFrequencia[combo.join(',')] = 0;
+                });
+                
+                // Etapa 4: Analisar os sorteios em lotes
+                const totalSorteios = todosSorteios.length;
+                const tamanhoBatch = 10; // Número de sorteios por lote
+                const totalBatches = Math.ceil(totalSorteios / tamanhoBatch);
+                
+                let batchAtual = 0;
+                let processados = 0;
+                
+                function processarLote() {
+                    const inicio = batchAtual * tamanhoBatch;
+                    const fim = Math.min(inicio + tamanhoBatch, totalSorteios);
+                    
+                    // Processar este lote de sorteios
+                    for (let i = inicio; i < fim; i++) {
+                        const sorteio = todosSorteios[i];
                         
-                        return;
-                    } catch (error) {
-                        console.error('Erro ao recuperar análise do cache:', error);
-                        atualizarProgresso(15, 'Erro', 'Erro ao carregar do cache, realizando nova análise...', 'Calculando...');
+                        // Para cada combinação, verificar se está contida no sorteio
+                        todasCombinacoesValidas.forEach(combo => {
+                            if (contemCombinacaoDigitos(sorteio, combo)) {
+                                const chave = combo.join(',');
+                                combinacoesFrequencia[chave]++;
+                            }
+                        });
+                        
+                        processados++;
+                    }
+                    
+                    // Atualizar progresso
+                    const progresso = 15 + (processados / totalSorteios) * 75; // 15% a 90%
+                    const tempoRestante = calcularTempoRestante(progresso);
+                    
+                    atualizarProgresso(
+                        progresso,
+                        'Analisando sorteios',
+                        `Processando lote ${batchAtual + 1} de ${totalBatches} (${processados} de ${totalSorteios} sorteios)`,
+                        tempoRestante
+                    );
+                    
+                    batchAtual++;
+                    
+                    // Se ainda há lotes, continuar processando
+                    if (batchAtual < totalBatches) {
+                        setTimeout(processarLote, 0);
+                    } else {
+                        // Finalizar processamento
+                        finalizarAnalise(todasCombinacoesValidas, combinacoesFrequencia);
                     }
                 }
                 
-                // Analisar em lotes para não travar a interface
-                setTimeout(() => {
-                    // Etapa 1: Gerar todas as combinações possíveis
-                    atualizarProgresso(20, 'Gerando combinações', 'Calculando todas as combinações possíveis...', 'Calculando...');
+                // Função para finalizar a análise
+                function finalizarAnalise(todasCombinacoesValidas, combinacoesFrequencia) {
+                    atualizarProgresso(
+                        95,
+                        'Finalizando',
+                        'Organizando resultados da análise...',
+                        'Menos de 5 segundos'
+                    );
                     
-                    const todasCombinacoesPossiveis = gerarCombinacoes(digitosPossiveis, tamanho);
-                    console.log(`Geradas ${todasCombinacoesPossiveis.length} combinações possíveis de ${tamanho} dígitos`);
+                    // Separar combinações nunca sorteadas e mais frequentes
+                    const nuncaSorteadas = [];
+                    const maisFrequentes = [];
                     
-                    // Etapa 2: Identificar combinações válidas
-                    atualizarProgresso(25, 'Identificando válidas', 'Filtrando combinações válidas conforme critérios...', calcularTempoRestante(25));
+                    let totalSairam = 0;
+                    let totalNuncaSairam = 0;
                     
-                    // Filtrar para obter apenas o número exato de combinações válidas
-                    // Para simplificar, vamos pegar as primeiras N combinações (onde N é o número de válidas)
-                    const numCombinacoesPossiveis = todasCombinacoesPossiveis.length;
-                    const numCombinacoesValidas = combinacoesValidasPorTamanho[tamanho].validas;
-                    
-                    // Para simular as combinações válidas, vamos selecionar uma amostra do total
-                    // Em uma implementação real, você teria uma lista específica de quais são as válidas
-                    const todasCombinacoesValidas = todasCombinacoesPossiveis.slice(0, numCombinacoesValidas);
-                    
-                    // Armazenar para uso posterior
-                    listaCombinacoesValidas[tamanho] = todasCombinacoesValidas;
-                    
-                    // Etapa 3: Inicializar contagem
-                    atualizarProgresso(30, 'Preparando análise', 'Inicializando contadores para análise...', calcularTempoRestante(30));
-                    
-                    // Inicializar contagem para cada combinação
-                    const combinacoesFrequencia = {};
-                    todasCombinacoesValidas.forEach(combo => {
-                        combinacoesFrequencia[combo.join(',')] = 0;
-                    });
-                    
-                    // Etapa 4: Analisar os sorteios em lotes
-                    const totalSorteios = todosSorteios.length;
-                    const tamanhoBatch = 10; // Número de sorteios por lote
-                    const totalBatches = Math.ceil(totalSorteios / tamanhoBatch);
-                    
-                    let batchAtual = 0;
-                    let processados = 0;
-                    
-                    function processarLote() {
-                        const inicio = batchAtual * tamanhoBatch;
-                        const fim = Math.min(inicio + tamanhoBatch, totalSorteios);
+                    for (const [combo, frequencia] of Object.entries(combinacoesFrequencia)) {
+                        const comboArray = combo.split(',').map(d => parseInt(d));
                         
-                        // Processar este lote de sorteios
-                        for (let i = inicio; i < fim; i++) {
-                            const sorteio = todosSorteios[i];
-                            
-                            // Para cada combinação, verificar se está contida no sorteio
-                            todasCombinacoesValidas.forEach(combo => {
-                                if (contemCombinacaoDigitos(sorteio, combo)) {
-                                    const chave = combo.join(',');
-                                    combinacoesFrequencia[chave]++;
-                                }
-                            });
-                            
-                            processados++;
-                        }
-                        
-                        // Atualizar progresso (30% a 90%)
-                        const progresso = 30 + (processados / totalSorteios) * 60;
-                        const tempoRestante = calcularTempoRestante(progresso);
-                        
-                        atualizarProgresso(
-                            progresso,
-                            'Analisando sorteios',
-                            `Processando lote ${batchAtual + 1} de ${totalBatches} (${processados} de ${totalSorteios} sorteios)`,
-                            tempoRestante
-                        );
-                        
-                        batchAtual++;
-                        
-                        // Se ainda há lotes, continuar processando
-                        if (batchAtual < totalBatches) {
-                            setTimeout(processarLote, 0);
+                        if (frequencia === 0) {
+                            nuncaSorteadas.push(comboArray);
+                            totalNuncaSairam++;
                         } else {
-                            // Finalizar processamento
-                            finalizarAnalise(todasCombinacoesValidas, combinacoesFrequencia);
+                            maisFrequentes.push({
+                                combinacao: comboArray,
+                                frequencia: frequencia,
+                                percentual: (frequencia / totalSorteios * 100).toFixed(2)
+                            });
+                            totalSairam++;
                         }
                     }
                     
-                    // Função para finalizar a análise
-                    function finalizarAnalise(todasCombinacoesValidas, combinacoesFrequencia) {
-                        atualizarProgresso(
-                            95,
-                            'Finalizando',
-                            'Organizando resultados da análise...',
-                            'Menos de 5 segundos'
-                        );
-                        
-                        // Separar combinações nunca sorteadas e mais frequentes
-                        const nuncaSorteadas = [];
-                        const maisFrequentes = [];
-                        
-                        let totalSairam = 0;
-                        let totalNuncaSairam = 0;
-                        
-                        for (const [combo, frequencia] of Object.entries(combinacoesFrequencia)) {
-                            const comboArray = combo.split(',').map(d => parseInt(d));
-                            
-                            if (frequencia === 0) {
-                                nuncaSorteadas.push(comboArray);
-                                totalNuncaSairam++;
-                            } else {
-                                maisFrequentes.push({
-                                    combinacao: comboArray,
-                                    frequencia: frequencia,
-                                    percentual: (frequencia / totalSorteios * 100).toFixed(2)
-                                });
-                                totalSairam++;
-                            }
-                        }
-                        
-                        // Ordenar as combinações mais frequentes
-                        maisFrequentes.sort((a, b) => b.frequencia - a.frequencia);
-                        
-                        // Estatísticas da análise
-                        const estatisticas = {
-                            totalAnalisadas: todasCombinacoesValidas.length,
-                            totalSairam: totalSairam,
-                            totalNuncaSairam: totalNuncaSairam,
-                            percentualSairam: ((totalSairam / todasCombinacoesValidas.length) * 100).toFixed(2)
-                        };
-                        
-                        // Atualizar a interface com as estatísticas
-                        atualizarEstatisticasAnalise(estatisticas);
-                        
-                        // Salvar no cache para uso futuro
-                        try {
-                            localStorage.setItem(cacheKey, JSON.stringify({
-                                combinacoesValidas: todasCombinacoesValidas,
-                                nuncaSorteadas: nuncaSorteadas,
-                                maisFrequentes: maisFrequentes,
-                                estatisticas: estatisticas
-                            }));
-                            console.log(`Análise para tamanho ${tamanho} salva em cache`);
-                        } catch (error) {
-                            console.error('Erro ao salvar análise em cache:', error);
-                        }
-                        
-                        // Exibir resultados
-                        exibirCombinacoes(nuncaSorteadas, maisFrequentes);
-                        
-                        // Salvar dados do resumo ANTES de gerar
-                        dadosResumoGeral[tamanho] = maisFrequentes.slice(0, 3);
-                        
-                        // Gerar resumo geral após análise
-                        exibirResumoGeral();
-                        
-                        // Concluir o progresso
-                        atualizarProgresso(
-                            100,
-                            'Concluído',
-                            'Análise completa finalizada com sucesso!',
-                            '0 segundos'
-                        );
-                        
-                        // Esconder a barra de progresso após um tempo
-                        setTimeout(() => {
-                            progressContainer.classList.add('hidden');
-                        }, 2000);
+                    // Ordenar as combinações mais frequentes
+                    maisFrequentes.sort((a, b) => b.frequencia - a.frequencia);
+                    
+                    // Estatísticas da análise
+                    const estatisticas = {
+                        totalAnalisadas: todasCombinacoesValidas.length,
+                        totalSairam: totalSairam,
+                        totalNuncaSairam: totalNuncaSairam,
+                        percentualSairam: ((totalSairam / todasCombinacoesValidas.length) * 100).toFixed(2)
+                    };
+                    
+                    // Atualizar a interface com as estatísticas
+                    atualizarEstatisticasAnalise(estatisticas);
+                    
+                    // Salvar no cache para uso futuro
+                    try {
+                        localStorage.setItem(cacheKey, JSON.stringify({
+                            combinacoesValidas: todasCombinacoesValidas,
+                            nuncaSorteadas: nuncaSorteadas,
+                            maisFrequentes: maisFrequentes,
+                            estatisticas: estatisticas
+                        }));
+                        console.log(`Análise para tamanho ${tamanho} salva em cache`);
+                    } catch (error) {
+                        console.error('Erro ao salvar análise em cache:', error);
                     }
                     
-                    // Iniciar o processamento em lotes
-                    processarLote();
-                }, 100);
-
-            } catch (error) {
-                console.error('Erro durante a análise:', error);
-                atualizarProgresso(0, 'Erro', 'Erro durante a análise: ' + error.message, 'Falhou');
+                    // Exibir resultados
+                    exibirCombinacoes(nuncaSorteadas, maisFrequentes);
+                    
+                    // Concluir o progresso
+                    atualizarProgresso(
+                        100,
+                        'Concluído',
+                        'Análise finalizada com sucesso!',
+                        '0 segundos'
+                    );
+                    
+                    // Esconder a barra de progresso após um tempo
+                    setTimeout(() => {
+                        progressContainer.classList.add('hidden');
+                    }, 2000);
+                }
                 
-                setTimeout(() => {
-                    progressContainer.classList.add('hidden');
-                }, 3000);
-            }
+                // Iniciar o processamento em lotes
+                processarLote();
+            }, 100);
         }
         
         // Atualizar estatísticas da análise na interface
@@ -1455,34 +1139,6 @@
         
         // Exibir as combinações analisadas
         function exibirCombinacoes(nuncaSorteadas, maisFrequentes) {
-            // Atualizar títulos com contadores baseados na tabela de estatísticas
-            const estatisticasTamanho = combinacoesValidasPorTamanho[tamanhoGrupoAtual];
-            const totalCombinacoesValidas = estatisticasTamanho.validas; // Número fixo da tabela
-            const totalNuncaSairam = nuncaSorteadas.length;
-            const totalJaSairam = maisFrequentes.length;
-            
-            // Atualizar título da seção "nunca saíram"
-            const tituloNuncaSairam = document.querySelector('h3:has(+ div #combinacoesNaoSorteadas)');
-            if (tituloNuncaSairam) {
-                tituloNuncaSairam.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    Combinações válidas que nunca saíram - ${totalNuncaSairam} de ${totalCombinacoesValidas} válidas
-                `;
-            }
-            
-            // Atualizar título da seção "mais frequentes"
-            const tituloMaisFrequentes = document.querySelector('h3:has(+ div #combinacoesMaisFrequentes)');
-            if (tituloMaisFrequentes) {
-                tituloMaisFrequentes.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                    Combinações válidas mais frequentes - ${totalJaSairam} de ${totalCombinacoesValidas} válidas
-                `;
-            }
-            
             // Exibir combinações nunca sorteadas
             combinacoesNaoSorteadasEl.innerHTML = '';
             
@@ -1504,8 +1160,9 @@
             if (maisFrequentes.length === 0) {
                 combinacoesMaisFrequentesEl.innerHTML = '<div class="text-center py-8">Nenhuma combinação válida deste tamanho foi sorteada ainda.</div>';
             } else {
-                // Mostrar todas as combinações mais frequentes
-                maisFrequentes.forEach((item, index) => {
+                // Pegar as 20 mais frequentes (ou menos, se não houver 20)
+                const quantidadeMostrar = Math.min(20, maisFrequentes.length);
+                maisFrequentes.slice(0, quantidadeMostrar).forEach((item, index) => {
                     const div = document.createElement('div');
                     div.className = 'bg-gray-100 dark:bg-gray-600 p-3 rounded-lg flex justify-between items-center';
                     
@@ -1526,245 +1183,8 @@
             }
         }
         
-        // Variável global para armazenar dados do resumo
-        let dadosResumoGeral = {};
-        
-        // Função para gerar o resumo geral após analisar um tamanho
-        async function gerarResumoGeral() {
-            // Verificar se já temos análises para todos os tamanhos
-            const todosOsTamanhos = [3, 4, 5, 6, 7, 8, 9, 10];
-            let analisesProntas = 0;
-            
-            for (const tamanho of todosOsTamanhos) {
-                const cacheKey = `diaDeSorte_analise_validas_${tamanho}`;
-                const cacheAnalise = localStorage.getItem(cacheKey);
-                
-                if (cacheAnalise) {
-                    try {
-                        const dados = JSON.parse(cacheAnalise);
-                        const top3 = dados.maisFrequentes.slice(0, 3);
-                        dadosResumoGeral[tamanho] = top3;
-                        analisesProntas++;
-                    } catch (error) {
-                        console.error(`Erro ao processar análise do tamanho ${tamanho}:`, error);
-                    }
-                }
-            }
-            
-            // Se temos pelo menos algumas análises, mostrar o resumo
-            if (analisesProntas > 0) {
-                exibirResumoGeral();
-            }
-        }
-        
-        // Função para exibir o resumo geral em TABELA
-        function exibirResumoGeral() {
-            corpoTabelaResumoFinal.innerHTML = '';
-            
-            const todosOsTamanhos = [3, 4, 5, 6, 7, 8, 9, 10];
-            
-            todosOsTamanhos.forEach(tamanho => {
-                const estatisticas = combinacoesValidasPorTamanho[tamanho];
-                const dados = dadosResumoGeral[tamanho] || [];
-                const maisFrequentes = dados.slice(0, 3); // Top 3
-                
-                // Criar a linha da tabela
-                const row = document.createElement('tr');
-                row.className = 'bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700';
-                
-                let rowHtml = `<td class="px-4 py-3 border font-semibold">${tamanho} dígitos</td>`;
-                
-                // Adicionar as 3 combinações mais frequentes
-                for (let i = 0; i < 3; i++) {
-                    if (i < maisFrequentes.length) {
-                        const item = maisFrequentes[i];
-                        rowHtml += `
-                            <td class="px-4 py-3 border font-mono">${item.combinacao.join(',')}</td>
-                            <td class="px-4 py-3 border text-center font-bold text-green-600 dark:text-green-400">${item.frequencia} <span class="text-xs text-gray-500">(${item.percentual}%)</span></td>
-                        `;
-                    } else {
-                        rowHtml += `
-                            <td class="px-4 py-3 border text-center text-gray-400">-</td>
-                            <td class="px-4 py-3 border text-center text-gray-400">-</td>
-                        `;
-                    }
-                }
-                
-                row.innerHTML = rowHtml;
-                corpoTabelaResumoFinal.appendChild(row);
-            });
-            
-            // Mostrar o resumo geral
-            resumoGeralEl.classList.remove('hidden');
-        }
-        
-        // Função para imprimir o resumo
-        function imprimirResumo() {
-            const dataAtual = new Date().toLocaleDateString('pt-BR');
-            const todosOsTamanhos = [3, 4, 5, 6, 7, 8, 9, 10];
-            
-            // Gerar HTML para a tabela de impressão
-            let tabelaHtml = `
-                <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-                    <thead>
-                        <tr style="background-color: #f5f5f5;">
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Tamanho</th>
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Nunca Saíram</th>
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">1ª Mais Frequente</th>
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Aparições</th>
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">2ª Mais Frequente</th>
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Aparições</th>
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">3ª Mais Frequente</th>
-                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Aparições</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            todosOsTamanhos.forEach(tamanho => {
-                const estatisticas = combinacoesValidasPorTamanho[tamanho];
-                const dados = dadosResumoGeral[tamanho] || [];
-                const maisFrequentes = dados.slice(0, 3);
-                const totalValidas = estatisticas.validas;
-                const totalSairam = dados.length;
-                const totalNuncaSairam = totalValidas - totalSairam;
-                
-                tabelaHtml += `
-                    <tr>
-                        <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-weight: bold;">${tamanho} dígitos</td>
-                        <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${totalNuncaSairam} de ${totalValidas}</td>
-                `;
-                
-                // Adicionar as 3 combinações mais frequentes
-                for (let i = 0; i < 3; i++) {
-                    if (i < maisFrequentes.length) {
-                        const item = maisFrequentes[i];
-                        tabelaHtml += `
-                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${item.combinacao.join(',')}</td>
-                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-weight: bold;">${item.frequencia}</td>
-                        `;
-                    } else {
-                        tabelaHtml += `
-                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center; color: #999;">-</td>
-                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center; color: #999;">-</td>
-                        `;
-                    }
-                }
-                
-                tabelaHtml += '</tr>';
-            });
-            
-            tabelaHtml += '</tbody></table>';
-            
-            const conteudoImpressao = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Resumo - Dia de Sorte</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; margin: 20px; }
-                        h1 { text-align: center; color: #16A34A; margin-bottom: 30px; }
-                        .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #666; }
-                        @media print {
-                            body { margin: 0; }
-                            .footer { page-break-inside: avoid; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <h1>Combinações Mais Frequentes por Tamanho de Dígito</h1>
-                    <p style="text-align: center; margin-bottom: 20px;">Análise do Dia de Sorte - ${dataAtual}</p>
-                    ${tabelaHtml}
-                    <div class="footer">
-                        <p>Gerado automaticamente em ${dataAtual} às ${new Date().toLocaleTimeString('pt-BR')}</p>
-                        <p>Baseado nos dados históricos dos sorteios do Dia de Sorte</p>
-                    </div>
-                </body>
-                </html>
-            `;
-            
-            const janelaImpressao = window.open('', '_blank');
-            janelaImpressao.document.write(conteudoImpressao);
-            janelaImpressao.document.close();
-            janelaImpressao.focus();
-            janelaImpressao.print();
-        }
-        
-        // Função para fazer download em Excel
-        function downloadExcel() {
-            // Verificar se a biblioteca XLSX está disponível
-            if (typeof XLSX === 'undefined') {
-                alert('Biblioteca Excel não carregada. Tente recarregar a página.');
-                return;
-            }
-            
-            // Preparar os dados para o Excel
-            const dadosExcel = [];
-            
-            // Cabeçalho
-            dadosExcel.push([
-                'Tamanho',
-                '1ª Mais Frequente',
-                'Aparições',
-                '2ª Mais Frequente', 
-                'Aparições',
-                '3ª Mais Frequente',
-                'Aparições'
-            ]);
-            
-            // Dados das linhas
-            const todosOsTamanhos = [3, 4, 5, 6, 7, 8, 9, 10];
-            
-            todosOsTamanhos.forEach(tamanho => {
-                const top3 = dadosResumoGeral[tamanho] || [];
-                const linha = [`${tamanho} dígitos`];
-                
-                // Adicionar as 3 combinações mais frequentes
-                for (let i = 0; i < 3; i++) {
-                    if (i < top3.length) {
-                        const item = top3[i];
-                        linha.push(item.combinacao.join(','));
-                        linha.push(item.frequencia);
-                    } else {
-                        linha.push('-');
-                        linha.push('-');
-                    }
-                }
-                
-                dadosExcel.push(linha);
-            });
-            
-            // Criar workbook e worksheet
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet(dadosExcel);
-            
-            // Definir largura das colunas
-            const larguraColunas = [
-                { wch: 15 }, // Tamanho
-                { wch: 20 }, // 1ª Combinação
-                { wch: 12 }, // Aparições
-                { wch: 20 }, // 2ª Combinação
-                { wch: 12 }, // Aparições
-                { wch: 20 }, // 3ª Combinação
-                { wch: 12 }  // Aparições
-            ];
-            ws['!cols'] = larguraColunas;
-            
-            // Adicionar worksheet ao workbook
-            XLSX.utils.book_append_sheet(wb, ws, 'Resumo Dia de Sorte');
-            
-            // Gerar nome do arquivo com data
-            const dataAtual = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
-            const nomeArquivo = `Resumo_Dia_de_Sorte_${dataAtual}.xlsx`;
-            
-            // Fazer download
-            XLSX.writeFile(wb, nomeArquivo);
-        }
-        
         // Event Listeners
         btnAnalisar.addEventListener('click', analisarCombinacoes);
-        btnImprimirResumo.addEventListener('click', imprimirResumo);
-        btnDownloadExcelResumo.addEventListener('click', downloadExcel);
         
         btnAtualizarDados.addEventListener('click', () => {
             // Limpar o cache
@@ -1779,16 +1199,7 @@
             // Reiniciar o processo
             todosSorteios = [];
             dadosCarregados = false;
-            analiseNumerosRealizada = false;
             iniciarCarregamento();
-        });
-
-        // Event listeners para pesquisa de dígitos
-        btnPesquisarDigitos.addEventListener('click', pesquisarDigitos);
-        pesquisaDigitosEl.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                pesquisarDigitos();
-            }
         });
         
         // Inicialização
