@@ -164,10 +164,6 @@
                             <button id="btnAnalisar" class="bg-primary hover:bg-green-700 text-white font-medium rounded-lg px-5 py-2.5 text-center w-full mt-2" disabled>
                                 Analisar Combinações
                             </button>
-                            
-                            <button id="btnAnalisarTodas" class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-5 py-2.5 text-center w-full mt-2" disabled>
-                                Analisar Todas as Combinações
-                            </button>
                         </div>
                     </div>
                     
@@ -418,7 +414,6 @@
         const totalConcursosInfo = document.getElementById('totalConcursosInfo');
         const btnAtualizarDados = document.getElementById('btnAtualizarDados');
         const btnAnalisar = document.getElementById('btnAnalisar');
-        const btnAnalisarTodas = document.getElementById('btnAnalisarTodas');
         
         // Elementos da barra de progresso principal
         const progressContainer = document.getElementById('progressContainer');
@@ -1032,14 +1027,13 @@
         // Habilitar a interface após o carregamento
         function habilitarInterface() {
             btnAnalisar.disabled = false;
-            btnAnalisarTodas.disabled = false;
             statusText.textContent = `Dados carregados: ${todosSorteios.length} concursos disponíveis`;
             
-            // Destacar o botão analisar todas
-            btnAnalisarTodas.classList.add('animate-pulse');
+            // Destacar o botão analisar
+            btnAnalisar.classList.add('animate-pulse');
             setTimeout(() => {
-                btnAnalisarTodas.classList.remove('animate-pulse');
-            }, 3000);
+                btnAnalisar.classList.remove('animate-pulse');
+            }, 2000);
         }
         
         // Configurar eventos da tabela de estatísticas
@@ -1767,157 +1761,8 @@
             XLSX.writeFile(wb, nomeArquivo);
         }
         
-        // Função para analisar TODAS as combinações (3 a 10 dígitos) de uma vez
-        async function analisarTodasAsCombinacoes() {
-            if (!dadosCarregados || todosSorteios.length === 0) {
-                alert('Aguarde o carregamento completo dos dados para iniciar a análise.');
-                return;
-            }
-
-            // Reiniciar o tempo de início
-            tempoInicioAnalise = Date.now();
-            
-            // Mostrar a barra de progresso
-            progressContainer.classList.remove('hidden');
-            progressTitle.textContent = 'Analisando TODAS as combinações (3 a 10 dígitos)...';
-            mainProgressBar.style.width = '0%';
-            progressPercent.textContent = '0%';
-            progressBarText.textContent = 'Iniciando análise completa...';
-            progressStage.textContent = 'Etapa: Preparando análise completa';
-            progressTimeRemaining.textContent = 'Tempo restante: Calculando...';
-            progressDetails.textContent = 'Iniciando análise de todos os tamanhos...';
-
-            try {
-                const todosOsTamanhos = [3, 4, 5, 6, 7, 8, 9, 10];
-                const totalTamanhos = todosOsTamanhos.length;
-                
-                for (let i = 0; i < totalTamanhos; i++) {
-                    const tamanho = todosOsTamanhos[i];
-                    const progressoBase = (i / totalTamanhos) * 100;
-                    
-                    atualizarProgresso(
-                        progressoBase,
-                        `Analisando ${tamanho} dígitos`,
-                        `Processando tamanho ${i + 1} de ${totalTamanhos}...`,
-                        calcularTempoRestante(progressoBase)
-                    );
-                    
-                    // Verificar se já existe em cache
-                    const cacheKey = `diaDeSorte_analise_validas_${tamanho}`;
-                    const cacheAnalise = localStorage.getItem(cacheKey);
-                    
-                    if (cacheAnalise) {
-                        try {
-                            const dados = JSON.parse(cacheAnalise);
-                            dadosResumoGeral[tamanho] = dados.maisFrequentes.slice(0, 3);
-                            atualizarProgresso(
-                                progressoBase + 10,
-                                `${tamanho} dígitos (cache)`,
-                                `Tamanho ${tamanho} carregado do cache`,
-                                calcularTempoRestante(progressoBase + 10)
-                            );
-                            continue;
-                        } catch (error) {
-                            console.error(`Erro ao carregar cache para tamanho ${tamanho}:`, error);
-                        }
-                    }
-                    
-                    // Analisar este tamanho
-                    await analisarTamanhoEspecifico(tamanho, progressoBase);
-                }
-                
-                // Finalizar
-                atualizarProgresso(100, 'Concluído', 'Análise completa finalizada! Tabela gerada.', '0 segundos');
-                
-                // Exibir a tabela final
-                exibirResumoGeral();
-                
-                // Esconder progresso após 2 segundos
-                setTimeout(() => {
-                    progressContainer.classList.add('hidden');
-                }, 2000);
-                
-            } catch (error) {
-                console.error('Erro durante análise completa:', error);
-                atualizarProgresso(0, 'Erro', 'Erro durante a análise completa: ' + error.message, 'Falhou');
-                
-                setTimeout(() => {
-                    progressContainer.classList.add('hidden');
-                }, 3000);
-            }
-        }
-        
-        // Função auxiliar para analisar um tamanho específico
-        async function analisarTamanhoEspecifico(tamanho, progressoBase) {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    // Gerar combinações
-                    const todasCombinacoesPossiveis = gerarCombinacoes(digitosPossiveis, tamanho);
-                    const numCombinacoesValidas = combinacoesValidasPorTamanho[tamanho].validas;
-                    const todasCombinacoesValidas = todasCombinacoesPossiveis.slice(0, numCombinacoesValidas);
-                    
-                    // Inicializar contagem
-                    const combinacoesFrequencia = {};
-                    todasCombinacoesValidas.forEach(combo => {
-                        combinacoesFrequencia[combo.join(',')] = 0;
-                    });
-                    
-                    // Analisar sorteios
-                    todosSorteios.forEach(sorteio => {
-                        todasCombinacoesValidas.forEach(combo => {
-                            if (contemCombinacaoDigitos(sorteio, combo)) {
-                                const chave = combo.join(',');
-                                combinacoesFrequencia[chave]++;
-                            }
-                        });
-                    });
-                    
-                    // Processar resultados
-                    const maisFrequentes = [];
-                    const totalSorteios = todosSorteios.length;
-                    
-                    for (const [combo, frequencia] of Object.entries(combinacoesFrequencia)) {
-                        if (frequencia > 0) {
-                            maisFrequentes.push({
-                                combinacao: combo.split(',').map(d => parseInt(d)),
-                                frequencia: frequencia,
-                                percentual: (frequencia / totalSorteios * 100).toFixed(2)
-                            });
-                        }
-                    }
-                    
-                    // Ordenar
-                    maisFrequentes.sort((a, b) => b.frequencia - a.frequencia);
-                    
-                    // Salvar no resumo
-                    dadosResumoGeral[tamanho] = maisFrequentes.slice(0, 3);
-                    
-                    // Salvar em cache
-                    try {
-                        const cacheKey = `diaDeSorte_analise_validas_${tamanho}`;
-                        localStorage.setItem(cacheKey, JSON.stringify({
-                            combinacoesValidas: todasCombinacoesValidas,
-                            nuncaSorteadas: [],
-                            maisFrequentes: maisFrequentes,
-                            estatisticas: {
-                                totalAnalisadas: todasCombinacoesValidas.length,
-                                totalSairam: maisFrequentes.length,
-                                totalNuncaSairam: todasCombinacoesValidas.length - maisFrequentes.length,
-                                percentualSairam: ((maisFrequentes.length / todasCombinacoesValidas.length) * 100).toFixed(2)
-                            }
-                        }));
-                    } catch (error) {
-                        console.error(`Erro ao salvar análise do tamanho ${tamanho}:`, error);
-                    }
-                    
-                    resolve();
-                }, 100);
-            });
-        }
-
         // Event Listeners
         btnAnalisar.addEventListener('click', analisarCombinacoes);
-        btnAnalisarTodas.addEventListener('click', analisarTodasAsCombinacoes);
         btnImprimirResumo.addEventListener('click', imprimirResumo);
         btnDownloadExcelResumo.addEventListener('click', downloadExcel);
         
