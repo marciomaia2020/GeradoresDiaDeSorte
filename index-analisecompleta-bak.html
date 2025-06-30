@@ -129,63 +129,16 @@
                         <tr>
                             <th class="py-3 px-4 text-left text-sm font-semibold border dark:border-gray-600">Números Válidos</th>
                             <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">Volume de Jogos</th>
-
-                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">
-                                <div class="flex flex-col items-center space-y-1">
-                                    <span>3 Díg.</span>
-                                    <div class="text-xs font-bold bg-gray-800 text-white px-2 py-1 rounded">120</div>
-                                    <div class="text-xs font-bold bg-red-600 text-white px-2 py-1 rounded">15</div>
-                                </div>
-                            </th>
-                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">
-                                <div class="flex flex-col items-center space-y-1">
-                                    <span>4 Díg.</span>
-                                    <div class="text-xs font-bold bg-gray-800 text-white px-2 py-1 rounded">210</div>
-                                    <div class="text-xs font-bold bg-green-600 text-white px-2 py-1 rounded">140</div>
-                                </div>
-                            </th>
-                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">
-                                <div class="flex flex-col items-center space-y-1">
-                                    <span>5 Díg.</span>
-                                    <div class="text-xs font-bold bg-gray-800 text-white px-2 py-1 rounded">252</div>
-                                    <div class="text-xs font-bold bg-green-600 text-white px-2 py-1 rounded">196</div>
-                                </div>
-                            </th>
-                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">
-                                <div class="flex flex-col items-center space-y-1">
-                                    <span>6 Díg.</span>
-                                    <div class="text-xs font-bold bg-gray-800 text-white px-2 py-1 rounded">210</div>
-                                    <div class="text-xs font-bold bg-green-600 text-white px-2 py-1 rounded">182</div>
-                                </div>
-                            </th>
-                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">
-                                <div class="flex flex-col items-center space-y-1">
-                                    <span>7 Díg.</span>
-                                    <div class="text-xs font-bold bg-gray-800 text-white px-2 py-1 rounded">120</div>
-                                    <div class="text-xs font-bold bg-green-600 text-white px-2 py-1 rounded">119</div>
-                                </div>
-                            </th>
-                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">
-                                <div class="flex flex-col items-center space-y-1">
-                                    <span>8 Díg.</span>
-                                    <div class="text-xs font-bold bg-gray-800 text-white px-2 py-1 rounded">45</div>
-                                    <div class="text-xs font-bold bg-green-600 text-white px-2 py-1 rounded">45</div>
-                                </div>
-                            </th>
-                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">
-                                <div class="flex flex-col items-center space-y-1">
-                                    <span>9 Díg.</span>
-                                    <div class="text-xs font-bold bg-gray-800 text-white px-2 py-1 rounded">10</div>
-                                    <div class="text-xs font-bold bg-green-600 text-white px-2 py-1 rounded">10</div>
-                                </div>
-                            </th>
-                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">
-                                <div class="flex flex-col items-center space-y-1">
-                                    <span>10 Díg.</span>
-                                    <div class="text-xs font-bold bg-gray-800 text-white px-2 py-1 rounded">1</div>
-                                    <div class="text-xs font-bold bg-green-600 text-white px-2 py-1 rounded">1</div>
-                                </div>
-                            </th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">1 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">2 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">3 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">4 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">5 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">6 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">7 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">8 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">9 Díg.</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">10 Díg.</th>
                         </tr>
                     </thead>
                     <tbody id="volume-table-body">
@@ -196,7 +149,7 @@
             
             <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
                 <p class="text-sm text-blue-800 dark:text-blue-200">
-                    <strong>💡 Legenda:</strong> A tabela mostra quantas configurações de cada número de dígitos conseguem formar determinado número de números válidos (1-31), seus respectivos volumes de jogos possíveis e o custo total baseado no valor por jogo. Os badges cinzas mostram o total de combinações e os badges coloridos mostram as combinações válidas. Os badges verdes mostram o custo para cada quantidade de configurações.
+                    <strong>💡 Legenda:</strong> A tabela mostra quantas configurações de cada número de dígitos conseguem formar determinado número de números válidos (1-31), seus respectivos volumes de jogos possíveis e o custo total baseado no valor por jogo. Os badges verdes mostram o custo para cada quantidade de configurações.
                 </p>
             </div>
         </div>
@@ -291,18 +244,18 @@
         // Instância global do cache
         const gameCache = new GameCache();
         
-        // Dados das configurações com dados reais do index.html (apenas 3-10 dígitos)
+        // Dados das configurações de 1 a 10 dígitos
         const configurations = [
-            { digits: 1, totalCombinations: 10, validCombinations: null, name: "1 Dígito" },
-            { digits: 2, totalCombinations: 45, validCombinations: null, name: "2 Dígitos" },
-            { digits: 3, totalCombinations: 120, validCombinations: 15, name: "3 Dígitos" },
-            { digits: 4, totalCombinations: 210, validCombinations: 140, name: "4 Dígitos" },
-            { digits: 5, totalCombinations: 252, validCombinations: 196, name: "5 Dígitos" },
-            { digits: 6, totalCombinations: 210, validCombinations: 182, name: "6 Dígitos" },
-            { digits: 7, totalCombinations: 120, validCombinations: 119, name: "7 Dígitos" },
-            { digits: 8, totalCombinations: 45, validCombinations: 45, name: "8 Dígitos" },
-            { digits: 9, totalCombinations: 10, validCombinations: 10, name: "9 Dígitos" },
-            { digits: 10, totalCombinations: 1, validCombinations: 1, name: "10 Dígitos" }
+            { digits: 1, totalCombinations: 10, name: "1 Dígito" },
+            { digits: 2, totalCombinations: 45, name: "2 Dígitos" },
+            { digits: 3, totalCombinations: 120, name: "3 Dígitos" },
+            { digits: 4, totalCombinations: 210, name: "4 Dígitos" },
+            { digits: 5, totalCombinations: 252, name: "5 Dígitos" },
+            { digits: 6, totalCombinations: 210, name: "6 Dígitos" },
+            { digits: 7, totalCombinations: 120, name: "7 Dígitos" },
+            { digits: 8, totalCombinations: 45, name: "8 Dígitos" },
+            { digits: 9, totalCombinations: 10, name: "9 Dígitos" },
+            { digits: 10, totalCombinations: 1, name: "10 Dígitos" }
         ];
 
         // Função para verificar se todos os dígitos de um número estão no conjunto permitido
@@ -740,8 +693,8 @@
                     volumeCell.appendChild(volumeContainer);
                     row.appendChild(volumeCell);
                     
-                    // Colunas para cada configuração (apenas 3-10 dígitos)
-                    counts.slice(2).forEach((count, configIndex) => {
+                    // Colunas para cada configuração
+                    counts.forEach((count, configIndex) => {
                         const countCell = document.createElement('td');
                         countCell.className = 'py-2 px-4 border dark:border-gray-600 text-center relative';
                         
@@ -801,7 +754,7 @@
             insufVolumeCell.textContent = 'Insuficiente';
             insufRow.appendChild(insufVolumeCell);
             
-            allStats.slice(2).forEach(stats => {
+            allStats.forEach(stats => {
                 const insufCell = document.createElement('td');
                 insufCell.className = 'py-2 px-4 border dark:border-gray-600 text-center';
                 
