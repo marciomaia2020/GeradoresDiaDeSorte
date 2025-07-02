@@ -213,7 +213,7 @@
                     🖨️ Imprimir Tabela
                 </button>
                 
-                <button 
+               <!-- <button 
                     id="btnDownloadExcel" 
                     class="flex items-center justify-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-lg transition-colors duration-200"
                     onclick="downloadExcel()"
@@ -222,7 +222,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                     📊 Baixar Excel
-                </button>
+                </button>-->
             </div>
         </div>
 
@@ -1095,73 +1095,225 @@
             }, 500);
         }
 
-        // Função para baixar a tabela em Excel (CSV)
+        // Função MELHORADA para baixar a tabela em Excel (CSV) - Formato Super Organizado
         function downloadExcel() {
             const gameValue = parseFloat(document.getElementById('gameValue').value) || 2.50;
             
-            // Criar cabeçalho do CSV
-            let csvContent = '"Análise Completa - Dia de Sorte - Tabela Resumo"\n';
-            csvContent += '"Data:","' + new Date().toLocaleDateString('pt-BR') + '"\n';
-            csvContent += '"Valor por jogo:","R$ ' + gameValue.toFixed(2) + '"\n';
-            csvContent += '\n';
+            // Usar separador de vírgula e configurar para UTF-8 com BOM
+            const BOM = '\uFEFF';
+            let csvContent = BOM;
             
-            // Cabeçalhos da tabela
-            csvContent += '"Números Válidos","Volume de Jogos","Custo Total",';
-            csvContent += '"3 Díg. (120/15)","4 Díg. (210/140)","5 Díg. (252/196)",';
-            csvContent += '"6 Díg. (210/182)","7 Díg. (120/119)","8 Díg. (45/45)",';
-            csvContent += '"9 Díg. (10/10)","10 Díg. (1/1)"\n';
+            // SEÇÃO 1: CABEÇALHO E INFORMAÇÕES BÁSICAS
+            csvContent += 'ANÁLISE COMPLETA - DIA DE SORTE - TABELA RESUMO,,,,,,,,,,,,,,,,,,\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'Data de Geração:,' + new Date().toLocaleDateString('pt-BR') + ',,,,,,,,,,,,,,,,,\n';
+            csvContent += 'Valor por Jogo:,R$ ' + gameValue.toFixed(2).replace('.', ',') + ',,,,,,,,,,,,,,,,,\n';
+            csvContent += 'Hora de Geração:,' + new Date().toLocaleTimeString('pt-BR') + ',,,,,,,,,,,,,,,,,\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
             
-            // Obter dados da tabela
+            // SEÇÃO 2: CABEÇALHOS DA TABELA PRINCIPAL
+            csvContent += 'TABELA PRINCIPAL - VOLUMES E CONFIGURAÇÕES,,,,,,,,,,,,,,,,,,\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            
+            // Linha de cabeçalhos principais
+            csvContent += 'Números,Volume,Custo do,3 Dígitos,,4 Dígitos,,5 Dígitos,,6 Dígitos,,7 Dígitos,,8 Dígitos,,9 Dígitos,,10 Dígitos,\n';
+            csvContent += 'Válidos,de Jogos,Volume,Qtd Config,Custo Config,Qtd Config,Custo Config,Qtd Config,Custo Config,Qtd Config,Custo Config,Qtd Config,Custo Config,Qtd Config,Custo Config,Qtd Config,Custo Config,Qtd Config,Custo Config\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            
+            // SEÇÃO 3: DADOS DA TABELA ORGANIZADOS
             const tableBody = document.getElementById('volume-table-body');
             const rows = tableBody.querySelectorAll('tr');
+            
+            // Processar dados para criar estrutura organizada
+            const tableData = [];
             
             rows.forEach(row => {
                 const cells = row.querySelectorAll('td');
                 if (cells.length > 0) {
-                    let rowData = [];
+                    const rowData = {};
                     
-                    // Coluna 1: Números Válidos
-                    rowData.push('"' + cells[0].textContent.trim() + '"');
-                    
-                    // Coluna 2: Volume de Jogos
-                    const volumeText = cells[1].textContent.trim().split('\n')[0];
-                    rowData.push('"' + volumeText + '"');
-                    
-                    // Coluna 3: Custo Total (calcular baseado no volume)
-                    if (volumeText !== 'Insuficiente') {
-                        const volume = parseInt(volumeText.replace(/\D/g, ''));
-                        const totalCost = volume * gameValue;
-                        const costFormatted = totalCost.toLocaleString('pt-BR', { 
-                            style: 'currency', 
-                            currency: 'BRL' 
-                        });
-                        rowData.push('"' + costFormatted + '"');
+                    // Extrair números válidos
+                    const validNumbersText = cells[0].textContent.trim();
+                    if (validNumbersText.includes('≤ 6')) {
+                        rowData.validNumbers = 'Insuficiente (≤6)';
+                        rowData.volume = 0;
+                        rowData.volumeText = 'Impossível';
+                        rowData.volumeCost = '-';
                     } else {
-                        rowData.push('"-"');
-                    }
-                    
-                    // Colunas 4-11: Dados das configurações
-                    for (let i = 2; i < cells.length; i++) {
-                        const cellText = cells[i].textContent.trim();
-                        if (cellText === '-') {
-                            rowData.push('"-"');
+                        const match = validNumbersText.match(/(\d+)/);
+                        rowData.validNumbers = match ? match[1] + ' números' : validNumbersText;
+                        
+                        // Extrair volume
+                        const volumeContainer = cells[1];
+                        const volumeDiv = volumeContainer.querySelector('div.font-bold');
+                        
+                        if (volumeDiv) {
+                            const volumeText = volumeDiv.textContent.trim();
+                            rowData.volume = parseInt(volumeText.replace(/\./g, '').replace(/\D/g, '')) || 0;
+                            rowData.volumeText = volumeText;
+                            
+                            if (rowData.volume > 0) {
+                                const totalCost = rowData.volume * gameValue;
+                                rowData.volumeCost = 'R$ ' + totalCost.toLocaleString('pt-BR', { 
+                                    minimumFractionDigits: 2, 
+                                    maximumFractionDigits: 2 
+                                }).replace('.', ',');
+                            } else {
+                                rowData.volumeCost = '-';
+                            }
                         } else {
-                            // Extrair apenas o número principal (configurações)
-                            const mainNumber = cellText.split('\n')[0] || cellText.split('R$')[0];
-                            rowData.push('"' + mainNumber.trim() + '"');
+                            rowData.volume = 0;
+                            rowData.volumeText = '0';
+                            rowData.volumeCost = '-';
                         }
                     }
                     
-                    csvContent += rowData.join(',') + '\n';
+                    // Extrair dados das configurações (3-10 dígitos)
+                    rowData.configs = [];
+                    for (let i = 2; i < cells.length; i++) {
+                        const cell = cells[i];
+                        const countDiv = cell.querySelector('div.font-semibold, .font-semibold');
+                        
+                        if (cell.textContent.trim() === '-' || cell.classList.contains('text-gray-400')) {
+                            rowData.configs.push({ count: 0, cost: '-' });
+                        } else if (countDiv) {
+                            const configCount = parseInt(countDiv.textContent.trim()) || 0;
+                            let configCost = '-';
+                            
+                            if (rowData.volume > 0 && configCount > 0) {
+                                const cost = configCount * rowData.volume * gameValue;
+                                configCost = 'R$ ' + cost.toLocaleString('pt-BR', { 
+                                    minimumFractionDigits: 2, 
+                                    maximumFractionDigits: 2 
+                                }).replace('.', ',');
+                            }
+                            
+                            rowData.configs.push({ count: configCount, cost: configCost });
+                        } else {
+                            const cellText = cell.textContent.trim();
+                            const configCount = parseInt(cellText) || 0;
+                            rowData.configs.push({ count: configCount, cost: '-' });
+                        }
+                    }
+                    
+                    tableData.push(rowData);
                 }
             });
             
-            // Adicionar notas explicativas
-            csvContent += '\n"NOTAS:"\n';
-            csvContent += '"- Formato das colunas de dígitos: Total Combinações/Combinações Válidas"\n';
-            csvContent += '"- Valores monetários baseados no valor por jogo configurado"\n';
-            csvContent += '"- Insuficiente = Menos de 7 números válidos disponíveis"\n';
-            csvContent += '"- Gerado em: ' + new Date().toLocaleString('pt-BR') + '"\n';
+            // Ordenar dados: válidos primeiro (por números válidos decrescente), insuficientes por último
+            tableData.sort((a, b) => {
+                if (a.validNumbers.includes('Insuficiente') && !b.validNumbers.includes('Insuficiente')) return 1;
+                if (!a.validNumbers.includes('Insuficiente') && b.validNumbers.includes('Insuficiente')) return -1;
+                if (a.validNumbers.includes('Insuficiente') && b.validNumbers.includes('Insuficiente')) return 0;
+                
+                const aNum = parseInt(a.validNumbers.match(/(\d+)/)?.[1] || '0');
+                const bNum = parseInt(b.validNumbers.match(/(\d+)/)?.[1] || '0');
+                return bNum - aNum; // Ordem decrescente
+            });
+            
+            // Adicionar dados organizados ao CSV
+            tableData.forEach(row => {
+                let line = '';
+                line += row.validNumbers + ',';
+                line += row.volumeText + ',';
+                line += row.volumeCost + ',';
+                
+                // Adicionar dados de cada configuração (quantidade e custo)
+                row.configs.forEach(config => {
+                    line += config.count + ',';
+                    line += config.cost + ',';
+                });
+                
+                csvContent += line + '\n';
+            });
+            
+            // SEÇÃO 4: ESTATÍSTICAS RESUMO
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'ESTATÍSTICAS RESUMO POR CONFIGURAÇÃO,,,,,,,,,,,,,,,,,,\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'Configuração,Total Combinações,Configurações Válidas,Taxa de Aproveitamento,Maior Volume,Menor Volume,Volume Médio,Observações,,,,,,,,,,\n';
+            
+            configurations.slice(2).forEach(config => {
+                const stats = calculateDetailedStats(config.digits);
+                const aproveitamento = ((stats.validConfigurations / config.totalCombinations) * 100).toFixed(1).replace('.', ',');
+                const maiorVolume = stats.maxVolume > 0 ? stats.maxVolume.toLocaleString('pt-BR') : '-';
+                const menorVolume = stats.minVolume > 0 && stats.minVolume < Infinity ? stats.minVolume.toLocaleString('pt-BR') : '-';
+                const volumeMedio = stats.avgVolume > 0 ? stats.avgVolume.toLocaleString('pt-BR') : '-';
+                
+                let observacao = '';
+                if (config.digits <= 3) observacao = 'Limitado';
+                else if (config.digits <= 4) observacao = 'Equilibrado';
+                else if (config.digits <= 6) observacao = 'Excelente';
+                else observacao = 'Redundante';
+                
+                csvContent += `${config.name},${config.totalCombinations},${stats.validConfigurations},${aproveitamento}%,${maiorVolume},${menorVolume},${volumeMedio},${observacao},,,,,,,,,,\n`;
+            });
+            
+            // SEÇÃO 5: ANÁLISE DE CUSTOS
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'ANÁLISE DE CUSTOS POR FAIXA DE VOLUME,,,,,,,,,,,,,,,,,,\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'Faixa de Volume,Valor Individual,3 Díg,4 Díg,5 Díg,6 Díg,7 Díg,8 Díg,9 Díg,10 Díg,Total Configs,Custo Médio,,,,,,\n';
+            
+            // Agrupar por faixas de volume
+            const volumeFaixas = [
+                { min: 1000000, max: Infinity, nome: 'Muito Alto (1M+)' },
+                { min: 100000, max: 999999, nome: 'Alto (100K-999K)' },
+                { min: 10000, max: 99999, nome: 'Médio Alto (10K-99K)' },
+                { min: 1000, max: 9999, nome: 'Médio (1K-9K)' },
+                { min: 100, max: 999, nome: 'Baixo (100-999)' },
+                { min: 1, max: 99, nome: 'Muito Baixo (1-99)' },
+                { min: 0, max: 0, nome: 'Insuficiente (0)' }
+            ];
+            
+            volumeFaixas.forEach(faixa => {
+                const configsNaFaixa = [0, 0, 0, 0, 0, 0, 0, 0]; // Para 3-10 dígitos
+                let totalConfigs = 0;
+                let volumeExemplo = 0;
+                
+                tableData.forEach(row => {
+                    if (row.volume >= faixa.min && row.volume <= faixa.max) {
+                        if (volumeExemplo === 0) volumeExemplo = row.volume;
+                        row.configs.forEach((config, index) => {
+                            configsNaFaixa[index] += config.count;
+                            totalConfigs += config.count;
+                        });
+                    }
+                });
+                
+                if (totalConfigs > 0) {
+                    const valorIndividual = volumeExemplo > 0 ? 
+                        'R$ ' + (volumeExemplo * gameValue).toLocaleString('pt-BR', { 
+                            minimumFractionDigits: 2, 
+                            maximumFractionDigits: 2 
+                        }).replace('.', ',') : '-';
+                    
+                    const custoMedio = volumeExemplo > 0 ? 
+                        'R$ ' + (volumeExemplo * gameValue * (totalConfigs / configsNaFaixa.length)).toLocaleString('pt-BR', { 
+                            minimumFractionDigits: 2, 
+                            maximumFractionDigits: 2 
+                        }).replace('.', ',') : '-';
+                    
+                    csvContent += `${faixa.nome},${valorIndividual},${configsNaFaixa.join(',')},${totalConfigs},${custoMedio},,,,,,\n`;
+                }
+            });
+            
+            // SEÇÃO 6: NOTAS E EXPLICAÇÕES
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'NOTAS E EXPLICAÇÕES,,,,,,,,,,,,,,,,,,\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'Conceito,Explicação,,,,,,,,,,,,,,,\n';
+            csvContent += 'Números Válidos,Quantidade de números de 1 a 31 formáveis com os dígitos escolhidos,,,,,,,,,,,,,,,\n';
+            csvContent += 'Volume de Jogos,Total de combinações C(n/7) possíveis com os números válidos,,,,,,,,,,,,,,,\n';
+            csvContent += 'Qtd Config,Quantidade de configurações de dígitos que geram este volume,,,,,,,,,,,,,,,\n';
+            csvContent += 'Custo Config,Valor total: Qtd Config × Volume × Valor por Jogo,,,,,,,,,,,,,,,\n';
+            csvContent += 'Taxa Aproveitamento,Percentual de configurações que geram jogos válidos,,,,,,,,,,,,,,,\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'PARÂMETROS UTILIZADOS,,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'Valor por Jogo,R$ ' + gameValue.toFixed(2).replace('.', ',') + ',,,,,,,,,,,,,,,\n';
+            csvContent += 'Números do Jogo,1 a 31,,,,,,,,,,,,,,,\n';
+            csvContent += 'Números por Aposta,7,,,,,,,,,,,,,,,\n';
+            csvContent += 'Data/Hora Geração,' + new Date().toLocaleString('pt-BR') + ',,,,,,,,,,,,,,,\n';
             
             // Criar e baixar o arquivo
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
