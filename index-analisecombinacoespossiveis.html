@@ -18,13 +18,6 @@
             darkMode: 'class',
         }
     </script>
-	<style>
-	.green{
-		color: green;
-	}
-	</style>
-	
-	
 </head>
 <body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
     <!-- Detector de modo escuro -->
@@ -188,7 +181,7 @@
                             <th class="px-4 py-3 border">Dígitos Únicos</th>
                             <th class="px-4 py-3 border">Qtd. Dígitos</th>
                             <th class="px-4 py-3 border">Números Válidos</th>
-                            <th class="px-4 py-3 border"><span class="green">Volume de Combinações</span></th>
+                            <th class="px-4 py-3 border">Volume de Combinações</th>
                         </tr>
                     </thead>
                     <tbody id="corpoTabela">
@@ -204,6 +197,129 @@
             <!-- Informações da tabela -->
             <div id="infoTabela" class="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
                 <!-- Será preenchido dinamicamente -->
+            </div>
+        </div>
+
+        <!-- Estatísticas Finais -->
+        <div id="estatisticasFinais" class="mt-8 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 hidden">
+            <h2 class="text-2xl font-semibold mb-6 text-center">📊 Estatísticas Gerais dos Sorteios</h2>
+            
+            <!-- Cards de estatísticas resumidas -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Qtd. Dígitos -->
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 p-6 rounded-lg border border-blue-200 dark:border-blue-700">
+                    <h3 class="text-lg font-bold text-blue-800 dark:text-blue-300 mb-4 text-center">🔢 Quantidade de Dígitos</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-sm">Média:</span>
+                            <span class="font-bold text-blue-600 dark:text-blue-400" id="mediaDigitos">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mínimo:</span>
+                            <span class="font-bold" id="minDigitos">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Máximo:</span>
+                            <span class="font-bold" id="maxDigitos">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mais Comum:</span>
+                            <span class="font-bold text-blue-600 dark:text-blue-400" id="modaDigitos">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Números Válidos -->
+                <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/20 p-6 rounded-lg border border-green-200 dark:border-green-700">
+                    <h3 class="text-lg font-bold text-green-800 dark:text-green-300 mb-4 text-center">✅ Números Válidos</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-sm">Média:</span>
+                            <span class="font-bold text-green-600 dark:text-green-400" id="mediaNumerosValidos">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mínimo:</span>
+                            <span class="font-bold" id="minNumerosValidos">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Máximo:</span>
+                            <span class="font-bold" id="maxNumerosValidos">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mais Comum:</span>
+                            <span class="font-bold text-green-600 dark:text-green-400" id="modaNumerosValidos">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Volume de Combinações -->
+                <div class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/20 p-6 rounded-lg border border-red-200 dark:border-red-700">
+                    <h3 class="text-lg font-bold text-red-800 dark:text-red-300 mb-4 text-center">🎯 Volume de Combinações</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-sm">Média:</span>
+                            <span class="font-bold text-red-600 dark:text-red-400" id="mediaVolume">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mínimo:</span>
+                            <span class="font-bold" id="minVolume">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Máximo:</span>
+                            <span class="font-bold" id="maxVolume">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mais Comum:</span>
+                            <span class="font-bold text-red-600 dark:text-red-400" id="modaVolume">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Distribuições detalhadas -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Distribuição Qtd. Dígitos -->
+                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                    <h4 class="text-md font-semibold mb-3 text-center text-blue-600 dark:text-blue-400">📈 Distribuição - Qtd. Dígitos</h4>
+                    <div id="distribuicaoDigitos" class="space-y-2 text-sm">
+                        <!-- Será preenchido via JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Distribuição Números Válidos -->
+                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                    <h4 class="text-md font-semibold mb-3 text-center text-green-600 dark:text-green-400">📈 Distribuição - Números Válidos</h4>
+                    <div id="distribuicaoNumerosValidos" class="space-y-2 text-sm">
+                        <!-- Será preenchido via JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Distribuição Volume -->
+                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                    <h4 class="text-md font-semibold mb-3 text-center text-red-600 dark:text-red-400">📈 Distribuição - Volumes</h4>
+                    <div id="distribuicaoVolume" class="space-y-2 text-sm">
+                        <!-- Será preenchido via JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Análise de correlação -->
+            <div class="mt-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg border">
+                <h4 class="text-lg font-semibold mb-4 text-center text-purple-700 dark:text-purple-300">🔗 Análise de Correlações</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg">
+                        <div class="font-bold text-purple-600 dark:text-purple-400" id="correlacaoDigitosNumerosValidos">-</div>
+                        <div class="text-xs">Dígitos ↔ Números Válidos</div>
+                    </div>
+                    <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg">
+                        <div class="font-bold text-purple-600 dark:text-purple-400" id="correlacaoDigitosVolume">-</div>
+                        <div class="text-xs">Dígitos ↔ Volume</div>
+                    </div>
+                    <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg">
+                        <div class="font-bold text-purple-600 dark:text-purple-400" id="correlacaoNumerosValidosVolume">-</div>
+                        <div class="text-xs">Números Válidos ↔ Volume</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -481,6 +597,7 @@
             atualizarInterface();
             gerarResumoGrupos();
             preencherFiltros();
+            gerarEstatisticasFinais();
         }
         
         // Função para atualizar a interface
@@ -1010,6 +1127,132 @@
             link.click();
             
             URL.revokeObjectURL(url);
+        }
+        
+        // Função para gerar estatísticas finais
+        function gerarEstatisticasFinais() {
+            const estatisticasFinais = document.getElementById('estatisticasFinais');
+            
+            // Arrays para cálculos
+            const qtdDigitosArray = sorteiosAnalisados.map(s => s.qtdDigitos);
+            const numerosValidosArray = sorteiosAnalisados.map(s => s.qtdNumerosValidos);
+            const volumeArray = sorteiosAnalisados.map(s => s.volumeCombinacoes);
+            
+            // Funções auxiliares
+            function calcularMedia(arr) {
+                return (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1);
+            }
+            
+            function calcularModa(arr) {
+                const frequencia = {};
+                arr.forEach(item => {
+                    frequencia[item] = (frequencia[item] || 0) + 1;
+                });
+                
+                let maxFreq = 0;
+                let moda = null;
+                
+                for (const [valor, freq] of Object.entries(frequencia)) {
+                    if (freq > maxFreq) {
+                        maxFreq = freq;
+                        moda = valor;
+                    }
+                }
+                
+                return moda;
+            }
+            
+            function calcularDistribuicao(arr, elementId) {
+                const frequencia = {};
+                arr.forEach(item => {
+                    const key = item === 0 ? 'Insuficiente' : item.toString();
+                    frequencia[key] = (frequencia[key] || 0) + 1;
+                });
+                
+                const container = document.getElementById(elementId);
+                container.innerHTML = '';
+                
+                // Ordenar por frequência (mais comum primeiro)
+                const sorted = Object.entries(frequencia).sort((a, b) => b[1] - a[1]);
+                
+                sorted.slice(0, 10).forEach(([valor, count], index) => {
+                    const div = document.createElement('div');
+                    div.className = 'flex justify-between items-center';
+                    
+                    const percent = ((count / sorteiosAnalisados.length) * 100).toFixed(1);
+                    
+                    let emoji = '';
+                    if (index === 0) emoji = '🥇';
+                    else if (index === 1) emoji = '🥈';
+                    else if (index === 2) emoji = '🥉';
+                    else emoji = '📊';
+                    
+                    div.innerHTML = `
+                        <span class="font-medium">${emoji} ${valor}:</span>
+                        <span class="text-xs">
+                            <span class="font-bold">${count}</span> 
+                            <span class="text-gray-500">(${percent}%)</span>
+                        </span>
+                    `;
+                    
+                    container.appendChild(div);
+                });
+            }
+            
+            function calcularCorrelacao(arr1, arr2) {
+                const n = arr1.length;
+                const sum1 = arr1.reduce((a, b) => a + b, 0);
+                const sum2 = arr2.reduce((a, b) => a + b, 0);
+                const sum1Sq = arr1.reduce((a, b) => a + b * b, 0);
+                const sum2Sq = arr2.reduce((a, b) => a + b * b, 0);
+                const pSum = arr1.reduce((total, val, i) => total + val * arr2[i], 0);
+                
+                const num = pSum - (sum1 * sum2 / n);
+                const den = Math.sqrt((sum1Sq - sum1 * sum1 / n) * (sum2Sq - sum2 * sum2 / n));
+                
+                return den === 0 ? 0 : (num / den).toFixed(3);
+            }
+            
+            // Calcular estatísticas básicas
+            // Qtd. Dígitos
+            document.getElementById('mediaDigitos').textContent = calcularMedia(qtdDigitosArray);
+            document.getElementById('minDigitos').textContent = Math.min(...qtdDigitosArray);
+            document.getElementById('maxDigitos').textContent = Math.max(...qtdDigitosArray);
+            document.getElementById('modaDigitos').textContent = calcularModa(qtdDigitosArray);
+            
+            // Números Válidos
+            document.getElementById('mediaNumerosValidos').textContent = calcularMedia(numerosValidosArray);
+            document.getElementById('minNumerosValidos').textContent = Math.min(...numerosValidosArray);
+            document.getElementById('maxNumerosValidos').textContent = Math.max(...numerosValidosArray);
+            document.getElementById('modaNumerosValidos').textContent = calcularModa(numerosValidosArray);
+            
+            // Volume de Combinações
+            const volumeArrayFormatted = volumeArray.map(v => v === 0 ? 'Insuficiente' : v.toLocaleString('pt-BR'));
+            const volumeNonZero = volumeArray.filter(v => v > 0);
+            
+            document.getElementById('mediaVolume').textContent = volumeNonZero.length > 0 ? 
+                calcularMedia(volumeNonZero) : 'N/A';
+            document.getElementById('minVolume').textContent = volumeNonZero.length > 0 ? 
+                Math.min(...volumeNonZero).toLocaleString('pt-BR') : 'N/A';
+            document.getElementById('maxVolume').textContent = volumeNonZero.length > 0 ? 
+                Math.max(...volumeNonZero).toLocaleString('pt-BR') : 'N/A';
+            document.getElementById('modaVolume').textContent = calcularModa(volumeArrayFormatted);
+            
+            // Gerar distribuições
+            calcularDistribuicao(qtdDigitosArray, 'distribuicaoDigitos');
+            calcularDistribuicao(numerosValidosArray, 'distribuicaoNumerosValidos');
+            calcularDistribuicao(volumeArray, 'distribuicaoVolume');
+            
+            // Calcular correlações
+            document.getElementById('correlacaoDigitosNumerosValidos').textContent = 
+                calcularCorrelacao(qtdDigitosArray, numerosValidosArray);
+            document.getElementById('correlacaoDigitosVolume').textContent = 
+                calcularCorrelacao(qtdDigitosArray, volumeArray);
+            document.getElementById('correlacaoNumerosValidosVolume').textContent = 
+                calcularCorrelacao(numerosValidosArray, volumeArray);
+            
+            // Mostrar seção de estatísticas
+            estatisticasFinais.classList.remove('hidden');
         }
         
         // Event Listeners
