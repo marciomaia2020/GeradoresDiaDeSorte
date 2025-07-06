@@ -141,6 +141,13 @@
                             <th class="py-3 px-4 text-left text-sm font-semibold border dark:border-gray-600">Números Válidos</th>
                             <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">Volume de Jogos C(n,7)</th>
                             <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">Custo Total</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600 bg-yellow-50 dark:bg-yellow-900/20">
+                                <div class="flex flex-col items-center space-y-1">
+                                    <span class="font-bold text-yellow-700 dark:text-yellow-300">Total de</span>
+                                    <span class="font-bold text-yellow-700 dark:text-yellow-300">Configurações</span>
+                                    <div class="text-xs bg-yellow-600 text-white px-2 py-1 rounded">Soma de todas</div>
+                                </div>
+                            </th>
 
                             <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">
                                 <div class="flex flex-col items-center space-y-1">
@@ -772,6 +779,63 @@
                     
                     costCell.appendChild(costDiv);
                     row.appendChild(costCell);
+                    
+                    // NOVA COLUNA - Total de Configurações (soma de todas) com detalhes dos dígitos
+                    const totalConfigCell = document.createElement('td');
+                    totalConfigCell.className = 'py-2 px-4 border dark:border-gray-600 text-center bg-yellow-50 dark:bg-yellow-900/20';
+                    
+                    // Somar todas as configurações que geram este número de números válidos
+                    const totalConfigs = counts.slice(2).reduce((sum, count) => sum + count, 0);
+                    
+                    // Criar container para mostrar total e detalhes
+                    const totalContainer = document.createElement('div');
+                    totalContainer.className = 'flex flex-col items-center space-y-1';
+                    
+                    // Número total em destaque
+                    const totalConfigDiv = document.createElement('div');
+                    totalConfigDiv.className = 'text-lg font-bold text-yellow-700 dark:text-yellow-300';
+                    totalConfigDiv.textContent = totalConfigs;
+                    
+                    // Detalhes dos dígitos utilizados
+                    const detailsDiv = document.createElement('div');
+                    detailsDiv.className = 'text-xs space-y-1';
+                    
+                    // Configurações com números dos dígitos (3-10 dígitos)
+                    const digitNumbers = [3, 4, 5, 6, 7, 8, 9, 10];
+                    const detailParts = [];
+                    
+                    counts.slice(2).forEach((count, index) => {
+                        if (count > 0) {
+                            const digitNumber = digitNumbers[index];
+                            detailParts.push(`${digitNumber}/${count}`);
+                        }
+                    });
+                    
+                    if (detailParts.length > 0) {
+                        // Quebrar em múltiplas linhas se necessário
+                        const detailText = detailParts.join(' | ');
+                        
+                        if (detailParts.length <= 2) {
+                            // Se poucos itens, mostrar em uma linha
+                            const detailSpan = document.createElement('div');
+                            detailSpan.className = 'text-xs text-yellow-600 dark:text-yellow-400 font-medium';
+                            detailSpan.textContent = `(${detailText})`;
+                            detailsDiv.appendChild(detailSpan);
+                        } else {
+                            // Se muitos itens, mostrar em várias linhas
+                            detailParts.forEach(part => {
+                                const partSpan = document.createElement('div');
+                                partSpan.className = 'text-xs text-yellow-600 dark:text-yellow-400 font-medium';
+                                partSpan.textContent = part;
+                                detailsDiv.appendChild(partSpan);
+                            });
+                        }
+                    }
+                    
+                    totalContainer.appendChild(totalConfigDiv);
+                    totalContainer.appendChild(detailsDiv);
+                    totalConfigCell.appendChild(totalContainer);
+                    row.appendChild(totalConfigCell);
                     
                     // Colunas para cada configuração (apenas 3-10 dígitos)
                     counts.slice(2).forEach((count, configIndex) => {
