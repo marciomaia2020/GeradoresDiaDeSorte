@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análise Completa - Combinações de 1 a 10 Dígitos - Dia de Sorte (CORRIGIDA)</title>
+    <title>Análise Completa - Combinações de 1 a 10 Dígitos - Dia de Sorte</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -55,9 +55,6 @@
             <h2 class="text-2xl md:text-3xl font-semibold mb-6">Combinações de 1 a 10 Dígitos - Dia de Sorte</h2>
             <p class="text-lg opacity-90 max-w-3xl mx-auto">
                 Análise estatística completa de todas as configurações possíveis para otimizar suas estratégias no jogo Dia de Sorte
-            </p>
-            <p class="text-sm opacity-75 mt-2 bg-green-600 inline-block px-3 py-1 rounded-full">
-                ✅ CÁLCULOS CORRIGIDOS - C(n,7) para Dia de Sorte
             </p>
         </div>
     </div>
@@ -126,21 +123,12 @@
                 </div>
             </div>
             
-            <!-- Aviso de correção -->
-            <div class="mb-4 p-3 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-md">
-                <p class="text-sm text-green-800 dark:text-green-200">
-                    <strong>✅ CÁLCULOS CORRIGIDOS:</strong> Agora usando C(n,7) corretamente para Dia de Sorte. 
-                    Exemplo: 22 números válidos = C(22,7) = 170.544 combinações = R$ 426.360,00 (sem multiplicações extras).
-                </p>
-            </div>
-            
             <div class="overflow-x-auto">
                 <table class="min-w-full border-collapse">
                     <thead class="bg-gray-100 dark:bg-gray-700">
                         <tr>
                             <th class="py-3 px-4 text-left text-sm font-semibold border dark:border-gray-600">Números Válidos</th>
-                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">Volume de Jogos C(n,7)</th>
-                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">Custo Total</th>
+                            <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">Volume de Jogos</th>
 
                             <th class="py-3 px-4 text-center text-sm font-semibold border dark:border-gray-600">
                                 <div class="flex flex-col items-center space-y-1">
@@ -208,9 +196,7 @@
             
             <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
                 <p class="text-sm text-blue-800 dark:text-blue-200">
-                    <strong>💡 Legenda:</strong> A tabela mostra quantas configurações de cada número de dígitos conseguem formar determinado número de números válidos (1-31), 
-                    seus respectivos volumes de jogos possíveis usando <strong>C(n,7)</strong> para Dia de Sorte e o custo total baseado no valor por jogo. 
-                    Os badges cinzas mostram o total de combinações e os badges coloridos mostram as combinações válidas.
+                    <strong>💡 Legenda:</strong> A tabela mostra quantas configurações de cada número de dígitos conseguem formar determinado número de números válidos (1-31), seus respectivos volumes de jogos possíveis e o custo total baseado no valor por jogo. Os badges cinzas mostram o total de combinações e os badges coloridos mostram as combinações válidas. Os badges verdes mostram o custo para cada quantidade de configurações.
                 </p>
             </div>
             
@@ -226,6 +212,17 @@
                     </svg>
                     🖨️ Imprimir Tabela
                 </button>
+                
+               <!-- <button 
+                    id="btnDownloadExcel" 
+                    class="flex items-center justify-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-lg transition-colors duration-200"
+                    onclick="downloadExcel()"
+                >
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    📊 Baixar Excel
+                </button>-->
             </div>
         </div>
 
@@ -339,22 +336,6 @@
             return numStr.split('').every(digit => allowedDigits.includes(parseInt(digit)));
         }
 
-        // FUNÇÃO CORRIGIDA - Calcular combinações C(n,r) para Dia de Sorte
-        function combinations(n, r) {
-            if (r > n || r < 0) return 0;
-            if (r === 0 || r === n) return 1;
-            
-            // Usar método iterativo mais eficiente para evitar overflow
-            r = Math.min(r, n - r);
-            let resultado = 1;
-            
-            for (let i = 0; i < r; i++) {
-                resultado = resultado * (n - i) / (i + 1);
-            }
-            
-            return Math.round(resultado);
-        }
-
         // Função para calcular estatísticas detalhadas para uma configuração (com cache)
         function calculateDetailedStats(digitCount) {
             const cacheKey = `stats_${digitCount}`;
@@ -389,7 +370,7 @@
                     }
                 }
                 
-                // Calcular combinações de jogos possíveis - CORRIGIDO para C(n,7)
+                // Calcular combinações de jogos possíveis
                 let gameCombinations = 0;
                 if (validNumbers.length >= 7) {
                     gameCombinations = combinations(validNumbers.length, 7);
@@ -459,6 +440,19 @@
             
             backtrack(0, []);
             return combinations;
+        }
+
+        // Função para calcular combinações C(n,r)
+        function combinations(n, r) {
+            if (r > n) return 0;
+            if (r === 0 || r === n) return 1;
+            
+            function factorial(num) {
+                if (num <= 1) return 1;
+                return num * factorial(num - 1);
+            }
+            
+            return factorial(n) / (factorial(r) * factorial(n - r));
         }
 
         // Função para atualizar custos dos jogos
@@ -650,7 +644,7 @@
             });
         }
 
-        // FUNÇÃO CORRIGIDA - Criar tabela de volumes para Dia de Sorte
+        // Função para criar tabela de volumes
         function createVolumeTable() {
             const tableBody = document.getElementById('volume-table-body');
             
@@ -727,34 +721,30 @@
                     validCell.textContent = `${validCount} números`;
                     row.appendChild(validCell);
                     
-                    // Coluna de volume - CORRIGIDA
+                    // Coluna de volume
                     const volumeCell = document.createElement('td');
                     volumeCell.className = 'py-2 px-4 border dark:border-gray-600 text-center';
                     
+                    // Criar container para volume e custo
+                    const volumeContainer = document.createElement('div');
+                    volumeContainer.className = 'flex flex-col items-center space-y-1';
+                    
+                    // Número de jogos
                     const volumeDiv = document.createElement('div');
                     volumeDiv.className = 'font-bold text-sm';
                     
                     // Colorir baseado no volume
-                    if (volume >= 10000000) {
+                    if (volume >= 1000) {
                         volumeDiv.classList.add('text-green-600', 'dark:text-green-400');
-                    } else if (volume >= 1000000) {
+                    } else if (volume >= 100) {
                         volumeDiv.classList.add('text-blue-600', 'dark:text-blue-400');
-                    } else if (volume >= 100000) {
-                        volumeDiv.classList.add('text-purple-600', 'dark:text-purple-400');
-                    } else if (volume >= 1000) {
-                        volumeDiv.classList.add('text-yellow-600', 'dark:text-yellow-400');
                     } else {
-                        volumeDiv.classList.add('text-orange-600', 'dark:text-orange-400');
+                        volumeDiv.classList.add('text-yellow-600', 'dark:text-yellow-400');
                     }
                     
                     volumeDiv.textContent = volume.toLocaleString('pt-BR');
-                    volumeCell.appendChild(volumeDiv);
-                    row.appendChild(volumeCell);
                     
-                    // Coluna de custo total - NOVA
-                    const costCell = document.createElement('td');
-                    costCell.className = 'py-2 px-4 border dark:border-gray-600 text-center';
-                    
+                    // Custo total para este volume
                     const gameValue = parseFloat(document.getElementById('gameValue').value) || 2.50;
                     const totalCost = volume * gameValue;
                     const totalCostFormatted = totalCost.toLocaleString('pt-BR', { 
@@ -763,15 +753,17 @@
                     });
                     
                     const costDiv = document.createElement('div');
-                    costDiv.className = 'text-sm font-semibold px-2 py-1 rounded bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 volume-cost';
+                    costDiv.className = 'text-xs font-semibold px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 volume-cost';
                     costDiv.textContent = totalCostFormatted;
                     
                     // Adicionar classe para atualização dinâmica
-                    costCell.classList.add('volume-cost-cell');
-                    costCell.dataset.volume = volume;
+                    volumeCell.classList.add('volume-cost-cell');
+                    volumeCell.dataset.volume = volume;
                     
-                    costCell.appendChild(costDiv);
-                    row.appendChild(costCell);
+                    volumeContainer.appendChild(volumeDiv);
+                    volumeContainer.appendChild(costDiv);
+                    volumeCell.appendChild(volumeContainer);
+                    row.appendChild(volumeCell);
                     
                     // Colunas para cada configuração (apenas 3-10 dígitos)
                     counts.slice(2).forEach((count, configIndex) => {
@@ -793,10 +785,20 @@
                             countDiv.className = 'font-semibold text-primary dark:text-blue-400';
                             countDiv.textContent = count;
                             
-                            // Badge de custo (configurações × volume × valor) - REMOVIDO
-                            // Para deixar mais limpo, removemos o custo individual aqui
+                            // Badge de custo (configurações × volume × valor)
+                            const gameValue = parseFloat(document.getElementById('gameValue').value) || 2.50;
+                            const cost = count * volume * gameValue;
+                            const costFormatted = cost.toLocaleString('pt-BR', { 
+                                style: 'currency', 
+                                currency: 'BRL' 
+                            });
+                            
+                            const costBadge = document.createElement('div');
+                            costBadge.className = 'px-1 py-1 text-xs font-bold rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 cost-value';
+                            costBadge.textContent = costFormatted;
                             
                             container.appendChild(countDiv);
+                            container.appendChild(costBadge);
                             countCell.appendChild(container);
                         } else {
                             countCell.textContent = '-';
@@ -824,16 +826,12 @@
             insufVolumeCell.textContent = 'Insuficiente';
             insufRow.appendChild(insufVolumeCell);
             
-            const insufCostCell = document.createElement('td');
-            insufCostCell.className = 'py-2 px-4 border dark:border-gray-600 text-center font-bold text-red-600 dark:text-red-400';
-            insufCostCell.textContent = 'R$ 0,00';
-            insufRow.appendChild(insufCostCell);
-            
             allStats.slice(2).forEach(stats => {
                 const insufCell = document.createElement('td');
                 insufCell.className = 'py-2 px-4 border dark:border-gray-600 text-center';
                 
                 if (stats.insufficientConfigurations > 0) {
+                    // Apenas mostrar o número, sem badge de custo
                     insufCell.textContent = stats.insufficientConfigurations;
                     insufCell.classList.add('font-semibold', 'text-red-600', 'dark:text-red-400');
                 } else {
@@ -1069,13 +1067,13 @@
                 <body>
                     <div class="header">
                         <h1>📊 Análise Completa - Dia de Sorte</h1>
-                        <h2>📋 Tabela Resumo - Volumes de Jogos por Números Válidos (CORRIGIDA)</h2>
+                        <h2>📋 Tabela Resumo - Volumes de Jogos por Números Válidos</h2>
                     </div>
                     
                     <div class="info">
                         <p><strong>Data:</strong> ${currentDate}</p>
                         <p><strong>Valor por jogo:</strong> R$ ${gameValue}</p>
-                        <p><strong>Correção:</strong> Cálculos usando C(n,7) para Dia de Sorte sem multiplicações extras</p>
+                        <p><strong>Legenda:</strong> Badges cinzas = Total de combinações | Badges coloridos = Combinações válidas</p>
                     </div>
                     
                     ${table}
@@ -1095,6 +1093,241 @@
                 printWindow.print();
                 printWindow.close();
             }, 500);
+        }
+
+        // Função MELHORADA para baixar a tabela em Excel (CSV) - Formato Super Organizado
+        function downloadExcel() {
+            const gameValue = parseFloat(document.getElementById('gameValue').value) || 2.50;
+            
+            // Usar separador de vírgula e configurar para UTF-8 com BOM
+            const BOM = '\uFEFF';
+            let csvContent = BOM;
+            
+            // SEÇÃO 1: CABEÇALHO E INFORMAÇÕES BÁSICAS
+            csvContent += 'ANÁLISE COMPLETA - DIA DE SORTE - TABELA RESUMO,,,,,,,,,,,,,,,,,,\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'Data de Geração:,' + new Date().toLocaleDateString('pt-BR') + ',,,,,,,,,,,,,,,,,\n';
+            csvContent += 'Valor por Jogo:,R$ ' + gameValue.toFixed(2).replace('.', ',') + ',,,,,,,,,,,,,,,,,\n';
+            csvContent += 'Hora de Geração:,' + new Date().toLocaleTimeString('pt-BR') + ',,,,,,,,,,,,,,,,,\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            
+            // SEÇÃO 2: CABEÇALHOS DA TABELA PRINCIPAL
+            csvContent += 'TABELA PRINCIPAL - VOLUMES E CONFIGURAÇÕES,,,,,,,,,,,,,,,,,,\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            
+            // Linha de cabeçalhos principais
+            csvContent += 'Números,Volume,Custo do,3 Dígitos,,4 Dígitos,,5 Dígitos,,6 Dígitos,,7 Dígitos,,8 Dígitos,,9 Dígitos,,10 Dígitos,\n';
+            csvContent += 'Válidos,de Jogos,Volume,Qtd Config,Custo Config,Qtd Config,Custo Config,Qtd Config,Custo Config,Qtd Config,Custo Config,Qtd Config,Custo Config,Qtd Config,Custo Config,Qtd Config,Custo Config,Qtd Config,Custo Config\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            
+            // SEÇÃO 3: DADOS DA TABELA ORGANIZADOS
+            const tableBody = document.getElementById('volume-table-body');
+            const rows = tableBody.querySelectorAll('tr');
+            
+            // Processar dados para criar estrutura organizada
+            const tableData = [];
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length > 0) {
+                    const rowData = {};
+                    
+                    // Extrair números válidos
+                    const validNumbersText = cells[0].textContent.trim();
+                    if (validNumbersText.includes('≤ 6')) {
+                        rowData.validNumbers = 'Insuficiente (≤6)';
+                        rowData.volume = 0;
+                        rowData.volumeText = 'Impossível';
+                        rowData.volumeCost = '-';
+                    } else {
+                        const match = validNumbersText.match(/(\d+)/);
+                        rowData.validNumbers = match ? match[1] + ' números' : validNumbersText;
+                        
+                        // Extrair volume
+                        const volumeContainer = cells[1];
+                        const volumeDiv = volumeContainer.querySelector('div.font-bold');
+                        
+                        if (volumeDiv) {
+                            const volumeText = volumeDiv.textContent.trim();
+                            rowData.volume = parseInt(volumeText.replace(/\./g, '').replace(/\D/g, '')) || 0;
+                            rowData.volumeText = volumeText;
+                            
+                            if (rowData.volume > 0) {
+                                const totalCost = rowData.volume * gameValue;
+                                rowData.volumeCost = 'R$ ' + totalCost.toLocaleString('pt-BR', { 
+                                    minimumFractionDigits: 2, 
+                                    maximumFractionDigits: 2 
+                                }).replace('.', ',');
+                            } else {
+                                rowData.volumeCost = '-';
+                            }
+                        } else {
+                            rowData.volume = 0;
+                            rowData.volumeText = '0';
+                            rowData.volumeCost = '-';
+                        }
+                    }
+                    
+                    // Extrair dados das configurações (3-10 dígitos)
+                    rowData.configs = [];
+                    for (let i = 2; i < cells.length; i++) {
+                        const cell = cells[i];
+                        const countDiv = cell.querySelector('div.font-semibold, .font-semibold');
+                        
+                        if (cell.textContent.trim() === '-' || cell.classList.contains('text-gray-400')) {
+                            rowData.configs.push({ count: 0, cost: '-' });
+                        } else if (countDiv) {
+                            const configCount = parseInt(countDiv.textContent.trim()) || 0;
+                            let configCost = '-';
+                            
+                            if (rowData.volume > 0 && configCount > 0) {
+                                const cost = configCount * rowData.volume * gameValue;
+                                configCost = 'R$ ' + cost.toLocaleString('pt-BR', { 
+                                    minimumFractionDigits: 2, 
+                                    maximumFractionDigits: 2 
+                                }).replace('.', ',');
+                            }
+                            
+                            rowData.configs.push({ count: configCount, cost: configCost });
+                        } else {
+                            const cellText = cell.textContent.trim();
+                            const configCount = parseInt(cellText) || 0;
+                            rowData.configs.push({ count: configCount, cost: '-' });
+                        }
+                    }
+                    
+                    tableData.push(rowData);
+                }
+            });
+            
+            // Ordenar dados: válidos primeiro (por números válidos decrescente), insuficientes por último
+            tableData.sort((a, b) => {
+                if (a.validNumbers.includes('Insuficiente') && !b.validNumbers.includes('Insuficiente')) return 1;
+                if (!a.validNumbers.includes('Insuficiente') && b.validNumbers.includes('Insuficiente')) return -1;
+                if (a.validNumbers.includes('Insuficiente') && b.validNumbers.includes('Insuficiente')) return 0;
+                
+                const aNum = parseInt(a.validNumbers.match(/(\d+)/)?.[1] || '0');
+                const bNum = parseInt(b.validNumbers.match(/(\d+)/)?.[1] || '0');
+                return bNum - aNum; // Ordem decrescente
+            });
+            
+            // Adicionar dados organizados ao CSV
+            tableData.forEach(row => {
+                let line = '';
+                line += row.validNumbers + ',';
+                line += row.volumeText + ',';
+                line += row.volumeCost + ',';
+                
+                // Adicionar dados de cada configuração (quantidade e custo)
+                row.configs.forEach(config => {
+                    line += config.count + ',';
+                    line += config.cost + ',';
+                });
+                
+                csvContent += line + '\n';
+            });
+            
+            // SEÇÃO 4: ESTATÍSTICAS RESUMO
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'ESTATÍSTICAS RESUMO POR CONFIGURAÇÃO,,,,,,,,,,,,,,,,,,\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'Configuração,Total Combinações,Configurações Válidas,Taxa de Aproveitamento,Maior Volume,Menor Volume,Volume Médio,Observações,,,,,,,,,,\n';
+            
+            configurations.slice(2).forEach(config => {
+                const stats = calculateDetailedStats(config.digits);
+                const aproveitamento = ((stats.validConfigurations / config.totalCombinations) * 100).toFixed(1).replace('.', ',');
+                const maiorVolume = stats.maxVolume > 0 ? stats.maxVolume.toLocaleString('pt-BR') : '-';
+                const menorVolume = stats.minVolume > 0 && stats.minVolume < Infinity ? stats.minVolume.toLocaleString('pt-BR') : '-';
+                const volumeMedio = stats.avgVolume > 0 ? stats.avgVolume.toLocaleString('pt-BR') : '-';
+                
+                let observacao = '';
+                if (config.digits <= 3) observacao = 'Limitado';
+                else if (config.digits <= 4) observacao = 'Equilibrado';
+                else if (config.digits <= 6) observacao = 'Excelente';
+                else observacao = 'Redundante';
+                
+                csvContent += `${config.name},${config.totalCombinations},${stats.validConfigurations},${aproveitamento}%,${maiorVolume},${menorVolume},${volumeMedio},${observacao},,,,,,,,,,\n`;
+            });
+            
+            // SEÇÃO 5: ANÁLISE DE CUSTOS
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'ANÁLISE DE CUSTOS POR FAIXA DE VOLUME,,,,,,,,,,,,,,,,,,\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'Faixa de Volume,Valor Individual,3 Díg,4 Díg,5 Díg,6 Díg,7 Díg,8 Díg,9 Díg,10 Díg,Total Configs,Custo Médio,,,,,,\n';
+            
+            // Agrupar por faixas de volume
+            const volumeFaixas = [
+                { min: 1000000, max: Infinity, nome: 'Muito Alto (1M+)' },
+                { min: 100000, max: 999999, nome: 'Alto (100K-999K)' },
+                { min: 10000, max: 99999, nome: 'Médio Alto (10K-99K)' },
+                { min: 1000, max: 9999, nome: 'Médio (1K-9K)' },
+                { min: 100, max: 999, nome: 'Baixo (100-999)' },
+                { min: 1, max: 99, nome: 'Muito Baixo (1-99)' },
+                { min: 0, max: 0, nome: 'Insuficiente (0)' }
+            ];
+            
+            volumeFaixas.forEach(faixa => {
+                const configsNaFaixa = [0, 0, 0, 0, 0, 0, 0, 0]; // Para 3-10 dígitos
+                let totalConfigs = 0;
+                let volumeExemplo = 0;
+                
+                tableData.forEach(row => {
+                    if (row.volume >= faixa.min && row.volume <= faixa.max) {
+                        if (volumeExemplo === 0) volumeExemplo = row.volume;
+                        row.configs.forEach((config, index) => {
+                            configsNaFaixa[index] += config.count;
+                            totalConfigs += config.count;
+                        });
+                    }
+                });
+                
+                if (totalConfigs > 0) {
+                    const valorIndividual = volumeExemplo > 0 ? 
+                        'R$ ' + (volumeExemplo * gameValue).toLocaleString('pt-BR', { 
+                            minimumFractionDigits: 2, 
+                            maximumFractionDigits: 2 
+                        }).replace('.', ',') : '-';
+                    
+                    const custoMedio = volumeExemplo > 0 ? 
+                        'R$ ' + (volumeExemplo * gameValue * (totalConfigs / configsNaFaixa.length)).toLocaleString('pt-BR', { 
+                            minimumFractionDigits: 2, 
+                            maximumFractionDigits: 2 
+                        }).replace('.', ',') : '-';
+                    
+                    csvContent += `${faixa.nome},${valorIndividual},${configsNaFaixa.join(',')},${totalConfigs},${custoMedio},,,,,,\n`;
+                }
+            });
+            
+            // SEÇÃO 6: NOTAS E EXPLICAÇÕES
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'NOTAS E EXPLICAÇÕES,,,,,,,,,,,,,,,,,,\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'Conceito,Explicação,,,,,,,,,,,,,,,\n';
+            csvContent += 'Números Válidos,Quantidade de números de 1 a 31 formáveis com os dígitos escolhidos,,,,,,,,,,,,,,,\n';
+            csvContent += 'Volume de Jogos,Total de combinações C(n/7) possíveis com os números válidos,,,,,,,,,,,,,,,\n';
+            csvContent += 'Qtd Config,Quantidade de configurações de dígitos que geram este volume,,,,,,,,,,,,,,,\n';
+            csvContent += 'Custo Config,Valor total: Qtd Config × Volume × Valor por Jogo,,,,,,,,,,,,,,,\n';
+            csvContent += 'Taxa Aproveitamento,Percentual de configurações que geram jogos válidos,,,,,,,,,,,,,,,\n';
+            csvContent += ',,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'PARÂMETROS UTILIZADOS,,,,,,,,,,,,,,,,,,\n';
+            csvContent += 'Valor por Jogo,R$ ' + gameValue.toFixed(2).replace('.', ',') + ',,,,,,,,,,,,,,,\n';
+            csvContent += 'Números do Jogo,1 a 31,,,,,,,,,,,,,,,\n';
+            csvContent += 'Números por Aposta,7,,,,,,,,,,,,,,,\n';
+            csvContent += 'Data/Hora Geração,' + new Date().toLocaleString('pt-BR') + ',,,,,,,,,,,,,,,\n';
+            
+            // Criar e baixar o arquivo
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'analise-completa-dia-de-sorte-' + new Date().toISOString().split('T')[0] + '.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         }
 
         // Inicializar página
