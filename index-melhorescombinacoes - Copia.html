@@ -222,18 +222,8 @@
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold">📋 Ranking Completo das Combinações</h3>
-                <div class="flex items-center gap-4">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">
-                        Mostrando <span id="total-showing" class="font-bold text-primary">0</span> combinações
-                    </div>
-                    <button 
-                        id="toggleRankingCompleto" 
-                        class="flex items-center px-4 py-2 bg-primary hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors duration-200"
-                        onclick="toggleRankingCompletoSection()"
-                    >
-                        <span id="toggleRankingIcon">👁️</span>
-                        <span id="toggleRankingText" class="ml-2">Ocultar</span>
-                    </button>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                    Mostrando <span id="total-showing" class="font-bold text-primary">0</span> combinações
                 </div>
             </div>
             
@@ -1873,23 +1863,6 @@
             ultimaVerificacao = verificacaoTemporaria;
             atualizarVisualizacaoJogos();
             ultimaVerificacao = verificacaoOriginal; // Restaurar verificação oficial
-        }
-
-        // Função para mostrar/ocultar ranking completo
-        function toggleRankingCompletoSection() {
-            const tableContainer = document.querySelector('#ranking-section .overflow-x-auto');
-            const toggleIcon = document.getElementById('toggleRankingIcon');
-            const toggleText = document.getElementById('toggleRankingText');
-            
-            if (tableContainer.style.display === 'none') {
-                tableContainer.style.display = 'block';
-                toggleIcon.textContent = '👁️';
-                toggleText.textContent = 'Ocultar';
-            } else {
-                tableContainer.style.display = 'none';
-                toggleIcon.textContent = '🔍';
-                toggleText.textContent = 'Mostrar';
-            }
         }
 
         // Inicializar aplicação

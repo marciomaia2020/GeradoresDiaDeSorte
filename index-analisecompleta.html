@@ -97,8 +97,21 @@
         </div>
 
         <!-- Análises Detalhadas por Configuração -->
-        <div id="detailed-analysis">
-            <!-- Será preenchido dinamicamente -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">📋 Análises Detalhadas por Configuração</h3>
+                <button 
+                    id="toggleDetailedAnalysis" 
+                    class="flex items-center px-4 py-2 bg-primary hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors duration-200"
+                    onclick="toggleDetailedAnalysisSection()"
+                >
+                    <span id="toggleIcon">👁️</span>
+                    <span id="toggleText" class="ml-2">Ocultar</span>
+                </button>
+            </div>
+            <div id="detailed-analysis">
+                <!-- Será preenchido dinamicamente -->
+            </div>
         </div>
 
         <!-- Tabela Resumo de Volumes -->
@@ -1159,6 +1172,23 @@
                 printWindow.print();
                 printWindow.close();
             }, 500);
+        }
+
+        // Função para mostrar/ocultar análise detalhada
+        function toggleDetailedAnalysisSection() {
+            const detailSection = document.getElementById('detailed-analysis');
+            const toggleIcon = document.getElementById('toggleIcon');
+            const toggleText = document.getElementById('toggleText');
+            
+            if (detailSection.style.display === 'none') {
+                detailSection.style.display = 'block';
+                toggleIcon.textContent = '👁️';
+                toggleText.textContent = 'Ocultar';
+            } else {
+                detailSection.style.display = 'none';
+                toggleIcon.textContent = '🔍';
+                toggleText.textContent = 'Mostrar';
+            }
         }
 
         // Inicializar página
