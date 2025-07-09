@@ -652,17 +652,25 @@
             // Gerar jogos
             const jogosSet = new Set(); // Para evitar duplicatas
             let tentativas = 0;
-            const maxTentativas = quantidade * 100; // Limite para evitar loop infinito
+            const maxTentativas = Math.max(quantidade * 1000, 100000); // Aumentar limite significativamente
+            let jogosComParidadeFlexivel = 0;
             
             while (jogosGerados.length < quantidade && tentativas < maxTentativas) {
                 tentativas++;
+                
+                // Após muitas tentativas, flexibilizar critério de paridade
+                let equilibrioAtual = equilibrioParidade;
+                if (tentativas > quantidade * 200 && equilibrioParidade !== 'qualquer') {
+                    equilibrioAtual = 'qualquer';
+                    jogosComParidadeFlexivel++;
+                }
                 
                 // Gerar um jogo seguindo a estratégia
                 const jogo = gerarJogoEstrategico(
                     dezenasBaixasSelecionadas, dezenasBaixasDisponiveis,
                     dezenasMedioSelecionadas, dezenasMediasDisponiveis,
                     dezenasAltasSelecionadas, dezenasAltasDisponiveis,
-                    equilibrioParidade
+                    equilibrioAtual
                 );
                 
                 // Verificar se o jogo é válido e não é duplicado
@@ -682,6 +690,11 @@
                         jogosGerados.push(jogoCompleto);
                     }
                 }
+            }
+            
+            // Informar se houve flexibilização da paridade
+            if (jogosComParidadeFlexivel > 0 && equilibrioParidade !== 'qualquer') {
+                mostrarNotificacao(`${jogosComParidadeFlexivel} jogos foram gerados com paridade flexível para atingir a quantidade solicitada`, 'info');
             }
             
             // Exibir os jogos gerados
