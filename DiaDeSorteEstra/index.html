@@ -709,50 +709,178 @@
             // Inicializar o jogo com as dezenas fixas
             const jogo = [...baixasFixas, ...mediasFixas, ...altasFixas];
             
-            // Completar com dezenas aleatórias de cada faixa
+            // Calcular quantas dezenas faltam de cada tipo
             const baixasFaltantes = 2 - baixasFixas.length;
             const mediasFaltantes = 3 - mediasFixas.length;
             const altasFaltantes = 2 - altasFixas.length;
             
-            // Adicionar dezenas baixas faltantes
+            // Se temos critério de paridade específico, tentar gerar de forma inteligente
+            if (equilibrio !== 'qualquer') {
+                return gerarJogoComParidade(
+                    jogo, baixasDisp, mediasDisp, altasDisp,
+                    baixasFaltantes, mediasFaltantes, altasFaltantes, equilibrio
+                );
+            }
+            
+            // Se não há critério de paridade, gerar normalmente
             if (baixasFaltantes > 0) {
                 const dezenasBaixasAleatorias = obterDezenasAleatorias(baixasDisp, baixasFaltantes);
                 jogo.push(...dezenasBaixasAleatorias);
             }
             
-            // Adicionar dezenas médias faltantes
             if (mediasFaltantes > 0) {
                 const dezenasMediasAleatorias = obterDezenasAleatorias(mediasDisp, mediasFaltantes);
                 jogo.push(...dezenasMediasAleatorias);
             }
             
-            // Adicionar dezenas altas faltantes
             if (altasFaltantes > 0) {
                 const dezenasAltasAleatorias = obterDezenasAleatorias(altasDisp, altasFaltantes);
                 jogo.push(...dezenasAltasAleatorias);
             }
             
-            // Verificar equilíbrio de paridade
-            if (equilibrio !== 'qualquer') {
-                const pares = jogo.filter(n => n % 2 === 0).length;
-                const impares = jogo.length - pares;
-                
-                if (equilibrio === '3-4' && (pares !== 3 || impares !== 4)) {
-                    return null; // Não atende ao critério de paridade 3-4
-                }
-                
-                if (equilibrio === '4-3' && (pares !== 4 || impares !== 3)) {
-                    return null; // Não atende ao critério de paridade 4-3
-                }
-                
-                if (equilibrio === 'balanced' && !(
-                    (pares === 3 && impares === 4) || 
-                    (pares === 4 && impares === 3)
-                )) {
-                    return null; // Não atende ao critério de paridade balanceada
+            return jogo;
+        }
+
+        // Função para gerar jogo respeitando paridade
+        function gerarJogoComParidade(jogoBase, baixasDisp, mediasDisp, altasDisp, baixasFalt, mediasFalt, altasFalt, equilibrio) {
+            // Calcular paridade atual das dezenas fixas
+            const paresFixos = jogoBase.filter(n => n % 2 === 0).length;
+            const imparesFixos = jogoBase.length - paresFixos;
+            
+            // Determinar quantos pares e ímpares precisamos adicionar
+            let paresNecessarios, imparesNecessarios;
+            
+            if (equilibrio === '3-4') {
+                paresNecessarios = 3 - paresFixos;
+                imparesNecessarios = 4 - imparesFixos;
+            } else if (equilibrio === '4-3') {
+                paresNecessarios = 4 - paresFixos;
+                imparesNecessarios = 3 - imparesFixos;
+            } else if (equilibrio === 'balanced') {
+                // Escolher aleatoriamente entre 3-4 ou 4-3
+                if (Math.random() < 0.5) {
+                    paresNecessarios = 3 - paresFixos;
+                    imparesNecessarios = 4 - imparesFixos;
+                } else {
+                    paresNecessarios = 4 - paresFixos;
+                    imparesNecessarios = 3 - imparesFixos;
                 }
             }
             
+            // Se já temos paridade correta ou impossível, usar geração normal
+            if (paresNecessarios < 0 || imparesNecessarios < 0 || 
+                paresNecessarios + imparesNecessarios !== baixasFalt + mediasFalt + altasFalt) {
+                
+                const jogo = [...jogoBase];
+                if (baixasFalt > 0) jogo.push(...obterDezenasAleatorias(baixasDisp, baixasFalt));
+                if (mediasFalt > 0) jogo.push(...obterDezenasAleatorias(mediasDisp, mediasFalt));
+                if (altasFalt > 0) jogo.push(...obterDezenasAleatorias(altasDisp, altasFalt));
+                return jogo;
+            }
+            
+            // Separar dezenas disponíveis por paridade
+            const baixasPares = baixasDisp.filter(n => n % 2 === 0);
+            const baixasImpares = baixasDisp.filter(n => n % 2 === 1);
+            const mediasPares = mediasDisp.filter(n => n % 2 === 0);
+            const mediasImpares = mediasDisp.filter(n => n % 2 === 1);
+            const altasPares = altasDisp.filter(n => n % 2 === 0);
+            const altasImpares = altasDisp.filter(n => n % 2 === 1);
+            
+            // Tentar gerar respeitando paridade
+            for (let tentativa = 0; tentativa < 50; tentativa++) {
+                const jogo = [...jogoBase];
+                let paresRestantes = paresNecessarios;
+                let imparesRestantes = imparesNecessarios;
+                
+                // Adicionar dezenas baixas
+                for (let i = 0; i < baixasFalt; i++) {
+                    if (paresRestantes > 0 && baixasPares.length > 0 && 
+                        (imparesRestantes === 0 || Math.random() < 0.5)) {
+                        const escolhida = baixasPares[Math.floor(Math.random() * baixasPares.length)];
+                        if (!jogo.includes(escolhida)) {
+                            jogo.push(escolhida);
+                            paresRestantes--;
+                            continue;
+                        }
+                    }
+                    if (imparesRestantes > 0 && baixasImpares.length > 0) {
+                        const escolhida = baixasImpares[Math.floor(Math.random() * baixasImpares.length)];
+                        if (!jogo.includes(escolhida)) {
+                            jogo.push(escolhida);
+                            imparesRestantes--;
+                            continue;
+                        }
+                    }
+                    // Se não conseguiu com paridade, pegar qualquer uma
+                    const todasBaixas = baixasDisp.filter(n => !jogo.includes(n));
+                    if (todasBaixas.length > 0) {
+                        jogo.push(todasBaixas[Math.floor(Math.random() * todasBaixas.length)]);
+                    }
+                }
+                
+                // Adicionar dezenas médias
+                for (let i = 0; i < mediasFalt; i++) {
+                    if (paresRestantes > 0 && mediasPares.length > 0 && 
+                        (imparesRestantes === 0 || Math.random() < 0.5)) {
+                        const escolhida = mediasPares[Math.floor(Math.random() * mediasPares.length)];
+                        if (!jogo.includes(escolhida)) {
+                            jogo.push(escolhida);
+                            paresRestantes--;
+                            continue;
+                        }
+                    }
+                    if (imparesRestantes > 0 && mediasImpares.length > 0) {
+                        const escolhida = mediasImpares[Math.floor(Math.random() * mediasImpares.length)];
+                        if (!jogo.includes(escolhida)) {
+                            jogo.push(escolhida);
+                            imparesRestantes--;
+                            continue;
+                        }
+                    }
+                    // Se não conseguiu com paridade, pegar qualquer uma
+                    const todasMedias = mediasDisp.filter(n => !jogo.includes(n));
+                    if (todasMedias.length > 0) {
+                        jogo.push(todasMedias[Math.floor(Math.random() * todasMedias.length)]);
+                    }
+                }
+                
+                // Adicionar dezenas altas
+                for (let i = 0; i < altasFalt; i++) {
+                    if (paresRestantes > 0 && altasPares.length > 0 && 
+                        (imparesRestantes === 0 || Math.random() < 0.5)) {
+                        const escolhida = altasPares[Math.floor(Math.random() * altasPares.length)];
+                        if (!jogo.includes(escolhida)) {
+                            jogo.push(escolhida);
+                            paresRestantes--;
+                            continue;
+                        }
+                    }
+                    if (imparesRestantes > 0 && altasImpares.length > 0) {
+                        const escolhida = altasImpares[Math.floor(Math.random() * altasImpares.length)];
+                        if (!jogo.includes(escolhida)) {
+                            jogo.push(escolhida);
+                            imparesRestantes--;
+                            continue;
+                        }
+                    }
+                    // Se não conseguiu com paridade, pegar qualquer uma
+                    const todasAltas = altasDisp.filter(n => !jogo.includes(n));
+                    if (todasAltas.length > 0) {
+                        jogo.push(todasAltas[Math.floor(Math.random() * todasAltas.length)]);
+                    }
+                }
+                
+                // Verificar se o jogo está completo
+                if (jogo.length === 7) {
+                    return jogo;
+                }
+            }
+            
+            // Se não conseguiu gerar com paridade, gerar normalmente
+            const jogo = [...jogoBase];
+            if (baixasFalt > 0) jogo.push(...obterDezenasAleatorias(baixasDisp, baixasFalt));
+            if (mediasFalt > 0) jogo.push(...obterDezenasAleatorias(mediasDisp, mediasFalt));
+            if (altasFalt > 0) jogo.push(...obterDezenasAleatorias(altasDisp, altasFalt));
             return jogo;
         }
 
