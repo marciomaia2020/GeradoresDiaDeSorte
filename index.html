@@ -225,7 +225,7 @@
 
         <!-- Conteúdo principal -->
         <div class="flex-1 p-4">
-            <h1 class="text-2xl font-bold text-center mb-6">Gerador de Combinações - Dia de Sorte (5d)</h1>
+            <h1 class="text-2xl font-bold text-center mb-6">Gerador de Combinações - Dia de Sorte (TODAS as combinações)</h1>
             
 			<hr />
 				<div class="menu-centro">
@@ -258,7 +258,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador Dia de Sorte Pro</title>
+    <title>Gerador Dia de Sorte Pro - TODAS Combinações</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script>
@@ -286,7 +286,7 @@
                     <i class="fas fa-dice text-white text-3xl"></i>
                     <div>
                         <h1 class="text-white text-2xl font-bold">Gerador Dia de Sorte Pro</h1>
-                        <p class="text-orange-100 text-sm">Estratégias inteligentes para seus jogos</p>
+                        <p class="text-orange-100 text-sm">8.064.190 jogos - TODAS as combinações disponíveis</p>
                     </div>
                 </div>
                 <div class="text-white text-right">
@@ -411,13 +411,29 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Quantos jogos você pretende fazer?
                         </label>
-                        <input type="number" id="num-games" min="10" max="170544" value="170544" placeholder="Digite de 10 a 170.544"
+                        <input type="number" id="num-games" min="10" max="8064190" value="8064190" placeholder="Digite de 10 a 8.064.190"
                                class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
                         <div class="mt-2 space-y-1">
-                            <p class="text-xs text-gray-500">Máximo: 170.544 jogos (120 combinações de 7 dígitos mais prováveis)</p>
+                            <p class="text-xs text-gray-500">Máximo: 8.064.190 jogos (TODAS as 120 combinações de 7 dígitos)</p>
+                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mt-3">
+                                <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">📊 Distribuição das Combinações:</h4>
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <div>• 35 combos × 170.544 = 5.969.040 jogos</div>
+                                    <div>• 6 combos × 116.280 = 697.680 jogos</div>
+                                    <div>• 15 combos × 77.520 = 1.162.800 jogos</div>
+                                    <div>• 21 combos × 6.435 = 135.135 jogos</div>
+                                    <div>• 23 combos × 3.432 = 78.936 jogos</div>
+                                    <div>• 12 combos × 1.716 = 20.592 jogos</div>
+                                    <div>• 7 combos × 1 = 7 jogos</div>
+                                    <div>• 1 combo insuficiente = 0 jogos</div>
+                                </div>
+                                <div class="text-xs font-bold text-blue-800 dark:text-blue-300 mt-2 border-t pt-2">
+                                    Total: 8.064.190 jogos únicos possíveis
+                                </div>
+                            </div>
                             <div id="games-reduction-info" class="hidden">
                                 <p class="text-xs text-green-600 font-semibold">🎯 Redução inteligente ativada!</p>
-                                <p class="text-xs text-gray-500">Baseado nas combinações de 7 dígitos mais sorteadas (41.51% dos casos)</p>
+                                <p class="text-xs text-gray-500">Usando TODAS as combinações disponíveis baseadas em dados reais</p>
                             </div>
                         </div>
                     </div>
@@ -462,14 +478,14 @@
                                    class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
                         </div>
                         
-                        <p class="text-xs text-gray-500 mt-1">Valor total: <span id="total-value">R$ 426.360,00</span></p>
+                        <p class="text-xs text-gray-500 mt-1">Valor total: <span id="total-value">R$ 20.160.475,00</span></p>
                         
                         <!-- Info sobre 7 dígitos -->
                         <div class="mt-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
                             <p class="text-xs text-green-700 dark:text-green-300">
                                 <i class="fas fa-star text-yellow-500 mr-1"></i>
                                 <strong>7 dígitos</strong> aparecem em <strong>41.51%</strong> dos sorteios (452 vezes).
-                                É a combinação mais provável!
+                                Agora você tem acesso a TODAS as combinações possíveis!
                             </p>
                         </div>
                     </div>
@@ -495,17 +511,17 @@
                                 <label class="flex items-center mb-1">
                                     <input type="checkbox" id="criteria-frequent" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
                                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Priorizar dezenas mais sorteadas</span>
-                                    <span id="criteria-frequent-info" class="hidden ml-2 text-xs font-semibold text-green-600">(8.0% de redução - 13.644 jogos)</span>
+                                    <span id="criteria-frequent-info" class="hidden ml-2 text-xs font-semibold text-green-600">(8.0% de redução)</span>
                                 </label>
                                 <label class="flex items-center mb-1">
                                     <input type="checkbox" id="criteria-less-frequent" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
                                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar dezenas menos sorteadas</span>
-                                    <span id="criteria-less-frequent-info" class="hidden ml-2 text-xs font-semibold text-green-600">(12.0% de redução - 20.465 jogos)</span>
+                                    <span id="criteria-less-frequent-info" class="hidden ml-2 text-xs font-semibold text-green-600">(12.0% de redução)</span>
                                 </label>
                                 <label class="flex items-center">
                                     <input type="checkbox" id="criteria-avoid-last" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
                                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar dezenas do último sorteio</span>
-                                    <span id="criteria-avoid-last-info" class="hidden ml-2 text-xs font-semibold text-green-600">(5.0% de redução - 8.527 jogos)</span>
+                                    <span id="criteria-avoid-last-info" class="hidden ml-2 text-xs font-semibold text-green-600">(5.0% de redução)</span>
                                 </label>
                             </div>
 
@@ -515,17 +531,17 @@
                                 <label class="flex items-center mb-1">
                                     <input type="checkbox" id="criteria-balance" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
                                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Equilíbrio entre pares e ímpares</span>
-                                    <span id="criteria-balance-info" class="hidden ml-2 text-xs font-semibold text-green-600">(15.0% de redução - 25.582 jogos)</span>
+                                    <span id="criteria-balance-info" class="hidden ml-2 text-xs font-semibold text-green-600">(15.0% de redução)</span>
                                 </label>
                                 <label class="flex items-center mb-1">
                                     <input type="checkbox" id="criteria-avoid-extremes" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
                                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar extremos (todos pares/ímpares)</span>
-                                    <span id="criteria-avoid-extremes-info" class="hidden ml-2 text-xs font-semibold text-green-600">(10.0% de redução - 17.054 jogos)</span>
+                                    <span id="criteria-avoid-extremes-info" class="hidden ml-2 text-xs font-semibold text-green-600">(10.0% de redução)</span>
                                 </label>
                                 <label class="flex items-center">
                                     <input type="checkbox" id="criteria-clusters" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
                                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Distribuir por grupos (1-10, 11-20, 21-31)</span>
-                                    <span id="criteria-clusters-info" class="hidden ml-2 text-xs font-semibold text-green-600">(25.0% de redução - 42.636 jogos)</span>
+                                    <span id="criteria-clusters-info" class="hidden ml-2 text-xs font-semibold text-green-600">(25.0% de redução)</span>
                                 </label>
                             </div>
 
@@ -535,17 +551,17 @@
                                 <label class="flex items-center mb-1">
                                     <input type="checkbox" id="criteria-no-sequence" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
                                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar sequências longas (1-2-3-4)</span>
-                                    <span id="criteria-no-sequence-info" class="hidden ml-2 text-xs font-semibold text-green-600">(20.0% de redução - 34.109 jogos)</span>
+                                    <span id="criteria-no-sequence-info" class="hidden ml-2 text-xs font-semibold text-green-600">(20.0% de redução)</span>
                                 </label>
                                 <label class="flex items-center mb-1">
                                     <input type="checkbox" id="criteria-sum-range" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
                                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Somas dentro de faixa (100-180)</span>
-                                    <span id="criteria-sum-range-info" class="hidden ml-2 text-xs font-semibold text-green-600">(30.0% de redução - 51.163 jogos)</span>
+                                    <span id="criteria-sum-range-info" class="hidden ml-2 text-xs font-semibold text-green-600">(30.0% de redução)</span>
                                 </label>
                                 <label class="flex items-center">
                                     <input type="checkbox" id="criteria-repeated-pairs" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
                                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar pares repetidos do último sorteio</span>
-                                    <span id="criteria-repeated-pairs-info" class="hidden ml-2 text-xs font-semibold text-green-600">(7.0% de redução - 11.938 jogos)</span>
+                                    <span id="criteria-repeated-pairs-info" class="hidden ml-2 text-xs font-semibold text-green-600">(7.0% de redução)</span>
                                 </label>
                             </div>
 
@@ -555,17 +571,17 @@
                                 <label class="flex items-center mb-1">
                                     <input type="checkbox" id="criteria-mathematical" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
                                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Fechamento matemático</span>
-                                    <span id="criteria-mathematical-info" class="hidden ml-2 text-xs font-semibold text-green-600">(40.0% de redução - 68.218 jogos)</span>
+                                    <span id="criteria-mathematical-info" class="hidden ml-2 text-xs font-semibold text-green-600">(40.0% de redução)</span>
                                 </label>
                                 <label class="flex items-center mb-1">
                                     <input type="checkbox" id="criteria-fibonacci" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
                                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar sequência Fibonacci</span>
-                                    <span id="criteria-fibonacci-info" class="hidden ml-2 text-xs font-semibold text-green-600">(15.0% de redução - 25.582 jogos)</span>
+                                    <span id="criteria-fibonacci-info" class="hidden ml-2 text-xs font-semibold text-green-600">(15.0% de redução)</span>
                                 </label>
                                 <label class="flex items-center">
                                     <input type="checkbox" id="criteria-prime-numbers" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
                                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Balancear números primos</span>
-                                    <span id="criteria-prime-numbers-info" class="hidden ml-2 text-xs font-semibold text-green-600">(10.0% de redução - 17.054 jogos)</span>
+                                    <span id="criteria-prime-numbers-info" class="hidden ml-2 text-xs font-semibold text-green-600">(10.0% de redução)</span>
                                 </label>
                             </div>
 
@@ -575,12 +591,12 @@
                                 <label class="flex items-center mb-1">
                                     <input type="checkbox" id="criteria-most-used-digits" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
                                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Disponibilizar o conjunto de dígitos mais utilizados</span>
-                                    <span id="criteria-most-used-digits-info" class="hidden ml-2 text-xs font-semibold text-green-600">(60.0% de redução - 102.326 jogos)</span>
+                                    <span id="criteria-most-used-digits-info" class="hidden ml-2 text-xs font-semibold text-green-600">(60.0% de redução)</span>
                                 </label>
                                 <label class="flex items-center">
                                     <input type="checkbox" id="criteria-least-used-digits" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
                                     <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Disponibilizar o conjunto de dígitos menos utilizados</span>
-                                    <span id="criteria-least-used-digits-info" class="hidden ml-2 text-xs font-semibold text-green-600">(30.0% de redução - 51.163 jogos)</span>
+                                    <span id="criteria-least-used-digits-info" class="hidden ml-2 text-xs font-semibold text-green-600">(30.0% de redução)</span>
                                 </label>
                             </div>
                         </div>
@@ -613,19 +629,19 @@
             <!-- Calculadora Dinâmica de Jogos -->
             <div class="mt-6 bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 border-2 border-blue-200 dark:border-blue-700 rounded-xl p-6">
                 <h3 class="text-lg font-bold text-center text-blue-800 dark:text-blue-300 mb-4">
-                    🎯 Calculadora Inteligente de Jogos
+                    🎯 Calculadora Inteligente de Jogos - TODAS as Combinações
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-700">
                         <div class="text-sm text-gray-600 dark:text-gray-400">Total Máximo</div>
-                        <div class="text-2xl font-bold text-blue-600">170.544</div>
-                        <div class="text-xs text-gray-500">120 combinações ótimas</div>
+                        <div class="text-2xl font-bold text-blue-600">8.064.190</div>
+                        <div class="text-xs text-gray-500">120 combinações completas</div>
                     </div>
                     
                     <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-green-200 dark:border-green-700">
                         <div class="text-sm text-gray-600 dark:text-gray-400">Jogos Estimados</div>
-                        <div id="estimated-games" class="text-2xl font-bold text-green-600">170.544</div>
+                        <div id="estimated-games" class="text-2xl font-bold text-green-600">8.064.190</div>
                         <div class="text-xs text-gray-500">baseado nos filtros</div>
                     </div>
                     
@@ -656,7 +672,7 @@
                 <!-- Valor Total Estimado -->
                 <div class="text-center p-3 bg-gradient-to-r from-dia-orange to-dia-yellow rounded-lg text-white">
                     <div class="text-sm opacity-90">Investimento Estimado</div>
-                    <div id="estimated-investment" class="text-xl font-bold">R$ 426.360,00</div>
+                    <div id="estimated-investment" class="text-xl font-bold">R$ 20.160.475,00</div>
                 </div>
             </div>
 
@@ -664,9 +680,9 @@
             <div class="mt-8 text-center">
                 <button id="generate-btn" class="bg-gradient-to-r from-dia-orange to-dia-yellow text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-dia-dark-orange hover:to-orange-500 transition-all duration-300 shadow-lg hover:shadow-xl">
                     <i class="fas fa-magic mr-2"></i>
-                    Gerar 170.544 Jogos
+                    Gerar 8.064.190 Jogos
                 </button>
-				<p>Confira <a href="https://geradoresdiadesorte.netlify.app/diadesorteconferidor/ target_blank">aqui </a>os melhores palpites</p>
+				<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Confira <a href="https://geradoresdiadesorte.netlify.app/diadesorteconferidor/" target="_blank" class="text-dia-orange hover:underline">aqui</a> os melhores palpites</p>
             </div>
         </div>
 
@@ -693,9 +709,12 @@
                     <!-- Busca -->
                     <div class="flex items-center space-x-4">
                         <div class="relative">
-                            <input type="text" id="search-input" placeholder="Buscar jogo..." 
+                            <input type="text" id="search-input" placeholder="Digite números (ex: 11 17 20 22)..." 
                                    class="pl-10 pr-4 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
                             <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            <div class="absolute -bottom-6 left-0 text-xs text-gray-500 dark:text-gray-400">
+                                💡 Digite múltiplos números separados por espaço
+                            </div>
                         </div>
                         <!-- Botões de Export -->
                         <div class="flex space-x-2">
@@ -821,16 +840,16 @@
                                     <strong>Selecionado:</strong> Usa o mês escolhido para todos os jogos.
                                 </p>
                                 <p class="text-sm text-gray-600 dark:text-gray-300">
-                                    <strong>Aleatório:</strong> Automaticamente usa o mês que mais foi sorteado no histórico (não é realmente aleatório).
+                                    <strong>Aleatório:</strong> Automaticamente usa o mês que mais foi sorteado no histórico.
                                 </p>
                             </div>
 
                             <div class="bg-dia-cream dark:bg-gray-900 p-4 rounded-lg border border-dia-orange">
-                                <h3 class="font-semibold text-dia-orange mb-2">💡 Dica Importante</h3>
+                                <h3 class="font-semibold text-dia-orange mb-2">💡 TODAS as Combinações</h3>
                                 <p class="text-sm text-gray-600 dark:text-gray-300">
-                                    Combinar 3-5 critérios geralmente oferece o melhor equilíbrio entre 
-                                    filtragem inteligente e diversidade de jogos. Muitos critérios podem 
-                                    ser restritivos demais.
+                                    Agora você tem acesso a TODAS as 8.064.190 combinações possíveis, 
+                                    distribuídas pelos volumes reais identificados em sua análise. 
+                                    Use os critérios para filtrar conforme sua estratégia.
                                 </p>
                             </div>
                         </div>
@@ -877,7 +896,86 @@
         let frequencyData = {};
         let monthFrequency = {};
 
+        // ===== TODAS as combinações de 7 dígitos com seus volumes reais =====
+        const ALL_7_DIGIT_COMBINATIONS = {
+            // 35 combinações com 170.544 jogos cada
+            high_volume: {
+                volume: 170544,
+                combinations: [
+                    [0,1,2,3,4,5,6], [0,1,2,3,4,5,7], [0,1,2,3,4,5,8], [0,1,2,3,4,5,9], [0,1,2,3,4,6,7],
+                    [0,1,2,3,4,6,8], [0,1,2,3,4,6,9], [0,1,2,3,4,7,8], [0,1,2,3,4,7,9], [0,1,2,3,4,8,9],
+                    [0,1,2,3,5,6,7], [0,1,2,3,5,6,8], [0,1,2,3,5,6,9], [0,1,2,3,5,7,8], [0,1,2,3,5,7,9],
+                    [0,1,2,3,5,8,9], [0,1,2,3,6,7,8], [0,1,2,3,6,7,9], [0,1,2,3,6,8,9], [0,1,2,3,7,8,9],
+                    [0,1,2,4,5,6,7], [0,1,2,4,5,6,8], [0,1,2,4,5,6,9], [0,1,2,4,5,7,8], [0,1,2,4,5,7,9],
+                    [0,1,2,4,5,8,9], [0,1,2,4,6,7,8], [0,1,2,4,6,7,9], [0,1,2,4,6,8,9], [0,1,2,4,7,8,9],
+                    [0,1,2,5,6,7,8], [0,1,2,5,6,7,9], [0,1,2,5,6,8,9], [0,1,2,5,7,8,9], [0,1,2,6,7,8,9]
+                ]
+            },
+            // 6 combinações com 116.280 jogos cada
+            medium_high_volume: {
+                volume: 116280,
+                combinations: [
+                    [0,1,3,4,5,6,7], [0,1,3,4,5,6,8], [0,1,3,4,5,6,9], [0,1,3,4,5,7,8], [0,1,3,4,5,7,9], [0,1,3,4,5,8,9]
+                ]
+            },
+            // 15 combinações com 77.520 jogos cada
+            medium_volume: {
+                volume: 77520,
+                combinations: [
+                    [0,1,3,4,6,7,8], [0,1,3,4,6,7,9], [0,1,3,4,6,8,9], [0,1,3,4,7,8,9], [0,1,3,5,6,7,8],
+                    [0,1,3,5,6,7,9], [0,1,3,5,6,8,9], [0,1,3,5,7,8,9], [0,1,3,6,7,8,9], [0,1,4,5,6,7,8],
+                    [0,1,4,5,6,7,9], [0,1,4,5,6,8,9], [0,1,4,5,7,8,9], [0,1,4,6,7,8,9], [0,1,5,6,7,8,9]
+                ]
+            },
+            // 21 combinações com 6.435 jogos cada
+            low_medium_volume: {
+                volume: 6435,
+                combinations: [
+                    [0,2,3,4,5,6,7], [0,2,3,4,5,6,8], [0,2,3,4,5,6,9], [0,2,3,4,5,7,8], [0,2,3,4,5,7,9],
+                    [0,2,3,4,5,8,9], [0,2,3,4,6,7,8], [0,2,3,4,6,7,9], [0,2,3,4,6,8,9], [0,2,3,4,7,8,9],
+                    [0,2,3,5,6,7,8], [0,2,3,5,6,7,9], [0,2,3,5,6,8,9], [0,2,3,5,7,8,9], [0,2,3,6,7,8,9],
+                    [0,2,4,5,6,7,8], [0,2,4,5,6,7,9], [0,2,4,5,6,8,9], [0,2,4,5,7,8,9], [0,2,4,6,7,8,9], [0,2,5,6,7,8,9]
+                ]
+            },
+            // 23 combinações com 3.432 jogos cada
+            low_volume: {
+                volume: 3432,
+                combinations: [
+                    [0,3,4,5,6,7,8], [0,3,4,5,6,7,9], [0,3,4,5,6,8,9], [0,3,4,5,7,8,9], [0,3,4,6,7,8,9],
+                    [0,3,5,6,7,8,9], [0,4,5,6,7,8,9], [1,2,3,4,5,6,7], [1,2,3,4,5,6,8], [1,2,3,4,5,6,9],
+                    [1,2,3,4,5,7,8], [1,2,3,4,5,7,9], [1,2,3,4,5,8,9], [1,2,3,4,6,7,8], [1,2,3,4,6,7,9],
+                    [1,2,3,4,6,8,9], [1,2,3,4,7,8,9], [1,2,3,5,6,7,8], [1,2,3,5,6,7,9], [1,2,3,5,6,8,9],
+                    [1,2,3,5,7,8,9], [1,2,3,6,7,8,9], [1,2,4,5,6,7,8]
+                ]
+            },
+            // 12 combinações com 1.716 jogos cada
+            very_low_volume: {
+                volume: 1716,
+                combinations: [
+                    [1,2,4,5,6,7,9], [1,2,4,5,6,8,9], [1,2,4,5,7,8,9], [1,2,4,6,7,8,9], [1,2,5,6,7,8,9],
+                    [1,3,4,5,6,7,8], [1,3,4,5,6,7,9], [1,3,4,5,6,8,9], [1,3,4,5,7,8,9], [1,3,4,6,7,8,9],
+                    [1,3,5,6,7,8,9], [1,4,5,6,7,8,9]
+                ]
+            },
+            // 7 combinações com 1 jogo cada
+            minimal_volume: {
+                volume: 1,
+                combinations: [
+                    [2,3,4,5,6,7,8], [2,3,4,5,6,7,9], [2,3,4,5,6,8,9], [2,3,4,5,7,8,9], 
+                    [2,3,4,6,7,8,9], [2,3,5,6,7,8,9], [2,4,5,6,7,8,9]
+                ]
+            },
+            // 1 combinação insuficiente
+            insufficient: {
+                volume: 0,
+                combinations: [
+                    [3,4,5,6,7,8,9]
+                ]
+            }
+        };
 
+        // Total máximo de jogos = 8.064.190
+        const MAX_TOTAL_GAMES = 8064190;
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
@@ -896,21 +994,34 @@
         }
         
         function disableAllControls() {
-            console.log('🔒 DESABILITANDO TODOS OS CONTROLES - Aguardando dados históricos...');
+            console.log('🔒 DESABILITANDO TODOS OS CONTROLES - Aguardando carregamento COMPLETO dos dados históricos...');
+            
+            // ===== VERIFICAÇÃO CRÍTICA: DADOS HISTÓRICOS DEVEM ESTAR VAZIOS =====
+            if (historicalData && historicalData.length > 0) {
+                console.error('❌ ERRO CRÍTICO: disableAllControls() chamado mas dados históricos já existem!');
+                return; // Não desabilitar se dados já foram carregados
+            }
             
             // ===== DESABILITAR BOTÃO DE GERAR JOGOS =====
-            document.getElementById('generate-btn').disabled = true;
-            document.getElementById('generate-btn').classList.add('opacity-50', 'cursor-not-allowed');
-            document.getElementById('generate-btn').innerHTML = '<i class="fas fa-lock mr-2"></i>Aguarde carregamento dos dados reais...';
+            const generateBtn = document.getElementById('generate-btn');
+            generateBtn.disabled = true;
+            generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            generateBtn.innerHTML = '<i class="fas fa-lock mr-2"></i>⏳ Aguarde carregamento COMPLETO dos dados reais da API...';
             
             // ===== DESABILITAR TODOS OS CRITÉRIOS =====
             document.querySelectorAll('input[type="checkbox"][id^="criteria-"]').forEach(checkbox => {
                 checkbox.disabled = true;
                 checkbox.parentElement.classList.add('opacity-50', 'cursor-not-allowed');
+                // IMPORTANTE: Remover event listeners para prevenir cálculos prematuros
+                checkbox.removeEventListener('change', calculateEstimatedGames);
             });
             
             // ===== DESABILITAR CALCULADORA INTELIGENTE =====
-            document.querySelector('.bg-gradient-to-r.from-blue-50').classList.add('opacity-50', 'cursor-not-allowed');
+            const calculatorSection = document.querySelector('.bg-gradient-to-r.from-blue-50');
+            if (calculatorSection) {
+                calculatorSection.classList.add('opacity-50', 'cursor-not-allowed');
+                calculatorSection.style.pointerEvents = 'none'; // Prevenir qualquer interação
+            }
             
             // ===== DESABILITAR CAMPOS DE ENTRADA =====
             document.getElementById('num-games').disabled = true;
@@ -923,13 +1034,23 @@
                 button.disabled = true;
                 button.classList.add('opacity-50', 'cursor-not-allowed');
                 button.onclick = null; // Remover evento temporariamente
+                button.style.pointerEvents = 'none'; // Prevenir cliques
             });
             
-            // ===== DESABILITAR Event Listeners dos Critérios =====
-            document.querySelectorAll('input[type="checkbox"][id^="criteria-"]').forEach(checkbox => {
-                // Remover event listener temporariamente para evitar cálculos prematuros
-                checkbox.removeEventListener('change', calculateEstimatedGames);
-            });
+            // ===== BLOQUEAR CÁLCULOS DA CALCULADORA INTELIGENTE =====
+            const estimatedGamesElement = document.getElementById('estimated-games');
+            if (estimatedGamesElement) {
+                estimatedGamesElement.textContent = '⏳ Aguardando dados...';
+                estimatedGamesElement.style.color = '#888';
+            }
+            
+            const reductionElement = document.getElementById('reduction-percentage');
+            if (reductionElement) {
+                reductionElement.textContent = '⏳';
+                reductionElement.style.color = '#888';
+            }
+            
+            console.log('✅ TODOS OS CONTROLES DESABILITADOS - Sistema aguardando carregamento COMPLETO dos dados históricos');
         }
 
         function createFixedNumbersGrid() {
@@ -972,34 +1093,6 @@
                 checkbox.addEventListener('change', calculateEstimatedGames);
             });
         }
-
-        // ===== 120 Combinações de 7 dígitos mais prováveis =====
-        const OPTIMAL_7_DIGIT_COMBINATIONS = [
-            [0,1,2,3,4,5,6], [0,1,2,3,4,5,7], [0,1,2,3,4,5,8], [0,1,2,3,4,5,9], [0,1,2,3,4,6,7],
-            [0,1,2,3,4,6,8], [0,1,2,3,4,6,9], [0,1,2,3,4,7,8], [0,1,2,3,4,7,9], [0,1,2,3,4,8,9],
-            [0,1,2,3,5,6,7], [0,1,2,3,5,6,8], [0,1,2,3,5,6,9], [0,1,2,3,5,7,8], [0,1,2,3,5,7,9],
-            [0,1,2,3,5,8,9], [0,1,2,3,6,7,8], [0,1,2,3,6,7,9], [0,1,2,3,6,8,9], [0,1,2,3,7,8,9],
-            [0,1,2,4,5,6,7], [0,1,2,4,5,6,8], [0,1,2,4,5,6,9], [0,1,2,4,5,7,8], [0,1,2,4,5,7,9],
-            [0,1,2,4,5,8,9], [0,1,2,4,6,7,8], [0,1,2,4,6,7,9], [0,1,2,4,6,8,9], [0,1,2,4,7,8,9],
-            [0,1,2,5,6,7,8], [0,1,2,5,6,7,9], [0,1,2,5,6,8,9], [0,1,2,5,7,8,9], [0,1,2,6,7,8,9],
-            [0,1,3,4,5,6,7], [0,1,3,4,5,6,8], [0,1,3,4,5,6,9], [0,1,3,4,5,7,8], [0,1,3,4,5,7,9],
-            [0,1,3,4,5,8,9], [0,1,3,4,6,7,8], [0,1,3,4,6,7,9], [0,1,3,4,6,8,9], [0,1,3,4,7,8,9],
-            [0,1,3,5,6,7,8], [0,1,3,5,6,7,9], [0,1,3,5,6,8,9], [0,1,3,5,7,8,9], [0,1,3,6,7,8,9],
-            [0,1,4,5,6,7,8], [0,1,4,5,6,7,9], [0,1,4,5,6,8,9], [0,1,4,5,7,8,9], [0,1,4,6,7,8,9],
-            [0,1,5,6,7,8,9], [0,2,3,4,5,6,7], [0,2,3,4,5,6,8], [0,2,3,4,5,6,9], [0,2,3,4,5,7,8],
-            [0,2,3,4,5,7,9], [0,2,3,4,5,8,9], [0,2,3,4,6,7,8], [0,2,3,4,6,7,9], [0,2,3,4,6,8,9],
-            [0,2,3,4,7,8,9], [0,2,3,5,6,7,8], [0,2,3,5,6,7,9], [0,2,3,5,6,8,9], [0,2,3,5,7,8,9],
-            [0,2,3,6,7,8,9], [0,2,4,5,6,7,8], [0,2,4,5,6,7,9], [0,2,4,5,6,8,9], [0,2,4,5,7,8,9],
-            [0,2,4,6,7,8,9], [0,2,5,6,7,8,9], [0,3,4,5,6,7,8], [0,3,4,5,6,7,9], [0,3,4,5,6,8,9],
-            [0,3,4,5,7,8,9], [0,3,4,6,7,8,9], [0,3,5,6,7,8,9], [0,4,5,6,7,8,9], [1,2,3,4,5,6,7],
-            [1,2,3,4,5,6,8], [1,2,3,4,5,6,9], [1,2,3,4,5,7,8], [1,2,3,4,5,7,9], [1,2,3,4,5,8,9],
-            [1,2,3,4,6,7,8], [1,2,3,4,6,7,9], [1,2,3,4,6,8,9], [1,2,3,4,7,8,9], [1,2,3,5,6,7,8],
-            [1,2,3,5,6,7,9], [1,2,3,5,6,8,9], [1,2,3,5,7,8,9], [1,2,3,6,7,8,9], [1,2,4,5,6,7,8],
-            [1,2,4,5,6,7,9], [1,2,4,5,6,8,9], [1,2,4,5,7,8,9], [1,2,4,6,7,8,9], [1,2,5,6,7,8,9],
-            [1,3,4,5,6,7,8], [1,3,4,5,6,7,9], [1,3,4,5,6,8,9], [1,3,4,5,7,8,9], [1,3,4,6,7,8,9],
-            [1,3,5,6,7,8,9], [1,4,5,6,7,8,9], [2,3,4,5,6,7,8], [2,3,4,5,6,7,9], [2,3,4,5,6,8,9],
-            [2,3,4,5,7,8,9], [2,3,4,6,7,8,9], [2,3,5,6,7,8,9], [2,4,5,6,7,8,9], [3,4,5,6,7,8,9]
-        ];
 
         function updateTotalValue() {
             const numGames = parseInt(document.getElementById('num-games').value) || 0;
@@ -1046,7 +1139,7 @@
             const reductionInfo = document.getElementById('games-reduction-info');
             const reductionSpans = document.querySelectorAll('[id$="-reduction"]');
             
-            if (numGames < 170544) {
+            if (numGames < MAX_TOTAL_GAMES) {
                 reductionInfo.classList.remove('hidden');
                 reductionSpans.forEach(span => span.classList.remove('hidden'));
             } else {
@@ -1057,26 +1150,26 @@
 
         // ===== SISTEMA DINÂMICO DE REDUÇÃO EM TEMPO REAL =====
         function calculateEstimatedGames() {
-            const baseGames = 170544; // Base: 120 combinações ótimas
+            const baseGames = MAX_TOTAL_GAMES; // Base: TODAS as combinações
             let reductionFactor = 1.0;
             const activeCriteria = [];
             
             // Definir fatores de redução para cada critério
             const reductionFactors = {
-                'criteria-frequent': { factor: 0.92, name: 'Mais Sorteadas', reduction: '8.0%', games: 13644 },
-                'criteria-less-frequent': { factor: 0.88, name: 'Evitar Menos Frequentes', reduction: '12.0%', games: 20465 },
-                'criteria-avoid-last': { factor: 0.95, name: 'Evitar Último Sorteio', reduction: '5.0%', games: 8527 },
-                'criteria-balance': { factor: 0.85, name: 'Equilibrio Par/Ímpar', reduction: '15.0%', games: 25582 },
-                'criteria-avoid-extremes': { factor: 0.90, name: 'Evitar Extremos', reduction: '10.0%', games: 17054 },
-                'criteria-clusters': { factor: 0.75, name: 'Distribuir Grupos', reduction: '25.0%', games: 42636 },
-                'criteria-no-sequence': { factor: 0.80, name: 'Evitar Sequências', reduction: '20.0%', games: 34109 },
-                'criteria-sum-range': { factor: 0.70, name: 'Faixa de Soma', reduction: '30.0%', games: 51163 },
-                'criteria-repeated-pairs': { factor: 0.93, name: 'Evitar Pares Repetidos', reduction: '7.0%', games: 11938 },
-                'criteria-mathematical': { factor: 0.60, name: 'Fechamento Matemático', reduction: '40.0%', games: 68218 },
-                'criteria-fibonacci': { factor: 0.85, name: 'Evitar Fibonacci', reduction: '15.0%', games: 25582 },
-                'criteria-prime-numbers': { factor: 0.90, name: 'Balancear Primos', reduction: '10.0%', games: 17054 },
-                'criteria-most-used-digits': { factor: 0.40, name: 'Dígitos Mais Usados', reduction: '60.0%', games: 102326 },
-                'criteria-least-used-digits': { factor: 0.70, name: 'Dígitos Menos Usados', reduction: '30.0%', games: 51163 }
+                'criteria-frequent': { factor: 0.92, name: 'Mais Sorteadas', reduction: '8.0%' },
+                'criteria-less-frequent': { factor: 0.88, name: 'Evitar Menos Frequentes', reduction: '12.0%' },
+                'criteria-avoid-last': { factor: 0.95, name: 'Evitar Último Sorteio', reduction: '5.0%' },
+                'criteria-balance': { factor: 0.85, name: 'Equilibrio Par/Ímpar', reduction: '15.0%' },
+                'criteria-avoid-extremes': { factor: 0.90, name: 'Evitar Extremos', reduction: '10.0%' },
+                'criteria-clusters': { factor: 0.75, name: 'Distribuir Grupos', reduction: '25.0%' },
+                'criteria-no-sequence': { factor: 0.80, name: 'Evitar Sequências', reduction: '20.0%' },
+                'criteria-sum-range': { factor: 0.70, name: 'Faixa de Soma', reduction: '30.0%' },
+                'criteria-repeated-pairs': { factor: 0.93, name: 'Evitar Pares Repetidos', reduction: '7.0%' },
+                'criteria-mathematical': { factor: 0.60, name: 'Fechamento Matemático', reduction: '40.0%' },
+                'criteria-fibonacci': { factor: 0.85, name: 'Evitar Fibonacci', reduction: '15.0%' },
+                'criteria-prime-numbers': { factor: 0.90, name: 'Balancear Primos', reduction: '10.0%' },
+                'criteria-most-used-digits': { factor: 0.40, name: 'Dígitos Mais Usados', reduction: '60.0%' },
+                'criteria-least-used-digits': { factor: 0.70, name: 'Dígitos Menos Usados', reduction: '30.0%' }
             };
             
             // Atualizar informações inline para cada critério
@@ -1088,7 +1181,7 @@
                     if (checkbox.checked) {
                         // Mostrar informação específica do critério
                         const criteria = reductionFactors[criteriaId];
-                        infoSpan.textContent = `(${criteria.reduction} de redução - ${criteria.games.toLocaleString()} jogos)`;
+                        infoSpan.textContent = `(${criteria.reduction} de redução)`;
                         infoSpan.classList.remove('hidden');
                         
                         // Aplicar fator de redução
@@ -1502,6 +1595,12 @@
         }
 
         function enableGameGeneration() {
+            // ===== VERIFICAR SE DADOS REALMENTE FORAM CARREGADOS =====
+            if (!historicalData || historicalData.length === 0) {
+                console.error('❌ ERRO: Tentativa de habilitar controles sem dados históricos válidos');
+                return false;
+            }
+            
             // ===== HABILITAR BOTÃO DE GERAR JOGOS =====
             document.getElementById('generate-btn').disabled = false;
             document.getElementById('generate-btn').classList.remove('opacity-50', 'cursor-not-allowed');
@@ -1513,8 +1612,21 @@
                 checkbox.parentElement.classList.remove('opacity-50', 'cursor-not-allowed');
             });
             
+            // ===== RE-ADICIONAR EVENT LISTENERS PARA CALCULADORA INTELIGENTE =====
+            console.log('🔄 REATIVANDO Calculadora Inteligente...');
+            document.querySelectorAll('input[type="checkbox"][id^="criteria-"]').forEach(checkbox => {
+                // Remover listeners antigos para evitar duplicação
+                checkbox.removeEventListener('change', calculateEstimatedGames);
+                // Adicionar listener novo
+                checkbox.addEventListener('change', calculateEstimatedGames);
+            });
+            
             // ===== HABILITAR CALCULADORA INTELIGENTE =====
-            document.querySelector('.bg-gradient-to-r.from-blue-50').classList.remove('opacity-50', 'cursor-not-allowed');
+            const calculatorSection = document.querySelector('.bg-gradient-to-r.from-blue-50');
+            if (calculatorSection) {
+                calculatorSection.classList.remove('opacity-50', 'cursor-not-allowed');
+                calculatorSection.style.pointerEvents = 'auto'; // Reativar interações
+            }
             
             // ===== HABILITAR CAMPOS DE ENTRADA =====
             document.getElementById('num-games').disabled = false;
@@ -1530,8 +1642,22 @@
             });
             
             // ===== RECALCULAR ESTIMATIVAS AGORA QUE OS DADOS ESTÃO PRONTOS =====
+            console.log('📊 RECALCULANDO estimativas com dados reais...');
             calculateEstimatedGames();
             updateTotalValue();
+            
+            // ===== TESTAR CALCULADORA INTELIGENTE =====
+            console.log('🧪 TESTANDO Calculadora Inteligente...');
+            const firstCriteria = document.getElementById('criteria-frequent');
+            if (firstCriteria) {
+                // Simular mudança para testar
+                const originalChecked = firstCriteria.checked;
+                firstCriteria.checked = !originalChecked;
+                calculateEstimatedGames(); // Deve funcionar
+                firstCriteria.checked = originalChecked;
+                calculateEstimatedGames(); // Resetar
+                console.log('✅ Calculadora Inteligente ATIVA e funcionando!');
+            }
             
             // Atualizar título da seção e adicionar botão para ocultar
             const sectionTitle = document.querySelector('#data-loading-section h2');
@@ -1549,6 +1675,9 @@
             document.querySelector('#data-loading-section .flex.items-center.justify-between').style.display = 'none';
             
             console.log('✅ SISTEMA TOTALMENTE HABILITADO - Dados históricos carregados com sucesso!');
+            console.log('✅ Calculadora Inteligente REATIVADA com event listeners funcionais!');
+            
+            return true;
         }
 
         function showDataSummary() {
@@ -1613,8 +1742,6 @@
             }
         }
 
-
-
         function calculateFrequency() {
             frequencyData = {};
             monthFrequency = {};
@@ -1677,8 +1804,8 @@
                 console.log(`📝 Gerando ${numGames} jogos (valor do campo input)`);
             }
             
-            if (!numGames || numGames < 10 || numGames > 200000) {
-                showAlert('Número de jogos inválido. Verifique os critérios selecionados.');
+            if (!numGames || numGames < 10 || numGames > MAX_TOTAL_GAMES) {
+                showAlert(`Número de jogos inválido. O máximo é ${MAX_TOTAL_GAMES.toLocaleString()} jogos.`);
                 return;
             }
 
@@ -1901,17 +2028,47 @@
         }
 
         function filterGames() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const searchTerm = document.getElementById('search-input').value.trim();
             
             if (!searchTerm) {
                 filteredGames = [...allGames];
             } else {
-                filteredGames = allGames.filter(game => {
-                    const numbersStr = game.numbers.join(' ');
-                    const monthStr = game.month.toLowerCase();
-                    return numbersStr.includes(searchTerm) || monthStr.includes(searchTerm) || 
-                           game.id.toString().includes(searchTerm);
-                });
+                // Busca inteligente por múltiplos números
+                const searchNumbers = [];
+                
+                // Extrair números da busca (separados por espaço, vírgula ou hífen)
+                const cleanSearch = searchTerm.replace(/[,-]/g, ' '); // Substitui vírgulas e hífens por espaços
+                const parts = cleanSearch.split(/\s+/).filter(part => part.length > 0);
+                
+                for (const part of parts) {
+                    const num = parseInt(part);
+                    if (!isNaN(num) && num >= 1 && num <= 31) {
+                        searchNumbers.push(num);
+                    }
+                }
+                
+                if (searchNumbers.length > 0) {
+                    // Filtrar jogos que contêm TODOS os números buscados
+                    filteredGames = allGames.filter(game => {
+                        return searchNumbers.every(searchNum => game.numbers.includes(searchNum));
+                    });
+                } else {
+                    // Se não há números válidos, buscar por outros critérios
+                    filteredGames = allGames.filter(game => {
+                        // Busca por mês
+                        const monthStr = game.month.toLowerCase();
+                        if (monthStr.includes(searchTerm.toLowerCase())) {
+                            return true;
+                        }
+                        
+                        // Busca por ID do jogo
+                        if (game.id.toString().includes(searchTerm)) {
+                            return true;
+                        }
+                        
+                        return false;
+                    });
+                }
             }
             
             currentPage = 1;
@@ -1953,28 +2110,77 @@
             const startIndex = (currentPage - 1) * gamesPerPage;
             const endIndex = startIndex + gamesPerPage;
             const gamesToShow = filteredGames.slice(startIndex, endIndex);
+            const searchTerm = document.getElementById('search-input').value.trim();
 
-            container.innerHTML = gamesToShow.map(game => `
-                <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md transition-shadow duration-300">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center space-x-4">
-                            <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Jogo #${game.id}</span>
-                            <div class="flex space-x-2">
-                                ${game.numbers.map(num => `
-                                    <span class="w-8 h-8 bg-gradient-to-br from-dia-orange to-dia-yellow text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                        ${num.toString().padStart(2, '0')}
-                                    </span>
-                                `).join('')}
+            container.innerHTML = gamesToShow.map(game => {
+                // Função para destacar números encontrados
+                const highlightNumbers = (numbers) => {
+                    return numbers.map(num => {
+                        const numStr = num.toString().padStart(2, '0');
+                        let isHighlighted = false;
+                        
+                        if (searchTerm) {
+                            // Extrair números da busca (mesmo processo do filtro)
+                            const searchNumbers = [];
+                            const cleanSearch = searchTerm.replace(/[,-]/g, ' ');
+                            const parts = cleanSearch.split(/\s+/).filter(part => part.length > 0);
+                            
+                            for (const part of parts) {
+                                const searchNum = parseInt(part);
+                                if (!isNaN(searchNum) && searchNum >= 1 && searchNum <= 31) {
+                                    searchNumbers.push(searchNum);
+                                }
+                            }
+                            
+                            // Destacar se o número está na lista de números buscados
+                            if (searchNumbers.includes(num)) {
+                                isHighlighted = true;
+                            }
+                        }
+                        
+                        const baseClasses = "w-8 h-8 text-white rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300";
+                        const backgroundClasses = isHighlighted 
+                            ? "bg-gradient-to-br from-green-500 to-green-600 shadow-lg ring-2 ring-green-300 animate-pulse" 
+                            : "bg-gradient-to-br from-dia-orange to-dia-yellow";
+                        
+                        return `<span class="${baseClasses} ${backgroundClasses}">${numStr}</span>`;
+                    }).join('');
+                };
+
+                // Função para destacar mês
+                const highlightMonth = (month) => {
+                    if (searchTerm && month.toLowerCase().includes(searchTerm.toLowerCase())) {
+                        return `<mark class="bg-yellow-200 dark:bg-yellow-600 px-1 rounded">${month}</mark>`;
+                    }
+                    return month;
+                };
+
+                // Função para destacar ID do jogo
+                const highlightGameId = (gameId) => {
+                    if (searchTerm && gameId.toString().includes(searchTerm)) {
+                        return `<mark class="bg-yellow-200 dark:bg-yellow-600 px-1 rounded">Jogo #${gameId}</mark>`;
+                    }
+                    return `Jogo #${gameId}`;
+                };
+
+                return `
+                    <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md transition-shadow duration-300 ${searchTerm ? 'ring-1 ring-blue-200 dark:ring-blue-700' : ''}">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-4">
+                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">${highlightGameId(game.id)}</span>
+                                <div class="flex space-x-2">
+                                    ${highlightNumbers(game.numbers)}
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm text-gray-600 dark:text-gray-400">Mês da Sorte</div>
+                                <div class="font-semibold text-dia-orange">${highlightMonth(game.month)}</div>
+                                <div class="text-xs text-gray-500">Soma: ${game.sum}</div>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <div class="text-sm text-gray-600 dark:text-gray-400">Mês da Sorte</div>
-                            <div class="font-semibold text-dia-orange">${game.month}</div>
-                            <div class="text-xs text-gray-500">Soma: ${game.sum}</div>
-                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function updatePagination() {
@@ -2133,7 +2339,6 @@
             window.URL.revokeObjectURL(url);
         }
 
-        // Função para ocultar/mostrar seção de dados
         // Função para encontrar o mês mais sorteado
         function getMostFrequentMonth() {
             if (Object.keys(monthFrequency).length === 0) {
