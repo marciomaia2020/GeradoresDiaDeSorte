@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Combinações - Dia de Sorte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS para exportação Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+	
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        'dia-orange': '#FF6B35',
+                        'dia-yellow': '#FFB800',
+                        'dia-light-orange': '#FFA366',
+                        'dia-dark-orange': '#E55A2B',
+                        'dia-cream': '#FFF8E1'
+                    }
+                }
+            },
+            darkMode: 'class'
+        }
+    </script>
+<style>
+ body, html {
+        height: 100%;
+        margin: 0;
+    }
+
+    .menu-centro {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+        gap: 2rem;
+    }
+
+    .menu-analises {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .menu-numeros {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        max-width: 600px;
+    }
+
+    .link-analise {
+        text-decoration: none;
+        color: black;
+        padding: 12px 20px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+        border: 2px solid #e9ecef;
+        font-weight: 600;
+        text-align: center;
+        min-width: 180px;
+        display: block;
+    }
+	   .link-analise1 {
+        text-decoration: none;
+        color: green;
+        padding: 12px 20px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+        border: 2px solid #e9ecef;
+        font-weight: 600;
+        text-align: center;
+        min-width: 180px;
+        display: block;
+    }
+
+    .link-numero {
+        text-decoration: none;
+        color: black;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+        border: 2px solid #e9ecef;
+        font-weight: 600;
+        text-align: center;
+        min-width: 40px;
+        display: block;
+    }
+
+    .link-analise:hover,
+    .link-numero:hover {
+        animation: alternaCores 1s infinite alternate;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+	.link-analise1:hover,
+    .link-numero:hover {
+        animation: alternaCores 1s infinite alternate;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    @keyframes alternaCores {
+        0% {
+            background-color: #fff7e6;
+        }
+        100% {
+            background-color: #ffc34d;
+        }
+    }
+
+    /* Dark mode styles */
+    .dark .link-analise,
+    .dark .link-numero {
+        background-color: #374151;
+        border-color: #4b5563;
+        color: #f9fafb;
+    }
+
+    .dark .link-analise:hover,
+    .dark .link-numero:hover {
+        animation: alternaCoresdark 1s infinite alternate;
+    }
+
+
+    @keyframes alternaCoresdark {
+        0% {
+            background-color: #451a03;
+        }
+        100% {
+            background-color: #ea580c;
+        }
+    }
+</style>
+
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
+    <!-- Detecção de tema escuro -->
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+
+    <!-- Layout com sidebar e conteúdo principal -->
+    <div class="flex flex-col md:flex-row">
+        <!-- Barra lateral com links -->
+        <div class="w-full md:w-64 bg-gray-100 dark:bg-gray-800 p-4 md:min-h-screen">
+            <div class="mb-6">
+                <h3 class="text-lg font-bold mb-3 text-primary dark:text-blue-400">Ferramentas Dia de Sorte</h3>
+                <div class="space-y-1">
+                    <a href="./index.html" class="block py-1 px-2 rounded bg-primary/10 text-primary dark:text-blue-400 font-bold">Gerador de Combinações</a>
+                    
+					<div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">ORDEM DE ANALISE 1</div>
+					<a href="./ResultadosDigitosDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">A - Resultados Digitos </a>
+					<a href="./AnalisePorCombinacao/" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">1- Análise por Combinação</a>
+                    <a href="./AnalisadorCombinacoesJogos/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">2 - Analisador Combinações Jogos</a>
+                    <a href="./CombinacaoUmDiadeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">3 - Combinação Um</a>
+                    <a href="./DiaDeSorteConferidor/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">4 - Dia de Sorte Conferidor</a>
+					<a href="./DiaDeSorteConferidor1/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">5 - Dia de Sorte Conferidor (Especifico)</a>
+
+					<div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">ORDEM DE ANALISE</div>
+                    <a href="./CombinacaoDoisDiadeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Combinacao Digitos II *</a>
+					<a href="https://anacombindoisresuldigitos.netlify.app/" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Análise de Combinações *</a>
+                    <a href="./ConfAutoMaisQue1DiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Conferidor Automático +1 * </a>
+					<a href="./ResumoDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Resumo *</a>
+                    <a href="./DiaDeSorteEstra/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Extratégias I *</a>
+                    <a href="./GeradorFinalDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Gerador Final *</a>
+					
+					<div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">DÍGITOS</div>
+                    <a href="./GeradorBaseadoEmDigitosDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Baseado em Dígitos</a>
+                    
+					<div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">CALCULADORA</div>
+                    <a href="./CalculadoraCusto/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Calculadora de Custos</a>
+
+                    <div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">ESTRATÉGIAS</div>
+                    <a href="./QuadraDuplasTrincas/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Quadra Duplas & Trincas</a>
+                    
+                    <div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">CONFERIDOES</div>
+                    <a href="./ConfAuto1DiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Conferidor Automático 1</a>
+                    
+                    <div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">ANÁLISES</div>
+                    <a href="./DiaDeSorteDesdobramento/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Desdobramento</a>
+                    <a href="./ResultadosAlteradosDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Resultados Alterados</a>
+                    
+                    <div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">OUTROS</div>
+                    <a href="./DiaDeSorteCal/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Calculadora</a>
+                    <a href="./DiaDeSorteCom/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Comissão</a>
+                    <a href="./DiaDeSorteCur/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Curiosidades</a>
+                    <a href="./DiaDeSorteIa/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Inteligência Artificial</a>
+                </div>
+            </div>
+        </div>
+		
+
+        <!-- Conteúdo principal -->
+        <div class="flex-1 p-4">
+            <h1 class="text-2xl font-bold text-center mb-6">Gerador de Combinações - Dia de Sorte (TODAS as combinações)</h1>
+            
+			<hr />
+				<div class="menu-centro">
+					<!-- Primeira linha: Links especiais -->
+					<div class="menu-analises">
+						<a href="index-pares-impares-df.html/" target="_blank" class="link-analise">Pares Vs Impares - DF</a>
+						<a href="index-melhorescombinacoes.html/" target="_blank" class="link-analise">Melhores Combinações</a>
+						<a href="index-analisecompleta.html/" target="_blank" class="link-analise1">Análise Completa *</a>
+					    <a href="index-analisecombinacoespossiveis.html/" target="_blank" class="link-analise1">Análise Combinações Possiveis *</a>
+					</div>
+					
+					<!-- Segunda linha: Números 1-10 -->
+					<div class="menu-numeros">
+						<a href="index1.html/" target="_blank" class="link-numero">1</a>
+						<a href="index2.html/" target="_blank" class="link-numero">2</a>
+						<a href="index3.html/" target="_blank" class="link-numero">3</a>
+						<a href="index4.html/" target="_blank" class="link-numero">4</a>
+						<a href="index5.html" target="_blank" class="link-numero">5</a>
+						<a href="index6.html" target="_blank" class="link-numero">6</a>
+						<a href="index7.html/" target="_blank" class="link-numero">7</a>
+						<a href="index8.html/" target="_blank" class="link-numero">8</a>
+						<a href="index9.html/" target="_blank" class="link-numero">9</a>
+						<a href="index10.html/" target="_blank" class="link-numero">10</a>
+					</div>
+				</div>
+			<hr />
+
+<!-- Header -->
+<header class="bg-gradient-to-r from-dia-orange to-dia-yellow shadow-lg">
+    <div class="container mx-auto px-4 py-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-dice text-white text-3xl"></i>
+                <div>
+                    <h1 class="text-white text-2xl font-bold">Gerador Dia de Sorte Pro (6 Dígitos)</h1>
+                    <p class="text-orange-100 text-sm">2.737.084 jogos - TODAS as 210 combinações de 6 dígitos</p>
+                </div>
+            </div>
+            <div class="text-white text-right">
+                <p class="text-sm">Último sorteio:</p>
+                <p id="last-draw" class="font-semibold">Carregando...</p>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container mx-auto px-4 py-8">
+    <!-- Configuração do Jogo -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
+            <i class="fas fa-cog text-dia-orange mr-3"></i>
+            Configuração dos Jogos (6 Dígitos)
+        </h2>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Coluna 1 -->
+            <div class="space-y-6">
+                <!-- Quantidade de Jogos -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Quantos jogos você pretende fazer?
+                    </label>
+                    <input type="number" id="num-games" min="10" max="2737084" value="2737084" placeholder="Digite de 10 a 2.737.084"
+                           class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    <div class="mt-2 space-y-1">
+                        <p class="text-xs text-gray-500">Máximo: 2.737.084 jogos (TODAS as 210 combinações de 6 dígitos)</p>
+                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mt-3">
+                            <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">📊 Distribuição das 210 Combinações de 6 Dígitos (Volumes Reais):</h4>
+                            <div class="grid grid-cols-1 gap-1 text-xs">
+                                <div class="text-center font-bold text-purple-600">C(10,6) = 210 combinações únicas</div>
+                                <div class="text-center">• 35 combinações premium × 50.388 = 1.763.580 jogos</div>
+                                <div class="text-center">• 15 combinações alta × 31.824 = 477.360 jogos</div>
+                                <div class="text-center">• 20 combinações média-alta × 19.448 = 388.960 jogos</div>
+                                <div class="text-center">• 35 combinações média × 1.716 = 60.060 jogos</div>
+                                <div class="text-center">• 47 combinações padrão × 792 = 37.224 jogos</div>
+                                <div class="text-center">• 30 combinações básica × 330 = 9.900 jogos</div>
+                                <div class="text-center">• 28 combinações insuficientes × 0 = 0 jogos</div>
+                                <div class="text-center text-orange-600">• Estratégia robusta: Volume máximo</div>
+                            </div>
+                            <div class="text-xs font-bold text-blue-800 dark:text-blue-300 mt-2 border-t pt-2">
+                                Total: 2.737.084 jogos únicos possíveis (6 dígitos)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dezenas Fixas -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Dezenas Fixas (opcional)
+                    </label>
+                    <div class="grid grid-cols-6 gap-2 mb-3">
+                        <div id="fixed-numbers" class="col-span-6 grid grid-cols-10 gap-1">
+                            <!-- Números de 1 a 31 serão gerados aqui -->
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500">Selecione até 2 dezenas fixas para jogos de 6 dígitos</p>
+                </div>
+
+                <!-- Quantidade de Números -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Quantidade de números por jogo
+                    </label>
+                    <select id="numbers-count" class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
+                        <option value="8">8 números - R$ 20,00 (8 apostas) ⭐ Recomendado para 6 dígitos</option>
+                        <option value="9">9 números - R$ 90,00 (36 apostas)</option>
+                        <option value="10">10 números - R$ 300,00 (120 apostas)</option>
+                        <option value="11">11 números - R$ 825,00 (330 apostas)</option>
+                        <option value="12">12 números - R$ 1.980,00 (742 apostas)</option>
+                        <option value="13">13 números - R$ 4.290,00 (1.716 apostas)</option>
+                        <option value="custom">Valor personalizado</option>
+                    </select>
+                    
+                    <!-- Campo de valor personalizado -->
+                    <div id="custom-value-container" class="hidden mt-3">
+                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                            Valor por jogo (R$)
+                        </label>
+                        <input type="number" id="custom-value" min="2.50" max="20000" step="0.01" value="20.00"
+                               class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
+                    </div>
+                    
+                    <p class="text-xs text-gray-500 mt-1">Valor total: <span id="total-value">R$ 54.741.680,00</span></p>
+                    
+                    <!-- Info sobre 6 dígitos -->
+                    <div class="mt-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                        <p class="text-xs text-green-700 dark:text-green-300">
+                            <i class="fas fa-star text-yellow-500 mr-1"></i>
+                            <strong>6 dígitos</strong> oferecem estratégia robusta.
+                            Cobertura máxima com 210 combinações reais!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coluna 2 -->
+            <div class="space-y-6">
+                <!-- Critérios -->
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Critérios de Filtragem (6 Dígitos)
+                        </label>
+                        <button onclick="showStrategyModal()" class="text-dia-orange hover:text-dia-dark-orange text-sm underline">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Como funciona?
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg p-3">
+                        <!-- Grupo
