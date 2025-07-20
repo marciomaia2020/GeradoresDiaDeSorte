@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Números Dia de Sorte</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://kit.fontawesome.com/2fa2c650ed.js" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --primary-color: #D1B513;
+            --primary-dark: #AD9610;
+            --primary-light: #F4D83A;
+            --secondary-color: #4CAF50;
+            --secondary-dark: #45a049;
+            --secondary-light: #7ad17e;
+            --background-color: #f5f5f5;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--background-color);
+            padding: 20px;
+            color: var(--text-color);
+        }
+
+        .container {
+            background-color: var(--card-background);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            position: relative;
+            display: inline-block;
+            padding-bottom: 8px;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+            border-radius: 1.5px;
+        }
+
+        small {
+            display: block;
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .number-selection {
+            margin: 25px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            font-weight: 500;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(209, 181, 19, 0.2);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        button {
+            background: linear-gradient(to bottom, var(--secondary-color), var(--secondary-dark));
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: var(--transition);
+            min-width: 150px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255,255,255,0.2), transparent);
+            opacity: 0.6;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        button i {
+            font-size: 1rem;
+        }
+
+        .numbers-display {
+            margin: 25px 0;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            min-height: 30px;
+        }
+
+        .results-container {
+            margin-top: 30px;
+            border-top: 1px dashed #ddd;
+            padding-top: 20px;
+        }
+
+        .number-ball {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border-radius: 50%;
+            margin: 0 3px;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            animation: popIn 0.5s forwards;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .saved-game {
+            background-color: #f8f8f8;
+            border-radius: var(--border-radius);
+            padding: 12px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .saved-game:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .saved-game-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-radius: 50%;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .no-games {
+            color: #888;
+            font-style: italic;
+            margin: 20px 0;
+        }
+
+        .month-selection {
+            margin: 15px 0;
+        }
+
+        .month-selection select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 150px;
+            text-align: center;
+            font-size: 1rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: calc(100% - 10px) center;
+            background-size: 12px;
+            transition: var(--transition);
+        }
+
+        .month-selection select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(209, 181, 19, 0.2);
+        }
+
+        .footer-link {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
+
+        .footer-link h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .footer-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .footer-link a:hover {
+            color: var(--primary-dark);
+        }
+
+        .footer-link a i {
+            font-size: 1.1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .footer-link a:hover i {
+            transform: translateX(3px);
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .number-selection {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .input-group {
+                width: 100%;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+
+        /* Dark mode support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #222;
+                --card-background: #2d2d2d;
+                --text-color: #e0e0e0;
+            }
+
+            small, label {
+                color: #aaa;
+            }
+
+            input[type="number"], .month-selection select {
+                background-color: #333;
+                color: #e0e0e0;
+                border-color: #444;
+            }
+
+            .saved-game {
+                background-color: #333;
+            }
+
+            .saved-game:hover {
+                background-color: #3a3a3a;
+            }
+
+            .month-selection select {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23e0e0e0' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de Números Dia de Sorte</h1>
+        <small>A caixa sorteia 7 números dentre os 31. Marque de 7 a 15 números.</small>
+
+        <p><small>Escolha pelo menos 3 números fixos</small></p>
+        
+        <div class="number-selection">
+            <div class="input-group">
+                <label for="fixed-number-1">Número Fixo 1:</label>
+                <input type="number" id="fixed-number-1" min="1" max="31" onchange="validateInput(this)">
+            </div>
+            
+            <div class="input-group">
+                <label for="fixed-number-2">Número Fixo 2:</label>
+                <input type="number" id="fixed-number-2" min="1" max="31" onchange="validateInput(this)">
+            </div>
+            
+            <div class="input-group">
+                <label for="fixed-number-3">Número Fixo 3:</label>
+                <input type="number" id="fixed-number-3" min="1" max="31" onchange="validateInput(this)">
+            </div>
+        </div>
+
+        <div class="month-selection">
+            <label for="month-select">Mês da Sorte:</label>
+            <select id="month-select">
+                <option value="Janeiro">Janeiro</option>
+                <option value="Fevereiro">Fevereiro</option>
+                <option value="Março">Março</option>
+                <option value="Abril">Abril</option>
+                <option value="Maio">Maio</option>
+                <option value="Junho">Junho</option>
+                <option value="Julho">Julho</option>
+                <option value="Agosto">Agosto</option>
+                <option value="Setembro">Setembro</option>
+                <option value="Outubro">Outubro</option>
+                <option value="Novembro">Novembro</option>
+                <option value="Dezembro">Dezembro</option>
+            </select>
+        </div>
+        
+        <div class="button-group">
+            <button id="generate-btn" onclick="generateNumbers()">
+                <i class="fas fa-dice"></i> Gerar Números
+            </button>
+            <button id="save-btn" onclick="saveGame()" disabled>
+                <i class="fas fa-save"></i> Salvar Jogo
+            </button>
+            <button id="export-btn" onclick="exportToExcel()">
+                <i class="fas fa-file-excel"></i> Exportar Excel
+            </button>
+        </div>
+        
+        <div id="generated-numbers" class="numbers-display"></div>
+        
+        <div class="results-container">
+            <h3>Jogos Salvos</h3>
+            <div id="saved-games" class="numbers-display">
+                <p class="no-games">Nenhum jogo salvo ainda</p>
+            </div>
+        </div>
+        
+        <div class="footer-link">
+            <h2>Desdobramento Dia de Sorte 
+                <a href="https://diadesortedes.netlify.app" target="_blank">
+                    <i class="fa-solid fa-right-long"></i>
+                </a>
+            </h2>
+        </div>
+    </div>
+
+    <script>
+        // Array para armazenar os jogos salvos
+        let savedGames = [];
+
+        // Função para validar os números fixos
+        function validateInput(input) {
+            const value = parseInt(input.value);
+            
+            // Verificar se o valor está dentro do intervalo válido
+            if (isNaN(value) || value < 1 || value > 31) {
+                input.value = '';
+                return;
+            }
+            
+            // Verificar se o valor já foi usado em outro campo
+            const fixedInputs = [
+                document.getElementById('fixed-number-1'),
+                document.getElementById('fixed-number-2'),
+                document.getElementById('fixed-number-3')
+            ];
+            
+            let duplicate = false;
+            for (let i = 0; i < fixedInputs.length; i++) {
+                if (fixedInputs[i] !== input && fixedInputs[i].value === input.value) {
+                    duplicate = true;
+                    break;
+                }
+            }
+            
+            if (duplicate) {
+                alert("Este número já foi selecionado. Por favor, escolha outro número.");
+                input.value = '';
+            }
+            
+            // Verificar se todos os campos estão preenchidos
+            let allFilled = true;
+            for (let i = 0; i < fixedInputs.length; i++) {
+                if (fixedInputs[i].value === '') {
+                    allFilled = false;
+                    break;
+                }
+            }
+            
+            // Habilitar/desabilitar o botão de gerar números
+            document.getElementById('generate-btn').disabled = !allFilled;
+        }
+
+        // Função para gerar números aleatórios
+        function generateNumbers() {
+            // Obter os números fixos
+            const fixed1 = parseInt(document.getElementById('fixed-number-1').value);
+            const fixed2 = parseInt(document.getElementById('fixed-number-2').value);
+            const fixed3 = parseInt(document.getElementById('fixed-number-3').value);
+            
+            // Verificar se todos os números fixos são válidos
+            if (isNaN(fixed1) || isNaN(fixed2) || isNaN(fixed3)) {
+                alert("Por favor, insira 3 números fixos válidos.");
+                return;
+            }
+            
+            const fixedNumbers = [fixed1, fixed2, fixed3];
+            
+            // Criar um array com todos os números disponíveis (1-31)
+            const allNumbers = Array.from({ length: 31 }, (_, i) => i + 1);
+            
+            // Remover os números fixos do pool de disponíveis
+            const availableNumbers = allNumbers.filter(num => !fixedNumbers.includes(num));
+            
+            // Selecionar números aleatórios complementares
+            const randomNumbers = [];
+            const complementCount = 4; // Precisamos de 4 números complementares para totalizar 7 (3 fixos + 4 aleatórios = 7)
+            
+            while (randomNumbers.length < complementCount) {
+                const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+                const selectedNumber = availableNumbers.splice(randomIndex, 1)[0];
+                randomNumbers.push(selectedNumber);
+            }
+            
+            // Combinar os números fixos e aleatórios e ordenar
+            const generatedNumbers = [...fixedNumbers, ...randomNumbers].sort((a, b) => a - b);
+            
+            // Obter o mês da sorte selecionado
+            const monthSelect = document.getElementById('month-select');
+            const selectedMonth = monthSelect.options[monthSelect.selectedIndex].value;
+            
+            // Exibir os números gerados
+            const numbersDisplay = document.getElementById('generated-numbers');
+            numbersDisplay.innerHTML = '';
+            
+            // Adicionar uma mensagem antes dos números
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = 'Números Gerados:';
+            messageDiv.style.marginBottom = '10px';
+            numbersDisplay.appendChild(messageDiv);
+            
+            // Criar elementos visuais para cada número gerado
+            const numberBallsContainer = document.createElement('div');
+            numberBallsContainer.style.display = 'flex';
+            numberBallsContainer.style.justifyContent = 'center';
+            numberBallsContainer.style.flexWrap = 'wrap';
+            numberBallsContainer.style.gap = '8px';
+            
+            generatedNumbers.forEach((number, index) => {
+                const ball = document.createElement('div');
+                ball.className = 'number-ball';
+                ball.textContent = number < 10 ? '0' + number : number;
+                ball.style.animationDelay = (index * 0.1) + 's';
+                numberBallsContainer.appendChild(ball);
+            });
+            
+            numbersDisplay.appendChild(numberBallsContainer);
+            
+            // Adicionar o mês da sorte
+            const monthDiv = document.createElement('div');
+            monthDiv.style.marginTop = '15px';
+            monthDiv.innerHTML = `<strong>Mês da Sorte:</strong> ${selectedMonth}`;
+            numbersDisplay.appendChild(monthDiv);
+            
+            // Habilitar o botão de salvar jogo
+            document.getElementById('save-btn').disabled = false;
+            
+            // Guardar os números gerados e o mês para uso posterior
+            window.lastGeneratedGame = {
+                numbers: generatedNumbers,
+                month: selectedMonth
+            };
+        }
+
+        // Função para salvar o jogo
+        function saveGame() {
+            if (!window.lastGeneratedGame) {
+                alert("Nenhum jogo gerado para salvar.");
+                return;
+            }
+            
+            // Adicionar o jogo à lista de jogos salvos
+            savedGames.push(window.lastGeneratedGame);
+            
+            // Atualizar a exibição dos jogos salvos
+            updateSavedGamesDisplay();
+            
+            // Desabilitar o botão de salvar para evitar duplicações
+            document.getElementById('save-btn').disabled = true;
+        }
+
+        // Função para atualizar a exibição dos jogos salvos
+        function updateSavedGamesDisplay() {
+            const savedGamesDiv = document.getElementById('saved-games');
+            
+            if (savedGames.length === 0) {
+                savedGamesDiv.innerHTML = '<p class="no-games">Nenhum jogo salvo ainda</p>';
+                return;
+            }
+            
+            savedGamesDiv.innerHTML = '';
+            
+            savedGames.forEach((game, index) => {
+                const gameDiv = document.createElement('div');
+                gameDiv.className = 'saved-game';
+                
+                // Adicionar números do jogo
+                game.numbers.forEach(number => {
+                    const numberDiv = document.createElement('div');
+                    numberDiv.className = 'saved-game-number';
+                    numberDiv.textContent = number < 10 ? '0' + number : number;
+                    gameDiv.appendChild(numberDiv);
+                });
+                
+                // Adicionar mês da sorte
+                const monthDiv = document.createElement('div');
+                monthDiv.style.marginLeft = '10px';
+                monthDiv.style.display = 'flex';
+                monthDiv.style.alignItems = 'center';
+                monthDiv.innerHTML = `<i class="fas fa-calendar-alt" style="margin-right: 5px;"></i> ${game.month}`;
+                gameDiv.appendChild(monthDiv);
+                
+                savedGamesDiv.appendChild(gameDiv);
+            });
+        }
+
+        // Função para exportar os jogos para Excel
+        function exportToExcel() {
+            if (savedGames.length === 0) {
+                alert("Nenhum jogo salvo para exportar.");
+                return;
+            }
+            
+            try {
+                // Preparar os dados para o Excel
+                const excelData = savedGames.map(game => {
+                    const row = game.numbers.map(n => n < 10 ? '0' + n : n.toString());
+                    row.push(game.month); // Adicionar o mês da sorte
+                    return row;
+                });
+                
+                // Adicionar cabeçalho
+                const header = Array(7).fill(0).map((_, i) => `Número ${i+1}`);
+                header.push('Mês da Sorte');
+                excelData.unshift(header);
+                
+                // Criar a planilha
+                const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Jogos Dia de Sorte");
+                
+                // Configurar a largura das colunas
+                const columnWidths = header.map(() => ({ wch: 10 }));
+                worksheet['!cols'] = columnWidths;
+                
+                // Gerar e baixar o arquivo
+                XLSX.writeFile(workbook, "jogos_dia_de_sorte.xlsx");
+                
+                alert("Exportação concluída com sucesso!");
+            } catch (error) {
+                console.error("Erro ao exportar para Excel:", error);
+                alert("Ocorreu um erro ao exportar para Excel. Verifique o console para mais detalhes.");
+            }
+        }
+
+        // Inicializar com um mês aleatório
+        document.addEventListener('DOMContentLoaded', () => {
+            const monthSelect = document.getElementById('month-select');
+            const randomMonth = Math.floor(Math.random() * 12);
+            monthSelect.selectedIndex = randomMonth;
+        });
+    </script>
+</body>
+</html>

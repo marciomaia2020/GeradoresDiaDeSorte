@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Combinações Possíveis - Dia de Sorte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        secondary: '#4a4a4a',
+                    }
+                }
+            },
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
+    <!-- Detector de modo escuro -->
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-blue-600 text-white py-6 rounded-lg">
+            📊 Combinações (Análises)
+        </h1>
+
+        <!-- Modal de carregamento -->
+        <div id="modalCarregamento" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full">
+                <h2 class="text-xl font-bold mb-4">🔄 Carregando Dados dos Sorteios</h2>
+                <p id="mensagemCarregamento" class="mb-4">Buscando resultados da API oficial...</p>
+                
+                <div class="flex items-center mb-4">
+                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mr-3"></div>
+                    <p id="statusCarregamento">Iniciando...</p>
+                </div>
+                
+                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-4">
+                    <div id="progressBar" class="bg-primary h-2.5 rounded-full transition-all duration-300" style="width: 5%"></div>
+                </div>
+                
+                <div id="logContainer" class="mt-4 max-h-40 overflow-y-auto text-xs bg-gray-100 dark:bg-gray-700 p-2 rounded">
+                    <div id="logContent">Iniciando busca de resultados...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="flex gap-4">
+                    <button id="btnCarregar" class="bg-primary hover:bg-purple-700 text-white font-medium rounded-lg px-6 py-3 shadow-lg transition-colors">
+                        🚀 Carregar Dados da API
+                    </button>
+                    <button id="btnLimparCache" class="bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg px-6 py-3 shadow-lg transition-colors">
+                        🗑️ Limpar Cache
+                    </button>
+                </div>
+                
+                <div id="statusInfo" class="text-center">
+                    <p id="totalConcursos" class="font-medium text-lg">0 concursos carregados</p>
+                    <p id="ultimaAtualizacao" class="text-sm text-gray-600 dark:text-gray-400">Aguardando carregamento...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumo dos Grupos -->
+        <div id="resumoGrupos" class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-8 hidden">
+            <h2 class="text-2xl font-semibold mb-6 text-center">📈 Estatística dos Volumes de Combinações (Mais Usados → Menos Usados)</h2>
+            
+            <!-- Cards de destaque -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                    <div class="text-2xl font-bold text-green-600 dark:text-green-400" id="volumeMaisUsado">-</div>
+                    <div class="text-sm text-green-700 dark:text-green-300">Volume Mais Usado</div>
+                    <div class="text-xs text-green-600 dark:text-green-400 mt-1" id="percentualMaisUsado">-</div>
+                </div>
+                
+                <div class="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" id="totalVolumesUnicos">-</div>
+                    <div class="text-sm text-blue-700 dark:text-blue-300">Volumes Únicos</div>
+                    <div class="text-xs text-blue-600 dark:text-blue-400 mt-1">Diferentes grupos encontrados</div>
+                </div>
+                
+                <div class="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                    <div class="text-2xl font-bold text-purple-600 dark:text-purple-400" id="maiorVolume">-</div>
+                    <div class="text-sm text-purple-700 dark:text-purple-300">Maior Volume</div>
+                    <div class="text-xs text-purple-600 dark:text-purple-400 mt-1">Máximo encontrado</div>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-700 dark:text-gray-300 border">
+                    <thead class="text-xs uppercase bg-primary text-white">
+                        <tr>
+                            <th class="px-6 py-3 border">Ranking</th>
+                            <th class="px-6 py-3 border">Volume de Combinações</th>
+                            <th class="px-6 py-3 border">Quantidade de Sorteios</th>
+                            <th class="px-6 py-3 border">Percentual do Total</th>
+                            <th class="px-6 py-3 border">Última Ocorrência</th>
+                            <th class="px-6 py-3 border">Frequência</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoResumoGrupos">
+                        <!-- Será preenchido via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Gráfico de barras simples -->
+            <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                <h3 class="text-lg font-semibold mb-4 text-center">📊 Distribuição Visual dos Volumes</h3>
+                <div id="graficoVolumes" class="space-y-2">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela Principal -->
+        <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+            <h2 class="text-2xl font-semibold mb-6">🎯 Análise Detalhada por Concurso</h2>
+            
+            <!-- Filtros -->
+            <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">🎲 Volume de Combinações:</label>
+                        <select id="filtroVolume" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
+                            <option value="">Todos os Volumes</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">🔢 Números Válidos:</label>
+                        <select id="filtroNumerosValidos" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
+                            <option value="">Todas as Quantidades</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">📊 Qtd. Dígitos:</label>
+                        <select id="filtroQtdDigitos" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
+                            <option value="">Todas as Quantidades</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button id="btnFiltrar" class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-6 py-2 w-full shadow-lg transition-colors">
+                            🔍 Aplicar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Informações sobre filtros aplicados -->
+            <div id="infoFiltros" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hidden">
+                <p class="text-sm text-blue-800 dark:text-blue-200">
+                    <span id="textoFiltros"></span>
+                </p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-700 dark:text-gray-300 border">
+                    <thead class="text-xs uppercase bg-primary text-white">
+                        <tr>
+                            <th class="px-4 py-3 border">Concurso</th>
+                            <th class="px-4 py-3 border">Data</th>
+                            <th class="px-4 py-3 border">Dezenas Sorteadas</th>
+                            <th class="px-4 py-3 border">Dígitos Únicos</th>
+                            <th class="px-4 py-3 border">Qtd. Dígitos</th>
+                            <th class="px-4 py-3 border">Números Válidos</th>
+                            <th class="px-4 py-3 border">Volume de Combinações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabela">
+                        <tr>
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                                🚀 Clique em "Carregar Dados da API" para buscar os resultados oficiais
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Informações da tabela -->
+            <div id="infoTabela" class="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+                <!-- Será preenchido dinamicamente -->
+            </div>
+        </div>
+
+        <!-- Estatísticas Finais -->
+        <div id="estatisticasFinais" class="mt-8 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 hidden">
+            <h2 class="text-2xl font-semibold mb-6 text-center">📊 Estatísticas Gerais dos Sorteios</h2>
+            
+            <!-- Cards de estatísticas resumidas -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Qtd. Dígitos -->
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 p-6 rounded-lg border border-blue-200 dark:border-blue-700">
+                    <h3 class="text-lg font-bold text-blue-800 dark:text-blue-300 mb-4 text-center">🔢 Quantidade de Dígitos</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-sm">Média:</span>
+                            <span class="font-bold text-blue-600 dark:text-blue-400" id="mediaDigitos">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mínimo:</span>
+                            <span class="font-bold" id="minDigitos">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Máximo:</span>
+                            <span class="font-bold" id="maxDigitos">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mais Comum:</span>
+                            <span class="font-bold text-blue-600 dark:text-blue-400" id="modaDigitos">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Números Válidos -->
+                <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/20 p-6 rounded-lg border border-green-200 dark:border-green-700">
+                    <h3 class="text-lg font-bold text-green-800 dark:text-green-300 mb-4 text-center">✅ Números Válidos</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-sm">Média:</span>
+                            <span class="font-bold text-green-600 dark:text-green-400" id="mediaNumerosValidos">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mínimo:</span>
+                            <span class="font-bold" id="minNumerosValidos">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Máximo:</span>
+                            <span class="font-bold" id="maxNumerosValidos">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mais Comum:</span>
+                            <span class="font-bold text-green-600 dark:text-green-400" id="modaNumerosValidos">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Volume de Combinações -->
+                <div class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/20 p-6 rounded-lg border border-red-200 dark:border-red-700">
+                    <h3 class="text-lg font-bold text-red-800 dark:text-red-300 mb-4 text-center">🎯 Volume de Combinações</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-sm">Média:</span>
+                            <span class="font-bold text-red-600 dark:text-red-400" id="mediaVolume">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mínimo:</span>
+                            <span class="font-bold" id="minVolume">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Máximo:</span>
+                            <span class="font-bold" id="maxVolume">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mais Comum:</span>
+                            <span class="font-bold text-red-600 dark:text-red-400" id="modaVolume">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Distribuições detalhadas -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Distribuição Qtd. Dígitos -->
+                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                    <h4 class="text-md font-semibold mb-3 text-center text-blue-600 dark:text-blue-400">📈 Distribuição - Qtd. Dígitos</h4>
+                    <div id="distribuicaoDigitos" class="space-y-2 text-sm">
+                        <!-- Será preenchido via JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Distribuição Números Válidos -->
+                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                    <h4 class="text-md font-semibold mb-3 text-center text-green-600 dark:text-green-400">📈 Distribuição - Números Válidos</h4>
+                    <div id="distribuicaoNumerosValidos" class="space-y-2 text-sm">
+                        <!-- Será preenchido via JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Distribuição Volume -->
+                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
+                    <h4 class="text-md font-semibold mb-3 text-center text-red-600 dark:text-red-400">📈 Distribuição - Volumes</h4>
+                    <div id="distribuicaoVolume" class="space-y-2 text-sm">
+                        <!-- Será preenchido via JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Análise de correlação -->
+            <div class="mt-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg border">
+                <h4 class="text-lg font-semibold mb-4 text-center text-purple-700 dark:text-purple-300">🔗 Análise de Correlações</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg">
+                        <div class="font-bold text-purple-600 dark:text-purple-400" id="correlacaoDigitosNumerosValidos">-</div>
+                        <div class="text-xs">Dígitos ↔ Números Válidos</div>
+                    </div>
+                    <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg">
+                        <div class="font-bold text-purple-600 dark:text-purple-400" id="correlacaoDigitosVolume">-</div>
+                        <div class="text-xs">Dígitos ↔ Volume</div>
+                    </div>
+                    <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg">
+                        <div class="font-bold text-purple-600 dark:text-purple-400" id="correlacaoNumerosValidosVolume">-</div>
+                        <div class="text-xs">Números Válidos ↔ Volume</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botões de Download -->
+        <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+            <button id="btnDownloadExcel" class="bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg px-6 py-3 shadow-lg transition-colors" disabled>
+                📊 Download Excel
+            </button>
+            <button id="btnDownloadJSON" class="bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg px-6 py-3 shadow-lg transition-colors" disabled>
+                📄 Download JSON
+            </button>
+            <button id="btnDownloadHTML" class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-6 py-3 shadow-lg transition-colors" disabled>
+                🌐 Download HTML
+            </button>
+        </div>
+    </div>
+
+    <!-- Biblioteca para Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <script>
+        // Variáveis globais
+        let todosSorteios = [];
+        let sorteiosAnalisados = [];
+        let dadosCarregados = false;
+        
+        // Elementos DOM
+        const modalCarregamento = document.getElementById('modalCarregamento');
+        const mensagemCarregamento = document.getElementById('mensagemCarregamento');
+        const statusCarregamento = document.getElementById('statusCarregamento');
+        const progressBar = document.getElementById('progressBar');
+        const logContent = document.getElementById('logContent');
+        const btnCarregar = document.getElementById('btnCarregar');
+        const btnLimparCache = document.getElementById('btnLimparCache');
+        const corpoTabela = document.getElementById('corpoTabela');
+        const totalConcursos = document.getElementById('totalConcursos');
+        const ultimaAtualizacao = document.getElementById('ultimaAtualizacao');
+        const resumoGrupos = document.getElementById('resumoGrupos');
+        const corpoResumoGrupos = document.getElementById('corpoResumoGrupos');
+        const filtroVolume = document.getElementById('filtroVolume');
+        const filtroNumerosValidos = document.getElementById('filtroNumerosValidos');
+        const filtroQtdDigitos = document.getElementById('filtroQtdDigitos');
+        const btnFiltrar = document.getElementById('btnFiltrar');
+        const btnDownloadExcel = document.getElementById('btnDownloadExcel');
+        const btnDownloadJSON = document.getElementById('btnDownloadJSON');
+        const btnDownloadHTML = document.getElementById('btnDownloadHTML');
+        const infoFiltros = document.getElementById('infoFiltros');
+        const textoFiltros = document.getElementById('textoFiltros');
+        const infoTabela = document.getElementById('infoTabela');
+        
+        // Função para adicionar log
+        function adicionarLog(mensagem) {
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.textContent = `[${timestamp}] ${mensagem}`;
+            logContent.appendChild(div);
+            logContent.scrollTop = logContent.scrollHeight;
+            console.log(`[LOG] ${mensagem}`);
+        }
+        
+        // Função para atualizar progresso
+        function atualizarProgresso(porcentagem, mensagem) {
+            progressBar.style.width = `${porcentagem}%`;
+            if (mensagem) {
+                statusCarregamento.textContent = mensagem;
+            }
+        }
+        
+        // Função para calcular combinações C(n,r)
+        function calcularCombinacoes(n, r) {
+            if (r > n || r < 0) return 0;
+            if (r === 0 || r === n) return 1;
+            
+            // Usar a fórmula mais eficiente
+            r = Math.min(r, n - r);
+            let resultado = 1;
+            
+            for (let i = 0; i < r; i++) {
+                resultado = resultado * (n - i) / (i + 1);
+            }
+            
+            return Math.round(resultado);
+        }
+        
+        // Função para verificar se um número pode ser formado com os dígitos disponíveis
+        function podeFormarNumero(numero, digitosDisponiveis) {
+            const digitosNumero = numero.toString().split('').map(d => parseInt(d));
+            const digitosSet = new Set(digitosDisponiveis);
+            
+            return digitosNumero.every(digito => digitosSet.has(digito));
+        }
+        
+        // Função para calcular números válidos a partir dos dígitos
+        function calcularNumerosValidos(digitos) {
+            const numerosValidos = [];
+            
+            // Verificar todos os números de 1 a 31
+            for (let num = 1; num <= 31; num++) {
+                if (podeFormarNumero(num, digitos)) {
+                    numerosValidos.push(num);
+                }
+            }
+            
+            return numerosValidos;
+        }
+        
+        // Função para determinar o volume de combinações
+        function calcularVolumeCombinacoes(qtdNumerosValidos) {
+            if (qtdNumerosValidos < 7) {
+                return 0; // Insuficiente
+            }
+            
+            return calcularCombinacoes(qtdNumerosValidos, 7);
+        }
+        
+        // Função para buscar dados da API
+        async function buscarDadosAPI() {
+            modalCarregamento.classList.remove('hidden');
+            btnCarregar.disabled = true;
+            
+            try {
+                atualizarProgresso(10, 'Descobrindo último concurso...');
+                adicionarLog('Iniciando busca na API oficial da Caixa');
+                
+                // 1. Buscar último concurso
+                let ultimoConcursoData;
+                try {
+                    const ultimoConcursoResponse = await fetch('https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte');
+                    
+                    if (ultimoConcursoResponse.ok) {
+                        ultimoConcursoData = await ultimoConcursoResponse.json();
+                    } else {
+                        throw new Error('API não respondeu');
+                    }
+                } catch (error) {
+                    adicionarLog('Tentando proxy...');
+                    const proxyResponse = await fetch('https://corsproxy.io/?https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte');
+                    ultimoConcursoData = await proxyResponse.json();
+                }
+                
+                const ultimoNumero = ultimoConcursoData.numero;
+                
+                adicionarLog(`Último concurso encontrado: ${ultimoNumero}`);
+                atualizarProgresso(20, `Buscando concursos 1 a ${ultimoNumero}...`);
+                
+                // 2. Buscar todos os concursos
+                todosSorteios = [];
+                const totalConcursos = ultimoNumero;
+                
+                // Buscar em lotes menores para não sobrecarregar
+                const tamanhoBatch = 15;
+                let processados = 0;
+                
+                for (let i = 1; i <= totalConcursos; i += tamanhoBatch) {
+                    const promessas = [];
+                    const fimBatch = Math.min(i + tamanhoBatch - 1, totalConcursos);
+                    
+                    for (let concurso = i; concurso <= fimBatch; concurso++) {
+                        promessas.push(buscarConcurso(concurso));
+                    }
+                    
+                    const resultados = await Promise.allSettled(promessas);
+                    
+                    resultados.forEach(resultado => {
+                        if (resultado.status === 'fulfilled' && resultado.value) {
+                            todosSorteios.push(resultado.value);
+                            processados++;
+                        }
+                    });
+                    
+                    const progresso = 20 + (processados / totalConcursos) * 70;
+                    atualizarProgresso(progresso, `Processados ${processados} de ${totalConcursos} concursos...`);
+                    
+                    adicionarLog(`Batch ${Math.ceil(i/tamanhoBatch)}: ${processados} concursos carregados`);
+                    
+                    // Pausa para não sobrecarregar a API
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
+                
+                // 3. Analisar os dados
+                atualizarProgresso(90, 'Analisando combinações...');
+                analisarDados();
+                
+                atualizarProgresso(100, 'Carregamento concluído!');
+                adicionarLog(`Carregamento finalizado: ${todosSorteios.length} concursos`);
+                
+                // Salvar no cache
+                try {
+                    localStorage.setItem('diadesorte_cache_v2', JSON.stringify(todosSorteios));
+                    localStorage.setItem('diadesorte_timestamp_v2', Date.now().toString());
+                } catch (e) {
+                    adicionarLog('Cache não pôde ser salvo (localStorage não disponível)');
+                }
+                
+                setTimeout(() => {
+                    modalCarregamento.classList.add('hidden');
+                }, 1000);
+                
+            } catch (error) {
+                adicionarLog(`Erro: ${error.message}`);
+                atualizarProgresso(0, 'Erro no carregamento');
+                setTimeout(() => {
+                    modalCarregamento.classList.add('hidden');
+                    alert('Erro ao carregar dados: ' + error.message);
+                }, 3000);
+            } finally {
+                btnCarregar.disabled = false;
+            }
+        }
+        
+        // Função para buscar um concurso específico
+        async function buscarConcurso(numero) {
+            try {
+                let response;
+                
+                try {
+                    response = await fetch(`https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/${numero}`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Tentando proxy...');
+                    }
+                } catch (error) {
+                    response = await fetch(`https://corsproxy.io/?https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/${numero}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.numero && data.listaDezenas) {
+                    return {
+                        numero: data.numero,
+                        data: data.dataApuracao,
+                        dezenas: data.listaDezenas.map(n => parseInt(n))
+                    };
+                }
+                
+                return null;
+            } catch (error) {
+                return null;
+            }
+        }
+        
+        // Função para analisar os dados
+        function analisarDados() {
+            sorteiosAnalisados = [];
+            
+            todosSorteios.forEach(sorteio => {
+                // Extrair dígitos únicos das dezenas
+                const digitosUnicos = new Set();
+                sorteio.dezenas.forEach(dezena => {
+                    dezena.toString().split('').forEach(digito => {
+                        digitosUnicos.add(parseInt(digito));
+                    });
+                });
+                
+                const digitos = Array.from(digitosUnicos).sort();
+                const numerosValidos = calcularNumerosValidos(digitos);
+                const volumeCombinacoes = calcularVolumeCombinacoes(numerosValidos.length);
+                
+                sorteiosAnalisados.push({
+                    numero: sorteio.numero,
+                    data: sorteio.data,
+                    dezenas: sorteio.dezenas,
+                    digitos: digitos,
+                    qtdDigitos: digitos.length,
+                    numerosValidos: numerosValidos,
+                    qtdNumerosValidos: numerosValidos.length,
+                    volumeCombinacoes: volumeCombinacoes
+                });
+            });
+            
+            // Ordenar por número do concurso (decrescente)
+            sorteiosAnalisados.sort((a, b) => b.numero - a.numero);
+            
+            // Atualizar interface
+            atualizarInterface();
+            gerarResumoGrupos();
+            preencherFiltros();
+            gerarEstatisticasFinais();
+        }
+        
+        // Função para atualizar a interface
+        function atualizarInterface() {
+            // Atualizar informações
+            totalConcursos.textContent = `${sorteiosAnalisados.length} concursos analisados`;
+            ultimaAtualizacao.textContent = `Última atualização: ${new Date().toLocaleString('pt-BR')}`;
+            
+            // Preencher tabela
+            preencherTabela(sorteiosAnalisados);
+            
+            // Habilitar downloads
+            btnDownloadExcel.disabled = false;
+            btnDownloadJSON.disabled = false;
+            btnDownloadHTML.disabled = false;
+            
+            dadosCarregados = true;
+        }
+        
+        // Função para preencher a tabela
+        function preencherTabela(dados) {
+            corpoTabela.innerHTML = '';
+            
+            if (dados.length === 0) {
+                const row = corpoTabela.insertRow();
+                const cell = row.insertCell();
+                cell.colSpan = 7;
+                cell.className = 'px-4 py-8 text-center text-gray-500';
+                cell.textContent = '🔍 Nenhum resultado encontrado com os filtros aplicados';
+                
+                infoTabela.textContent = '';
+                return;
+            }
+            
+            dados.forEach(sorteio => {
+                const row = corpoTabela.insertRow();
+                
+                // Concurso
+                const cellConcurso = row.insertCell();
+                cellConcurso.className = 'px-4 py-3 border font-medium';
+                cellConcurso.textContent = sorteio.numero;
+                
+                // Data
+                const cellData = row.insertCell();
+                cellData.className = 'px-4 py-3 border';
+                cellData.textContent = sorteio.data;
+                
+                // Dezenas
+                const cellDezenas = row.insertCell();
+                cellDezenas.className = 'px-4 py-3 border';
+                cellDezenas.textContent = sorteio.dezenas.join(' - ');
+                
+                // Dígitos
+                const cellDigitos = row.insertCell();
+                cellDigitos.className = 'px-4 py-3 border font-mono';
+                cellDigitos.textContent = sorteio.digitos.join(', ');
+                
+                // Qtd. Dígitos
+                const cellQtdDigitos = row.insertCell();
+                cellQtdDigitos.className = 'px-4 py-3 border text-center';
+                cellQtdDigitos.textContent = sorteio.qtdDigitos;
+                
+                // Números Válidos
+                const cellNumerosValidos = row.insertCell();
+                cellNumerosValidos.className = 'px-4 py-3 border text-center font-medium';
+                cellNumerosValidos.textContent = sorteio.qtdNumerosValidos;
+                
+                // Volume de Combinações
+                const cellVolume = row.insertCell();
+                cellVolume.className = 'px-4 py-3 border text-center font-bold';
+                
+                if (sorteio.volumeCombinacoes === 0) {
+                    cellVolume.textContent = 'Insuficiente';
+                    cellVolume.classList.add('text-red-600', 'dark:text-red-400');
+                } else {
+                    cellVolume.textContent = sorteio.volumeCombinacoes.toLocaleString('pt-BR');
+                    
+                    // Colorir baseado no volume
+                    if (sorteio.volumeCombinacoes >= 1000000) {
+                        cellVolume.classList.add('text-green-600', 'dark:text-green-400');
+                    } else if (sorteio.volumeCombinacoes >= 100000) {
+                        cellVolume.classList.add('text-blue-600', 'dark:text-blue-400');
+                    } else if (sorteio.volumeCombinacoes >= 1000) {
+                        cellVolume.classList.add('text-purple-600', 'dark:text-purple-400');
+                    } else {
+                        cellVolume.classList.add('text-yellow-600', 'dark:text-yellow-400');
+                    }
+                }
+            });
+            
+            // Atualizar informações da tabela
+            infoTabela.textContent = `Exibindo ${dados.length} de ${sorteiosAnalisados.length} concursos analisados`;
+        }
+        
+        // Função para gerar resumo dos grupos
+        function gerarResumoGrupos() {
+            const grupos = {};
+            
+            // Contar ocorrências por volume - FOCO TOTAL NO VOLUME DE COMBINAÇÕES
+            sorteiosAnalisados.forEach(sorteio => {
+                const volume = sorteio.volumeCombinacoes;
+                const volumeTexto = volume === 0 ? 'Insuficiente' : volume.toLocaleString('pt-BR');
+                
+                if (!grupos[volumeTexto]) {
+                    grupos[volumeTexto] = {
+                        volume: volume,
+                        count: 0,
+                        ultimaOcorrencia: 0,
+                        primeiraOcorrencia: Infinity
+                    };
+                }
+                grupos[volumeTexto].count++;
+                grupos[volumeTexto].ultimaOcorrencia = Math.max(
+                    grupos[volumeTexto].ultimaOcorrencia,
+                    sorteio.numero
+                );
+                grupos[volumeTexto].primeiraOcorrencia = Math.min(
+                    grupos[volumeTexto].primeiraOcorrencia,
+                    sorteio.numero
+                );
+            });
+            
+            // Ordenar por QUANTIDADE DE SORTEIOS (mais usados → menos usados)
+            const gruposOrdenados = Object.entries(grupos).sort((a, b) => {
+                return b[1].count - a[1].count; // Ordenar por contagem (mais usados primeiro)
+            });
+            
+            // Atualizar cards de destaque
+            if (gruposOrdenados.length > 0) {
+                const maisUsado = gruposOrdenados[0];
+                document.getElementById('volumeMaisUsado').textContent = maisUsado[0];
+                
+                const percentualMaisUsado = ((maisUsado[1].count / sorteiosAnalisados.length) * 100).toFixed(1);
+                document.getElementById('percentualMaisUsado').textContent = `${percentualMaisUsado}% dos sorteios`;
+                
+                document.getElementById('totalVolumesUnicos').textContent = gruposOrdenados.length;
+                
+                const maiorVolumeNumerico = Math.max(...gruposOrdenados.map(g => g[1].volume));
+                const maiorVolumeTexto = maiorVolumeNumerico === 0 ? 'Insuficiente' : maiorVolumeNumerico.toLocaleString('pt-BR');
+                document.getElementById('maiorVolume').textContent = maiorVolumeTexto;
+            }
+            
+            // Limpar tabela
+            corpoResumoGrupos.innerHTML = '';
+            
+            // Preencher tabela com ranking dos mais usados
+            gruposOrdenados.forEach(([volumeTexto, info], index) => {
+                const row = corpoResumoGrupos.insertRow();
+                
+                // Ranking
+                const cellRanking = row.insertCell();
+                cellRanking.className = 'px-6 py-4 border text-center font-bold';
+                
+                // Emoji e posição baseado no ranking
+                let rankingTexto = `${index + 1}º`;
+                if (index === 0) {
+                    rankingTexto = `🥇 ${index + 1}º`;
+                    cellRanking.classList.add('text-yellow-600', 'dark:text-yellow-400');
+                } else if (index === 1) {
+                    rankingTexto = `🥈 ${index + 1}º`;
+                    cellRanking.classList.add('text-gray-600', 'dark:text-gray-400');
+                } else if (index === 2) {
+                    rankingTexto = `🥉 ${index + 1}º`;
+                    cellRanking.classList.add('text-orange-600', 'dark:text-orange-400');
+                } else {
+                    rankingTexto = `📍 ${index + 1}º`;
+                }
+                
+                cellRanking.textContent = rankingTexto;
+                
+                // Volume de Combinações
+                const cellVolume = row.insertCell();
+                cellVolume.className = 'px-6 py-4 border font-bold';
+                cellVolume.textContent = volumeTexto;
+                
+                // Quantidade de Sorteios
+                const cellCount = row.insertCell();
+                cellCount.className = 'px-6 py-4 border text-center font-semibold';
+                cellCount.textContent = info.count;
+                
+                // Percentual do Total
+                const cellPercent = row.insertCell();
+                cellPercent.className = 'px-6 py-4 border text-center';
+                const percentual = ((info.count / sorteiosAnalisados.length) * 100).toFixed(2);
+                cellPercent.textContent = `${percentual}%`;
+                
+                // Última Ocorrência
+                const cellUltima = row.insertCell();
+                cellUltima.className = 'px-6 py-4 border text-center';
+                cellUltima.textContent = info.ultimaOcorrencia;
+                
+                // Frequência (indicador visual)
+                const cellFrequencia = row.insertCell();
+                cellFrequencia.className = 'px-6 py-4 border text-center';
+                
+                let frequenciaTexto = '';
+                let frequenciaClass = '';
+                
+                if (percentual >= 20) {
+                    frequenciaTexto = '🔥 Muito Alta';
+                    frequenciaClass = 'text-red-600 dark:text-red-400 font-bold';
+                } else if (percentual >= 10) {
+                    frequenciaTexto = '⚡ Alta';
+                    frequenciaClass = 'text-orange-600 dark:text-orange-400 font-semibold';
+                } else if (percentual >= 5) {
+                    frequenciaTexto = '🌟 Média';
+                    frequenciaClass = 'text-blue-600 dark:text-blue-400';
+                } else if (percentual >= 1) {
+                    frequenciaTexto = '📊 Baixa';
+                    frequenciaClass = 'text-gray-600 dark:text-gray-400';
+                } else {
+                    frequenciaTexto = '🔹 Rara';
+                    frequenciaClass = 'text-purple-600 dark:text-purple-400';
+                }
+                
+                cellFrequencia.textContent = frequenciaTexto;
+                cellFrequencia.className += ` ${frequenciaClass}`;
+                
+                // Colorir Volume baseado no valor
+                if (info.volume === 0) {
+                    cellVolume.classList.add('text-red-600', 'dark:text-red-400');
+                } else if (info.volume >= 10000000) {
+                    cellVolume.classList.add('text-green-600', 'dark:text-green-400');
+                } else if (info.volume >= 1000000) {
+                    cellVolume.classList.add('text-blue-600', 'dark:text-blue-400');
+                } else if (info.volume >= 100000) {
+                    cellVolume.classList.add('text-purple-600', 'dark:text-purple-400');
+                } else if (info.volume >= 1000) {
+                    cellVolume.classList.add('text-yellow-600', 'dark:text-yellow-400');
+                } else {
+                    cellVolume.classList.add('text-orange-600', 'dark:text-orange-400');
+                }
+            });
+            
+            // Gerar gráfico visual de barras
+            gerarGraficoVolumes(gruposOrdenados);
+            
+            // Mostrar seção de resumo
+            resumoGrupos.classList.remove('hidden');
+        }
+        
+        // Função para gerar gráfico visual dos volumes
+        function gerarGraficoVolumes(gruposOrdenados) {
+            const graficoContainer = document.getElementById('graficoVolumes');
+            graficoContainer.innerHTML = '';
+            
+            // Pegar apenas os top 10 mais usados
+            const top10 = gruposOrdenados.slice(0, 10);
+            const maxCount = Math.max(...top10.map(g => g[1].count));
+            
+            top10.forEach(([volumeTexto, info], index) => {
+                const barContainer = document.createElement('div');
+                barContainer.className = 'flex items-center space-x-3 mb-2';
+                
+                // Label do volume
+                const label = document.createElement('div');
+                label.className = 'w-24 text-xs font-medium text-right flex-shrink-0';
+                label.textContent = volumeTexto;
+                
+                // Barra de progresso
+                const barWrapper = document.createElement('div');
+                barWrapper.className = 'flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-4 relative';
+                
+                const bar = document.createElement('div');
+                bar.className = 'h-4 rounded-full transition-all duration-500';
+                
+                // Cor baseada na posição no ranking
+                if (index === 0) {
+                    bar.classList.add('bg-gradient-to-r', 'from-yellow-400', 'to-yellow-600');
+                } else if (index === 1) {
+                    bar.classList.add('bg-gradient-to-r', 'from-gray-400', 'to-gray-600');
+                } else if (index === 2) {
+                    bar.classList.add('bg-gradient-to-r', 'from-orange-400', 'to-orange-600');
+                } else if (index <= 4) {
+                    bar.classList.add('bg-gradient-to-r', 'from-green-400', 'to-green-600');
+                } else {
+                    bar.classList.add('bg-gradient-to-r', 'from-blue-400', 'to-blue-600');
+                }
+                
+                const percentage = (info.count / maxCount) * 100;
+                bar.style.width = `${percentage}%`;
+                
+                // Texto da quantidade
+                const countText = document.createElement('div');
+                countText.className = 'absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-lg';
+                countText.textContent = info.count;
+                
+                bar.appendChild(countText);
+                barWrapper.appendChild(bar);
+                
+                // Percentual
+                const percentText = document.createElement('div');
+                percentText.className = 'w-12 text-xs text-right';
+                const percent = ((info.count / sorteiosAnalisados.length) * 100).toFixed(1);
+                percentText.textContent = `${percent}%`;
+                
+                barContainer.appendChild(label);
+                barContainer.appendChild(barWrapper);
+                barContainer.appendChild(percentText);
+                
+                graficoContainer.appendChild(barContainer);
+            });
+        }
+        
+        // Função para preencher filtros
+        function preencherFiltros() {
+            // Filtro de volumes
+            const volumes = [...new Set(sorteiosAnalisados.map(s => {
+                return s.volumeCombinacoes === 0 ? 'Insuficiente' : s.volumeCombinacoes.toLocaleString('pt-BR');
+            }))];
+            
+            volumes.sort((a, b) => {
+                const numA = a === 'Insuficiente' ? 0 : parseInt(a.replace(/\./g, ''));
+                const numB = b === 'Insuficiente' ? 0 : parseInt(b.replace(/\./g, ''));
+                return numB - numA;
+            });
+            
+            filtroVolume.innerHTML = '<option value="">Todos os Volumes</option>';
+            volumes.forEach(volume => {
+                const option = document.createElement('option');
+                option.value = volume;
+                option.textContent = volume;
+                filtroVolume.appendChild(option);
+            });
+            
+            // Filtro de números válidos
+            const numerosValidos = [...new Set(sorteiosAnalisados.map(s => s.qtdNumerosValidos))];
+            numerosValidos.sort((a, b) => b - a);
+            
+            filtroNumerosValidos.innerHTML = '<option value="">Todas as Quantidades</option>';
+            numerosValidos.forEach(qtd => {
+                const option = document.createElement('option');
+                option.value = qtd;
+                option.textContent = `${qtd} números válidos`;
+                filtroNumerosValidos.appendChild(option);
+            });
+            
+            // Filtro de quantidade de dígitos
+            const qtdDigitos = [...new Set(sorteiosAnalisados.map(s => s.qtdDigitos))];
+            qtdDigitos.sort((a, b) => a - b);
+            
+            filtroQtdDigitos.innerHTML = '<option value="">Todas as Quantidades</option>';
+            qtdDigitos.forEach(qtd => {
+                const option = document.createElement('option');
+                option.value = qtd;
+                option.textContent = `${qtd} dígitos`;
+                filtroQtdDigitos.appendChild(option);
+            });
+        }
+        
+        // Função para aplicar filtros
+        function aplicarFiltros() {
+            let dadosFiltrados = [...sorteiosAnalisados];
+            let filtrosAplicados = [];
+            
+            // Filtro por volume
+            if (filtroVolume.value) {
+                const volumeSelecionado = filtroVolume.value;
+                dadosFiltrados = dadosFiltrados.filter(s => {
+                    const volumeTexto = s.volumeCombinacoes === 0 ? 'Insuficiente' : s.volumeCombinacoes.toLocaleString('pt-BR');
+                    return volumeTexto === volumeSelecionado;
+                });
+                filtrosAplicados.push(`Volume: ${volumeSelecionado}`);
+            }
+            
+            // Filtro por números válidos
+            if (filtroNumerosValidos.value) {
+                dadosFiltrados = dadosFiltrados.filter(s => s.qtdNumerosValidos == filtroNumerosValidos.value);
+                filtrosAplicados.push(`Números válidos: ${filtroNumerosValidos.value}`);
+            }
+            
+            // Filtro por quantidade de dígitos
+            if (filtroQtdDigitos.value) {
+                dadosFiltrados = dadosFiltrados.filter(s => s.qtdDigitos == filtroQtdDigitos.value);
+                filtrosAplicados.push(`Dígitos: ${filtroQtdDigitos.value}`);
+            }
+            
+            // Mostrar informações dos filtros
+            if (filtrosAplicados.length > 0) {
+                textoFiltros.textContent = `🔍 Filtros aplicados: ${filtrosAplicados.join(' | ')}`;
+                infoFiltros.classList.remove('hidden');
+            } else {
+                infoFiltros.classList.add('hidden');
+            }
+            
+            preencherTabela(dadosFiltrados);
+        }
+        
+        // Função para download Excel
+        function downloadExcel() {
+            if (!dadosCarregados) return;
+            
+            const dados = [];
+            dados.push(['Concurso', 'Data', 'Dezenas', 'Dígitos', 'Qtd. Dígitos', 'Números Válidos', 'Volume de Combinações']);
+            
+            sorteiosAnalisados.forEach(sorteio => {
+                const volumeTexto = sorteio.volumeCombinacoes === 0 ? 'Insuficiente' : sorteio.volumeCombinacoes;
+                dados.push([
+                    sorteio.numero,
+                    sorteio.data,
+                    sorteio.dezenas.join(' - '),
+                    sorteio.digitos.join(', '),
+                    sorteio.qtdDigitos,
+                    sorteio.qtdNumerosValidos,
+                    volumeTexto
+                ]);
+            });
+            
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(dados);
+            XLSX.utils.book_append_sheet(wb, ws, 'Combinações Dia de Sorte');
+            
+            const dataAtual = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
+            XLSX.writeFile(wb, `Analise_Combinacoes_Dia_de_Sorte_${dataAtual}.xlsx`);
+        }
+        
+        // Função para download JSON
+        function downloadJSON() {
+            if (!dadosCarregados) return;
+            
+            const dataStr = JSON.stringify(sorteiosAnalisados, null, 2);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Analise_Combinacoes_Dia_de_Sorte_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+        }
+        
+        // Função para download HTML
+        function downloadHTML() {
+            if (!dadosCarregados) return;
+            
+            let htmlContent = `
+            <!DOCTYPE html>
+            <html lang="pt-BR">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Análise de Combinações Possíveis - Dia de Sorte</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; background-color: #f0f8ff; }
+                    .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+                    h1 { text-align: center; color: #5D5CDE; margin-bottom: 30px; }
+                    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                    th { background-color: #5D5CDE; color: white; padding: 12px; text-align: left; }
+                    td { padding: 10px; border: 1px solid #ddd; }
+                    tr:nth-child(even) { background-color: #f2f2f2; }
+                    .high-volume { color: #16a34a; font-weight: bold; }
+                    .medium-volume { color: #3b82f6; font-weight: bold; }
+                    .low-volume { color: #eab308; font-weight: bold; }
+                    .insufficient { color: #dc2626; font-weight: bold; }
+                    .footer { text-align: center; margin-top: 20px; color: #666; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>📊 Análise de Combinações Possíveis - Dia de Sorte</h1>
+                    <p style="text-align: center; margin-bottom: 20px;">Relatório gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Concurso</th>
+                                <th>Data</th>
+                                <th>Dezenas</th>
+                                <th>Dígitos</th>
+                                <th>Qtd. Dígitos</th>
+                                <th>Números Válidos</th>
+                                <th>Volume de Combinações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            sorteiosAnalisados.forEach(sorteio => {
+                let volumeClass = 'insufficient';
+                let volumeTexto = 'Insuficiente';
+                
+                if (sorteio.volumeCombinacoes > 0) {
+                    volumeTexto = sorteio.volumeCombinacoes.toLocaleString('pt-BR');
+                    
+                    if (sorteio.volumeCombinacoes >= 1000000) {
+                        volumeClass = 'high-volume';
+                    } else if (sorteio.volumeCombinacoes >= 100000) {
+                        volumeClass = 'medium-volume';
+                    } else {
+                        volumeClass = 'low-volume';
+                    }
+                }
+                
+                htmlContent += `
+                    <tr>
+                        <td>${sorteio.numero}</td>
+                        <td>${sorteio.data}</td>
+                        <td>${sorteio.dezenas.join(' - ')}</td>
+                        <td>${sorteio.digitos.join(', ')}</td>
+                        <td>${sorteio.qtdDigitos}</td>
+                        <td>${sorteio.qtdNumerosValidos}</td>
+                        <td class="${volumeClass}">${volumeTexto}</td>
+                    </tr>
+                `;
+            });
+            
+            htmlContent += `
+                        </tbody>
+                    </table>
+                    
+                    <div class="footer">
+                        <p>Total de concursos analisados: ${sorteiosAnalisados.length}</p>
+                        <p>Gerado pela Análise de Combinações Possíveis - Dia de Sorte</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            `;
+            
+            const blob = new Blob([htmlContent], {type: 'text/html'});
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Analise_Combinacoes_Dia_de_Sorte_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.html`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+        }
+        
+        // Função para gerar estatísticas finais
+        function gerarEstatisticasFinais() {
+            const estatisticasFinais = document.getElementById('estatisticasFinais');
+            
+            // Arrays para cálculos
+            const qtdDigitosArray = sorteiosAnalisados.map(s => s.qtdDigitos);
+            const numerosValidosArray = sorteiosAnalisados.map(s => s.qtdNumerosValidos);
+            const volumeArray = sorteiosAnalisados.map(s => s.volumeCombinacoes);
+            
+            // Funções auxiliares
+            function calcularMedia(arr) {
+                return (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1);
+            }
+            
+            function calcularModa(arr) {
+                const frequencia = {};
+                arr.forEach(item => {
+                    frequencia[item] = (frequencia[item] || 0) + 1;
+                });
+                
+                let maxFreq = 0;
+                let moda = null;
+                
+                for (const [valor, freq] of Object.entries(frequencia)) {
+                    if (freq > maxFreq) {
+                        maxFreq = freq;
+                        moda = valor;
+                    }
+                }
+                
+                return moda;
+            }
+            
+            function calcularDistribuicao(arr, elementId) {
+                const frequencia = {};
+                arr.forEach(item => {
+                    const key = item === 0 ? 'Insuficiente' : item.toString();
+                    frequencia[key] = (frequencia[key] || 0) + 1;
+                });
+                
+                const container = document.getElementById(elementId);
+                container.innerHTML = '';
+                
+                // Ordenar por frequência (mais comum primeiro)
+                const sorted = Object.entries(frequencia).sort((a, b) => b[1] - a[1]);
+                
+                sorted.slice(0, 10).forEach(([valor, count], index) => {
+                    const div = document.createElement('div');
+                    div.className = 'flex justify-between items-center';
+                    
+                    const percent = ((count / sorteiosAnalisados.length) * 100).toFixed(1);
+                    
+                    let emoji = '';
+                    if (index === 0) emoji = '🥇';
+                    else if (index === 1) emoji = '🥈';
+                    else if (index === 2) emoji = '🥉';
+                    else emoji = '📊';
+                    
+                    div.innerHTML = `
+                        <span class="font-medium">${emoji} ${valor}:</span>
+                        <span class="text-xs">
+                            <span class="font-bold">${count}</span> 
+                            <span class="text-gray-500">(${percent}%)</span>
+                        </span>
+                    `;
+                    
+                    container.appendChild(div);
+                });
+            }
+            
+            function calcularCorrelacao(arr1, arr2) {
+                const n = arr1.length;
+                const sum1 = arr1.reduce((a, b) => a + b, 0);
+                const sum2 = arr2.reduce((a, b) => a + b, 0);
+                const sum1Sq = arr1.reduce((a, b) => a + b * b, 0);
+                const sum2Sq = arr2.reduce((a, b) => a + b * b, 0);
+                const pSum = arr1.reduce((total, val, i) => total + val * arr2[i], 0);
+                
+                const num = pSum - (sum1 * sum2 / n);
+                const den = Math.sqrt((sum1Sq - sum1 * sum1 / n) * (sum2Sq - sum2 * sum2 / n));
+                
+                return den === 0 ? 0 : (num / den).toFixed(3);
+            }
+            
+            // Calcular estatísticas básicas
+            // Qtd. Dígitos
+            document.getElementById('mediaDigitos').textContent = calcularMedia(qtdDigitosArray);
+            document.getElementById('minDigitos').textContent = Math.min(...qtdDigitosArray);
+            document.getElementById('maxDigitos').textContent = Math.max(...qtdDigitosArray);
+            document.getElementById('modaDigitos').textContent = calcularModa(qtdDigitosArray);
+            
+            // Números Válidos
+            document.getElementById('mediaNumerosValidos').textContent = calcularMedia(numerosValidosArray);
+            document.getElementById('minNumerosValidos').textContent = Math.min(...numerosValidosArray);
+            document.getElementById('maxNumerosValidos').textContent = Math.max(...numerosValidosArray);
+            document.getElementById('modaNumerosValidos').textContent = calcularModa(numerosValidosArray);
+            
+            // Volume de Combinações
+            const volumeArrayFormatted = volumeArray.map(v => v === 0 ? 'Insuficiente' : v.toLocaleString('pt-BR'));
+            const volumeNonZero = volumeArray.filter(v => v > 0);
+            
+            document.getElementById('mediaVolume').textContent = volumeNonZero.length > 0 ? 
+                calcularMedia(volumeNonZero) : 'N/A';
+            document.getElementById('minVolume').textContent = volumeNonZero.length > 0 ? 
+                Math.min(...volumeNonZero).toLocaleString('pt-BR') : 'N/A';
+            document.getElementById('maxVolume').textContent = volumeNonZero.length > 0 ? 
+                Math.max(...volumeNonZero).toLocaleString('pt-BR') : 'N/A';
+            document.getElementById('modaVolume').textContent = calcularModa(volumeArrayFormatted);
+            
+            // Gerar distribuições
+            calcularDistribuicao(qtdDigitosArray, 'distribuicaoDigitos');
+            calcularDistribuicao(numerosValidosArray, 'distribuicaoNumerosValidos');
+            calcularDistribuicao(volumeArray, 'distribuicaoVolume');
+            
+            // Calcular correlações
+            document.getElementById('correlacaoDigitosNumerosValidos').textContent = 
+                calcularCorrelacao(qtdDigitosArray, numerosValidosArray);
+            document.getElementById('correlacaoDigitosVolume').textContent = 
+                calcularCorrelacao(qtdDigitosArray, volumeArray);
+            document.getElementById('correlacaoNumerosValidosVolume').textContent = 
+                calcularCorrelacao(numerosValidosArray, volumeArray);
+            
+            // Mostrar seção de estatísticas
+            estatisticasFinais.classList.remove('hidden');
+        }
+        
+        // Event Listeners
+        btnCarregar.addEventListener('click', buscarDadosAPI);
+        btnLimparCache.addEventListener('click', () => {
+            try {
+                localStorage.removeItem('diadesorte_cache_v2');
+                localStorage.removeItem('diadesorte_timestamp_v2');
+                alert('✅ Cache limpo com sucesso!');
+            } catch (e) {
+                alert('✅ Cache simulado limpo!');
+            }
+        });
+        btnFiltrar.addEventListener('click', aplicarFiltros);
+        btnDownloadExcel.addEventListener('click', downloadExcel);
+        btnDownloadJSON.addEventListener('click', downloadJSON);
+        btnDownloadHTML.addEventListener('click', downloadHTML);
+        
+        // Verificar cache ao carregar
+        window.addEventListener('load', () => {
+            try {
+                const cache = localStorage.getItem('diadesorte_cache_v2');
+                const timestamp = localStorage.getItem('diadesorte_timestamp_v2');
+                
+                if (cache && timestamp) {
+                    const idade = Date.now() - parseInt(timestamp);
+                    if (idade < 3600000) { // 1 hora
+                        todosSorteios = JSON.parse(cache);
+                        analisarDados();
+                        adicionarLog('Dados carregados do cache');
+                    }
+                }
+            } catch (e) {
+                // Cache não disponível no iframe
+            }
+        });
+    </script>
+</body>
+</html>

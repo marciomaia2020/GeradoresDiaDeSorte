@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dia de Sorte - Hub de Ferramentas</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        secondary: '#E8A500',
+                        accent: '#22c55e'
+                    },
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-200">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-primary mb-2">
+                <i class="fas fa-clover mr-2"></i>Dia de Sorte - Hub de Ferramentas
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400 text-lg">
+                Acesse todas as ferramentas de apoio para Dia de Sorte em um só lugar
+            </p>
+        </header>
+
+        <div class="flex flex-wrap gap-4 justify-center mb-6">
+            <button id="openAllBtn" class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-lg shadow transition flex items-center gap-2">
+                <i class="fas fa-external-link-alt"></i> Abrir Todos os Sites
+            </button>
+            <button id="toggleViewBtn" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 font-bold py-3 px-6 rounded-lg shadow transition flex items-center gap-2">
+                <i class="fas fa-th-large"></i> <span id="viewModeText">Visualização em Grid</span>
+            </button>
+        </div>
+
+        <div class="mb-8">
+            <div class="relative">
+                <input type="text" id="searchInput" placeholder="Pesquisar ferramentas..." class="w-full p-4 pr-12 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-primary">
+                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <div class="flex flex-wrap gap-2" id="categoryFilters">
+                <button class="category-filter bg-primary text-white px-4 py-2 rounded-full" data-category="all">Todos</button>
+                <button class="category-filter bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-full" data-category="estatisticas">Estatísticas</button>
+                <button class="category-filter bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-full" data-category="geradores">Geradores</button>
+                <button class="category-filter bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-full" data-category="conferidores">Conferidores</button>
+                <button class="category-filter bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-full" data-category="estrategias">Estratégias</button>
+            </div>
+        </div>
+
+        <!-- Lista de sites será inserida via JavaScript - Layout List por padrão -->
+        <div id="sitesList" class="space-y-4"></div>
+        
+        <!-- Layout Grid (inicialmente escondido) -->
+        <div id="sitesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+        
+        <div id="statusMessage" class="fixed bottom-4 right-4 bg-primary text-white px-6 py-3 rounded-lg shadow-lg hidden"></div>
+        
+        <div id="notificationContainer" class="fixed bottom-4 left-4 z-50 flex flex-col-reverse gap-2"></div>
+    </div>
+
+    <footer class="mt-16 pb-8 text-center text-gray-500 dark:text-gray-400 text-sm">
+        <p>Todos os sites abrem em novas guias. Permita pop-ups para abrir múltiplos sites de uma vez.</p>
+        <p class="mt-2">
+            <button id="darkModeToggle" class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary">
+                <i class="fas fa-moon dark:hidden"></i>
+                <i class="fas fa-sun hidden dark:inline"></i>
+            </button>
+        </p>
+    </footer>
+
+    <script>
+        // Verificação de dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        // Lista de sites
+        const SITES = [
+            {
+                name: 'Estatísticas | Calculadora Combinações (Dígitos)',
+                url: 'https://combinacaodoisdiadesorte.onrender.com/',
+                description: 'Ferramenta para cálculo de combinações baseadas em dígitos.',
+                category: 'estatisticas',
+                icon: 'calculator'
+            },
+            {
+                name: 'Estatísticas | Análise de Dígitos',
+                url: 'https://resultadosdigitosdiadesorte.onrender.com/',
+                description: 'Análise detalhada dos dígitos em resultados anteriores.',
+                category: 'estatisticas',
+                icon: 'chart-line'
+            },
+            {
+                name: 'Estatísticas | Resumo',
+                url: 'https://resumodiadesorte.onrender.com/',
+                description: 'Resumo estatístico completo dos sorteios anteriores.',
+                category: 'estatisticas',
+                icon: 'chart-pie'
+            },
+            {
+                name: 'Estatísticas | Análise de Palpites (Digitos)',
+                url: 'https://analisedospalpitesds.onrender.com/',
+                description: 'Ferramenta avançada para análise de palpites baseados em dígitos.',
+                category: 'estatisticas',
+                icon: 'chart-bar'
+            },
+            {
+                name: 'Estratégias | Palpites II',
+                url: 'https://palpitesds.onrender.com/',
+                description: 'Estratégias avançadas para geração de palpites.',
+                category: 'estrategias',
+                icon: 'chess'
+            },
+            {
+                name: 'Geradores | Combinação I',
+                url: 'https://combinacaoumdiadesorte.onrender.com/',
+                description: 'Gerador de palpites baseado em combinações otimizadas.',
+                category: 'geradores',
+                icon: 'random'
+            },
+            {
+                name: 'Geradores | Baseado em Dígitos',
+                url: 'https://geradorbaseadoemdigitosdiadesorte.netlify.app/',
+                description: 'Gerador que utiliza padrões de dígitos para criar palpites estratégicos.',
+                category: 'geradores',
+                icon: 'dice'
+            },
+            {
+                name: 'Conferidor | Resumo',
+                url: 'https://diadesorteconferidor.onrender.com/',
+                description: 'Ferramenta para conferir seus jogos com resumo estatístico.',
+                category: 'conferidores',
+                icon: 'check-double'
+            },
+            {
+                name: 'Conferidor | Automático 1',
+                url: 'https://confauto1diadesorte.netlify.app/',
+                description: 'Conferidor automático para um único palpite com feedback por áudio.',
+                category: 'conferidores',
+                icon: 'check-circle'
+            },
+            {
+                name: 'Conferidor | Automático 1+',
+                url: 'https://confautomaisque1diadesorte.netlify.app/',
+                description: 'Conferidor automático para múltiplos palpites com feedback por áudio.',
+                category: 'conferidores',
+                icon: 'tasks'
+            },
+            {
+                name: 'Geradores | Gerador Final',
+                url: 'https://geradorfinaldiadesorte.netlify.app/',
+                description: 'Gerador completo com recursos avançados de filtragem.',
+                category: 'geradores',
+                icon: 'magic'
+            }
+        ];
+
+        // Estado da aplicação
+        let currentView = 'list'; // 'list' ou 'grid'
+        let currentFilter = 'all';
+        let currentSearch = '';
+
+        // Elementos DOM
+        const sitesListElement = document.getElementById('sitesList');
+        const sitesGridElement = document.getElementById('sitesGrid');
+        const categoryFilters = document.querySelectorAll('.category-filter');
+        const searchInput = document.getElementById('searchInput');
+        const toggleViewBtn = document.getElementById('toggleViewBtn');
+        const viewModeText = document.getElementById('viewModeText');
+        const openAllBtn = document.getElementById('openAllBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const notificationContainer = document.getElementById('notificationContainer');
+
+        // Funções de renderização
+        function renderSites() {
+            const filteredSites = SITES.filter(site => {
+                const matchesCategory = currentFilter === 'all' || site.category === currentFilter;
+                const matchesSearch = site.name.toLowerCase().includes(currentSearch.toLowerCase()) || 
+                                     site.description.toLowerCase().includes(currentSearch.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            // Limpar as duas visualizações
+            sitesListElement.innerHTML = '';
+            sitesGridElement.innerHTML = '';
+
+            if (filteredSites.length === 0) {
+                const noResultsMessage = document.createElement('div');
+                noResultsMessage.className = 'text-center py-10 text-gray-500 dark:text-gray-400';
+                noResultsMessage.innerHTML = `
+                    <i class="fas fa-search fa-3x mb-4"></i>
+                    <p class="text-xl">Nenhum resultado encontrado</p>
+                    <p class="mt-2">Tente outros termos ou remova os filtros</p>
+                `;
+                sitesListElement.appendChild(noResultsMessage);
+                sitesGridElement.appendChild(noResultsMessage.cloneNode(true));
+                return;
+            }
+
+            // Renderizar para visualização em lista
+            filteredSites.forEach((site, index) => {
+                const siteElement = document.createElement('div');
+                siteElement.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition overflow-hidden border border-gray-200 dark:border-gray-700';
+                siteElement.innerHTML = `
+                    <div class="flex flex-col md:flex-row items-stretch">
+                        <div class="bg-primary/10 dark:bg-primary/20 flex items-center justify-center p-6 md:w-24">
+                            <i class="fas fa-${site.icon} text-primary text-4xl"></i>
+                        </div>
+                        <div class="p-6 flex-1">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white">${site.name}</h3>
+                                <span class="mt-2 md:mt-0 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                                    ${getCategoryLabel(site.category)}
+                                </span>
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-400 mb-4">${site.description}</p>
+                            <div class="flex items-center justify-end">
+                                <a href="${site.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    <i class="fas fa-external-link-alt mr-2"></i> Abrir Site
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                sitesListElement.appendChild(siteElement);
+
+                // Renderizar para visualização em grid
+                const gridSiteElement = document.createElement('div');
+                gridSiteElement.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col h-full';
+                gridSiteElement.innerHTML = `
+                    <div class="bg-primary/10 dark:bg-primary/20 flex items-center justify-center p-6">
+                        <i class="fas fa-${site.icon} text-primary text-4xl"></i>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col">
+                        <div class="flex flex-col mb-2">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">${site.name}</h3>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 self-start">
+                                ${getCategoryLabel(site.category)}
+                            </span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-400 mb-4 flex-1">${site.description}</p>
+                        <div class="flex items-center justify-center mt-auto">
+                            <a href="${site.url}" target="_blank" rel="noopener noreferrer" class="w-full text-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                <i class="fas fa-external-link-alt mr-2"></i> Abrir Site
+                            </a>
+                        </div>
+                    </div>
+                `;
+                sitesGridElement.appendChild(gridSiteElement);
+            });
+
+            // Atualizar visualização
+            updateView();
+        }
+
+        function updateView() {
+            if (currentView === 'list') {
+                sitesListElement.classList.remove('hidden');
+                sitesGridElement.classList.add('hidden');
+                viewModeText.textContent = 'Visualização em Grid';
+            } else {
+                sitesListElement.classList.add('hidden');
+                sitesGridElement.classList.remove('hidden');
+                viewModeText.textContent = 'Visualização em Lista';
+            }
+        }
+
+        function getCategoryLabel(category) {
+            const labels = {
+                'estatisticas': 'Estatísticas',
+                'geradores': 'Geradores',
+                'conferidores': 'Conferidores',
+                'estrategias': 'Estratégias'
+            };
+            return labels[category] || category;
+        }
+
+        // Event Listeners
+        toggleViewBtn.addEventListener('click', () => {
+            currentView = currentView === 'list' ? 'grid' : 'list';
+            updateView();
+        });
+
+        categoryFilters.forEach(filter => {
+            filter.addEventListener('click', () => {
+                // Atualizar estado visual
+                categoryFilters.forEach(f => {
+                    f.classList.remove('bg-primary', 'text-white');
+                    f.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-800', 'dark:text-gray-200');
+                });
+                filter.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-800', 'dark:text-gray-200');
+                filter.classList.add('bg-primary', 'text-white');
+                
+                // Atualizar filtro e renderizar
+                currentFilter = filter.dataset.category;
+                renderSites();
+            });
+        });
+
+        searchInput.addEventListener('input', () => {
+            currentSearch = searchInput.value;
+            renderSites();
+        });
+
+        // Abrir todos os sites
+        openAllBtn.addEventListener('click', async () => {
+            const availableSites = SITES.filter(site => {
+                const matchesCategory = currentFilter === 'all' || site.category === currentFilter;
+                const matchesSearch = site.name.toLowerCase().includes(currentSearch.toLowerCase()) || 
+                                    site.description.toLowerCase().includes(currentSearch.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            if (availableSites.length === 0) {
+                showNotification('Nenhum site para abrir com os filtros atuais', 'warning');
+                return;
+            }
+
+            showNotification(`Aguarde, abrindo ${availableSites.length} sites em novas abas...`, 'info');
+            
+            for (const site of availableSites) {
+                try {
+                    // Tentativa de abrir em uma nova aba
+                    window.open(site.url, '_blank');
+                    
+                    // Exibir notificação para cada site
+                    showNotification(`Aberto: ${site.name}`, 'success');
+                    
+                    // Pequena pausa para evitar bloqueio de pop-ups
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                } catch (error) {
+                    showNotification(`Erro ao abrir ${site.name}: ${error.message}`, 'error');
+                }
+            }
+        });
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification max-w-xs p-4 mb-4 rounded-lg shadow-lg flex items-center gap-3 transition-all duration-300 ease-in-out opacity-0 transform translate-x-[-20px]`;
+            
+            // Definir tipo de notificação
+            let iconClass = 'fa-info-circle text-blue-500';
+            let bgClass = 'bg-blue-100 dark:bg-blue-900/30';
+            
+            if (type === 'success') {
+                iconClass = 'fa-check-circle text-green-500';
+                bgClass = 'bg-green-100 dark:bg-green-900/30';
+            } else if (type === 'warning') {
+                iconClass = 'fa-exclamation-triangle text-yellow-500';
+                bgClass = 'bg-yellow-100 dark:bg-yellow-900/30';
+            } else if (type === 'error') {
+                iconClass = 'fa-times-circle text-red-500';
+                bgClass = 'bg-red-100 dark:bg-red-900/30';
+            }
+            
+            notification.classList.add(bgClass);
+            notification.innerHTML = `
+                <div class="shrink-0">
+                    <i class="fas ${iconClass} text-xl"></i>
+                </div>
+                <div class="text-sm text-gray-900 dark:text-gray-100">${message}</div>
+            `;
+            
+            notificationContainer.appendChild(notification);
+            
+            // Animar entrada
+            setTimeout(() => {
+                notification.classList.add('opacity-100');
+                notification.classList.remove('translate-x-[-20px]');
+            }, 10);
+            
+            // Configurar o timeout para remover a notificação
+            setTimeout(() => {
+                notification.classList.add('opacity-0', 'translate-x-[-20px]');
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 5000);
+        }
+        
+        // Inicialização
+        renderSites();
+    </script>
+</body>
+</html>

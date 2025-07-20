@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dia da Sorte - Gerador de Palpites</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-white dark:bg-gray-900 min-h-screen transition-colors duration-200">
+    <!-- Elemento de áudio para o beep -->
+    <audio id="beep-sound" preload="auto">
+        <source src="data:audio/mp3;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFzb25pY0NvbXBsZXguY29tAAAAQ09NTAEAAAARBGF0aXN0AAA/VEVOVAEAAA1MYXNvbmljAAAAVFlFUgAAAAUAAABUUkFDSwAAAAEAAAAvVElUMgAAABcAAABCaWcgU291bmQgQmFuayBCZWVwAAAAWFhYWAAAABoAAHByaXZhdGUAQmlnIFNvdW5kIEJhbmsAAP/7kGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEluZm8AAAAPAAAABQAAAkAAUFBQUFBQUFBQkJCQkJCQkJCQsLCwsLCwsLDQ0NDQ0NDQ0NDw8PDw8PDw8P//////////////////AAAAOUxBTUUzLjk5cgGqAAAAAC4WAAA0/1RJRDMAAAAeAAAAAQAAgD4AAzIAAklMRUMyAAAAAAADQgDwyMQFQQAAAABMSVNUMQAAAFRJVDIAAAAIAGEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/7lGQAAAG5KdtmMGtwRKGqnPYm1AzwwWWewxqBxwevM9J7VAgMBDwcgAJlUaAEVH//9Q/dQJBsFSKjDlHZ1HNBHsYyLgQ4wPOghgGQ4XuefzPO/OAicEIIHNXgHQPKl5QbaBN6JC4MO7aKmkjShhfuUTCQu4dFAWChLdQW73LgJ3JFNLMqhQxo4T5ggJQKHIL6oDJbKnBMEOgOYlAEW7gMZw6q7Jk2yaqsyW7VKirLKytLJhisUBbNE0ZQpHHi5aOFnGhQtIgdmC3bjL2A6kE0OIBDJQTb/2f/iG4KCLYfbYthx+f/z+8D4IgPzA+A/wZBAT+BAcHCBIYHAPcGnsBUEfmj//9AgYHQP94EB/8CAn9/UPeCw+B8QMmD/yYEnECQDLcUAAACAGABYMAAIiIgIiB7IKGIEjNt/Gf85E45EeXWzijVJNJ67haxzKSMzQZtAsFP/Pb1lqHbFb4IB0gVLyGNB1HpDz6dCYyZbTI6oVFYE9y6gDNMKlJGzZqnOfbM6eRBg1nSdJo0hCgpERjBKpLn9DPpx5rvbQNjW1kzFQ4OaXUUVKiQEQVRRJITHJ0KakJdGvME4Y4ShrUaNFJtWJVeL2dZYQsazBH+pISQ9NqWLlrQ49DlQ4c2R5a10cWLGhhKLRpcNZ8TRs1V4lT48Vjw0dHUKLHWIppacb5yQX9yz0kbFnqZK8OOS8avPPmLvlLrh+5z3z7nOXOc5cuc5c9Y5c9YuXLDl8xcoub5y51i5ixc3NGLm+YsXRRYubqFFz1CRYuemUKFz1Z0ii5us8oRc26tJFi5u3VnRYub3Vo0WLnrfWjRYuetpnWix676ZMrObfVlZzboNZWc3QatHObetWtGi5vfWrRoud+DVnObpNWdGc3WWtGi564LVo0WaXeVnNujeZ1o0XOrXWdGc3T6z1nNuit1nRnN0b6zozmyK3WvRnNskt1nRnNFvMysEjHyiAAAqBAAABD0DQRBBWfL9YK2GK2GOPiT2x5S17ZOHCXd2a5zMYRbCMcb1CwKVAmqHVKy9xLpU5zrb04aSjOuHNmzZs2YZtytRo0aNLRo0aNLRo3bN2qWjRoZtjNo0aGbRoQtU0V4aoaqGrVNWqemrVNU1TVNWqapqmqap00KlCYyAAAQAGABgAQAKf/7lGTghANwZMx/NScQZuIZjOPM7A4Rj0GczJzBtLJoc5jjkfAL+pIhgZfEH9SDhA4IMTKACCU4JAd9iUPoHUdB7H9TnPSc5+bG9jbZAl5RpaKWDGWt98aZg4HhkYaSjjjMkDHLVHuXVRR3ey4OPbRYy28GnmTkpSPnN87kQkEXWLmDpMz20jBQkROpJIHmHTMZs2bNkmZs2bNmyZMrSVmjQhaKNG5s0aNGjVLGTdLR3b2zZumkqaplEJBAqhAAgkTCiQRMFAKkAFUwYlGDGJjLpZKZdKZdLIcDMkcOEkMOGnqXFoRdSUTrHiJo8lCJo8GbkrIzL+GbLsQzZdSHJexDLl0IclemOSvTHJLlDN+UMu0N+cM1ZViGasorMuorM1pVJlpVJjzVaFPOoRHmRjIvMeZH8x47/nNFQUKFTqUKJFOoUKA6pRUHVKKidU1UDqlFQdUoqDqlFQdUoqDqlFQdUoqD1lGpQoaqDqlFQdUoqDqlGpQoaqNmBQJASAAAQSDQqRkAABgGGQUCAOFAhILdMQALoOiCJMKDDGGESIIkFExABjERgYiIxEQGIgMYQIIFgKoVQqw1CrDUGugawNVNVNVNVNaNaNbNbNaNbNYNYNVNVNVNaNaNaNaNbNYNYNaNaNaNbNbNbNbNYNYNbNbNbLVaLVaLRaLVaLRaLRaLRaLRaLRaLRaLRaLRaLRaLRaLVqtVqtVq0Wi0Wi0Wi0Wi0WjZs2bNmzZJUlUZMzZmzNmbMmTMmTNmzZs2bNmzZs2bNmzZs2bNmzZs2bNmzZs2SZJmzZkzZmzZs2bNmzZs2bNmzZs2bNmzZs2bNmzZs2bNmzZs2bNmyTJM2bNmrNmrVr17Xr169evWX8NeGvDXhsjZGyhsoTKEyhf/7lGR2AAOCREn3KsAMN0CHPuJABAylEOHcSwLBmIpde5UyUCZQmUJlhMoTJ0ydMnTp06dOnTJkyZMmSVKlSpMkqSpVKlSpMmTJkyZMnTp06dOnTp06dOnTJkyZMmSVKlSpUqVKlSpUqTJkyZMmSdOrTq1a9e3duZnZzs7Ojs6Ojo6Ojo7Oz8/P0NDQ0NDQ0NDQ19fX19fYWFhYWFhYWFhYjIyMjIyEhISEhISEhISEhISEhIQXRVAUUEVCkpKSlFKUalKUahStLS00NDQ0NDRQUFFRUVFRUVGxsbGy0tLS1JVKpVfklVWNj////+xsbLH////7GxsqSqSxo2NGjY5aqtWytVdnr///////////1+v95N/t+v93//X//X/9f/1//X/9f/1//X/9f/1//X+2/8/9v/P/b/z/m/tr/m/tr/m/tj2PY9j2PY9j2PY9jTPPP+////8/f5/j7Gxslj/7HsexsaxrGsex7IQnuKICg4OkpMjX1X////+VlZWVl////5WVlZTqVSlgwYL9KlX5WqqVJUv//b/t/S///////7aqVLVqqWqlVTGjRo2Obm6urq+v////6urrb///+urq6vr//9X/X/df95//v/9//+//7///r//////f6//3+v/9/qVVVVzc3OL/////8Pf//+Nf/////5f//+L//3Fr/X8Wy//////5Q/8Vwvwv////8Vwvwv////8Vwvwvwv///d/7r/r//83/P/b/z/2//X/b/9f/1//X/9f/1//X/9f/1//G//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==" type="audio/mp3">
+    </audio>
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">Dia da Sorte - Conferidor Automático (1+ Palpite Manual)</h1>
+        <hr />
+        <p><a href="index.html" target="_blank">Voltar</a></p>
+
+
+
+
+
+        <div class="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">Gerador de Palpites</h2>
+            
+            <!-- Botão de teste de áudio -->
+            <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-lg mb-4">
+                <div class="flex justify-between items-center">
+                    <div class="text-sm text-blue-800 dark:text-blue-200">
+                        <span class="font-bold">Teste de áudio:</span> Clique no botão ao lado para verificar se o som está funcionando.
+                    </div>
+                    <button id="test-audio-btn" class="bg-blue-500 hover:bg-blue-600 text-white text-sm py-1 px-3 rounded">
+                        Testar Som
+                    </button>
+                </div>
+                <div id="audio-status" class="text-xs mt-1 text-blue-700 dark:text-blue-300">Sistema de áudio inicializado.</div>
+            </div>
+            
+            <div class="mb-2">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="flex-1">
+                        <label class="text-sm text-gray-600 dark:text-gray-400 mb-1 block">Números</label>
+                        <div id="numbers-container" class="grid grid-cols-7 gap-2 w-full">
+                            <div class="number-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                            <div class="number-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                            <div class="number-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                            <div class="number-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                            <div class="number-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                            <div class="number-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                            <div class="number-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                        </div>
+                    </div>
+                    <div class="w-20">
+                        <label class="text-sm text-gray-600 dark:text-gray-400 mb-1 block">Mês</label>
+                        <div id="month-box" class="month-box bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center h-12 text-lg font-bold text-gray-800 dark:text-white">-</div>
+                    </div>
+                </div>
+                <div id="match-info" class="mt-2 text-sm text-gray-600 dark:text-gray-400 text-center hidden">
+                    Acertos: <span id="match-counter" class="text-green-600 dark:text-green-400">0</span>/7 + Mês: <span id="month-match" class="text-green-600 dark:text-green-400">não</span>
+                </div>
+                <!-- NOVO: Contador de palpites -->
+                <div id="palpite-counter" class="mt-1 text-xs text-gray-500 dark:text-gray-400 text-center">
+                    Palpite: <span id="counter-value">0</span>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h3 class="text-md font-medium text-gray-700 dark:text-gray-300 mb-3">Números fixos para todos os palpites:</h3>
+                
+                <!-- Seção de números fixos (4 números) -->
+                <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800 mb-4">
+                    <div class="mb-2">
+                        <label class="text-sm font-medium text-blue-800 dark:text-blue-300">Escolha 4 números fixos para todos os palpites:</label>
+                    </div>
+                    <div class="grid grid-cols-4 gap-3 mb-3">
+                        <input type="number" min="1" max="31" id="fixed-number-1" class="fixed-number-input bg-white dark:bg-gray-700 border border-blue-300 dark:border-blue-600 rounded-md text-center h-12 text-base font-bold text-gray-800 dark:text-white" placeholder="1">
+                        <input type="number" min="1" max="31" id="fixed-number-2" class="fixed-number-input bg-white dark:bg-gray-700 border border-blue-300 dark:border-blue-600 rounded-md text-center h-12 text-base font-bold text-gray-800 dark:text-white" placeholder="2">
+                        <input type="number" min="1" max="31" id="fixed-number-3" class="fixed-number-input bg-white dark:bg-gray-700 border border-blue-300 dark:border-blue-600 rounded-md text-center h-12 text-base font-bold text-gray-800 dark:text-white" placeholder="3">
+                        <input type="number" min="1" max="31" id="fixed-number-4" class="fixed-number-input bg-white dark:bg-gray-700 border border-blue-300 dark:border-blue-600 rounded-md text-center h-12 text-base font-bold text-gray-800 dark:text-white" placeholder="4">
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="apply-fixed-numbers" class="flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Aplicar números fixos
+                        </button>
+                    </div>
+                    <div id="fixed-numbers-error" class="mt-2 text-sm text-red-500 hidden"></div>
+                </div>
+                
+                <!-- Navegação pelos conjuntos de palpites -->
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Mostrando palpites </span>
+                        <span id="conjunto-atual" class="font-bold">1-5</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400"> de 31</span>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="prev-conjunto" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50" disabled>
+                            ← Anterior
+                        </button>
+                        <button id="next-conjunto" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
+                            Próximo →
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Container com grupos fixos de palpites -->
+                <!-- Grupo 1 (visível inicialmente) -->
+                <div id="grupo-palpites-1" class="palpites-grupo">
+                    <!-- Palpite 1 -->
+                    <div class="palpite-group mb-4 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Palpite 1</h4>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 palpite-status"></span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="flex-1">
+                                <div class="manual-input-container grid grid-cols-7 gap-2 w-full" data-palpite-id="1">
+                                    <!-- 4 números fixos (readonly) -->
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <!-- 3 números automáticos -->
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                </div>
+                            </div>
+                            <div class="w-16">
+                                <input type="number" min="1" max="12" class="month-input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white w-full" placeholder="Mês">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Palpite 2 -->
+                    <div class="palpite-group mb-4 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Palpite 2</h4>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 palpite-status"></span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="flex-1">
+                                <div class="manual-input-container grid grid-cols-7 gap-2 w-full" data-palpite-id="2">
+                                    <!-- 4 números fixos (readonly) -->
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <!-- 3 números automáticos -->
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                </div>
+                            </div>
+                            <div class="w-16">
+                                <input type="number" min="1" max="12" class="month-input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white w-full" placeholder="Mês">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Palpite 3 -->
+                    <div class="palpite-group mb-4 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Palpite 3</h4>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 palpite-status"></span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="flex-1">
+                                <div class="manual-input-container grid grid-cols-7 gap-2 w-full" data-palpite-id="3">
+                                    <!-- 4 números fixos (readonly) -->
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <!-- 3 números automáticos -->
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                </div>
+                            </div>
+                            <div class="w-16">
+                                <input type="number" min="1" max="12" class="month-input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white w-full" placeholder="Mês">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Palpite 4 -->
+                    <div class="palpite-group mb-4 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Palpite 4</h4>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 palpite-status"></span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="flex-1">
+                                <div class="manual-input-container grid grid-cols-7 gap-2 w-full" data-palpite-id="4">
+                                    <!-- 4 números fixos (readonly) -->
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <!-- 3 números automáticos -->
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                </div>
+                            </div>
+                            <div class="w-16">
+                                <input type="number" min="1" max="12" class="month-input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white w-full" placeholder="Mês">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Palpite 5 -->
+                    <div class="palpite-group mb-4 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Palpite 5</h4>
+                            <span class="text-xs text-gray-500 dark:text-gray-400 palpite-status"></span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="flex-1">
+                                <div class="manual-input-container grid grid-cols-7 gap-2 w-full" data-palpite-id="5">
+                                    <!-- 4 números fixos (readonly) -->
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                    <!-- 3 números automáticos -->
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                    <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                </div>
+                            </div>
+                            <div class="w-16">
+                                <input type="number" min="1" max="12" class="month-input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white w-full" placeholder="Mês">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Grupo 2 (escondido inicialmente) -->
+                <div id="grupo-palpites-2" class="palpites-grupo hidden">
+                    <!-- Outros palpites (6-10) serão gerados via JavaScript -->
+                </div>
+                
+                <!-- Outros grupos 3-7 com palpites 11-31 serão gerados via JavaScript -->
+                <div id="palpites-container">
+                    <!-- Aqui serão adicionados dinamicamente os outros palpites -->
+                </div>
+                
+                <div class="mt-3">
+                    <div id="error-message" class="text-red-500 text-sm mb-2 hidden"></div>
+                    
+                    <!-- Botão para gerar números automáticos para todos os palpites -->
+                    <button id="generate-auto-all" class="w-full mb-2 py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md transition-colors duration-200 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                        </svg>
+                        Gerar números automáticos para todos os palpites
+                    </button>
+                    
+                    <!-- Botões para conferência sequencial e em massa -->
+                    <div class="flex flex-col gap-2">
+                        <button id="check-next-btn" class="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md transition-colors duration-200 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Conferir Próximo Palpite
+                        </button>
+                        
+                        <button id="check-all-btn" class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            Conferir Todos os Palpites
+                        </button>
+                        
+                        <button id="reset-check-btn" class="w-full py-2 px-4 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-md transition-colors duration-200 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                            </svg>
+                            Reiniciar Conferência
+                        </button>
+                    </div>
+                    
+                    <!-- Resultado da conferência -->
+                    <div id="conferencia-resultado" class="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-md hidden">
+                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Resultado da conferência:</h4>
+                        <div id="conferencia-msg" class="text-sm font-bold text-center py-2"></div>
+                    </div>
+                    
+                    <!-- Resumo de acertos -->
+                    <div id="resumo-acertos" class="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-md hidden">
+                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Resumo da conferência:</h4>
+                        <div class="grid grid-cols-3 gap-2 text-sm">
+                            <div class="bg-gray-100 dark:bg-gray-600 p-2 rounded">
+                                <div class="text-xs text-gray-500 dark:text-gray-400">Palpite atual</div>
+                                <div id="palpite-atual" class="font-bold text-gray-800 dark:text-white">0</div>
+                            </div>
+                            <div class="bg-gray-100 dark:bg-gray-600 p-2 rounded">
+                                <div class="text-xs text-gray-500 dark:text-gray-400">Acertos</div>
+                                <div id="atual-acertos" class="font-bold text-green-600 dark:text-green-400">0</div>
+                            </div>
+                            <div class="bg-gray-100 dark:bg-gray-600 p-2 rounded">
+                                <div class="text-xs text-gray-500 dark:text-gray-400">Mês</div>
+                                <div id="atual-mes" class="font-bold text-blue-600 dark:text-blue-400">Não</div>
+                            </div>
+                        </div>
+                        <div id="palpite-vencedor" class="mt-3 py-2 px-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-900 rounded-md hidden">
+                            <div class="text-center font-medium text-green-700 dark:text-green-400">PALPITE VENCEDOR!</div>
+                            <div class="text-sm text-center text-green-600 dark:text-green-300 mt-1">
+                                Encontrou <span id="vencedor-acertos" class="font-bold">5</span> acertos!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="interval-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Intervalo de geração automática:</label>
+                <div class="flex gap-2">
+                    <select id="interval-select" class="flex-1 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-base focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+                        <option value="0">Desativado</option>
+                        <option value="1">1 segundo</option>
+                        <option value="2">2 segundos</option>
+                        <option value="5">5 segundos</option>
+                        <option value="10">10 segundos</option>
+                        <option value="30">30 segundos</option>
+                        <option value="60">1 minuto</option>
+                    </select>
+                    <button id="toggle-auto-btn" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white py-2 px-4 rounded-md transition-colors duration-200 hidden">
+                        Parar
+                    </button>
+                </div>
+                <div id="countdown-display" class="mt-2 text-sm text-gray-600 dark:text-gray-400 hidden">
+                    Próximo palpite em: <span id="countdown">0</span>s
+                </div>
+            </div>
+            
+            <button id="generate-btn" class="w-full py-3 px-4 bg-primary hover:bg-primary/90 text-white font-medium rounded-md transition-colors duration-200 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                </svg>
+                Gerar Palpite
+            </button>
+        </div>
+        
+        <div class="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">Como funciona</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-2">Clique no botão "Gerar Palpite" para obter 7 números aleatórios entre 1 e 31, sem repetições.</p>
+            <p class="text-gray-600 dark:text-gray-300 mb-2">Escolha 4 números fixos e clique em "Aplicar números fixos" para usá-los em todos os 31 palpites. Os outros 3 números de cada palpite serão gerados automaticamente.</p>
+            <p class="text-gray-600 dark:text-gray-300 mb-2">Para conferir seus palpites, preencha os meses e clique em:
+            <ul class="list-disc pl-5 text-gray-600 dark:text-gray-300 mb-2">
+                <li><b>Conferir Próximo Palpite</b>: Verifica um palpite por vez</li>
+                <li><b>Conferir Todos</b>: Verifica todos os seus palpites de uma vez</li>
+            </ul>
+            <p class="text-gray-600 dark:text-gray-300 mb-2">Para geração automática, selecione um intervalo de tempo no menu suspenso. Quando ativo, um contador mostrará o tempo restante para o próximo palpite.</p>
+            <p class="text-gray-600 dark:text-gray-300 text-sm">Os números gerados são apenas sugestões e não garantem resultados em qualquer sorteio.</p>
+            
+            <div id="history-section" class="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Histórico de grandes acertos (5+)</h4>
+                    <div class="flex space-x-2">
+                        <button id="show-freq-btn" class="text-xs px-2 py-1 bg-primary text-white rounded hover:bg-primary/90 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5z" />
+                                <path d="M8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7z" />
+                                <path d="M14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                            </svg>
+                            Frequência
+                        </button>
+                        <!-- NOVO: Botão para exportar histórico -->
+                        <button id="export-history-btn" class="text-xs px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                            Exportar
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Frequência de acertos -->
+                <div id="frequency-stats" class="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-md hidden">
+                    <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Frequência de acertos:</h5>
+                    <div id="frequency-content"></div>
+                </div>
+                
+                <!-- NOVO: Seção para exportar histórico -->
+                <div id="export-options" class="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-md hidden">
+                    <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Exportar histórico completo:</h5>
+                    <div class="flex gap-2 mt-2">
+                        <button id="export-excel-btn" class="flex-1 py-1 px-2 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded transition-colors duration-200 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                            Excel (.xlsx)
+                        </button>
+                        <button id="export-html-btn" class="flex-1 py-1 px-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded transition-colors duration-200 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                            HTML
+                        </button>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                        Os arquivos exportados contêm o histórico completo de acertos, mesmo os que não são mais exibidos na interface.
+                    </div>
+                </div>
+                
+                <!-- Histórico de grandes acertos -->
+                <div id="history-container" class="text-sm">
+                    <!-- Aqui serão adicionados os grandes acertos -->
+                    <div class="text-center text-gray-500 dark:text-gray-400 italic py-2">
+                        Os acertos com 5+ números aparecerão aqui.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de áudio - COMPLETAMENTE REFEITO
+        let audioContext = null;
+        let audioInitialized = false;
+
+        // Função para inicializar o contexto de áudio
+        function initAudio() {
+            try {
+                // Criar um contexto de áudio apenas se não existir
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    audioInitialized = true;
+                    document.getElementById('audio-status').textContent = 'Sistema de áudio inicializado.';
+                    return true;
+                }
+                return audioInitialized;
+            } catch (e) {
+                console.error("Erro ao inicializar áudio:", e);
+                document.getElementById('audio-status').textContent = 'Erro ao inicializar áudio: ' + e.message;
+                return false;
+            }
+        }
+
+        // Função de beep simples - usando Web Audio API diretamente
+        function playAlertSound() {
+            if (!initAudio()) {
+                console.error("Não foi possível tocar som: áudio não inicializado");
+                document.getElementById('audio-status').textContent = 'Não foi possível tocar som: áudio não inicializado';
+                return;
+            }
+            
+            try {
+                // Log para debug
+                console.log("Reproduzindo som de alerta");
+                document.getElementById('audio-status').textContent = 'Reproduzindo som de alerta...';
+                
+                // Criar oscilador e nó de ganho
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                // Configurar oscilador para um som agudo (alerta)
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(780, audioContext.currentTime);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Configurar volume
+                gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+                
+                // Iniciar som
+                oscillator.start();
+                
+                // Controlar a duração do som (500ms)
+                setTimeout(() => {
+                    // Fade out suave
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    // Parar o oscilador após o fade out
+                    setTimeout(() => {
+                        oscillator.stop();
+                        document.getElementById('audio-status').textContent = 'Som de alerta reproduzido com sucesso!';
+                    }, 200);
+                }, 300);
+                
+                // Efeito visual de destaque quando um beep é tocado
+                highlightMatchCounter();
+                
+                return true;
+            } catch (e) {
+                console.error("Erro ao reproduzir som:", e);
+                document.getElementById('audio-status').textContent = 'Erro ao reproduzir som: ' + e.message;
+                return false;
+            }
+        }
+        
+        // Função para destacar visualmente o contador de acertos
+        function highlightMatchCounter() {
+            const matchCounter = document.getElementById('match-counter');
+            if (!matchCounter) return;
+            
+            // Adicionar classe de destaque (flash)
+            matchCounter.classList.add('flash-highlight');
+            
+            // Remover classe após animação
+            setTimeout(() => {
+                matchCounter.classList.remove('flash-highlight');
+            }, 1000);
+        }
+
+        // Função para testar o áudio (botão de teste)
+        document.getElementById('test-audio-btn').addEventListener('click', function() {
+            initAudio();
+            playAlertSound();
+        });
+
+        // Detectar modo escuro
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Variáveis para controle de intervalo
+        let intervalId = null;
+        let countdownValue = 0;
+        let autoCheckingEnabled = false;
+        let checkingStopped = false;
+        let currentIntervalValue = 0; // NOVO: armazenar o intervalo atual
+        
+        // Variáveis para controle da conferência sequencial
+        let currentCheckIndex = 0;
+        let allPalpites = [];
+        let checkingInProgress = false;
+        
+        // Variáveis para armazenar os palpites manuais e histórico
+        let userGuessNumbers = [];
+        let userGuessMonth = null;
+        const historyLimit = 10; // Número máximo de itens no histórico
+        let detailedHistoryData = [];
+        let completeHistoryData = []; // NOVO: Histórico completo sem limite
+        
+        // Sistema de registro de todos os números sorteados (persistente)
+        let numerosSorteadosHistorico = [];
+        let sessionID = new Date().getTime().toString(); // ID único para a sessão atual
+        
+        // NOVOS: Contadores e tempo para os ajustes solicitados
+        let palpiteCounter = 0; // NOVO: Contador de palpites
+        let lastMatchDate = null; // NOVO: Data do último acerto
+        let lastMatchPalpite = 0; // NOVO: Número do último palpite com acerto
+        
+        // NOVO: Mapeamento dos valores de intervalo para textos legíveis
+        const intervalTexts = {
+            "0": "Desativado",
+            "1": "1 segundo",
+            "2": "2 segundos",
+            "5": "5 segundos",
+            "10": "10 segundos",
+            "30": "30 segundos",
+            "60": "1 minuto"
+        };
+        
+        // Array para armazenar os números fixos do usuário
+        let fixedNumbersArray = [];
+        
+        // Função para tocar o beep
+        function playBeep() {
+            const beepSound = document.getElementById('beep-sound');
+            if (beepSound) {
+                // Resetar o áudio para permitir reprodução múltipla
+                beepSound.currentTime = 0;
+                beepSound.play().catch(e => {
+                    console.log("Erro ao tocar beep:", e);
+                });
+            }
+        }
+        
+        // Carregar histórico anterior se existir
+        try {
+            // Carregar histórico de sorteios
+            const historicoSalvo = localStorage.getItem('diaDaSorteNumeros');
+            if (historicoSalvo) {
+                numerosSorteadosHistorico = JSON.parse(historicoSalvo);
+                console.log(`Histórico de sorteios carregado: ${numerosSorteadosHistorico.length} registros`);
+            }
+            
+            // Carregar histórico de acertos (5+)
+            const acertosSalvos = localStorage.getItem('diaDaSorteAcertos');
+            if (acertosSalvos) {
+                detailedHistoryData = JSON.parse(acertosSalvos);
+                completeHistoryData = [...detailedHistoryData]; // Manter uma cópia completa
+                console.log(`Histórico de acertos carregado: ${detailedHistoryData.length} registros`);
+            }
+        } catch (e) {
+            console.log("Não foi possível carregar o histórico:", e);
+            numerosSorteadosHistorico = [];
+            detailedHistoryData = [];
+            completeHistoryData = [];
+        }
+        const monthNames = [
+            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        ];
+        
+        // NOVO: Função para calcular a diferença de tempo entre duas datas de maneira legível
+        function formatTimeDifference(prevDate, currentDate) {
+            if (!prevDate) return "Primeiro acerto";
+            
+            const diffInSeconds = Math.floor((currentDate - prevDate) / 1000);
+            
+            const days = Math.floor(diffInSeconds / 86400);
+            const hours = Math.floor((diffInSeconds % 86400) / 3600);
+            const minutes = Math.floor((diffInSeconds % 3600) / 60);
+            const seconds = diffInSeconds % 60;
+            
+            let result = "";
+            
+            if (days > 0) {
+                result += `${days} dia${days > 1 ? 's' : ''}`;
+            }
+            
+            if (hours > 0) {
+                if (result) result += ", ";
+                result += `${hours} hora${hours > 1 ? 's' : ''}`;
+            }
+            
+            if (minutes > 0) {
+                if (result) result += ", ";
+                result += `${minutes} minuto${minutes > 1 ? 's' : ''}`;
+            }
+            
+            if (seconds > 0 || result === "") {
+                if (result) result += " e ";
+                result += `${seconds} segundo${seconds !== 1 ? 's' : ''}`;
+            }
+            
+            return result;
+        }
+        
+        // NOVO: Função para resetar o estilo do contador para o padrão (verde)
+        function resetMatchCounterStyle() {
+            const matchCounter = document.getElementById('match-counter');
+            if (!matchCounter) return;
+            
+            // Remover qualquer classe de destaque existente
+            matchCounter.classList.remove('text-red-600', 'dark:text-red-400', 'font-bold', 'text-base');
+            // Adicionar de volta as classes padrão
+            matchCounter.classList.add('text-green-600', 'dark:text-green-400');
+        }
+        
+        // Efeito sonoro para quando encontrar um vencedor
+        function createWinSound() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            oscillator.connect(gain);
+            gain.connect(ctx.destination);
+            
+            oscillator.type = "sine";
+            oscillator.frequency.value = 600;
+            gain.gain.value = 0.1;
+            
+            oscillator.start();
+            
+            // Aumentar um pouco a frequência e depois diminuir (efeito de "vitória")
+            oscillator.frequency.setValueAtTime(600, ctx.currentTime);
+            oscillator.frequency.linearRampToValueAtTime(800, ctx.currentTime + 0.1);
+            oscillator.frequency.linearRampToValueAtTime(1000, ctx.currentTime + 0.2);
+            oscillator.frequency.linearRampToValueAtTime(1200, ctx.currentTime + 0.3);
+            
+            // Diminuir o volume gradualmente
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4);
+            
+            // Parar o som após o efeito completo
+            setTimeout(() => {
+                oscillator.stop();
+            }, 400);
+        }
+        
+        // Função para gerar números aleatórios únicos
+        function generateUniqueRandomNumbers(min, max, count, excludeNumbers) {
+            // Conjunto para armazenar números já utilizados
+            const usedNumbers = new Set(excludeNumbers || []);
+            const result = [];
+            
+            // Verificar se é possível gerar a quantidade solicitada de números únicos
+            const availableNumbersCount = (max - min + 1) - usedNumbers.size;
+            if (count > availableNumbersCount) {
+                console.error(`Não é possível gerar ${count} números únicos entre ${min} e ${max} excluindo ${usedNumbers.size} números.`);
+                return result;
+            }
+            
+            // Gerar os números aleatórios
+            while (result.length < count) {
+                const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+                if (!usedNumbers.has(randomNum)) {
+                    usedNumbers.add(randomNum);
+                    result.push(randomNum);
+                }
+            }
+            
+            return result;
+        }
+        
+        // Função para registrar números sorteados no histórico
+        function registrarNumerosSorteados(numeros, mes) {
+            const agora = new Date();
+            const registro = {
+                dataHora: agora.toISOString(),
+                dataHoraFormatada: agora.toLocaleString(),
+                numeros: [...numeros],
+                mes: mes,
+                timestamp: agora.getTime()
+            };
+            
+            // Adicionar ao histórico
+            numerosSorteadosHistorico.push(registro);
+            
+            // Limitar o histórico a 1000 registros para evitar excesso de uso de memória
+            if (numerosSorteadosHistorico.length > 1000) {
+                numerosSorteadosHistorico = numerosSorteadosHistorico.slice(-1000);
+            }
+            
+            // Salvar no localStorage
+            try {
+                localStorage.setItem('diaDaSorteNumeros', JSON.stringify(numerosSorteadosHistorico));
+                console.log("Números registrados no histórico:", numeros);
+            } catch (e) {
+                console.error("Erro ao salvar histórico:", e);
+            }
+            
+            return registro;
+        }
+        
+        // Função para gerar números aleatórios
+        function generateRandomNumbers() {
+            // NOVO: Incrementar o contador de palpites
+            palpiteCounter++;
+            document.getElementById('counter-value').textContent = palpiteCounter;
+            
+            // Interromper qualquer verificação em andamento
+            resetCheckingState();
+            
+            // Remover as marcações de correspondência anteriores
+            document.querySelectorAll('.number-box').forEach(box => {
+                box.classList.remove('match');
+                // Limpar estilos
+                box.style.backgroundColor = "";
+                box.style.color = "";
+                box.style.fontWeight = "";
+            });
+            document.getElementById('month-box').classList.remove('match');
+            
+            // NOVO: Resetar o estilo do contador para verde (padrão)
+            resetMatchCounterStyle();
+            
+            // Conjunto para armazenar números já utilizados
+            const usedNumbers = new Set();
+            const generatedNumbers = [];
+            
+            // Obter todas as caixas de números
+            const numberBoxes = document.querySelectorAll('.number-box');
+            
+            // Para cada coluna (caixa)
+            numberBoxes.forEach((box) => {
+                let randomNum;
+                // Gerar um número aleatório que ainda não foi usado
+                do {
+                    randomNum = Math.floor(Math.random() * 31) + 1;
+                } while(usedNumbers.has(randomNum));
+                
+                // Adicionar o número ao conjunto de usados
+                usedNumbers.add(randomNum);
+                generatedNumbers.push(randomNum);
+                
+                // Mostrar o número na caixa
+                box.textContent = randomNum;
+                
+                // Adicionar uma animação simples
+                box.classList.add('pop-in');
+                setTimeout(() => {
+                    box.classList.remove('pop-in');
+                }, 300);
+            });
+            
+            // Gerar um mês aleatório (1-12)
+            const randomMonth = Math.floor(Math.random() * 12) + 1;
+            const monthBox = document.getElementById('month-box');
+            monthBox.textContent = randomMonth;
+            monthBox.classList.add('pop-in');
+            setTimeout(() => {
+                monthBox.classList.remove('pop-in');
+            }, 300);
+            
+            // Registrar os números gerados no histórico persistente
+            registrarNumerosSorteados(generatedNumbers, randomMonth);
+            
+            // Esconder qualquer resultado ou mensagem anteriores
+            document.getElementById('conferencia-resultado').classList.add('hidden');
+            document.getElementById('resumo-acertos').classList.add('hidden');
+            document.getElementById('palpite-vencedor').classList.add('hidden');
+            
+            // Se o intervalo estiver selecionado, iniciar verificação automática
+            const intervalValue = parseInt(document.getElementById('interval-select').value);
+            if (intervalValue > 0 && !checkingStopped) {
+                // Ativar a verificação automática
+                autoCheckingEnabled = true;
+                
+                // Começar a verificar automaticamente após a animação
+                setTimeout(() => {
+                    startSequentialCheck();
+                }, 500);
+            }
+        }
+        
+        // Função para iniciar verificação sequencial automaticamente
+        function startSequentialCheck() {
+            if (!autoCheckingEnabled) return;
+            
+            console.log("Iniciando verificação automática com registro de frequência");
+            
+            // Resetar o estado e iniciar a verificação
+            resetCheckingState();
+            
+            // Garantir que o registro de frequência esteja ativo
+            const autoCheckMode = true;
+            checkNextPalpite(autoCheckMode); // true indica verificação automática com registro de frequência
+        }
+        
+        // Função para atualizar o contador
+        function updateCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            countdownElement.textContent = countdownValue;
+            
+            if (countdownValue > 0) {
+                countdownValue--;
+            } else {
+                // Quando o contador chega a zero, gera novos números
+                generateRandomNumbers();
+                // Reinicia o contador com o valor do intervalo selecionado
+                const intervalValue = parseInt(document.getElementById('interval-select').value);
+                countdownValue = intervalValue - 1;
+            }
+        }
+        
+        // Função para iniciar a geração automática
+        function startAutoGeneration() {
+            // Obtém o valor do intervalo selecionado
+            const intervalValue = parseInt(document.getElementById('interval-select').value);
+            
+            // Se o intervalo for 0, não faz nada
+            if (intervalValue === 0) return;
+            
+            // NOVO: Armazenar o intervalo atual
+            currentIntervalValue = intervalValue;
+            
+            console.log("Iniciando geração automática com registro de frequência ativado");
+            
+            // Mostra o botão de parar e o contador
+            document.getElementById('toggle-auto-btn').classList.remove('hidden');
+            document.getElementById('countdown-display').classList.remove('hidden');
+            
+            // Define o valor inicial do contador
+            countdownValue = intervalValue;
+            
+            // NOVO: Resetar o estilo do contador para verde
+            resetMatchCounterStyle();
+            
+            // Atualiza o contador imediatamente
+            updateCountdown();
+            
+            // Inicia o intervalo para atualizar o contador a cada segundo
+            intervalId = setInterval(updateCountdown, 1000);
+            
+            // Resetar a flag de parada
+            checkingStopped = false;
+            
+            // Garantir que o registro de frequência esteja ativo
+            // na verificação automática
+            autoCheckingEnabled = true;
+        }
+        
+        // Função para parar a geração automática
+        function stopAutoGeneration() {
+            // Limpa o intervalo
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+            
+            // Esconde o botão de parar e o contador
+            document.getElementById('toggle-auto-btn').classList.add('hidden');
+            document.getElementById('countdown-display').classList.add('hidden');
+            
+            // Reseta o select para "Desativado"
+            document.getElementById('interval-select').value = "0";
+            
+            // NOVO: Resetar o valor do intervalo atual
+            currentIntervalValue = 0;
+            
+            // Desativar verificação automática
+            autoCheckingEnabled = false;
+        }
+        
+        // Função para registrar os acertos em detalhes
+        function registerDetailedMatch(palpiteId, userNumbers, generatedNumbers, userMonth, actualMonth, matchCount, matchedNumbers) {
+            const now = new Date();
+            const recordId = now.getTime().toString();
+            
+            // Criar objeto detalhado para registro
+            const detailedRecord = {
+                id: recordId,
+                palpiteId: palpiteId,
+                sessionId: sessionID,
+                timestamp: now.toISOString(),
+                datetime: now.toLocaleString(),
+                userNumbers: [...userNumbers],
+                generatedNumbers: [...generatedNumbers],
+                matchedNumbers: [...matchedNumbers],
+                userMonth: userMonth,
+                actualMonth: actualMonth,
+                monthMatch: userMonth === actualMonth,
+                matchCount: matchCount,
+                // NOVO: Adicionar informações sobre o contador e intervalo
+                palpiteCounter: palpiteCounter,
+                lastMatchPalpite: lastMatchPalpite,
+                intervalo: currentIntervalValue
+            };
+            
+            // Adicionar ao histórico
+            detailedHistoryData.push(detailedRecord);
+            completeHistoryData.push(detailedRecord); // Adiciona ao histórico completo
+            
+            // Manter o limite de registros exibidos (para evitar excesso de memória)
+            if (detailedHistoryData.length > 100) {
+                detailedHistoryData = detailedHistoryData.slice(-100);
+            }
+            
+            // Salvar o histórico de acertos no localStorage para persistência
+            try {
+                localStorage.setItem('diaDaSorteAcertos', JSON.stringify(completeHistoryData));
+                console.log("Acertos salvos no registro:", JSON.stringify(detailedRecord, null, 2));
+            } catch (e) {
+                console.log("Não foi possível salvar os acertos localmente:", e);
+            }
+            
+            return detailedRecord;
+        }
+        
+        // Função para adicionar ao histórico de acertos - agora também exibe visualmente no histórico
+        function addToHistory(palpiteId, matchCount, matchedNumbers, generatedNumbers, month, monthMatch, userNumbers, userMonth) {
+            // Obter a data atual para o cálculo de diferença de tempo
+            const currentDate = new Date();
+            
+            // Registrar no histórico detalhado
+            const recordId = registerDetailedMatch(
+                palpiteId,
+                userNumbers, 
+                generatedNumbers,
+                userMonth, 
+                month, 
+                matchCount,
+                matchedNumbers
+            );
+            
+            // Também exibir no histórico visual se for um grande acerto (5+)
+            if (matchCount >= 5) {
+                // Mostrar a seção de histórico
+                const historySection = document.getElementById('history-section');
+                
+                // Obter o container de histórico
+                const historyContainer = document.getElementById('history-container');
+                
+                // Remover a mensagem padrão se existir
+                const defaultMsg = historyContainer.querySelector('.text-center.italic');
+                if (defaultMsg) {
+                    historyContainer.removeChild(defaultMsg);
+                }
+                
+                // Criar um novo item de histórico
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item bg-gray-50 dark:bg-gray-800 p-2 rounded mb-2';
+                
+                // Ordenar os números para facilitar a visualização
+                const sortedMatches = [...matchedNumbers].sort((a, b) => a - b);
+                const monthName = monthNames[month - 1]; // Converter o número do mês para nome (0-indexed no array)
+                
+                // Calcular a diferença de tempo desde o último acerto
+                const timeDiffStr = formatTimeDifference(lastMatchDate, currentDate);
+                
+                // NOVO: Calcular a diferença entre o palpite atual e o último palpite com acerto
+                const palpiteDiff = lastMatchPalpite > 0 ? palpiteCounter - lastMatchPalpite : 0;
+                
+                // NOVO: Obter o texto do intervalo de tempo usado
+                const intervaloTexto = intervalTexts[currentIntervalValue.toString()] || "Geração manual";
+                
+                // Criar o conteúdo do item de histórico com as novas informações
+                historyItem.innerHTML = `
+                    <div class="text-xs text-gray-500 dark:text-gray-400">${currentDate.toLocaleString()}</div>
+                    <div class="mt-1">
+                        <span class="font-medium">${matchCount} acertos:</span> 
+                        <span class="history-numbers text-red-600 dark:text-red-400">${sortedMatches.join(', ')}</span>
+                    </div>
+                    <div class="text-xs">
+                        Mês: <span class="${monthMatch ? 'text-green-600 dark:text-green-400 font-medium' : ''}">${monthName} (${month})</span>
+                        ${monthMatch ? ' ✓' : ''}
+                    </div>
+                    <div class="text-xs mt-1">
+                        <span class="font-medium">Palpite #${palpiteCounter}</span>
+                    </div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                        <span class="font-medium">Tempo desde o último acerto:</span> ${timeDiffStr}
+                    </div>
+                    ${palpiteDiff > 0 ? `
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                        <span class="font-medium">Diferença de palpites:</span> ${palpiteDiff} palpites (${lastMatchPalpite} → ${palpiteCounter})
+                    </div>` : ''}
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                        <span class="font-medium">Intervalo utilizado:</span> ${intervaloTexto}
+                    </div>
+                `;
+                
+                // Adicionar o novo item no topo da lista
+                if (historyContainer.firstChild) {
+                    historyContainer.insertBefore(historyItem, historyContainer.firstChild);
+                } else {
+                    historyContainer.appendChild(historyItem);
+                }
+                
+                // Limitar o número de itens no histórico visual
+                const historyItems = historyContainer.querySelectorAll('.history-item');
+                if (historyItems.length > 8) { // Mostrar apenas os últimos 8 grandes acertos
+                    for (let i = 8; i < historyItems.length; i++) {
+                        historyContainer.removeChild(historyItems[i]);
+                    }
+                }
+                
+                // NOVO: Atualizar a data do último acerto e palpite para cálculos futuros
+                lastMatchDate = currentDate;
+                lastMatchPalpite = palpiteCounter;
+            }
+            
+            return recordId;
+        }
+        
+        // Função para gerar 3 números aleatórios para complementar os 4 fixos
+        function generateAutoNumbersForPalpite(palpiteContainer) {
+            if (fixedNumbersArray.length !== 4) {
+                console.error("Os números fixos não foram definidos. Defina 4 números fixos primeiro.");
+                return false;
+            }
+            
+            // Gerar 3 números aleatórios que não colidem com os fixos
+            const randomNumbers = generateUniqueRandomNumbers(1, 31, 3, fixedNumbersArray);
+            
+            // Obter as caixas de números automáticos neste palpite
+            const autoNumberBoxes = palpiteContainer.querySelectorAll('.auto-number-box');
+            
+            // Atualizar os números aleatórios nas caixas
+            autoNumberBoxes.forEach((box, index) => {
+                box.textContent = randomNumbers[index];
+                
+                // Destacar visualmente com classe de animação
+                box.classList.add('pop-in');
+                setTimeout(() => {
+                    box.classList.remove('pop-in');
+                }, 300);
+            });
+            
+            return true;
+        }
+        
+        // Função para gerar números automáticos para todos os palpites
+        function generateAutoNumbersForAllPalpites() {
+            if (fixedNumbersArray.length !== 4) {
+                // Mostrar alerta para o usuário
+                const errorElement = document.getElementById('fixed-numbers-error');
+                errorElement.textContent = "Por favor, defina os 4 números fixos primeiro.";
+                errorElement.classList.remove('hidden');
+                setTimeout(() => {
+                    errorElement.classList.add('hidden');
+                }, 3000);
+                return false;
+            }
+            
+            // Obter todos os containers de palpites
+            const allContainers = document.querySelectorAll('.manual-input-container');
+            
+            // Para cada container, gerar novos números aleatórios
+            allContainers.forEach(container => {
+                generateAutoNumbersForPalpite(container);
+            });
+            
+            return true;
+        }
+        
+        // Função para aplicar os números fixos em todos os palpites
+        function applyFixedNumbers() {
+            // Obter os valores dos campos de entrada de números fixos
+            const fixedInputs = document.querySelectorAll('.fixed-number-input');
+            const fixedNumbers = [];
+            let allFilled = true;
+            let hasUnique = true;
+            
+            // Coletar os números e verificar se todos estão preenchidos
+            fixedInputs.forEach(input => {
+                if (!input.value) {
+                    allFilled = false;
+                } else {
+                    const num = parseInt(input.value);
+                    fixedNumbers.push(num);
+                }
+            });
+            
+            // Verificar se todos os campos estão preenchidos
+            if (!allFilled) {
+                const errorElement = document.getElementById('fixed-numbers-error');
+                errorElement.textContent = "Por favor, preencha todos os 4 números fixos.";
+                errorElement.classList.remove('hidden');
+                setTimeout(() => {
+                    errorElement.classList.add('hidden');
+                }, 3000);
+                return false;
+            }
+            
+            // Verificar se todos os números estão entre 1 e 31
+            const validRange = fixedNumbers.every(num => num >= 1 && num <= 31);
+            if (!validRange) {
+                const errorElement = document.getElementById('fixed-numbers-error');
+                errorElement.textContent = "Todos os números devem estar entre 1 e 31.";
+                errorElement.classList.remove('hidden');
+                setTimeout(() => {
+                    errorElement.classList.add('hidden');
+                }, 3000);
+                return false;
+            }
+            
+            // Verificar se há números repetidos
+            const uniqueNumbers = new Set(fixedNumbers);
+            if (uniqueNumbers.size !== 4) {
+                const errorElement = document.getElementById('fixed-numbers-error');
+                errorElement.textContent = "Os números fixos não podem se repetir.";
+                errorElement.classList.remove('hidden');
+                setTimeout(() => {
+                    errorElement.classList.add('hidden');
+                }, 3000);
+                return false;
+            }
+            
+            // Armazenar os números fixos na variável global
+            fixedNumbersArray = [...fixedNumbers];
+            
+            // Obter todos os elementos de exibição de números fixos
+            const fixedDisplays = document.querySelectorAll('.fixed-number-display');
+            
+            // Atualizar todos os elementos de exibição com os números fixos
+            fixedDisplays.forEach((display, index) => {
+                const fixedIndex = index % 4; // Para garantir que apenas os 4 primeiros inputs sejam atualizados
+                display.value = fixedNumbers[fixedIndex];
+                
+                // Destacar visualmente a atualização
+                display.classList.add('bg-blue-50');
+                display.classList.add('dark:bg-blue-900/30');
+                display.classList.add('border-blue-300');
+                display.classList.add('dark:border-blue-600');
+                
+                setTimeout(() => {
+                    display.classList.remove('bg-blue-50');
+                    display.classList.remove('dark:bg-blue-900/30');
+                }, 1000);
+            });
+            
+            // Gerar os números aleatórios para cada palpite
+            generateAutoNumbersForAllPalpites();
+            
+            return true;
+        }
+        
+        // Função para coletar todos os palpites disponíveis
+        function getAllPalpites() {
+            const todosPalpites = [];
+            
+            // Primeiro coletar os palpites dos grupos fixos
+            const gruposPalpitesFixos = document.querySelectorAll('.palpites-grupo');
+            gruposPalpitesFixos.forEach(grupo => {
+                const palpitesNoGrupo = grupo.querySelectorAll('.palpite-group');
+                palpitesNoGrupo.forEach(palpite => {
+                    todosPalpites.push(palpite);
+                });
+            });
+            
+            // Obter o container de palpites para verificar se há mais palpites
+            const palpitesContainer = document.getElementById('palpites-container');
+            if (palpitesContainer) {
+                const palpitesAdicionais = palpitesContainer.querySelectorAll('.palpite-group');
+                palpitesAdicionais.forEach(palpite => {
+                    todosPalpites.push(palpite);
+                });
+            }
+            
+            return todosPalpites;
+        }
+        
+        // Resetar o estado da conferência
+        function resetCheckingState() {
+            // Reiniciar o índice atual
+            currentCheckIndex = 0;
+            
+            // Indicar que não há conferência em andamento
+            checkingInProgress = false;
+            
+            // NOVO: Resetar o estilo do contador para verde (padrão)
+            resetMatchCounterStyle();
+            
+            // Limpar todos os destaques e estilos
+            const palpites = getAllPalpites();
+            palpites.forEach(palpite => {
+                // Limpar a classe do container
+                palpite.classList.remove('border-green-500', 'bg-green-50', 'dark:bg-green-900/10', 
+                                    'border-yellow-500', 'bg-yellow-50', 'dark:bg-yellow-900/10');
+                
+                // Limpar o status
+                const statusElement = palpite.querySelector('.palpite-status');
+                if (statusElement) {
+                    statusElement.textContent = '';
+                    statusElement.classList.remove('text-green-600', 'text-gray-600', 
+                                              'font-medium', 'text-red-500', 'text-yellow-600');
+                }
+                
+                // Limpar os estilos dos inputs (números)
+                const inputs = palpite.querySelectorAll('.fixed-number-display');
+                inputs.forEach(input => {
+                    input.style.backgroundColor = "";
+                    input.style.color = "";
+                    input.style.fontWeight = "";
+                    input.style.borderColor = "";
+                });
+                
+                // Limpar os estilos das caixas automáticas
+                const autoBoxes = palpite.querySelectorAll('.auto-number-box');
+                autoBoxes.forEach(box => {
+                    box.style.backgroundColor = "";
+                    box.style.color = "";
+                    box.style.fontWeight = "";
+                    box.style.borderColor = "";
+                });
+                
+                // Limpar o estilo do mês
+                const monthInput = palpite.querySelector('.month-input');
+                if (monthInput) {
+                    monthInput.style.backgroundColor = "";
+                    monthInput.style.color = "";
+                    monthInput.style.fontWeight = "";
+                    monthInput.style.borderColor = "";
+                }
+            });
+            
+            // Esconder os elementos de resumo
+            document.getElementById('conferencia-resultado').classList.add('hidden');
+            document.getElementById('resumo-acertos').classList.add('hidden');
+            document.getElementById('palpite-vencedor').classList.add('hidden');
+            document.getElementById('error-message').classList.add('hidden');
+        }
+        
+        // Função para obter os números de um palpite (fixos + automáticos)
+        function getPalpiteNumbers(palpiteGroup) {
+            const palpiteNumbers = [];
+            
+            // Obter os números fixos
+            const fixedInputs = palpiteGroup.querySelectorAll('.fixed-number-display');
+            fixedInputs.forEach(input => {
+                if (input.value) {
+                    palpiteNumbers.push(parseInt(input.value));
+                }
+            });
+            
+            // Obter os números automáticos
+            const autoBoxes = palpiteGroup.querySelectorAll('.auto-number-box');
+            autoBoxes.forEach(box => {
+                if (box.textContent !== 'Auto') {
+                    palpiteNumbers.push(parseInt(box.textContent));
+                }
+            });
+            
+            return palpiteNumbers;
+        }
+        
+        // Função para verificar um único palpite
+        function checkSinglePalpite(palpiteGroup, numberIndex) {
+            // Obter os números sorteados
+            const numberBoxes = document.querySelectorAll('.number-box');
+            const monthBox = document.getElementById('month-box');
+            const currentBoxNumbers = [];
+            
+            // Coletar os números sorteados
+            numberBoxes.forEach(box => {
+                if (box.textContent !== '-') {
+                    currentBoxNumbers.push(parseInt(box.textContent));
+                }
+            });
+            
+            // Se não existirem números sorteados, mostrar um erro
+            if (currentBoxNumbers.length !== 7) {
+                document.getElementById('error-message').textContent = 'Por favor, gere um palpite (sorteio) primeiro antes de conferir.';
+                document.getElementById('error-message').classList.remove('hidden');
+                return { success: false, message: "Sem sorteio" };
+            }
+            
+            // Obter o mês sorteado
+            const currentMonth = parseInt(monthBox.textContent);
+            
+            // Obter os elementos deste palpite
+            const inputContainer = palpiteGroup.querySelector('.manual-input-container');
+            if (!inputContainer) return { success: false, message: "Container inválido" };
+            
+            const monthInput = palpiteGroup.querySelector('.month-input');
+            const statusElement = palpiteGroup.querySelector('.palpite-status');
+            const palpiteId = palpiteGroup.getAttribute('data-palpite-id') || numberIndex;
+            
+            // Verificar se os números fixos e automáticos estão preenchidos
+            const palpiteNumbers = getPalpiteNumbers(palpiteGroup);
+            
+            // Se não tiver números suficientes ou mês preenchido, pular
+            if (palpiteNumbers.length !== 7 || !monthInput.value) {
+                return { success: false, message: "Palpite incompleto" };
+            }
+            
+            // Verificar se o mês está dentro do intervalo válido
+            const palpiteMonth = parseInt(monthInput.value);
+            if (palpiteMonth < 1 || palpiteMonth > 12) {
+                statusElement.textContent = "Mês inválido";
+                statusElement.classList.add('text-red-500');
+                return { success: false, message: "Mês inválido" };
+            }
+            
+            // Verificar se há números repetidos no palpite
+            const uniqueNumbers = new Set(palpiteNumbers);
+            if (uniqueNumbers.size !== 7) {
+                statusElement.textContent = "Números repetidos";
+                statusElement.classList.add('text-red-500');
+                return { success: false, message: "Números repetidos" };
+            }
+            
+            // Verificar coincidências para este palpite
+            let matchCount = 0;
+            let monthMatch = false;
+            const matchedNumbers = [];
+            
+            // Limpar estilos anteriores dos números fixos
+            const fixedInputs = palpiteGroup.querySelectorAll('.fixed-number-display');
+            fixedInputs.forEach(input => {
+                input.style.backgroundColor = "";
+                input.style.color = "";
+                input.style.fontWeight = "";
+                input.style.borderColor = "";
+            });
+            
+            // Limpar estilos anteriores dos números automáticos
+            const autoBoxes = palpiteGroup.querySelectorAll('.auto-number-box');
+            autoBoxes.forEach(box => {
+                box.style.backgroundColor = "";
+                box.style.color = "";
+                box.style.fontWeight = "";
+                box.style.borderColor = "";
+            });
+            
+            // Verificar cada número do palpite e destacar os acertos
+            palpiteNumbers.forEach((num, index) => {
+                if (currentBoxNumbers.includes(num)) {
+                    // Destacar o número fixo ou automático de acordo com o índice
+                    if (index < 4) {
+                        // É um número fixo
+                        const fixedInput = fixedInputs[index];
+                        fixedInput.style.backgroundColor = "#10B981"; // Verde
+                        fixedInput.style.color = "white";
+                        fixedInput.style.fontWeight = "bold";
+                        fixedInput.style.borderColor = "#059669";
+                    } else {
+                        // É um número automático
+                        const autoIndex = index - 4; // Converter para o índice dos números automáticos (0-2)
+                        const autoBox = autoBoxes[autoIndex];
+                        autoBox.style.backgroundColor = "#10B981"; // Verde
+                        autoBox.style.color = "white";
+                        autoBox.style.fontWeight = "bold";
+                        autoBox.style.borderColor = "#059669";
+                    }
+                    
+                    matchedNumbers.push(num);
+                    matchCount++;
+                }
+            });
+            
+            // Verificar se o mês coincide
+            if (palpiteMonth === currentMonth) {
+                // Destacar visualmente o mês acertado no palpite
+                monthInput.style.backgroundColor = "#3B82F6"; // Azul
+                monthInput.style.color = "white";
+                monthInput.style.fontWeight = "bold";
+                monthInput.style.borderColor = "#2563EB";
+                
+                monthMatch = true;
+            }
+            
+            // Atualizar o status visual deste palpite
+            if (matchCount >= 5) {
+                // NOVO: Tocar o beep para 5+ acertos
+                playBeep();
+                
+                // Destacar o palpite em caso de 5+ acertos
+                palpiteGroup.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/10');
+                statusElement.textContent = `${matchCount} acertos + Mês: ${monthMatch ? 'Sim' : 'Não'}`;
+                statusElement.classList.add('text-green-600', 'font-medium');
+                
+                // Adicionar ao histórico
+                addToHistory(palpiteId, matchCount, matchedNumbers, currentBoxNumbers, currentMonth, monthMatch, palpiteNumbers, palpiteMonth);
+                
+                // Atualizar o resumo de acertos
+                updateResults(palpiteId, matchCount, monthMatch, true);
+                
+                // MODIFICADO: Continuar verificando mesmo com 5+ acertos
+                
+                // Retornar sucesso com acerto premiado
+                return { 
+                    success: true, 
+                    message: "Palpite VENCEDOR!", 
+                    matchCount: matchCount,
+                    monthMatch: monthMatch,
+                    winner: true,
+                    palpiteId: palpiteId
+                };
+                
+            } else if (matchCount >= 3) {
+                // Destacar palpites com 3-4 acertos com cor amarela (ainda bom!)
+                palpiteGroup.classList.add('border-yellow-500', 'bg-yellow-50', 'dark:bg-yellow-900/10');
+                statusElement.textContent = `${matchCount} acertos + Mês: ${monthMatch ? 'Sim' : 'Não'}`;
+                statusElement.classList.add('text-yellow-600');
+                
+                // Atualizar o resumo
+                updateResults(palpiteId, matchCount, monthMatch, false);
+                
+                // Retornar sucesso com acerto bom (mas não premiado)
+                return { 
+                    success: true, 
+                    message: "Bom palpite!", 
+                    matchCount: matchCount,
+                    monthMatch: monthMatch,
+                    winner: false,
+                    palpiteId: palpiteId
+                };
+            } else {
+                // Atualizar status para palpites com menos de 3 acertos
+                statusElement.textContent = `${matchCount} acertos + Mês: ${monthMatch ? 'Sim' : 'Não'}`;
+                statusElement.classList.add('text-gray-600');
+                
+                // Atualizar o resumo
+                updateResults(palpiteId, matchCount, monthMatch, false);
+                
+                // Retornar sucesso com acerto fraco
+                return { 
+                    success: true, 
+                    message: "Poucos acertos", 
+                    matchCount: matchCount,
+                    monthMatch: monthMatch,
+                    winner: false,
+                    palpiteId: palpiteId
+                };
+            }
+        }
+        
+        // Função para atualizar o resumo de resultados
+        function updateResults(palpiteId, matchCount, monthMatch, isWinner) {
+            const resumoAcertos = document.getElementById('resumo-acertos');
+            resumoAcertos.classList.remove('hidden');
+            
+            // Atualizar os detalhes do palpite atual
+            document.getElementById('palpite-atual').textContent = palpiteId;
+            document.getElementById('atual-acertos').textContent = matchCount;
+            document.getElementById('atual-mes').textContent = monthMatch ? 'Sim' : 'Não';
+            
+            // Exibir o banner de vencedor se for o caso
+            const palpiteVencedor = document.getElementById('palpite-vencedor');
+            if (isWinner) {
+                document.getElementById('vencedor-acertos').textContent = matchCount;
+                palpiteVencedor.classList.remove('hidden');
+            } else {
+                palpiteVencedor.classList.add('hidden');
+            }
+        }
+        
+        // Função para conferir o próximo palpite sequencialmente
+        function checkNextPalpite(isAuto = false) {
+            // Se for a primeira verificação, resetar o estado e coletar todos os palpites
+            if (!checkingInProgress) {
+                resetCheckingState();
+                allPalpites = getAllPalpites();
+                checkingInProgress = true;
+                
+                if (isAuto) {
+                    console.log("Iniciando conferência automática com registro de frequência ATIVADO");
+                }
+            }
+            
+            // Se já verificamos todos os palpites ou não há palpites, mostrar mensagem
+            if (currentCheckIndex >= allPalpites.length) {
+                document.getElementById('conferencia-resultado').classList.remove('hidden');
+                document.getElementById('conferencia-msg').textContent = "Todos os palpites verificados. Nenhum vencedor encontrado.";
+                document.getElementById('conferencia-msg').className = "text-sm font-bold text-center py-2 text-gray-600 dark:text-gray-300";
+                return;
+            }
+            
+            // Pegar o próximo palpite a ser verificado
+            const currentPalpite = allPalpites[currentCheckIndex];
+            
+            // Obter números sorteados para registrar acertos
+            const numberBoxes = document.querySelectorAll('.number-box');
+            const numerosSorteados = [];
+            numberBoxes.forEach(box => {
+                if (box.textContent !== '-') {
+                    numerosSorteados.push(parseInt(box.textContent));
+                }
+            });
+            
+            // Verificar este palpite
+            const result = checkSinglePalpite(currentPalpite, currentCheckIndex + 1);
+            
+            // Incrementar o índice para o próximo palpite
+            currentCheckIndex++;
+            
+            // Se a verificação foi bem-sucedida, registrar os números acertados na frequência
+            if (result.success && isAuto) {
+                // Capturar acertos para registro de frequência
+                const inputContainer = currentPalpite.querySelector('.manual-input-container');
+                const monthInput = currentPalpite.querySelector('.month-input');
+                
+                if (inputContainer && monthInput && monthInput.value) {
+                    // Coletar números do palpite
+                    const palpiteNums = getPalpiteNumbers(currentPalpite);
+                    
+                    // Identificar acertos
+                    const numerosAcertados = palpiteNums.filter(num => numerosSorteados.includes(num));
+                    
+                    // Registrar frequências
+                    if (numerosAcertados.length > 0) {
+                        const mesSorteado = document.getElementById('month-box').textContent;
+                        const mesAcertado = parseInt(monthInput.value) === parseInt(mesSorteado) ? parseInt(mesSorteado) : null;
+                        
+                        // Registrar este acerto na frequência
+                        registrarFrequenciasAcertos(numerosAcertados, mesAcertado);
+                        console.log(`Registrado ${numerosAcertados.length} acertos na conferência automática`);
+                    }
+                }
+            }
+            
+            // Se a verificação falhou (palpite inválido), tentar o próximo
+            if (!result.success) {
+                // Se for o último palpite, mostrar mensagem
+                if (currentCheckIndex >= allPalpites.length) {
+                    document.getElementById('conferencia-resultado').classList.remove('hidden');
+                    document.getElementById('conferencia-msg').textContent = "Todos os palpites verificados. Nenhum vencedor encontrado.";
+                    document.getElementById('conferencia-msg').className = "text-sm font-bold text-center py-2 text-gray-600 dark:text-gray-300";
+                    return;
+                }
+                
+                // Caso contrário, chamada recursiva para o próximo
+                if (isAuto && autoCheckingEnabled && !checkingStopped) {
+                    checkNextPalpite(true);
+                }
+                return;
+            }
+            
+            // Se encontramos um ganhador, mostrar mensagem de vitória, mas CONTINUAR verificando
+            if (result.winner) {
+                document.getElementById('conferencia-resultado').classList.remove('hidden');
+                document.getElementById('conferencia-msg').textContent = `PALPITE GANHADOR ENCONTRADO! Palpite ${result.palpiteId} com ${result.matchCount} acertos!`;
+                document.getElementById('conferencia-msg').className = "text-sm font-bold text-center py-2 text-green-600 dark:text-green-400";
+                
+                // Mostrar palpite vencedor
+                updateResults(result.palpiteId, result.matchCount, result.monthMatch, true);
+                
+                // MODIFICADO: Continuar verificando mesmo quando encontrar um ganhador
+                if (currentCheckIndex < allPalpites.length && isAuto && autoCheckingEnabled && !checkingStopped) {
+                    setTimeout(() => {
+                        checkNextPalpite(true);
+                    }, 100);
+                }
+                return;
+            }
+            
+            // Continuar verificando o próximo palpite automaticamente se estiver no modo automático
+            if (isAuto && autoCheckingEnabled && !checkingStopped) {
+                setTimeout(() => {
+                    checkNextPalpite(true);
+                }, 100);
+            }
+        }
+        
+        // Sistema para registrar frequência de números acertados
+        let registroNumerosAcertados = {};
+        let registroMesesAcertados = {};
+        
+        // Função para registrar a frequência de números acertados
+        function registrarFrequenciasAcertos(numerosAcertados, mesAcertado) {
+            // Registrar frequência dos números
+            numerosAcertados.forEach(numero => {
+                if (registroNumerosAcertados[numero]) {
+                    registroNumerosAcertados[numero]++;
+                } else {
+                    registroNumerosAcertados[numero] = 1;
+                }
+            });
+            
+            // Registrar frequência dos meses (se acertou)
+            if (mesAcertado) {
+                if (registroMesesAcertados[mesAcertado]) {
+                    registroMesesAcertados[mesAcertado]++;
+                } else {
+                    registroMesesAcertados[mesAcertado] = 1;
+                }
+            }
+            
+            // Salvar no localStorage para persistência
+            try {
+                localStorage.setItem('diaDaSorteFreqNumeros', JSON.stringify(registroNumerosAcertados));
+                localStorage.setItem('diaDaSorteFreqMeses', JSON.stringify(registroMesesAcertados));
+            } catch (e) {
+                console.log("Não foi possível salvar as frequências:", e);
+            }
+            
+            // Retornar as estatísticas atualizadas
+            return {
+                numeros: {...registroNumerosAcertados},
+                meses: {...registroMesesAcertados}
+            };
+        }
+        
+        // Função para exibir estatísticas das frequências
+        function exibirEstatisticasFrequencia() {
+            // Ordenar números por frequência (do mais frequente para o menos)
+            const numerosOrdenados = Object.entries(registroNumerosAcertados)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10); // Top 10 números
+            
+            // Preparar mensagem
+            let mensagem = '<strong>Números mais frequentes:</strong><div class="grid grid-cols-5 gap-2 my-2">';
+            
+            // Adicionar cada número com sua frequência
+            numerosOrdenados.forEach(([numero, freq]) => {
+                mensagem += `<div class="bg-primary/10 dark:bg-primary/20 p-1 rounded text-center">
+                    <span class="text-lg font-bold">${numero}</span>
+                    <div class="text-xs">${freq}x</div>
+                </div>`;
+            });
+            
+            mensagem += '</div>';
+            
+            // Adicionar meses mais frequentes se houver
+            if (Object.keys(registroMesesAcertados).length > 0) {
+                const mesesOrdenados = Object.entries(registroMesesAcertados)
+                    .sort((a, b) => b[1] - a[1]);
+                
+                mensagem += '<strong>Meses mais frequentes:</strong><div class="grid grid-cols-4 gap-2 my-2">';
+                
+                mesesOrdenados.forEach(([mes, freq]) => {
+                    mensagem += `<div class="bg-blue-500/10 dark:bg-blue-500/20 p-1 rounded text-center">
+                        <span class="text-sm font-medium">${monthNames[parseInt(mes)-1]}</span>
+                        <div class="text-xs">${freq}x</div>
+                    </div>`;
+                });
+                
+                mensagem += '</div>';
+            }
+            
+            return mensagem;
+        }
+        
+        // NOVO: Funções para exportação de dados
+        
+        // Função para exportar histórico para Excel (.xlsx)
+        function exportToExcel() {
+            try {
+                // Garantir que temos dados para exportar
+                if (completeHistoryData.length === 0) {
+                    alert("Não há dados para exportar. Faça alguns acertos primeiro.");
+                    return;
+                }
+                
+                // Criar um nome de arquivo baseado na data atual
+                const fileName = `Dia_da_Sorte_Historico_${new Date().toISOString().slice(0, 10)}.xlsx`;
+                
+                // Preparar os dados para o formato de planilha
+                const worksheetData = completeHistoryData.map(record => {
+                    return {
+                        'ID': record.id,
+                        'Data/Hora': record.datetime,
+                        'Palpite ID': record.palpiteId,
+                        'Número do Palpite': record.palpiteCounter || 'N/A',
+                        'Acertos': record.matchCount,
+                        'Números do Usuário': record.userNumbers.join(', '),
+                        'Números Sorteados': record.generatedNumbers.join(', '),
+                        'Números Acertados': record.matchedNumbers.join(', '),
+                        'Mês do Usuário': record.userMonth,
+                        'Mês Sorteado': record.actualMonth,
+                        'Acertou Mês': record.monthMatch ? 'Sim' : 'Não',
+                        'Intervalo': record.intervalo ? intervalTexts[record.intervalo.toString()] : 'N/A'
+                    };
+                });
+                
+                // Criar a planilha
+                const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+                
+                // Criar o workbook e adicionar a planilha
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Histórico de Acertos");
+                
+                // Converter para binário e fazer o download
+                XLSX.writeFile(workbook, fileName);
+                
+                console.log("Exportação para Excel concluída:", fileName);
+            } catch (error) {
+                console.error("Erro ao exportar para Excel:", error);
+                alert("Ocorreu um erro ao exportar os dados para Excel: " + error.message);
+            }
+        }
+        
+        // Função para exportar histórico para HTML
+        function exportToHTML() {
+            try {
+                // Garantir que temos dados para exportar
+                if (completeHistoryData.length === 0) {
+                    alert("Não há dados para exportar. Faça alguns acertos primeiro.");
+                    return;
+                }
+                
+                // Criar um nome de arquivo baseado na data atual
+                const fileName = `Dia_da_Sorte_Historico_${new Date().toISOString().slice(0, 10)}.html`;
+                
+                // Criar o conteúdo HTML
+                let htmlContent = `
+                <!DOCTYPE html>
+                <html lang="pt-BR">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Histórico de Acertos - Dia da Sorte</title>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            line-height: 1.6;
+                            color: #333;
+                            max-width: 1200px;
+                            margin: 0 auto;
+                            padding: 20px;
+                        }
+                        h1 {
+                            text-align: center;
+                            color: #5D5CDE;
+                            margin-bottom: 30px;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-bottom: 30px;
+                        }
+                        th, td {
+                            padding: 10px;
+                            border: 1px solid #ddd;
+                            text-align: left;
+                        }
+                        th {
+                            background-color: #f2f2f2;
+                            font-weight: bold;
+                        }
+                        tr:nth-child(even) {
+                            background-color: #f9f9f9;
+                        }
+                        .match-count-5 { color: #10B981; font-weight: bold; }
+                        .match-count-6 { color: #0EA5E9; font-weight: bold; }
+                        .match-count-7 { color: #EF4444; font-weight: bold; }
+                        .totals {
+                            margin-top: 20px;
+                            font-weight: bold;
+                        }
+                        .export-date {
+                            text-align: right;
+                            font-style: italic;
+                            margin-top: 40px;
+                            color: #666;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Histórico de Acertos - Dia da Sorte</h1>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Palpite ID</th>
+                                <th>Número do Palpite</th>
+                                <th>Acertos</th>
+                                <th>Números Acertados</th>
+                                <th>Mês Acertado</th>
+                                <th>Números do Usuário</th>
+                                <th>Números Sorteados</th>
+                                <th>Intervalo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                // Adicionar uma linha para cada registro, com formatação especial para 5, 6 e 7 acertos
+                completeHistoryData.forEach(record => {
+                    const matchCountClass = `match-count-${record.matchCount}`;
+                    
+                    htmlContent += `
+                        <tr>
+                            <td>${record.datetime}</td>
+                            <td>${record.palpiteId}</td>
+                            <td>${record.palpiteCounter || 'N/A'}</td>
+                            <td class="${matchCountClass}">${record.matchCount}</td>
+                            <td>${record.matchedNumbers.join(', ')}</td>
+                            <td>${record.monthMatch ? 'Sim' : 'Não'}</td>
+                            <td>${record.userNumbers.join(', ')}</td>
+                            <td>${record.generatedNumbers.join(', ')}</td>
+                            <td>${record.intervalo ? intervalTexts[record.intervalo.toString()] : 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+                
+                // Calcular alguns totais
+                const acertos5 = completeHistoryData.filter(r => r.matchCount === 5).length;
+                const acertos6 = completeHistoryData.filter(r => r.matchCount === 6).length;
+                const acertos7 = completeHistoryData.filter(r => r.matchCount === 7).length;
+                
+                // Fechar a tabela e adicionar rodapé
+                htmlContent += `
+                        </tbody>
+                    </table>
+                    
+                    <div class="totals">
+                        <p>Total de registros: ${completeHistoryData.length}</p>
+                        <p>Acertos de 5 números: <span class="match-count-5">${acertos5}</span></p>
+                        <p>Acertos de 6 números: <span class="match-count-6">${acertos6}</span></p>
+                        <p>Acertos de 7 números: <span class="match-count-7">${acertos7}</span></p>
+                    </div>
+                    
+                    <div class="export-date">
+                        Exportado em: ${new Date().toLocaleString()}
+                    </div>
+                </body>
+                </html>
+                `;
+                
+                // Criar um objeto Blob com o conteúdo HTML
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                
+                // Criar um link para download e simular um clique
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                console.log("Exportação para HTML concluída:", fileName);
+            } catch (error) {
+                console.error("Erro ao exportar para HTML:", error);
+                alert("Ocorreu um erro ao exportar os dados para HTML: " + error.message);
+            }
+        }
+        
+        // Função para verificar todos os palpites de uma vez
+        function checkAllPalpites() {
+            // Resetar estado e coletar todos os palpites
+            resetCheckingState();
+            const palpites = getAllPalpites();
+            let encontrouVencedor = false;
+            let palpiteVencedor = null;
+            let totalVerificados = 0;
+            let totalVencedores = 0;
+            
+            // Armazenar todos os números acertados nesta sessão de verificação
+            let todosMumAcertadosSessao = [];
+            let todosOsMesesAcertados = [];
+            
+            // Verificar cada palpite
+            palpites.forEach((palpite, index) => {
+                const result = checkSinglePalpite(palpite, index + 1);
+                
+                // Se a verificação foi bem-sucedida
+                if (result.success) {
+                    totalVerificados++;
+                    
+                    // Capturar os números e mês do palpite para análise posterior
+                    const inputContainer = palpite.querySelector('.manual-input-container');
+                    const monthInput = palpite.querySelector('.month-input');
+                    
+                    if (inputContainer && monthInput) {
+                        // Obter os números do palpite (fixos + automáticos)
+                        const palpiteNums = getPalpiteNumbers(palpite);
+                        
+                        // Obter mês do input
+                        const palpiteMes = monthInput.value ? parseInt(monthInput.value) : null;
+                        
+                        // Obter os números sorteados
+                        const numberBoxes = document.querySelectorAll('.number-box');
+                        const monthBox = document.getElementById('month-box');
+                        const numerosSorteados = [];
+                        
+                        // Coletar os números sorteados
+                        numberBoxes.forEach(box => {
+                            if (box.textContent !== '-') {
+                                numerosSorteados.push(parseInt(box.textContent));
+                            }
+                        });
+                        
+                        // Obter o mês sorteado
+                        const mesSorteado = monthBox.textContent !== '-' ? parseInt(monthBox.textContent) : null;
+                        
+                        // Identificar quais números foram acertados
+                        const numerosAcertados = palpiteNums.filter(num => numerosSorteados.includes(num));
+                        const mesAcertado = palpiteMes === mesSorteado ? mesSorteado : null;
+                        
+                        // Adicionar à coleção de todos os acertos desta sessão
+                        todosMumAcertadosSessao = [...todosMumAcertadosSessao, ...numerosAcertados];
+                        if (mesAcertado) todosOsMesesAcertados.push(mesAcertado);
+                    }
+                    
+                    // Se encontramos um vencedor (5+ acertos)
+                    if (result.winner) {
+                        encontrouVencedor = true;
+                        totalVencedores++;
+                        
+                        // Guardar o primeiro vencedor para destacar
+                        if (!palpiteVencedor) {
+                            palpiteVencedor = result;
+                        }
+                    }
+                }
+            });
+            
+            // Registrar frequências dos acertos desta sessão
+            registrarFrequenciasAcertos(todosMumAcertadosSessao, todosOsMesesAcertados);
+            
+            // Esconder o resumo da conferência
+            document.getElementById('resumo-acertos').classList.add('hidden');
+            
+            // Mostrar resultado final
+            document.getElementById('conferencia-resultado').classList.remove('hidden');
+            
+            if (encontrouVencedor) {
+                let mensagem = `<div class="text-center text-green-600 dark:text-green-400 font-bold">
+                    ${totalVerificados} palpites verificados. ${totalVencedores} vencedor(es) encontrado(s)!
+                </div>`;
+                
+                document.getElementById('conferencia-msg').innerHTML = mensagem;
+                document.getElementById('conferencia-msg').className = "text-lg py-2 text-green-600 dark:text-green-400 font-bold";
+                
+                // Tocar som de vitória apenas uma vez
+                try {
+                    createWinSound();
+                } catch (error) {
+                    console.log("Não foi possível reproduzir som", error);
+                }
+                
+                // MODIFICADO: Não parar a geração automática mesmo quando encontrar vencedor
+                // Apenas continuar verificando
+            } else {
+                let mensagem = `<div class="text-center">
+                    ${totalVerificados} palpites verificados. Nenhum vencedor encontrado.
+                </div>`;
+                
+                document.getElementById('conferencia-msg').innerHTML = mensagem;
+                document.getElementById('conferencia-msg').className = "text-sm py-2 text-gray-600 dark:text-gray-300";
+                
+                // Esconder o banner de vencedor
+                document.getElementById('palpite-vencedor').classList.add('hidden');
+            }
+        }
+        
+        // Event listener para o botão de gerar números
+        document.getElementById('generate-btn').addEventListener('click', generateRandomNumbers);
+        
+        // Event listener para o botão de aplicar números fixos
+        document.getElementById('apply-fixed-numbers').addEventListener('click', applyFixedNumbers);
+        
+        // Event listener para o botão de gerar números automáticos para todos os palpites
+        document.getElementById('generate-auto-all').addEventListener('click', generateAutoNumbersForAllPalpites);
+        
+        // Event listener para o select de intervalo
+        document.getElementById('interval-select').addEventListener('change', function() {
+            // Se já existir um intervalo, para ele primeiro
+            if (intervalId) {
+                clearInterval(intervalId);
+                intervalId = null;
+            }
+            
+            // NOVO: Resetar o estilo do contador para verde
+            resetMatchCounterStyle();
+            
+            // Se o valor selecionado for maior que 0, inicia a geração automática
+            if (parseInt(this.value) > 0) {
+                // Ao selecionar um intervalo, atualizar e mostrar a frequência
+                const frequencyStats = document.getElementById('frequency-stats');
+                const frequencyContent = document.getElementById('frequency-content');
+                if (frequencyContent) {
+                    frequencyContent.innerHTML = exibirEstatisticasFrequencia();
+                    frequencyStats.classList.remove('hidden');
+                }
+                
+                // Iniciar a geração automática
+                startAutoGeneration();
+                
+                console.log("Iniciada conferência automática com registro de frequência");
+            } else {
+                // Se o valor for 0, esconde o botão de parar e o contador
+                document.getElementById('toggle-auto-btn').classList.add('hidden');
+                document.getElementById('countdown-display').classList.add('hidden');
+                
+                // NOVO: Resetar o valor do intervalo atual
+                currentIntervalValue = 0;
+                
+                // Desativar verificação automática
+                autoCheckingEnabled = false;
+            }
+        });
+        
+        // Event listener para o botão de parar a geração automática
+        document.getElementById('toggle-auto-btn').addEventListener('click', function() {
+            stopAutoGeneration();
+            // Parar também a verificação automática
+            checkingStopped = true;
+        });
+        
+        // Event listener para conferir o próximo palpite
+        document.getElementById('check-next-btn').addEventListener('click', function() {
+            checkNextPalpite(false); // false = não é verificação automática
+        });
+        
+        // Event listener para conferir todos os palpites
+        document.getElementById('check-all-btn').addEventListener('click', checkAllPalpites);
+        
+        // Event listener para reiniciar a conferência
+        document.getElementById('reset-check-btn').addEventListener('click', function() {
+            resetCheckingState();
+            // Permitir verificação automática novamente
+            checkingStopped = false;
+        });
+        
+        // Adicionar validação de input para limitar a 1-31 e evitar repetições
+        const fixedInputs = document.querySelectorAll('.fixed-number-input');
+        
+        fixedInputs.forEach(input => {
+            // Garantir que o valor esteja dentro do intervalo 1-31
+            input.addEventListener('blur', function() {
+                const value = parseInt(this.value);
+                if (value < 1) this.value = 1;
+                if (value > 31) this.value = 31;
+            });
+            
+            // Destacar campo quando selecionado
+            input.addEventListener('focus', function() {
+                this.select();
+            });
+        });
+        
+        // Validação para campos de mês
+        const monthInputs = document.querySelectorAll('.month-input');
+        monthInputs.forEach(input => {
+            // Garantir que o valor esteja dentro do intervalo 1-12
+            input.addEventListener('blur', function() {
+                const value = parseInt(this.value);
+                if (value < 1) this.value = 1;
+                if (value > 12) this.value = 12;
+            });
+            
+            // Destacar campo quando selecionado
+            input.addEventListener('focus', function() {
+                this.select();
+            });
+        });
+    </script>
+    
+    <style>
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .pop-in {
+            animation: popIn 0.3s ease forwards;
+        }
+        
+        @keyframes highlight {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .winner-highlight {
+            animation: highlight 0.5s ease infinite;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
+        }
+        
+        /* Nova animação de flash para destacar acertos */
+        @keyframes flash {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 1; color: #ef4444; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .flash-highlight {
+            animation: flash 0.5s ease-in-out;
+        }
+        
+        #match-counter {
+            font-weight: bold;
+        }
+        
+        #history-section {
+            border-top: 1px dashed #ccc;
+            margin-top: 12px;
+            padding-top: 12px;
+            font-size: 0.85rem;
+        }
+        
+        .history-item {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dotted #eee;
+        }
+        
+        .history-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .history-numbers {
+            font-family: monospace;
+        }
+    </style>
+    
+    <script>
+        // Variáveis para controle de paginação dos palpites
+        let paginaAtual = 1;
+        const palpitesPorPagina = 5;
+        const totalPaginas = Math.ceil(31 / palpitesPorPagina);
+        
+        // Gerar e gerenciar os palpites em lotes
+        document.addEventListener('DOMContentLoaded', function() {
+            const palpitesContainer = document.getElementById('palpites-container');
+            const prevButton = document.getElementById('prev-conjunto');
+            const nextButton = document.getElementById('next-conjunto');
+            const conjuntoAtualSpan = document.getElementById('conjunto-atual');
+            
+            // Função para criar um palpite
+            function criarPalpite(numero) {
+                const palpiteGroup = document.createElement('div');
+                palpiteGroup.className = 'palpite-group mb-4 p-3 rounded-lg border border-gray-200 dark:border-gray-700';
+                palpiteGroup.setAttribute('data-palpite-id', numero);
+                
+                palpiteGroup.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Palpite ${numero}</h4>
+                        <span class="text-xs text-gray-500 dark:text-gray-400 palpite-status"></span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex-1">
+                            <div class="manual-input-container grid grid-cols-7 gap-2 w-full" data-palpite-id="${numero}">
+                                <!-- 4 números fixos (readonly) -->
+                                <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                <input type="number" min="1" max="31" class="fixed-number-display bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white" readonly>
+                                <!-- 3 números automáticos -->
+                                <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                                <div class="auto-number-box bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-700 rounded-md flex items-center justify-center h-10 text-sm font-medium text-gray-600 dark:text-gray-300">Auto</div>
+                            </div>
+                        </div>
+                        <div class="w-16">
+                            <input type="number" min="1" max="12" class="month-input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-center h-10 text-sm font-medium text-gray-800 dark:text-white w-full" placeholder="Mês">
+                        </div>
+                    </div>
+                `;
+                
+                return palpiteGroup;
+            }
+            
+            // Criar todos os palpites em um array para facilitar o gerenciamento
+            let todosPalpites = [];
+            
+            // Função para criar todos os palpites dinamicamente
+            function criarTodosOsPalpites() {
+                todosPalpites = []; // Reiniciar o array
+                
+                // Primeiro, coletar os palpites fixos (1-5) que já existem
+                const palpitesFixos = document.querySelectorAll('#grupo-palpites-1 .palpite-group');
+                palpitesFixos.forEach(palpite => {
+                    todosPalpites.push(palpite);
+                });
+                
+                // Preencher o grupo 2 (palpites 6-10)
+                const grupo2 = document.getElementById('grupo-palpites-2');
+                grupo2.innerHTML = ''; // Limpar o container
+                
+                // Criar palpites 6-10 no grupo2
+                for (let i = 6; i <= 10; i++) {
+                    const novoPalpite = criarPalpite(i);
+                    grupo2.appendChild(novoPalpite);
+                    todosPalpites.push(novoPalpite);
+                }
+                
+                // Limpar o container de palpites para os restantes (11-31)
+                palpitesContainer.innerHTML = '';
+                
+                // Criar palpites de 11 a 31 e adicionar ao container
+                for (let i = 11; i <= 31; i++) {
+                    const novoPalpite = criarPalpite(i);
+                    palpitesContainer.appendChild(novoPalpite);
+                    todosPalpites.push(novoPalpite);
+                }
+                
+                console.log(`Total de palpites criados: ${todosPalpites.length}`);
+            }
+            
+            // Função para exibir apenas os palpites da página atual
+            function mostrarPaginaAtual() {
+                // Esconder todos os palpites nos containers dinâmicos
+                palpitesContainer.querySelectorAll('.palpite-group').forEach(palpite => {
+                    palpite.style.display = 'none';
+                });
+                
+                // Esconder todos os grupos de palpites fixos
+                document.querySelectorAll('.palpites-grupo').forEach(grupo => {
+                    grupo.classList.add('hidden');
+                });
+                
+                // Calcular o intervalo de palpites para esta página
+                const inicio = (paginaAtual - 1) * palpitesPorPagina + 1; // números de palpites (1-based)
+                const fim = Math.min(inicio + palpitesPorPagina - 1, 31);
+                
+                console.log(`Mostrando palpites ${inicio} a ${fim}`);
+                
+                // Decidir como mostrar os palpites com base na página atual
+                if (inicio <= 5) {
+                    // Estamos na primeira página, mostrar o grupo fixo 1
+                    document.getElementById('grupo-palpites-1').classList.remove('hidden');
+                } else if (inicio <= 10) {
+                    // Estamos na segunda página, mostrar o grupo fixo 2 caso exista
+                    const grupo2 = document.getElementById('grupo-palpites-2');
+                    if (grupo2) {
+                        grupo2.classList.remove('hidden');
+                    } else {
+                        // Se não existir, mostrar os palpites 6-10 do container
+                        for (let i = 5; i < 10; i++) {
+                            if (todosPalpites[i]) {
+                                todosPalpites[i].style.display = 'block';
+                            }
+                        }
+                    }
+                } else {
+                    // Para as demais páginas, mostrar os palpites do container dinâmico
+                    // Os índices nos todosPalpites são 0-based, mas os números de palpite são 1-based
+                    for (let i = inicio - 1; i < fim; i++) {
+                        if (todosPalpites[i]) {
+                            todosPalpites[i].style.display = 'block';
+                        }
+                    }
+                }
+                
+                // Atualizar o indicador de página
+                conjuntoAtualSpan.textContent = `${inicio}-${fim}`;
+                
+                // Ativar/desativar botões de navegação
+                prevButton.disabled = paginaAtual === 1;
+                nextButton.disabled = fim >= 31;
+            }
+            
+            // Criar todos os palpites no carregamento
+            criarTodosOsPalpites();
+            
+            // Inicializar com a primeira página
+            mostrarPaginaAtual();
+            
+            // Configurar botões de navegação
+            prevButton.addEventListener('click', function() {
+                if (paginaAtual > 1) {
+                    paginaAtual--;
+                    mostrarPaginaAtual();
+                }
+            });
+            
+            nextButton.addEventListener('click', function() {
+                const maxPage = Math.ceil(31 / palpitesPorPagina);
+                if (paginaAtual < maxPage) {
+                    paginaAtual++;
+                    mostrarPaginaAtual();
+                    console.log(`Avançou para página ${paginaAtual} de ${maxPage}`);
+                }
+            });
+            
+            // Configurar botões de exportação
+            const showFreqBtn = document.getElementById('show-freq-btn');
+            const frequencyStats = document.getElementById('frequency-stats');
+            const frequencyContent = document.getElementById('frequency-content');
+            
+            // NOVO: Botões para exportar histórico
+            const exportHistoryBtn = document.getElementById('export-history-btn');
+            const exportOptions = document.getElementById('export-options');
+            const exportExcelBtn = document.getElementById('export-excel-btn');
+            const exportHtmlBtn = document.getElementById('export-html-btn');
+            
+            // Adicionar o evento de clique ao botão de frequência
+            if (showFreqBtn) {
+                showFreqBtn.addEventListener('click', function() {
+                    // Alternar visibilidade da seção de estatísticas
+                    if (frequencyStats.classList.contains('hidden')) {
+                        // Atualizar o conteúdo com as estatísticas de frequência mais recentes
+                        frequencyContent.innerHTML = exibirEstatisticasFrequencia();
+                        frequencyStats.classList.remove('hidden');
+                        showFreqBtn.textContent = 'Ocultar Frequência';
+                        
+                        // Esconder opções de exportação
+                        exportOptions.classList.add('hidden');
+                        exportHistoryBtn.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                            Exportar`;
+                    } else {
+                        frequencyStats.classList.add('hidden');
+                        showFreqBtn.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5z" />
+                                <path d="M8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7z" />
+                                <path d="M14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                            </svg>
+                            Frequência`;
+                    }
+                });
+            }
+            
+            // NOVO: Adicionar evento de clique ao botão de exportar histórico
+            if (exportHistoryBtn) {
+                exportHistoryBtn.addEventListener('click', function() {
+                    // Alternar visibilidade das opções de exportação
+                    if (exportOptions.classList.contains('hidden')) {
+                        exportOptions.classList.remove('hidden');
+                        exportHistoryBtn.textContent = 'Ocultar Exportação';
+                        
+                        // Esconder estatísticas de frequência
+                        frequencyStats.classList.add('hidden');
+                        showFreqBtn.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5z" />
+                                <path d="M8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7z" />
+                                <path d="M14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                            </svg>
+                            Frequência`;
+                    } else {
+                        exportOptions.classList.add('hidden');
+                        exportHistoryBtn.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                            Exportar`;
+                    }
+                });
+            }
+            
+            // NOVO: Adicionar eventos de clique aos botões de exportação
+            if (exportExcelBtn) {
+                exportExcelBtn.addEventListener('click', exportToExcel);
+            }
+            
+            if (exportHtmlBtn) {
+                exportHtmlBtn.addEventListener('click', exportToHTML);
+            }
+            
+            // Carregar histórico de acertos visualmente se existir
+            const acertosSalvos = localStorage.getItem('diaDaSorteAcertos');
+            if (acertosSalvos) {
+                const historicos = JSON.parse(acertosSalvos);
+                const grandes = historicos.filter(h => h.matchCount >= 5);
+                
+                if (grandes.length > 0) {
+                    // Exibir os últimos 8 grandes acertos
+                    const ultimos = grandes.slice(-8);
+                    const historyContainer = document.getElementById('history-container');
+                    
+                    // Remover a mensagem padrão
+                    const defaultMsg = historyContainer.querySelector('.text-center.italic');
+                    if (defaultMsg) {
+                        historyContainer.removeChild(defaultMsg);
+                    }
+                    
+                    // Adicionar os acertos em ordem reversa (mais recentes primeiro)
+                    ultimos.reverse().forEach(acerto => {
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item bg-gray-50 dark:bg-gray-800 p-2 rounded mb-2';
+                        
+                        const sortedMatches = [...acerto.matchedNumbers].sort((a, b) => a - b);
+                        const monthName = monthNames[acerto.actualMonth - 1];
+                        
+                        // NOVO: Verificar se existem propriedades adicionais (para compatibilidade com históricos mais antigos)
+                        const hasPalpiteCounter = acerto.palpiteCounter !== undefined;
+                        const hasLastMatchPalpite = acerto.lastMatchPalpite !== undefined;
+                        const palpiteDiff = hasLastMatchPalpite && acerto.lastMatchPalpite > 0 ? 
+                            acerto.palpiteCounter - acerto.lastMatchPalpite : 0;
+                        
+                        // NOVO: Obter o intervalo utilizado se disponível
+                        const intervaloTexto = acerto.intervalo !== undefined ? 
+                            (intervalTexts[acerto.intervalo.toString()] || "Geração manual") : "Não registrado";
+                        
+                        historyItem.innerHTML = `
+                            <div class="text-xs text-gray-500 dark:text-gray-400">${acerto.datetime}</div>
+                            <div class="mt-1">
+                                <span class="font-medium">${acerto.matchCount} acertos:</span> 
+                                <span class="history-numbers text-red-600 dark:text-red-400">${sortedMatches.join(', ')}</span>
+                            </div>
+                            <div class="text-xs">
+                                Mês: <span class="${acerto.monthMatch ? 'text-green-600 dark:text-green-400 font-medium' : ''}">${monthName} (${acerto.actualMonth})</span>
+                                ${acerto.monthMatch ? ' ✓' : ''}
+                            </div>
+                            ${hasPalpiteCounter ? `
+                            <div class="text-xs mt-1">
+                                <span class="font-medium">Palpite #${acerto.palpiteCounter}</span>
+                            </div>` : ''}
+                            ${palpiteDiff > 0 ? `
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                <span class="font-medium">Diferença de palpites:</span> ${palpiteDiff} palpites
+                            </div>` : ''}
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                <span class="font-medium">Intervalo utilizado:</span> ${intervaloTexto}
+                            </div>
+                        `;
+                        
+                        historyContainer.appendChild(historyItem);
+                    });
+                }
+            }
+            
+            // Carregar frequências salvas se existirem
+            try {
+                const freqNumerosSalvos = localStorage.getItem('diaDaSorteFreqNumeros');
+                const freqMesesSalvos = localStorage.getItem('diaDaSorteFreqMeses');
+                
+                if (freqNumerosSalvos) {
+                    registroNumerosAcertados = JSON.parse(freqNumerosSalvos);
+                }
+                
+                if (freqMesesSalvos) {
+                    registroMesesAcertados = JSON.parse(freqMesesSalvos);
+                }
+            } catch (e) {
+                console.log("Erro ao carregar frequências:", e);
+                registroNumerosAcertados = {};
+                registroMesesAcertados = {};
+            }
+        });
+    </script>
+</body>
+</html>

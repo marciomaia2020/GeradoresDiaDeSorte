@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados do Dia de Sorte | Consulta e Estatísticas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #F09300; /* Laranja Dia de Sorte */
+            --primary-dark: #D57E00;
+            --primary-light: #FFC866;
+            --accent-color: #FF7B00;
+            --background-color: #FFFAF2;
+            --text-color: #333333;
+            --secondary-color: #E0E0E0;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --info-color: #17a2b8;
+            --warning-color: #ffc107;
+            --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            --soft-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            --ball-shadow: 0 4px 10px rgba(240, 147, 0, 0.25);
+            --transition-default: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto 35px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: var(--transition-default);
+        }
+
+        .container:hover {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            padding: 35px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .logo {
+            width: 75px;
+            height: 75px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+        }
+
+        .logo i {
+            font-size: 32px;
+            color: var(--primary-color);
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.4rem;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            letter-spacing: -0.5px;
+            font-weight: 700;
+        }
+
+        .search-container {
+            background: linear-gradient(180deg, white 0%, #f9f9f9 100%);
+            padding: 25px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .search-container::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(240,147,0,0) 0%, rgba(240,147,0,0.5) 50%, rgba(240,147,0,0) 100%);
+        }
+
+        .search-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 220px;
+            padding: 14px 18px;
+            border: 1px solid #e2e2e2;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: white;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(240, 147, 0, 0.2);
+        }
+
+        .search-button {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(240, 147, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+            transition: opacity 0.3s ease;
+        }
+
+        .search-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(240, 147, 0, 0.35);
+        }
+
+        .search-button:hover::after {
+            opacity: 0.5;
+        }
+
+        .search-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(240, 147, 0, 0.25);
+        }
+
+        .result-container {
+            padding: 30px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin: 30px 0 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            position: relative;
+        }
+
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: var(--primary-color);
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            position: relative;
+        }
+
+        .result-header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: var(--primary-color);
+        }
+
+        .result-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .result-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-top: 8px;
+        }
+
+        .result-info {
+            margin-bottom: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .result-info h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .result-info h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: var(--primary-color);
+        }
+
+        .balls-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .ball {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
+            font-weight: bold;
+            font-size: 1.4rem;
+            box-shadow: var(--ball-shadow);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ball::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%);
+            border-radius: 50% 50% 0 0;
+        }
+
+        .ball:hover {
+            transform: scale(1.12) translateY(-5px);
+            box-shadow: 0 8px 15px rgba(240, 147, 0, 0.35);
+        }
+
+        .month-badge {
+            background: linear-gradient(135deg, var(--primary-light) 0%, #FFD991 100%);
+            color: var(--text-color);
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            margin-top: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .month-badge::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+        }
+
+        .month-badge:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .month-badge i {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .grid-title {
+            text-align: center;
+            margin: 35px 0 20px;
+            color: var(--text-color);
+            font-size: 1.4rem;
+            font-weight: 500;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            padding-bottom: 12px;
+        }
+
+        .grid-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: var(--primary-color);
+        }
+
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: rgba(240, 147, 0, 0.03);
+            border-radius: 15px;
+        }
+
+        .number-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            color: var(--text-color);
+            border-radius: 50%;
+            border: 1px solid #eee;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .number-cell::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%);
+            opacity: 0.6;
+        }
+
+        .number-cell.highlight {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+            box-shadow: 0 5px 10px rgba(240, 147, 0, 0.25);
+            z-index: 1;
+        }
+
+        .number-cell:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .number-cell.highlight:hover {
+            transform: scale(1.15);
+        }
+
+        .stats-container {
+            margin-top: 50px;
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            box-shadow: var(--soft-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        }
+
+        .stats-header {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .stats-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: var(--soft-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            position: relative;
+            padding-left: 10px;
+        }
+
+        .stats-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            flex: 1;
+            min-width: 140px;
+            background-color: var(--background-color);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.07);
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-shadow: 0 1px 1px rgba(0,0,0,0.05);
+        }
+
+        .digit-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .digit-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 15px;
+            background-color: var(--background-color);
+            border-radius: 12px;
+            min-width: 60px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .digit-badge:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.07);
+        }
+
+        .digit-badge-value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .digit-badge-count {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .top-numbers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .top-number {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 10px;
+            background-color: var(--background-color);
+            border-radius: 12px;
+            min-width: 75px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .top-number:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+        }
+
+        .top-number-value {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
+            font-weight: bold;
+            margin-bottom: 8px;
+            box-shadow: 0 3px 6px rgba(240, 147, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .top-number-value::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%);
+        }
+
+        .top-number-count {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .months-chart {
+            height: 180px;
+            margin-top: 25px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            justify-content: space-between;
+            padding: 0 10px 25px;
+            position: relative;
+        }
+
+        .months-chart::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 5px;
+            right: 5px;
+            height: 1px;
+            background-color: #ddd;
+        }
+
+        .months-chart::after {
+            content: 'Meses';
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.85rem;
+            color: #777;
+        }
+
+        .month-bar {
+            flex: 1;
+            background: linear-gradient(180deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            font-size: 0.8rem;
+            padding-top: 5px;
+            min-width: 26px;
+            position: relative;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .month-bar:hover {
+            filter: brightness(1.1);
+            transform: scaleY(1.05);
+        }
+
+        .month-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 100%);
+            border-radius: 6px 6px 0 0;
+        }
+
+        .month-bar-label {
+            position: absolute;
+            bottom: -22px;
+            transform: rotate(-45deg);
+            transform-origin: top left;
+            font-size: 0.8rem;
+            color: #666;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .month-bar-value {
+            position: absolute;
+            top: -25px;
+            font-size: 0.8rem;
+            color: var(--primary-dark);
+            font-weight: bold;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 24px;
+            background-color: #e0e0e0;
+            border-radius: 12px;
+            margin: 15px 0;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 70px;
+            height: 70px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-align: center;
+            max-width: 80%;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background-color: #ffeaea;
+            color: var(--error-color);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            text-align: center;
+            display: none;
+            box-shadow: 0 3px 6px rgba(220, 53, 69, 0.1);
+            border-left: 4px solid var(--error-color);
+            font-weight: 500;
+        }
+
+        .historic-links {
+            background: linear-gradient(180deg, var(--primary-light) 0%, #FFD991 100%);
+            padding: 25px;
+            border-radius: 20px;
+            margin-top: 40px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .historic-links::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%);
+            background-size: 20px 20px;
+            opacity: 0.3;
+        }
+
+        .historic-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4rem;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .historic-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 2px;
+            background: var(--primary-dark);
+        }
+
+        .historic-list {
+            list-style-type: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .historic-item {
+            background-color: white;
+            border-radius: 12px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .historic-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.12);
+        }
+
+        .historic-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 15px;
+            transition: background-color 0.3s ease;
+            height: 100%;
+        }
+
+        .historic-link:hover {
+            color: var(--primary-dark);
+            background-color: #fff9f2;
+        }
+
+        .historic-link i {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .historic-link:hover i {
+            transform: translateX(3px);
+        }
+
+        .statistics-loading {
+            text-align: center;
+            padding: 50px 20px;
+            color: #777;
+            font-size: 1.1rem;
+        }
+
+        .statistics-loading .loading-spinner {
+            margin: 0 auto 15px;
+            width: 50px;
+            height: 50px;
+            border-width: 4px;
+        }
+
+        .app-info {
+            background-color: white;
+            padding: 25px;
+            border-radius: 20px;
+            margin-top: 40px;
+            box-shadow: var(--soft-shadow);
+            text-align: center;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .app-info h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .app-info p {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px 0;
+            color: #666;
+            font-size: 0.95rem;
+            background-color: white;
+            border-top: 1px solid #eee;
+            box-shadow: 0 -3px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .search-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .numbers-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 8px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ball {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            
+            .months-chart {
+                height: 140px;
+            }
+            
+            .month-bar-label {
+                font-size: 0.7rem;
+                transform: rotate(-60deg);
+            }
+
+            .result-container {
+                padding: 20px;
+            }
+
+            .stats-container {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .numbers-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 6px;
+            }
+
+            .ball {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+
+            .stats-content {
+                flex-direction: column;
+            }
+            
+            .top-numbers {
+                gap: 8px;
+            }
+            
+            .top-number {
+                min-width: 65px;
+                padding: 12px 8px;
+            }
+            
+            .month-bar {
+                min-width: 22px;
+            }
+
+            .digit-badge {
+                min-width: 55px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-clover"></i>
+                </div>
+                <div>
+                    <h1>Resultados do Dia de Sorte</h1>
+                    <p class="subtitle">Consulte dados e estatísticas atualizados</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="search-container">
+            <div class="search-form">
+                <input type="number" id="concursoInput" class="search-input" placeholder="Digite o número do concurso">
+                <button id="searchButton" class="search-button" onclick="buscarResultado()">
+                    <i class="fas fa-search"></i> Buscar Resultado
+                </button>
+            </div>
+            <div id="errorMessage" class="error-message"></div>
+        </div>
+
+        <div class="result-container">
+            <div id="resultContent" style="display: none;">
+                <div class="result-header">
+                    <div class="result-title">
+                        <i class="fas fa-trophy"></i> Concurso <span id="concursoNumber"></span>
+                    </div>
+                    <div class="result-subtitle">Data do sorteio: <span id="concursoDate"></span></div>
+                </div>
+
+                <div class="result-info">
+                    <h3>Números Sorteados</h3>
+                    <div id="ballsContainer" class="balls-container"></div>
+                    <div id="monthBadge" class="month-badge"></div>
+                </div>
+
+                <div class="grid-title">Números do Dia de Sorte (1-31)</div>
+                <div id="numbersGrid" class="numbers-grid"></div>
+
+                <div class="stats-container">
+                    <div class="stats-header">
+                        <i class="fas fa-chart-bar"></i> Estatísticas do Concurso Atual
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stats-card">
+                            <div class="stats-title">Dígitos Utilizados</div>
+                            <div id="digitStats" class="digit-stats"></div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-title">Resumo do Sorteio</div>
+                            <div class="stats-content">
+                                <div class="stat-item">
+                                    <div class="stat-label">Dígito Mais Frequente</div>
+                                    <div id="mostFrequentDigit" class="stat-value">-</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-label">Número Par/Ímpar</div>
+                                    <div id="parImpar" class="stat-value">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nova seção para estatísticas históricas -->
+    <div class="container" id="historicalStatsContainer">
+        <div class="section-header">
+            <div class="result-title">
+                <i class="fas fa-history"></i> Estatísticas Históricas
+            </div>
+            <div class="result-subtitle">Análise completa do concurso 1 até o mais recente</div>
+        </div>
+
+        <div id="historicalStatsContent" class="statistics-loading">
+            <div class="loading-spinner"></div>
+            <p>Carregando estatísticas históricas...</p>
+        </div>
+    </div>
+
+    <div class="container historic-links">
+        <div class="historic-title">HISTÓRICO DE RESULTADOS</div>
+        <ul class="historic-list">
+            <li class="historic-item">
+                <a href="./HistoricoDeResultados/index.html" target="_blank" class="historic-link">
+                    <i class="fa-solid fa-arrow-right"></i> Histórico de Resultados - Vertical
+                </a>
+            </li>
+            <li class="historic-item">
+                <a href="./HistoricoDeResultados/index1a.html" target="_blank" class="historic-link">
+                    <i class="fa-solid fa-arrow-right"></i> Histórico de Resultados - Quadrantes com estatísticas
+                </a>
+            </li>
+            <li class="historic-item">
+                <a href="./HistoricoDeResultados/index2.html" target="_blank" class="historic-link">
+                    <i class="fa-solid fa-arrow-right"></i> Gerador de Combinações
+                </a>
+            </li>
+            <li class="historic-item">
+                <a href="./HistoricoDeResultados/index3.html" target="_blank" class="historic-link">
+                    <i class="fa-solid fa-arrow-right"></i> Resultados de todos os sorteios da Mega Sena
+                </a>
+            </li>
+            <li class="historic-item">
+                <a href="./HistoricoDeResultados/index5.html" target="_blank" class="historic-link">
+                    <i class="fa-solid fa-arrow-right"></i> Resultados de todos os sorteios da Mega Sena - com filtros
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="app-info">
+        <h2>Sobre o Dia de Sorte</h2>
+        <p>O Dia de Sorte é uma loteria onde você aposta seus números da sorte. Escolha de 7 a 15 números dentre os 31 disponíveis e mais 1 "Mês de Sorte". São sorteados sete números e um "Mês de Sorte" por concurso.</p>
+        <p>Valor da aposta mínima (7 números): R$ 2,50.</p>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Carregando resultados...</div>
+    </div>
+
+    <footer>
+        <p>Desenvolvido por: Márcio Fernando Maia &copy; 2025 - Todos os direitos reservados</p>
+        <p>Consulte sempre os resultados oficiais no site da Caixa Econômica Federal</p>
+    </footer>
+
+    <script>
+        // Variáveis globais para armazenar dados estatísticos
+        let globalStats = {
+            totalConcursos: 0,
+            digitFrequency: {}, // Frequência dos dígitos (0-9)
+            numberFrequency: {}, // Frequência dos números (1-31)
+            monthFrequency: {},  // Frequência dos meses
+            evenOddDistribution: { // Distribuição de pares e ímpares
+                pares: 0,
+                impares: 0
+            }
+        };
+
+        // Função para mostrar/esconder loading
+        function toggleLoading(show, message = "Carregando resultados...") {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const loadingText = document.querySelector('.loading-text');
+            
+            if (loadingText) {
+                loadingText.textContent = message;
+            }
+            
+            if (show) {
+                loadingOverlay.classList.add('active');
+            } else {
+                loadingOverlay.classList.remove('active');
+            }
+        }
+
+        // Função para mostrar mensagem de erro
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            errorMessage.style.display = 'block';
+            
+            // Esconder a mensagem após 5 segundos
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Função para formatar a data
+        function formatarData(dataString) {
+            if (!dataString) return "Data não disponível";
+            
+            const partesData = dataString.split('/');
+            if (partesData.length !== 3) return dataString;
+            
+            const meses = [
+                "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+            ];
+            
+            const dia = partesData[0];
+            const mes = parseInt(partesData[1]) - 1;
+            const ano = partesData[2];
+            
+            return `${dia} de ${meses[mes]} de ${ano}`;
+        }
+
+        // Função para contar dígitos usados nas dezenas
+        function contarDigitos(dezenas) {
+            const digitCounts = {};
+            
+            // Inicializar contagem para todos os dígitos (0-9)
+            for (let i = 0; i <= 9; i++) {
+                digitCounts[i] = 0;
+            }
+            
+            // Contar ocorrências de cada dígito
+            dezenas.forEach(dezena => {
+                const digitos = dezena.toString().split('');
+                digitos.forEach(digito => {
+                    digitCounts[parseInt(digito)] = (digitCounts[parseInt(digito)] || 0) + 1;
+                });
+            });
+            
+            return digitCounts;
+        }
+
+        // Função para encontrar o dígito mais frequente
+        function digitoMaisFrequente(contagem) {
+            let maiorContagem = 0;
+            let digitoMaisFreq = null;
+            
+            // Iteração usando nomes de variáveis distintos
+            for (const [digito, quantidade] of Object.entries(contagem)) {
+                if (quantidade > maiorContagem) {
+                    maiorContagem = quantidade;
+                    digitoMaisFreq = digito;
+                }
+            }
+            
+            return { digito: digitoMaisFreq, contagem: maiorContagem };
+        }
+
+        // Função para contar pares e ímpares
+        function contarParesImpares(dezenas) {
+            let pares = 0;
+            let impares = 0;
+            
+            dezenas.forEach(dezena => {
+                if (parseInt(dezena) % 2 === 0) {
+                    pares++;
+                } else {
+                    impares++;
+                }
+            });
+            
+            return { pares, impares };
+        }
+
+        // Função para obter os N itens mais frequentes
+        function getTopItems(obj, count) {
+            return Object.entries(obj)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, count)
+                .map(([item, freq]) => ({ item, freq }));
+        }
+
+        // Função para encontrar o mês da sorte na resposta da API
+        function encontrarMesDaSorte(data) {
+            // Verificar todos os possíveis nomes de campo para o mês da sorte
+            const possiveisNomes = [
+                'mesDaSorte',
+                'nomeMes',
+                'nomeTimeCoracaoMesSorte',
+                'nomeMesSorte',
+                'mesCoracao'
+            ];
+
+            let mesSorte = null;
+
+            // Procurar o campo diretamente no objeto
+            for (const nome of possiveisNomes) {
+                if (data[nome] && typeof data[nome] === 'string') {
+                    mesSorte = data[nome];
+                    break;
+                }
+            }
+
+            // Se não encontrar diretamente, procurar em todas as propriedades do objeto
+            if (!mesSorte) {
+                for (const key in data) {
+                    if (
+                        typeof data[key] === 'string' && 
+                        (key.toLowerCase().includes('mes') || key.toLowerCase().includes('month'))
+                    ) {
+                        mesSorte = data[key];
+                        break;
+                    }
+
+                    // Verificar também se algum campo contém a palavra "Janeiro", "Fevereiro", etc.
+                    if (typeof data[key] === 'string') {
+                        const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+                                      "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+                        if (meses.some(mes => data[key].includes(mes))) {
+                            mesSorte = data[key];
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Caso não encontre, retorna um valor padrão
+            return mesSorte || 'Não informado';
+        }
+
+        // Função principal para buscar resultados
+        async function buscarResultado() {
+            const concursoInput = document.getElementById('concursoInput');
+            const concurso = concursoInput.value.trim();
+            
+            // Esconder possíveis mensagens de erro anteriores
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            // Mostrar loading
+            toggleLoading(true, `Buscando resultados do concurso ${concurso || 'mais recente'}...`);
+            
+            try {
+                // Tentar primeiro a API alternativa que tem funcionado melhor
+                await buscarResultadoAlternativo(concurso);
+            } catch (erro) {
+                console.error('Erro na API alternativa:', erro);
+                
+                // Tentar a API oficial como fallback
+                try {
+                    // URL base para a API oficial do Dia de Sorte
+                    const baseUrl = 'https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte';
+                    const url = concurso 
+                        ? `${baseUrl}/${concurso}`
+                        : baseUrl; // API oficial usa URL base para o último concurso
+                    
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Erro ao buscar o concurso: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Verificar se os dados da API têm as dezenas
+                    const dezenas = data.listaDezenas || [];
+                    if (!dezenas.length || dezenas.length !== 7) {
+                        throw new Error('Resultado inválido ou incompleto.');
+                    }
+                    
+                    // Exibir os resultados (com inspeção automática do campo do mês)
+                    exibirResultado(data);
+                } catch (erroOficial) {
+                    console.error('Erro na API oficial:', erroOficial);
+                    showError(`Erro ao buscar o resultado: ${erroOficial.message || 'Verifique sua conexão'}`);
+                    
+                    // Esconder área de resultados se houver erro em ambas APIs
+                    document.getElementById('resultContent').style.display = 'none';
+                }
+            } finally {
+                // Esconder loading
+                toggleLoading(false);
+                
+                // Carregar estatísticas gerais se esta for a primeira busca
+                if (Object.keys(globalStats.digitFrequency).length === 0) {
+                    carregarEstatisticasGerais();
+                }
+            }
+        }
+
+        // Função para buscar resultados da API alternativa
+        async function buscarResultadoAlternativo(concurso) {
+            const baseUrl = 'https://loteriascaixa-api.herokuapp.com/api/diadesorte';
+            const url = concurso 
+                ? `${baseUrl}/${concurso}`
+                : `${baseUrl}/latest`;
+                
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`Erro ao buscar o concurso da API alternativa: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            // Verificar se os dados da API têm as dezenas
+            if (!data.dezenas || data.dezenas.length !== 7) {
+                throw new Error('Resultado inválido ou incompleto da API alternativa.');
+            }
+            
+            // Exibir os resultados
+            exibirResultado(data);
+        }
+
+        // Função para exibir o resultado
+        function exibirResultado(data) {
+            console.log('Dados recebidos:', data);
+            
+            // Determinar o número do concurso
+            const numeroConcurso = data.numero || data.concurso || 'N/D';
+            document.getElementById('concursoNumber').textContent = numeroConcurso;
+            
+            // Determinar a data do concurso
+            const dataConcurso = data.dataApuracao || data.data || 'N/D';
+            document.getElementById('concursoDate').textContent = formatarData(dataConcurso);
+            
+            // Determinar as dezenas
+            const dezenas = data.listaDezenas || data.dezenas || [];
+            
+            // Exibir bolas sorteadas
+            const ballsContainer = document.getElementById('ballsContainer');
+            ballsContainer.innerHTML = '';
+            
+            dezenas.forEach(numero => {
+                const ball = document.createElement('div');
+                ball.className = 'ball';
+                ball.textContent = numero;
+                ballsContainer.appendChild(ball);
+            });
+            
+            // Encontrar e exibir o mês da sorte
+            const mesDaSorte = data.mesDaSorte || 
+                               encontrarMesDaSorte(data) || 
+                               'Não informado';
+            
+            const monthBadge = document.getElementById('monthBadge');
+            monthBadge.innerHTML = `<i class="fas fa-calendar-alt"></i> Mês da Sorte: ${mesDaSorte}`;
+            
+            // Atualizar grid de números
+            const numbersGrid = document.getElementById('numbersGrid');
+            numbersGrid.innerHTML = '';
+            
+            for (let i = 1; i <= 31; i++) {
+                const cellDiv = document.createElement('div');
+                cellDiv.className = 'number-cell';
+                cellDiv.textContent = i < 10 ? `0${i}` : i;
+                
+                // Destacar números sorteados
+                const iStr = i.toString().padStart(2, '0');
+                if (dezenas.includes(iStr)) {
+                    cellDiv.classList.add('highlight');
+                }
+                
+                numbersGrid.appendChild(cellDiv);
+            }
+            
+            // Estatísticas dos dígitos
+            const digitCounts = contarDigitos(dezenas);
+            const digitStatsContainer = document.getElementById('digitStats');
+            digitStatsContainer.innerHTML = '';
+            
+            for (let i = 0; i <= 9; i++) {
+                const digitBadge = document.createElement('div');
+                digitBadge.className = 'digit-badge';
+                
+                const digitValue = document.createElement('div');
+                digitValue.className = 'digit-badge-value';
+                digitValue.textContent = i;
+                
+                const digitCount = document.createElement('div');
+                digitCount.className = 'digit-badge-count';
+                digitCount.textContent = digitCounts[i];
+                
+                digitBadge.appendChild(digitValue);
+                digitBadge.appendChild(digitCount);
+                digitStatsContainer.appendChild(digitBadge);
+            }
+            
+            // Dígito mais frequente
+            const maisFrequente = digitoMaisFrequente(digitCounts);
+            document.getElementById('mostFrequentDigit').textContent = maisFrequente.digito;
+            
+            // Contagem de pares/ímpares
+            const parImpar = contarParesImpares(dezenas);
+            document.getElementById('parImpar').textContent = `${parImpar.pares}/${parImpar.impares}`;
+            
+            // Mostrar área de resultados
+            document.getElementById('resultContent').style.display = 'block';
+        }
+
+        // Função para carregar estatísticas gerais de todos os concursos
+        async function carregarEstatisticasGerais() {
+            try {
+                toggleLoading(true, "Calculando estatísticas históricas...");
+                
+                // Usar API alternativa que tem funcionado melhor
+                const alternativeResponse = await fetch('https://loteriascaixa-api.herokuapp.com/api/diadesorte');
+                
+                if (!alternativeResponse.ok) {
+                    throw new Error('Não foi possível carregar o histórico da API alternativa');
+                }
+                
+                const todosResultados = await alternativeResponse.json();
+                processarEstatisticasHistoricas(todosResultados);
+                
+                toggleLoading(false);
+            } catch (erro) {
+                console.error('Erro ao carregar estatísticas gerais:', erro);
+                document.getElementById('historicalStatsContent').innerHTML = `
+                    <div class="error-message" style="display: block; margin: 30px 0;">
+                        <i class="fas fa-exclamation-triangle"></i> Erro ao carregar estatísticas históricas: ${erro.message}
+                    </div>
+                `;
+                toggleLoading(false);
+            }
+        }
+
+        // Função para processar estatísticas históricas
+        function processarEstatisticasHistoricas(todosResultados) {
+            // Inicializar estatísticas
+            const digitStats = {};
+            const numberStats = {};
+            const monthStats = {};
+            let totalPares = 0;
+            let totalImpares = 0;
+            
+            // Inicializar contagens
+            for (let i = 0; i <= 9; i++) {
+                digitStats[i] = 0;
+            }
+            
+            for (let i = 1; i <= 31; i++) {
+                numberStats[i] = 0;
+            }
+            
+            const meses = [
+                "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+            ];
+            
+            meses.forEach(mes => {
+                monthStats[mes] = 0;
+            });
+            
+            // Número total de concursos
+            globalStats.totalConcursos = todosResultados.length;
+            
+            // Processar todos os resultados
+            todosResultados.forEach(resultado => {
+                // API alternativa usa 'dezenas'
+                const dezenas = resultado.dezenas;
+                
+                if (!dezenas || !Array.isArray(dezenas)) return; // Pular se não houver dezenas
+                
+                // Contar dezenas
+                dezenas.forEach(dezena => {
+                    // Incrementar estatística do número
+                    const num = parseInt(dezena);
+                    if (!isNaN(num) && num >= 1 && num <= 31) {
+                        numberStats[num] = (numberStats[num] || 0) + 1;
+                        
+                        // Contar dígitos
+                        dezena.toString().split('').forEach(digito => {
+                            const dig = parseInt(digito);
+                            if (!isNaN(dig) && dig >= 0 && dig <= 9) {
+                                digitStats[dig] = (digitStats[dig] || 0) + 1;
+                            }
+                        });
+                        
+                        // Contar pares e ímpares
+                        if (num % 2 === 0) {
+                            totalPares++;
+                        } else {
+                            totalImpares++;
+                        }
+                    }
+                });
+                
+                // Contar mês da sorte
+                let mesDaSorte = resultado.mesDaSorte;
+                if (mesDaSorte && meses.includes(mesDaSorte)) {
+                    monthStats[mesDaSorte] = (monthStats[mesDaSorte] || 0) + 1;
+                }
+            });
+            
+            // Armazenar estatísticas globais
+            globalStats.digitFrequency = digitStats;
+            globalStats.numberFrequency = numberStats;
+            globalStats.monthFrequency = monthStats;
+            globalStats.evenOddDistribution = {
+                pares: totalPares,
+                impares: totalImpares
+            };
+            
+            console.log('Estatísticas gerais carregadas:', globalStats);
+            
+            // Exibir estatísticas históricas
+            exibirEstatisticasHistoricas();
+        }
+
+        // Função para exibir estatísticas históricas
+        function exibirEstatisticasHistoricas() {
+            const container = document.getElementById('historicalStatsContent');
+            
+            // Verificar se já carregamos as estatísticas
+            if (Object.keys(globalStats.digitFrequency).length === 0) {
+                return; // Ainda não carregou os dados
+            }
+            
+            // Obter os 5 números mais sorteados
+            const topNumbers = getTopItems(globalStats.numberFrequency, 5);
+            
+            // Obter os 3 dígitos mais frequentes
+            const topDigits = getTopItems(globalStats.digitFrequency, 3);
+            
+            // Calcular total de dezenas sorteadas
+            const totalDezenas = Object.values(globalStats.numberFrequency).reduce((acc, val) => acc + val, 0);
+            
+            // Calcular porcentagem de pares e ímpares
+            const percentPares = totalDezenas > 0 
+                ? (globalStats.evenOddDistribution.pares / totalDezenas * 100).toFixed(1)
+                : "0.0";
+            const percentImpares = totalDezenas > 0
+                ? (globalStats.evenOddDistribution.impares / totalDezenas * 100).toFixed(1)
+                : "0.0";
+            
+            // Encontrar o mês mais sorteado
+            let maxMonthCount = 0;
+            let mostFrequentMonth = '';
+            for (const [month, count] of Object.entries(globalStats.monthFrequency)) {
+                if (count > maxMonthCount) {
+                    maxMonthCount = count;
+                    mostFrequentMonth = month;
+                }
+            }
+            
+            // HTML para estatísticas históricas
+            container.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <div class="stats-title"><i class="fas fa-medal"></i> Números Mais Sorteados</div>
+                        <div class="top-numbers">
+                            ${topNumbers.map((item, index) => `
+                                <div class="top-number">
+                                    <div class="top-number-value">${item.item}</div>
+                                    <div class="top-number-count">${item.freq}x</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card">
+                        <div class="stats-title"><i class="fas fa-keyboard"></i> Dígitos Mais Frequentes</div>
+                        <div class="stats-content">
+                            ${topDigits.map(item => `
+                                <div class="stat-item">
+                                    <div class="stat-label">Dígito</div>
+                                    <div class="stat-value">${item.item}</div>
+                                    <div class="stat-label">${item.freq}x</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-card" style="margin-top: 25px;">
+                    <div class="stats-title"><i class="fas fa-chart-pie"></i> Distribuição Pares vs. Ímpares</div>
+                    <div style="margin: 15px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span><strong>Pares:</strong> ${globalStats.evenOddDistribution.pares} (${percentPares}%)</span>
+                            <span><strong>Ímpares:</strong> ${globalStats.evenOddDistribution.impares} (${percentImpares}%)</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: ${percentPares}%">${percentPares}%</div>
+                        </div>
+                        <div style="font-size: 0.85rem; color: #666; text-align: center; margin-top: 8px;">
+                            Distribuição de números pares vs. ímpares em todos os sorteios
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-card" style="margin-top: 25px;">
+                    <div class="stats-title"><i class="fas fa-calendar-day"></i> Meses da Sorte</div>
+                    <div class="months-chart">
+                        ${Object.entries(globalStats.monthFrequency).map(([month, count]) => {
+                            if (!month || month === 'undefined') return '';
+                            const monthShort = month.substring(0, 3);
+                            const height = maxMonthCount > 0 ? (count / maxMonthCount * 100) : 0; // Altura proporcional
+                            return `
+                                <div class="month-bar" style="height: ${height}%">
+                                    <span class="month-bar-value">${count}</span>
+                                    <span class="month-bar-label">${monthShort}</span>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <div style="text-align: center; margin-top: 35px;">
+                        <div style="font-weight: bold; color: var(--primary-color); font-size: 1.1rem;">
+                            <i class="fas fa-star"></i> Mês mais sorteado: ${mostFrequentMonth || 'Não disponível'} (${mostFrequentMonth ? globalStats.monthFrequency[mostFrequentMonth] : 0} vezes)
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-card" style="margin-top: 25px;">
+                    <div class="stats-title"><i class="fas fa-info-circle"></i> Informações Gerais</div>
+                    <div class="stats-content">
+                        <div class="stat-item">
+                            <div class="stat-label">Total de Concursos</div>
+                            <div class="stat-value">${globalStats.totalConcursos}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Dezenas Sorteadas</div>
+                            <div class="stat-value">${totalDezenas}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Número mais frequente</div>
+                            <div class="stat-value">${topNumbers.length > 0 ? `${topNumbers[0].item} (${topNumbers[0].freq}x)` : 'N/D'}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Adiciona um listener para a tecla Enter no campo de pesquisa
+        document.getElementById('concursoInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                buscarResultado();
+            }
+        });
+
+        // Função executada quando a página carrega
+        document.addEventListener('DOMContentLoaded', function() {
+            // Buscar o último resultado automaticamente ao carregar a página
+            buscarResultado();
+        });
+    </script>
+</body>
+</html>

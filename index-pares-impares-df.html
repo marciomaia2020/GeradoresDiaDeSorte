@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Completa - Resultados Dia de Sorte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE'
+                    }
+                }
+            },
+            darkMode: 'class'
+        }
+    </script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .number-ball {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+        .number-ball.par {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+        .number-ball.impar {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        .dezena-ball {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .dezena-ball.repetida {
+            border: 3px solid #fbbf24;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
+            animation: pulse-gold 2s infinite;
+        }
+        @keyframes pulse-gold {
+            0%, 100% { box-shadow: 0 0 15px rgba(251, 191, 36, 0.6); }
+            50% { box-shadow: 0 0 25px rgba(251, 191, 36, 0.9); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
+    <!-- Detecção de tema escuro -->
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+
+    <!-- Header -->
+    <div class="gradient-bg text-white py-12">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">📊 Análise Completa</h1>
+            <h2 class="text-2xl md:text-3xl font-semibold mb-6">Resultados Históricos - Dia de Sorte</h2>
+            <p class="text-lg opacity-90 max-w-3xl mx-auto">
+                Análise estatística completa de todos os concursos realizados pela Caixa Econômica Federal
+            </p>
+        </div>
+    </div>
+
+    <!-- Loading / Status -->
+    <div id="loading-section" class="container mx-auto px-4 py-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 text-center">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mb-4"></div>
+            <h3 class="text-xl font-semibold mb-2">Carregando Dados da Caixa...</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4" id="loading-status">Conectando com a API...</p>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div id="progress-bar" class="bg-primary h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-500 mt-2" id="progress-text">0%</p>
+        </div>
+    </div>
+
+    <!-- Resumo Geral -->
+    <div id="summary-section" class="container mx-auto px-4 py-8 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-6 text-center">📈 Resumo Geral</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <div class="text-3xl font-bold text-blue-600 dark:text-blue-400" id="total-concursos">-</div>
+                    <div class="text-sm text-blue-700 dark:text-blue-300">Total de Concursos</div>
+                </div>
+                
+                <div class="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <div class="text-3xl font-bold text-green-600 dark:text-green-400" id="total-numeros">-</div>
+                    <div class="text-sm text-green-700 dark:text-green-300">Números Sorteados</div>
+                </div>
+                
+                <div class="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <div class="text-3xl font-bold text-purple-600 dark:text-purple-400" id="primeiro-concurso">-</div>
+                    <div class="text-sm text-purple-700 dark:text-purple-300">Primeiro Concurso</div>
+                </div>
+                
+                <div class="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                    <div class="text-3xl font-bold text-orange-600 dark:text-orange-400" id="ultimo-concurso">-</div>
+                    <div class="text-sm text-orange-700 dark:text-orange-300">Último Concurso</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Análise Principal: Pares vs Ímpares -->
+    <div id="pares-impares-section" class="container mx-auto px-4 py-8 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-6 text-center">🎯 ANÁLISE PRINCIPAL 1: Pares vs Ímpares</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <!-- Números Pares -->
+                <div class="text-center p-6 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg">
+                    <h4 class="text-xl font-bold text-blue-600 dark:text-blue-400 mb-4">🔵 NÚMEROS PARES</h4>
+                    <div class="text-5xl font-bold text-blue-600 dark:text-blue-400 mb-2" id="total-pares">-</div>
+                    <div class="text-sm text-blue-700 dark:text-blue-300 mb-4">Total de ocorrências</div>
+                    <div class="text-2xl font-semibold text-blue-600 dark:text-blue-400" id="percent-pares">-%</div>
+                    <div class="text-xs text-blue-600 dark:text-blue-400">Percentual do total</div>
+                </div>
+                
+                <!-- Números Ímpares -->
+                <div class="text-center p-6 bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-lg">
+                    <h4 class="text-xl font-bold text-red-600 dark:text-red-400 mb-4">🔴 NÚMEROS ÍMPARES</h4>
+                    <div class="text-5xl font-bold text-red-600 dark:text-red-400 mb-2" id="total-impares">-</div>
+                    <div class="text-sm text-red-700 dark:text-red-300 mb-4">Total de ocorrências</div>
+                    <div class="text-2xl font-semibold text-red-600 dark:text-red-400" id="percent-impares">-%</div>
+                    <div class="text-xs text-red-600 dark:text-red-400">Percentual do total</div>
+                </div>
+            </div>
+
+            <!-- Gráfico Pares vs Ímpares -->
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold mb-4 text-center">📊 Distribuição Visual</h4>
+                <div class="h-64">
+                    <canvas id="paresImparesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Análise por Concurso -->
+            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                <h4 class="font-semibold mb-3">📈 Análise Detalhada:</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <span class="font-semibold">Média por concurso:</span>
+                        <div>Pares: <span id="media-pares-concurso" class="font-bold text-blue-600">-</span></div>
+                        <div>Ímpares: <span id="media-impares-concurso" class="font-bold text-red-600">-</span></div>
+                    </div>
+                    <div>
+                        <span class="font-semibold">Concurso mais par:</span>
+                        <div id="concurso-mais-par" class="font-bold">-</div>
+                    </div>
+                    <div>
+                        <span class="font-semibold">Concurso mais ímpar:</span>
+                        <div id="concurso-mais-impar" class="font-bold">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Análise Principal: Dígitos Finais -->
+    <div id="digitos-finais-section" class="container mx-auto px-4 py-8 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-6 text-center">🎯 ANÁLISE PRINCIPAL 2: Dígitos Finais Mais Sorteados</h3>
+            
+            <!-- Ranking dos Dígitos -->
+            <div class="mb-8">
+                <h4 class="text-lg font-semibold mb-4 text-center">🏆 Ranking dos Dígitos Finais</h4>
+                <div id="ranking-digitos" class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <!-- Será preenchido dinamicamente -->
+                </div>
+            </div>
+
+            <!-- Gráfico Dígitos Finais -->
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold mb-4 text-center">📊 Frequência dos Dígitos Finais</h4>
+                <div class="h-64">
+                    <canvas id="digitosFinaisChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Análise Estatística -->
+            <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                <h4 class="font-semibold mb-3">📈 Análise Estatística:</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <span class="font-semibold">Dígito mais sorteado:</span>
+                        <div id="digito-mais-sorteado" class="font-bold text-green-600">-</div>
+                    </div>
+                    <div>
+                        <span class="font-semibold">Dígito menos sorteado:</span>
+                        <div id="digito-menos-sorteado" class="font-bold text-red-600">-</div>
+                    </div>
+                    <div>
+                        <span class="font-semibold">Diferença maior-menor:</span>
+                        <div id="diferenca-digitos" class="font-bold text-purple-600">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estatísticas Extras -->
+    <div id="extras-section" class="container mx-auto px-4 py-8 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-6 text-center">📊 Estatísticas Extras</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Números Mais Sorteados -->
+                <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                    <h4 class="font-semibold mb-3 text-green-800 dark:text-green-200">🎯 Top 10 Números Mais Sorteados</h4>
+                    <div id="numeros-mais-sorteados" class="space-y-1 text-sm">
+                        <!-- Será preenchido dinamicamente -->
+                    </div>
+                </div>
+                
+                <!-- Números Menos Sorteados -->
+                <div class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+                    <h4 class="font-semibold mb-3 text-red-800 dark:text-red-200">❄️ Top 10 Números Menos Sorteados</h4>
+                    <div id="numeros-menos-sorteados" class="space-y-1 text-sm">
+                        <!-- Será preenchido dinamicamente -->
+                    </div>
+                </div>
+                
+                <!-- Sequências -->
+                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                    <h4 class="font-semibold mb-3 text-blue-800 dark:text-blue-200">🔢 Análise de Sequências</h4>
+                    <div class="space-y-2 text-sm">
+                        <div>Sequências de 2: <span id="sequencias-2" class="font-bold">-</span></div>
+                        <div>Sequências de 3: <span id="sequencias-3" class="font-bold">-</span></div>
+                        <div>Sequências de 4+: <span id="sequencias-4" class="font-bold">-</span></div>
+                        <div class="mt-3 text-xs text-blue-700 dark:text-blue-300">
+                            <strong>Maior sequência:</strong><br>
+                            <span id="maior-sequencia">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Últimos Resultados -->
+    <div id="ultimos-resultados-section" class="container mx-auto px-4 py-8 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-2xl font-bold mb-6 text-center">📅 Últimos 10 Resultados - Pares vs Ímpares</h3>
+            <div id="ultimos-resultados" class="space-y-4">
+                <!-- Será preenchido dinamicamente -->
+            </div>
+        </div>
+        
+        <!-- Últimos Resultados - Dezenas Finais -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <h3 class="text-2xl font-bold mb-6 text-center">🎯 Últimos 10 Resultados - Dezenas Finais Repetidas</h3>
+            <div id="ultimos-resultados-dezenas" class="space-y-4">
+                <!-- Será preenchido dinamicamente -->
+            </div>
+            
+            <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
+                <h4 class="font-semibold mb-2 text-blue-800 dark:text-blue-200">📋 Legenda das Cores:</h4>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(0, 70%, 60%)"></div>
+                        <span>Dígito 0</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(36, 70%, 60%)"></div>
+                        <span>Dígito 1</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(72, 70%, 60%)"></div>
+                        <span>Dígito 2</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(108, 70%, 60%)"></div>
+                        <span>Dígito 3</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(144, 70%, 60%)"></div>
+                        <span>Dígito 4</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(180, 70%, 60%)"></div>
+                        <span>Dígito 5</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(216, 70%, 60%)"></div>
+                        <span>Dígito 6</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(252, 70%, 60%)"></div>
+                        <span>Dígito 7</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(288, 70%, 60%)"></div>
+                        <span>Dígito 8</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full" style="background: hsl(324, 70%, 60%)"></div>
+                        <span>Dígito 9</span>
+                    </div>
+                </div>
+                <p class="text-xs text-blue-700 dark:text-blue-300 mt-2">
+                    <strong>Números com a mesma cor terminam com o mesmo dígito.</strong> 
+                    Quando há repetições, elas são destacadas com bordas douradas e efeito de brilho.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais para armazenar dados
+        let todosResultados = [];
+        let estatisticas = {
+            totalConcursos: 0,
+            totalNumeros: 0,
+            pares: 0,
+            impares: 0,
+            digitosFinais: {},
+            numerosFrequencia: {},
+            concursos: []
+        };
+
+        // Função para buscar dados da API da Caixa
+        async function buscarDadosCaixa() {
+            try {
+                updateLoadingStatus("Conectando com a API da Caixa...", 10);
+                
+                // Primeiro, buscar o último concurso para saber quantos existem
+                const ultimoConcursoResponse = await fetch('https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/');
+                const ultimoConcurso = await ultimoConcursoResponse.json();
+                
+                if (!ultimoConcurso || !ultimoConcurso.numero) {
+                    throw new Error('Não foi possível obter informações do último concurso');
+                }
+
+                const numeroUltimoConcurso = ultimoConcurso.numero;
+                updateLoadingStatus(`Encontrados ${numeroUltimoConcurso} concursos. Iniciando download...`, 20);
+
+                // Buscar todos os concursos em lotes para otimizar
+                const loteSize = 50;
+                const totalLotes = Math.ceil(numeroUltimoConcurso / loteSize);
+                
+                for (let lote = 0; lote < totalLotes; lote++) {
+                    const inicio = lote * loteSize + 1;
+                    const fim = Math.min((lote + 1) * loteSize, numeroUltimoConcurso);
+                    
+                    const progressPercent = 20 + (lote / totalLotes) * 60;
+                    updateLoadingStatus(`Baixando concursos ${inicio}-${fim}...`, progressPercent);
+                    
+                    // Buscar concursos deste lote em paralelo
+                    const promises = [];
+                    for (let i = inicio; i <= fim; i++) {
+                        promises.push(buscarConcursoEspecifico(i));
+                    }
+                    
+                    const resultadosLote = await Promise.allSettled(promises);
+                    
+                    // Processar resultados do lote
+                    resultadosLote.forEach((resultado, index) => {
+                        if (resultado.status === 'fulfilled' && resultado.value) {
+                            todosResultados.push(resultado.value);
+                        }
+                    });
+                    
+                    // Pequena pausa para não sobrecarregar a API
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+
+                updateLoadingStatus("Processando dados...", 90);
+                
+                // Processar todos os dados coletados
+                processarDados();
+                
+                updateLoadingStatus("Finalizando...", 100);
+                
+                // Exibir resultados
+                setTimeout(() => {
+                    document.getElementById('loading-section').classList.add('hidden');
+                    exibirResultados();
+                }, 500);
+
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+                updateLoadingStatus(`Erro: ${error.message}`, 0);
+                
+                // Tentar usar dados de exemplo se a API falhar
+                setTimeout(() => {
+                    usarDadosExemplo();
+                }, 2000);
+            }
+        }
+
+        // Função para buscar um concurso específico
+        async function buscarConcursoEspecifico(numero) {
+            try {
+                const response = await fetch(`https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/${numero}`);
+                if (!response.ok) throw new Error(`Erro ${response.status}`);
+                
+                const dados = await response.json();
+                
+                if (dados && dados.listaDezenas && dados.listaDezenas.length === 7) {
+                    return {
+                        numero: dados.numero,
+                        data: dados.dataApuracao,
+                        numeros: dados.listaDezenas.map(n => parseInt(n)),
+                        mesNome: dados.nomeMunicipioUFSorteio || dados.mesNome
+                    };
+                }
+                return null;
+            } catch (error) {
+                console.warn(`Erro ao buscar concurso ${numero}:`, error);
+                return null;
+            }
+        }
+
+        // Função para atualizar status do loading
+        function updateLoadingStatus(text, percent) {
+            document.getElementById('loading-status').textContent = text;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+            document.getElementById('progress-text').textContent = `${Math.round(percent)}%`;
+        }
+
+        // Função para processar todos os dados coletados
+        function processarDados() {
+            // Inicializar contadores
+            estatisticas.totalConcursos = todosResultados.length;
+            estatisticas.totalNumeros = estatisticas.totalConcursos * 7;
+            estatisticas.pares = 0;
+            estatisticas.impares = 0;
+            estatisticas.digitosFinais = {};
+            estatisticas.numerosFrequencia = {};
+            
+            // Inicializar contadores de dígitos finais
+            for (let i = 0; i <= 9; i++) {
+                estatisticas.digitosFinais[i] = 0;
+            }
+
+            // Inicializar contadores de números
+            for (let i = 1; i <= 31; i++) {
+                estatisticas.numerosFrequencia[i] = 0;
+            }
+
+            // Processar cada concurso
+            todosResultados.forEach(concurso => {
+                let paresConcurso = 0;
+                let imparesConcurso = 0;
+
+                concurso.numeros.forEach(numero => {
+                    // Contar frequência do número
+                    estatisticas.numerosFrequencia[numero]++;
+                    
+                    // Contar pares e ímpares
+                    if (numero % 2 === 0) {
+                        estatisticas.pares++;
+                        paresConcurso++;
+                    } else {
+                        estatisticas.impares++;
+                        imparesConcurso++;
+                    }
+                    
+                    // Contar dígito final
+                    const digitoFinal = numero % 10;
+                    estatisticas.digitosFinais[digitoFinal]++;
+                });
+
+                // Armazenar informações do concurso
+                estatisticas.concursos.push({
+                    numero: concurso.numero,
+                    data: concurso.data,
+                    numeros: concurso.numeros,
+                    pares: paresConcurso,
+                    impares: imparesConcurso,
+                    mes: concurso.mesNome
+                });
+            });
+
+            // Ordenar concursos por número
+            estatisticas.concursos.sort((a, b) => a.numero - b.numero);
+        }
+
+        // Função para exibir todos os resultados
+        function exibirResultados() {
+            exibirResumoGeral();
+            exibirAnaliseParesImpares();
+            exibirAnaliseDigitosFinais();
+            exibirEstatisticasExtras();
+            exibirUltimosResultados();
+            exibirUltimosResultadosDezenas();
+        }
+
+        // Função para exibir resumo geral
+        function exibirResumoGeral() {
+            document.getElementById('total-concursos').textContent = estatisticas.totalConcursos.toLocaleString('pt-BR');
+            document.getElementById('total-numeros').textContent = estatisticas.totalNumeros.toLocaleString('pt-BR');
+            
+            if (estatisticas.concursos.length > 0) {
+                document.getElementById('primeiro-concurso').textContent = estatisticas.concursos[0].numero;
+                document.getElementById('ultimo-concurso').textContent = estatisticas.concursos[estatisticas.concursos.length - 1].numero;
+            }
+            
+            document.getElementById('summary-section').classList.remove('hidden');
+        }
+
+        // Função para exibir análise de pares e ímpares
+        function exibirAnaliseParesImpares() {
+            const totalNumeros = estatisticas.totalNumeros;
+            const percentPares = ((estatisticas.pares / totalNumeros) * 100).toFixed(1);
+            const percentImpares = ((estatisticas.impares / totalNumeros) * 100).toFixed(1);
+
+            document.getElementById('total-pares').textContent = estatisticas.pares.toLocaleString('pt-BR');
+            document.getElementById('total-impares').textContent = estatisticas.impares.toLocaleString('pt-BR');
+            document.getElementById('percent-pares').textContent = `${percentPares}%`;
+            document.getElementById('percent-impares').textContent = `${percentImpares}%`;
+
+            // Calcular médias por concurso
+            const mediaPares = (estatisticas.pares / estatisticas.totalConcursos).toFixed(1);
+            const mediaImpares = (estatisticas.impares / estatisticas.totalConcursos).toFixed(1);
+            
+            document.getElementById('media-pares-concurso').textContent = mediaPares;
+            document.getElementById('media-impares-concurso').textContent = mediaImpares;
+
+            // Encontrar concursos extremos
+            let concursoMaisPar = { numero: 0, pares: 0 };
+            let concursoMaisImpar = { numero: 0, impares: 0 };
+            
+            estatisticas.concursos.forEach(concurso => {
+                if (concurso.pares > concursoMaisPar.pares) {
+                    concursoMaisPar = { numero: concurso.numero, pares: concurso.pares };
+                }
+                if (concurso.impares > concursoMaisImpar.impares) {
+                    concursoMaisImpar = { numero: concurso.numero, impares: concurso.impares };
+                }
+            });
+
+            document.getElementById('concurso-mais-par').textContent = `#${concursoMaisPar.numero} (${concursoMaisPar.pares} pares)`;
+            document.getElementById('concurso-mais-impar').textContent = `#${concursoMaisImpar.numero} (${concursoMaisImpar.impares} ímpares)`;
+
+            // Criar gráfico
+            criarGraficoParesImpares();
+            
+            document.getElementById('pares-impares-section').classList.remove('hidden');
+        }
+
+        // Função para exibir análise de dígitos finais
+        function exibirAnaliseDigitosFinais() {
+            // Ordenar dígitos por frequência
+            const digitosOrdenados = Object.entries(estatisticas.digitosFinais)
+                .map(([digito, freq]) => ({ digito: parseInt(digito), frequencia: freq }))
+                .sort((a, b) => b.frequencia - a.frequencia);
+
+            // Criar ranking visual
+            const rankingContainer = document.getElementById('ranking-digitos');
+            rankingContainer.innerHTML = '';
+
+            digitosOrdenados.forEach((item, index) => {
+                const posicao = index + 1;
+                const percent = ((item.frequencia / estatisticas.totalNumeros) * 100).toFixed(1);
+                
+                let medalha = '';
+                let corClass = '';
+                if (posicao === 1) {
+                    medalha = '🥇';
+                    corClass = 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-400';
+                } else if (posicao === 2) {
+                    medalha = '🥈';
+                    corClass = 'bg-gray-100 dark:bg-gray-700 border-gray-400';
+                } else if (posicao === 3) {
+                    medalha = '🥉';
+                    corClass = 'bg-orange-100 dark:bg-orange-900/30 border-orange-400';
+                } else {
+                    corClass = 'bg-blue-50 dark:bg-blue-900/20 border-blue-200';
+                }
+
+                const digitoCard = document.createElement('div');
+                digitoCard.className = `text-center p-4 border-2 rounded-lg ${corClass}`;
+                digitoCard.innerHTML = `
+                    <div class="text-lg mb-1">${medalha}</div>
+                    <div class="text-3xl font-bold text-primary dark:text-blue-400">${item.digito}</div>
+                    <div class="text-sm font-semibold">${item.frequencia.toLocaleString('pt-BR')}</div>
+                    <div class="text-xs opacity-75">${percent}%</div>
+                    <div class="text-xs mt-1">#{posicao}</div>
+                `;
+                rankingContainer.appendChild(digitoCard);
+            });
+
+            // Atualizar estatísticas
+            const maisFrequente = digitosOrdenados[0];
+            const menosFrequente = digitosOrdenados[digitosOrdenados.length - 1];
+            const diferenca = maisFrequente.frequencia - menosFrequente.frequencia;
+
+            document.getElementById('digito-mais-sorteado').textContent = `${maisFrequente.digito} (${maisFrequente.frequencia.toLocaleString('pt-BR')} vezes)`;
+            document.getElementById('digito-menos-sorteado').textContent = `${menosFrequente.digito} (${menosFrequente.frequencia.toLocaleString('pt-BR')} vezes)`;
+            document.getElementById('diferenca-digitos').textContent = `${diferenca.toLocaleString('pt-BR')} ocorrências`;
+
+            // Criar gráfico
+            criarGraficoDigitosFinais();
+            
+            document.getElementById('digitos-finais-section').classList.remove('hidden');
+        }
+
+        // Função para exibir estatísticas extras
+        function exibirEstatisticasExtras() {
+            // Números mais e menos sorteados
+            const numerosOrdenados = Object.entries(estatisticas.numerosFrequencia)
+                .map(([num, freq]) => ({ numero: parseInt(num), frequencia: freq }))
+                .sort((a, b) => b.frequencia - a.frequencia);
+
+            // Top 10 mais sorteados
+            const top10Mais = numerosOrdenados.slice(0, 10);
+            const maisContainer = document.getElementById('numeros-mais-sorteados');
+            maisContainer.innerHTML = '';
+            top10Mais.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center';
+                div.innerHTML = `
+                    <span>${index + 1}º</span>
+                    <span class="font-bold">${item.numero.toString().padStart(2, '0')}</span>
+                    <span>${item.frequencia} vezes</span>
+                `;
+                maisContainer.appendChild(div);
+            });
+
+            // Top 10 menos sorteados
+            const top10Menos = numerosOrdenados.slice(-10).reverse();
+            const menosContainer = document.getElementById('numeros-menos-sorteados');
+            menosContainer.innerHTML = '';
+            top10Menos.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center';
+                div.innerHTML = `
+                    <span>${index + 1}º</span>
+                    <span class="font-bold">${item.numero.toString().padStart(2, '0')}</span>
+                    <span>${item.frequencia} vezes</span>
+                `;
+                menosContainer.appendChild(div);
+            });
+
+            // Análise de sequências
+            analisarSequencias();
+            
+            document.getElementById('extras-section').classList.remove('hidden');
+        }
+
+        // Função para analisar sequências
+        function analisarSequencias() {
+            let sequencias2 = 0;
+            let sequencias3 = 0;
+            let sequencias4Plus = 0;
+            let maiorSequencia = { numeros: [], concurso: 0, tamanho: 0 };
+
+            estatisticas.concursos.forEach(concurso => {
+                const numerosOrdenados = [...concurso.numeros].sort((a, b) => a - b);
+                
+                let sequenciaAtual = [numerosOrdenados[0]];
+                let maiorSequenciaConcurso = [numerosOrdenados[0]];
+
+                for (let i = 1; i < numerosOrdenados.length; i++) {
+                    if (numerosOrdenados[i] === numerosOrdenados[i-1] + 1) {
+                        sequenciaAtual.push(numerosOrdenados[i]);
+                    } else {
+                        if (sequenciaAtual.length >= 2) {
+                            if (sequenciaAtual.length === 2) sequencias2++;
+                            else if (sequenciaAtual.length === 3) sequencias3++;
+                            else sequencias4Plus++;
+
+                            if (sequenciaAtual.length > maiorSequenciaConcurso.length) {
+                                maiorSequenciaConcurso = [...sequenciaAtual];
+                            }
+                        }
+                        sequenciaAtual = [numerosOrdenados[i]];
+                    }
+                }
+
+                // Verificar última sequência
+                if (sequenciaAtual.length >= 2) {
+                    if (sequenciaAtual.length === 2) sequencias2++;
+                    else if (sequenciaAtual.length === 3) sequencias3++;
+                    else sequencias4Plus++;
+
+                    if (sequenciaAtual.length > maiorSequenciaConcurso.length) {
+                        maiorSequenciaConcurso = [...sequenciaAtual];
+                    }
+                }
+
+                // Atualizar maior sequência geral
+                if (maiorSequenciaConcurso.length > maiorSequencia.tamanho) {
+                    maiorSequencia = {
+                        numeros: maiorSequenciaConcurso,
+                        concurso: concurso.numero,
+                        tamanho: maiorSequenciaConcurso.length
+                    };
+                }
+            });
+
+            document.getElementById('sequencias-2').textContent = sequencias2;
+            document.getElementById('sequencias-3').textContent = sequencias3;
+            document.getElementById('sequencias-4').textContent = sequencias4Plus;
+            
+            if (maiorSequencia.tamanho >= 2) {
+                document.getElementById('maior-sequencia').textContent = 
+                    `${maiorSequencia.numeros.join('-')} (Concurso #${maiorSequencia.concurso}, ${maiorSequencia.tamanho} números)`;
+            } else {
+                document.getElementById('maior-sequencia').textContent = 'Nenhuma sequência encontrada';
+            }
+        }
+
+        // Função para exibir últimos resultados (pares vs ímpares)
+        function exibirUltimosResultados() {
+            const ultimos10 = estatisticas.concursos.slice(-10).reverse();
+            const container = document.getElementById('ultimos-resultados');
+            container.innerHTML = '';
+
+            ultimos10.forEach(concurso => {
+                const div = document.createElement('div');
+                div.className = 'flex flex-col md:flex-row items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg';
+                
+                const numerosHTML = concurso.numeros.map(num => {
+                    const isPar = num % 2 === 0;
+                    return `<div class="number-ball ${isPar ? 'par' : 'impar'}">${num.toString().padStart(2, '0')}</div>`;
+                }).join('');
+
+                div.innerHTML = `
+                    <div class="text-center md:text-left mb-2 md:mb-0">
+                        <div class="font-bold">Concurso #${concurso.numero}</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">${concurso.data}</div>
+                    </div>
+                    <div class="flex gap-2 mb-2 md:mb-0">
+                        ${numerosHTML}
+                    </div>
+                    <div class="text-center text-sm">
+                        <div>Pares: ${concurso.pares} | Ímpares: ${concurso.impares}</div>
+                        <div class="text-xs text-gray-500">${concurso.mes || ''}</div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('ultimos-resultados-section').classList.remove('hidden');
+        }
+
+        // Função para exibir últimos resultados com destaque para dezenas finais
+        function exibirUltimosResultadosDezenas() {
+            const ultimos10 = estatisticas.concursos.slice(-10).reverse();
+            const container = document.getElementById('ultimos-resultados-dezenas');
+            container.innerHTML = '';
+
+            ultimos10.forEach(concurso => {
+                // Analisar repetições de dígitos finais
+                const digitosFinais = {};
+                const repeticoes = {};
+                
+                concurso.numeros.forEach(num => {
+                    const digitoFinal = num % 10;
+                    if (!digitosFinais[digitoFinal]) {
+                        digitosFinais[digitoFinal] = [];
+                    }
+                    digitosFinais[digitoFinal].push(num);
+                });
+
+                // Identificar quais dígitos se repetem
+                Object.entries(digitosFinais).forEach(([digito, numeros]) => {
+                    if (numeros.length > 1) {
+                        repeticoes[digito] = numeros;
+                    }
+                });
+
+                const div = document.createElement('div');
+                div.className = 'p-4 bg-gray-50 dark:bg-gray-700 rounded-lg';
+                
+                const numerosHTML = concurso.numeros.map(num => {
+                    const digitoFinal = num % 10;
+                    const cor = `hsl(${digitoFinal * 36}, 70%, 60%)`;
+                    const isRepetida = repeticoes[digitoFinal] !== undefined;
+                    const repetidaClass = isRepetida ? 'repetida' : '';
+                    
+                    return `<div class="dezena-ball ${repetidaClass}" style="background: ${cor}">${num.toString().padStart(2, '0')}</div>`;
+                }).join('');
+
+                // Criar resumo das repetições
+                let resumoRepeticoes = '';
+                if (Object.keys(repeticoes).length > 0) {
+                    const repeticoesTexto = Object.entries(repeticoes).map(([digito, numeros]) => {
+                        return `Dígito ${digito}: ${numeros.map(n => n.toString().padStart(2, '0')).join(', ')}`;
+                    }).join(' | ');
+                    resumoRepeticoes = `<div class="text-xs text-amber-600 dark:text-amber-400 font-semibold mt-2">✨ ${repeticoesTexto}</div>`;
+                } else {
+                    resumoRepeticoes = `<div class="text-xs text-gray-500 mt-2">Nenhuma repetição de dígito final</div>`;
+                }
+
+                div.innerHTML = `
+                    <div class="flex flex-col md:flex-row items-center justify-between">
+                        <div class="text-center md:text-left mb-2 md:mb-0">
+                            <div class="font-bold">Concurso #${concurso.numero}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">${concurso.data}</div>
+                        </div>
+                        <div class="flex gap-2 mb-2 md:mb-0">
+                            ${numerosHTML}
+                        </div>
+                        <div class="text-center text-sm">
+                            <div>Repetições: ${Object.keys(repeticoes).length}</div>
+                            <div class="text-xs text-gray-500">${concurso.mes || ''}</div>
+                        </div>
+                    </div>
+                    ${resumoRepeticoes}
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Função para criar gráfico de pares vs ímpares
+        function criarGraficoParesImpares() {
+            const ctx = document.getElementById('paresImparesChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Números Pares', 'Números Ímpares'],
+                    datasets: [{
+                        data: [estatisticas.pares, estatisticas.impares],
+                        backgroundColor: ['#3b82f6', '#ef4444'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = estatisticas.totalNumeros;
+                                    const percent = ((context.parsed / total) * 100).toFixed(1);
+                                    return `${context.label}: ${context.parsed.toLocaleString('pt-BR')} (${percent}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Função para criar gráfico de dígitos finais
+        function criarGraficoDigitosFinais() {
+            const ctx = document.getElementById('digitosFinaisChart').getContext('2d');
+            
+            const labels = [];
+            const data = [];
+            const colors = [];
+            
+            for (let i = 0; i <= 9; i++) {
+                labels.push(`Dígito ${i}`);
+                data.push(estatisticas.digitosFinais[i]);
+                colors.push(`hsl(${i * 36}, 70%, 60%)`);
+            }
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Frequência',
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: colors.map(color => color.replace('60%', '40%')),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Número de Ocorrências'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Dígito Final'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Função para usar dados de exemplo em caso de erro na API
+        function usarDadosExemplo() {
+            updateLoadingStatus("API indisponível. Usando dados de exemplo...", 50);
+            
+            // Simular alguns resultados de exemplo
+            const exemplos = [
+                { numero: 1, data: "2023-05-29", numeros: [1, 5, 6, 19, 26, 29, 31] },
+                { numero: 2, data: "2023-05-30", numeros: [15, 18, 25, 27, 29, 30, 31] },
+                { numero: 3, data: "2023-05-31", numeros: [2, 3, 4, 13, 19, 20, 24] },
+                { numero: 4, data: "2023-06-01", numeros: [1, 11, 21, 3, 13, 23, 7] },
+                { numero: 5, data: "2023-06-02", numeros: [2, 12, 22, 4, 14, 24, 8] },
+                { numero: 6, data: "2023-06-03", numeros: [5, 15, 25, 6, 16, 26, 9] },
+                { numero: 7, data: "2023-06-04", numeros: [7, 17, 27, 8, 18, 28, 10] },
+                { numero: 8, data: "2023-06-05", numeros: [1, 3, 5, 7, 9, 11, 13] },
+                { numero: 9, data: "2023-06-06", numeros: [2, 4, 6, 8, 10, 12, 14] },
+                { numero: 10, data: "2023-06-07", numeros: [1, 2, 3, 4, 5, 6, 7] }
+            ];
+            
+            todosResultados = exemplos;
+            processarDados();
+            
+            updateLoadingStatus("Dados de exemplo carregados!", 100);
+            
+            setTimeout(() => {
+                document.getElementById('loading-section').classList.add('hidden');
+                exibirResultados();
+            }, 1000);
+        }
+
+        // Inicializar aplicação
+        window.onload = function() {
+            buscarDadosCaixa();
+        };
+    </script>
+</body>
+</html>

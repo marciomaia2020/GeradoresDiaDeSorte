@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Loterias</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        loteria: {
+                            megasena: '#209869',
+                            lotofacil: '#930089',
+                            quina: '#260085',
+                            lotomania: '#F78100',
+                            timemania: '#00FF48',
+                            diasorte: '#FFAF00',
+                            duplasena: '#A61324',
+                            milionaria: '#FCAF17'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+        
+        .result-card {
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        /* Animação de carregamento */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Estilos específicos para as modalidades */
+        .megasena-theme {
+            --theme-color: #209869;
+        }
+        
+        .lotofacil-theme {
+            --theme-color: #930089;
+        }
+        
+        .quina-theme {
+            --theme-color: #260085;
+        }
+        
+        .lotomania-theme {
+            --theme-color: #F78100;
+        }
+        
+        .timemania-theme {
+            --theme-color: #00FF48;
+        }
+        
+        .diasorte-theme {
+            --theme-color: #FFAF00;
+        }
+        
+        .duplasena-theme {
+            --theme-color: #A61324;
+        }
+        
+        .milionaria-theme {
+            --theme-color: #FCAF17;
+        }
+        
+        .theme-bg {
+            background-color: var(--theme-color);
+        }
+        
+        .theme-text {
+            color: var(--theme-color);
+        }
+        
+        .theme-border {
+            border-color: var(--theme-color);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen transition-all">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6">
+            <h1 class="text-2xl font-bold text-center mb-6">Calculadora de Custo para Loterias</h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h2 class="font-semibold text-lg mb-4">Parâmetros do Cálculo</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label for="modalidade" class="block font-medium mb-1">Modalidade de Loteria:</label>
+                            <select id="modalidade" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-base">
+                                <option value="megasena">Mega-Sena (R$ 5,00)</option>
+                                <option value="lotofacil">Lotofácil (R$ 3,00)</option>
+                                <option value="quina">Quina (R$ 2,50)</option>
+                                <option value="lotomania">Lotomania (R$ 3,00)</option>
+                                <option value="timemania">Timemania (R$ 3,50)</option>
+                                <option value="diasorte" selected>Dia de Sorte (R$ 2,50)</option>
+                                <option value="duplasena">Dupla Sena (R$ 2,50)</option>
+                                <option value="milionaria">+Milionária (R$ 6,00)</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="tamanho" class="block font-medium mb-1">Tamanho do grupo de dígitos:</label>
+                            <select id="tamanho" class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-base">
+                                <option value="3">3 dígitos</option>
+                                <option value="4">4 dígitos</option>
+                                <option value="5">5 dígitos</option>
+                                <option value="6" selected>6 dígitos</option>
+                                <option value="7">7 dígitos</option>
+                                <option value="8">8 dígitos</option>
+                                <option value="9">9 dígitos</option>
+                                <option value="10">10 dígitos (todos)</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Calculadora de apostas específicas -->
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+                            <h3 class="font-medium mb-3">Calculadora de Apostas Específicas</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <label for="quantidade-jogos" class="block text-sm mb-1">Quantidade de jogos para apostar:</label>
+                                    <div class="flex space-x-2">
+                                        <input type="number" id="quantidade-jogos" value="10" min="1" 
+                                            class="flex-1 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-base">
+                                        <button id="calcular-aposta" class="diasorte-theme theme-bg text-white px-4 py-2 rounded-lg font-medium">
+                                            Calcular
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="resultado-aposta" class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 hidden">
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Custo Total</div>
+                                            <div id="custo-aposta" class="text-xl font-bold diasorte-theme theme-text">R$ 25,00</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">Percentual do Total</div>
+                                            <div id="percentual-aposta" class="text-xl font-bold">0,00012%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <button id="calcular" class="flex-1 bg-primary hover:bg-opacity-90 text-white px-4 py-2 rounded-lg font-medium">
+                                Calcular Custo
+                            </button>
+                            <button id="resumo" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">
+                                Ver Resumo
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="loading" class="hidden flex justify-center my-6">
+                        <div class="spinner w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+                    </div>
+                </div>
+                
+                <div id="info-modalidade" class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+                    <h2 class="font-semibold text-lg mb-3 diasorte-theme theme-text">Dia de Sorte</h2>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span>Preço por jogo:</span>
+                            <span class="font-medium">R$ 2,50</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Quantidade de números:</span>
+                            <span class="font-medium">7 números</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Faixa de números:</span>
+                            <span class="font-medium">1 a 31</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Total de jogos possíveis:</span>
+                            <span class="font-medium">7.888.725</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Custo para jogar todas as combinações:</span>
+                            <span class="font-medium">R$ 19.721.812,50</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="resultados" class="hidden">
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
+                    <h2 class="text-xl font-semibold mb-4">Resultados do Cálculo</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="result-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm">
+                            <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Total de Combinações</h3>
+                            <div id="total-combinacoes" class="text-2xl font-bold">0</div>
+                        </div>
+                        
+                        <div class="result-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm">
+                            <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Jogos Possíveis</h3>
+                            <div id="jogos-possiveis" class="text-2xl font-bold">0</div>
+                        </div>
+                        
+                        <div class="result-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm">
+                            <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Cobertura do Total</h3>
+                            <div id="cobertura" class="text-2xl font-bold">0%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="result-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm">
+                            <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Custo Estimado</h3>
+                            <div id="custo" class="text-3xl font-bold diasorte-theme theme-text">R$ 0,00</div>
+                            <div class="mt-2 text-sm">Baseado no preço de <span id="preco-jogo">R$ 2,50</span> por jogo</div>
+                        </div>
+                        
+                        <div class="result-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm">
+                            <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Economia vs. Total</h3>
+                            <div class="flex items-end">
+                                <div id="economia" class="text-3xl font-bold text-green-600 dark:text-green-400">R$ 0,00</div>
+                                <div id="porcentagem-economia" class="ml-2 text-sm font-medium text-green-600 dark:text-green-400">(0%)</div>
+                            </div>
+                            <div class="mt-2 text-sm">Em comparação com jogar todas as combinações possíveis</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 rounded">
+                    <h3 class="font-semibold mb-2">Informações Adicionais</h3>
+                    <p class="text-sm">Os cálculos acima mostram quantos jogos diferentes podem ser formados usando a combinação de dígitos selecionada e quanto custaria para jogar todos eles.</p>
+                    <p class="text-sm mt-2">A cobertura indica qual porcentagem do total de jogos possíveis você estaria cobrindo com esta estratégia.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal para resumo completo -->
+        <div id="resumo-modal-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+            <div class="resumo-modal-content bg-white dark:bg-gray-800 rounded-xl shadow-xl w-11/12 max-w-5xl max-h-[90vh] overflow-y-auto">
+                <div id="resumo-modal-header" class="diasorte-theme theme-bg text-white p-4 rounded-t-xl flex justify-between items-center">
+                    <h2 id="resumo-modal-title" class="text-xl font-bold">Resumo Completo para Dia de Sorte</h2>
+                    <button id="resumo-modal-close" class="text-3xl font-light">&times;</button>
+                </div>
+                <div id="resumo-modal-body" class="p-6">
+                    <div id="resumo-loading" class="flex justify-center my-6">
+                        <div class="spinner w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full"></div>
+                        <p class="ml-3 text-lg">Gerando resumo completo...</p>
+                    </div>
+                    <div id="resumo-content" class="hidden">
+                        <!-- Conteúdo do resumo será preenchido dinamicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="container mx-auto px-4 py-4 text-center text-sm text-gray-600 dark:text-gray-400 mt-8">
+        Calculadora de Custo para Loterias - 2025
+    </footer>
+
+    <script>
+        // Detecção de dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Configuração das modalidades de loteria
+        const loterias = {
+            megasena: {
+                nome: 'Mega-Sena',
+                preco: 5.00,
+                numeros: 6,
+                min: 1,
+                max: 60,
+                totalJogos: 50063860, // C(60,6)
+                class: 'megasena-theme'
+            },
+            lotofacil: {
+                nome: 'Lotofácil',
+                preco: 3.00,
+                numeros: 15,
+                min: 1,
+                max: 25,
+                totalJogos: 3268760, // C(25,15)
+                class: 'lotofacil-theme'
+            },
+            quina: {
+                nome: 'Quina',
+                preco: 2.50,
+                numeros: 5,
+                min: 1,
+                max: 80,
+                totalJogos: 24040016, // C(80,5)
+                class: 'quina-theme'
+            },
+            lotomania: {
+                nome: 'Lotomania',
+                preco: 3.00,
+                numeros: 50,
+                min: 1,
+                max: 100,
+                totalJogos: 100891344, // C(100,50)
+                class: 'lotomania-theme'
+            },
+            timemania: {
+                nome: 'Timemania',
+                preco: 3.50,
+                numeros: 10,
+                min: 1,
+                max: 80,
+                totalJogos: 1140239500, // C(80,10)
+                class: 'timemania-theme'
+            },
+            diasorte: {
+                nome: 'Dia de Sorte',
+                preco: 2.50,
+                numeros: 7,
+                min: 1,
+                max: 31,
+                totalJogos: 7888725, // C(31,7)
+                class: 'diasorte-theme'
+            },
+            duplasena: {
+                nome: 'Dupla Sena',
+                preco: 2.50,
+                numeros: 6,
+                min: 1,
+                max: 50,
+                totalJogos: 15890700, // C(50,6)
+                class: 'duplasena-theme'
+            },
+            milionaria: {
+                nome: '+Milionária',
+                preco: 6.00,
+                numeros: 6,  // Simplificado (na realidade são 6 números + 2 trevos)
+                min: 1,
+                max: 50,
+                totalJogos: 15890700, // C(50,6) - simplificado, na realidade é mais
+                class: 'milionaria-theme'
+            }
+        };
+
+        // Funções matemáticas
+        function factorial(n) {
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) {
+                result *= i;
+            }
+            return result;
+        }
+
+        function comb(n, k) {
+            // Combinação: C(n,k) = n! / (k! * (n-k)!)
+            if (k < 0 || k > n) return 0;
+            if (k === 0 || k === n) return 1;
+            
+            // Otimização para números grandes
+            let result = 1;
+            for (let i = 1; i <= k; i++) {
+                result *= (n - (k - i));
+                result /= i;
+            }
+            return Math.round(result);
+        }
+
+        // Função para gerar combinações
+        function gerarCombinacoes(conjunto, tamanho) {
+            const combinacoes = [];
+            
+            function combinar(inicio, atual) {
+                if (atual.length === tamanho) {
+                    combinacoes.push([...atual]);
+                    return;
+                }
+                
+                for (let i = inicio; i < conjunto.length; i++) {
+                    atual.push(conjunto[i]);
+                    combinar(i + 1, atual);
+                    atual.pop();
+                }
+            }
+            
+            combinar(0, []);
+            return combinacoes;
+        }
+
+        // Analisar se uma combinação pode formar jogos válidos
+        function analisarCombinacao(combinacao, modalidade) {
+            // Converter para array se for uma string
+            if (typeof combinacao === 'string') {
+                combinacao = combinacao.split(',').map(d => parseInt(d.trim()));
+            }
+            
+            const loteria = loterias[modalidade];
+            const limiteInferior = loteria.min;
+            const limiteSuperior = loteria.max;
+            const tamanhoJogo = loteria.numeros;
+            
+            // Verificar quais números podem ser formados com os dígitos
+            const numerosFormaveis = [];
+            const setDigitos = new Set(combinacao);
+            
+            for (let i = limiteInferior; i <= limiteSuperior; i++) {
+                let podeFormar = true;
+                
+                // Converter o número para string
+                const numStr = i.toString();
+                
+                // Verificar se todos os dígitos estão na combinação
+                for (let d of numStr) {
+                    if (!setDigitos.has(parseInt(d))) {
+                        podeFormar = false;
+                        break;
+                    }
+                }
+                
+                if (podeFormar) {
+                    numerosFormaveis.push(i);
+                }
+            }
+            
+            // Calcular estatísticas
+            const totalNumerosFormaveis = numerosFormaveis.length;
+            const ehValido = totalNumerosFormaveis >= tamanhoJogo;
+            let jogosPossiveis = 0;
+            
+            if (ehValido) {
+                jogosPossiveis = comb(totalNumerosFormaveis, tamanhoJogo);
+            }
+            
+            // Total de jogos possíveis no jogo selecionado
+            const totalJogosPossiveis = loteria.totalJogos;
+            
+            // Calcular porcentagem de cobertura
+            const cobertura = jogosPossiveis / totalJogosPossiveis * 100;
+            
+            return {
+                combinacao: combinacao,
+                modalidade: modalidade,
+                numerosFormaveis: numerosFormaveis,
+                totalNumerosFormaveis: totalNumerosFormaveis,
+                ehValido: ehValido,
+                jogosPossiveis: jogosPossiveis,
+                totalJogosPossiveis: totalJogosPossiveis,
+                cobertura: cobertura
+            };
+        }
+
+        // Elementos DOM
+        const modalidadeSelect = document.getElementById('modalidade');
+        const tamanhoSelect = document.getElementById('tamanho');
+        const calcularBtn = document.getElementById('calcular');
+        const resumoBtn = document.getElementById('resumo');
+        const loading = document.getElementById('loading');
+        const resultados = document.getElementById('resultados');
+        const infoModalidade = document.getElementById('info-modalidade');
+        
+        // Elementos de apostas específicas
+        const quantidadeJogosInput = document.getElementById('quantidade-jogos');
+        const calcularApostaBtn = document.getElementById('calcular-aposta');
+        const resultadoAposta = document.getElementById('resultado-aposta');
+        const custoAposta = document.getElementById('custo-aposta');
+        const percentualAposta = document.getElementById('percentual-aposta');
+        
+        // Campos de resultado
+        const totalCombinacoes = document.getElementById('total-combinacoes');
+        const jogosPossiveis = document.getElementById('jogos-possiveis');
+        const cobertura = document.getElementById('cobertura');
+        const custo = document.getElementById('custo');
+        const precoJogo = document.getElementById('preco-jogo');
+        const economia = document.getElementById('economia');
+        const porcentagemEconomia = document.getElementById('porcentagem-economia');
+        
+        // Modal de Resumo
+        const resumoModalOverlay = document.getElementById('resumo-modal-overlay');
+        const resumoModalTitle = document.getElementById('resumo-modal-title');
+        const resumoModalHeader = document.getElementById('resumo-modal-header');
+        const resumoModalClose = document.getElementById('resumo-modal-close');
+        const resumoLoading = document.getElementById('resumo-loading');
+        const resumoContent = document.getElementById('resumo-content');
+        
+        // Cache para resultados do resumo
+        let resumoCache = {};
+        // Cache para dados da modalidade atual
+        let dadosModalidadeAtual = null;
+
+        // Função para atualizar informações da modalidade
+        function atualizarInfoModalidade() {
+            const modalidade = modalidadeSelect.value;
+            const loteria = loterias[modalidade];
+            
+            // Atualizar tema da página
+            document.body.className = document.body.className.replace(/\w+-theme/g, '');
+            document.body.classList.add(loteria.class);
+            
+            // Atualizar cores dos elementos específicos
+            calcularApostaBtn.className = calcularApostaBtn.className.replace(/\w+-theme theme-bg/, `${loteria.class} theme-bg`);
+            resultadoAposta.className = resultadoAposta.className.replace(/theme-bg/, '');
+            custoAposta.className = custoAposta.className.replace(/\w+-theme theme-text/, `${loteria.class} theme-text`);
+            
+            // Atualizar informações da modalidade
+            infoModalidade.innerHTML = `
+                <h2 class="font-semibold text-lg mb-3 ${loteria.class} theme-text">${loteria.nome}</h2>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>Preço por jogo:</span>
+                        <span class="font-medium">R$ ${loteria.preco.toFixed(2)}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Quantidade de números:</span>
+                        <span class="font-medium">${loteria.numeros} números</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Faixa de números:</span>
+                        <span class="font-medium">${loteria.min} a ${loteria.max}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Total de jogos possíveis:</span>
+                        <span class="font-medium">${loteria.totalJogos.toLocaleString()}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Custo para jogar todas as combinações:</span>
+                        <span class="font-medium">R$ ${(loteria.totalJogos * loteria.preco).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                </div>
+            `;
+            
+            // Limpar resultado de apostas
+            resultadoAposta.classList.add('hidden');
+        }
+
+        // Função para calcular o custo
+        function calcularCusto() {
+            const modalidade = modalidadeSelect.value;
+            const tamanho = parseInt(tamanhoSelect.value);
+            const loteria = loterias[modalidade];
+            
+            // Mostrar loading
+            loading.classList.remove('hidden');
+            resultados.classList.add('hidden');
+            
+            // Executar cálculo em um timeout para não travar a UI
+            setTimeout(() => {
+                try {
+                    // Gerar combinação de dígitos baseada no tamanho
+                    const digitos = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                    const combinacao = gerarCombinacoes(digitos, tamanho)[0]; // Pegar a primeira combinação como exemplo
+                    
+                    // Obter estatísticas de cobertura baseadas nos dados da imagem anexa
+                    // (Isto é simplificado - na aplicação real, precisaríamos calcular isso para cada caso)
+                    const estatisticas = getEstatisticasTamanho(tamanho, modalidade);
+                    
+                    // Calcular custo e economia
+                    const custoPorJogo = loteria.preco;
+                    const custoTotal = estatisticas.jogosPossiveis * custoPorJogo;
+                    const custoTotalTodasCombinacoes = loteria.totalJogos * custoPorJogo;
+                    const economiaValor = custoTotalTodasCombinacoes - custoTotal;
+                    const economiaPercentual = (economiaValor / custoTotalTodasCombinacoes) * 100;
+                    
+                    // Salvar dados para uso pela calculadora de apostas específicas
+                    dadosModalidadeAtual = {
+                        loteria,
+                        estatisticas,
+                        custoPorJogo,
+                        custoTotal,
+                        custoTotalTodasCombinacoes
+                    };
+                    
+                    // Atualizar a interface
+                    totalCombinacoes.textContent = estatisticas.totalCombinacoes.toLocaleString();
+                    jogosPossiveis.textContent = estatisticas.jogosPossiveis.toLocaleString();
+                    cobertura.textContent = estatisticas.cobertura.toFixed(8) + '%';
+                    
+                    custo.textContent = `R$ ${custoTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                    custo.className = `text-3xl font-bold ${loteria.class} theme-text`;
+                    
+                    precoJogo.textContent = `R$ ${custoPorJogo.toFixed(2)}`;
+                    
+                    economia.textContent = `R$ ${economiaValor.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                    porcentagemEconomia.textContent = `(${(100 - economiaPercentual).toFixed(2)}% do total)`;
+                    
+                    // Esconder loading e mostrar resultados
+                    loading.classList.add('hidden');
+                    resultados.classList.remove('hidden');
+                    
+                    // Limpar resultado de apostas específicas
+                    resultadoAposta.classList.add('hidden');
+                } catch (error) {
+                    console.error('Erro ao calcular custo:', error);
+                    loading.classList.add('hidden');
+                    alert('Ocorreu um erro ao calcular o custo. Por favor, tente novamente.');
+                }
+            }, 100);
+        }
+        
+        // Função para calcular o custo de uma quantidade específica de jogos
+        function calcularApostaEspecifica() {
+            const modalidade = modalidadeSelect.value;
+            const quantidadeJogos = parseInt(quantidadeJogosInput.value);
+            const loteria = loterias[modalidade];
+            
+            if (isNaN(quantidadeJogos) || quantidadeJogos <= 0) {
+                alert('Por favor, digite uma quantidade válida de jogos.');
+                return;
+            }
+            
+            // Calcular o custo total da aposta
+            const custoTotalAposta = quantidadeJogos * loteria.preco;
+            
+            // Calcular o percentual do total de jogos
+            const percentualDoTotal = (quantidadeJogos / loteria.totalJogos) * 100;
+            
+            // Atualizar a interface
+            custoAposta.textContent = `R$ ${custoTotalAposta.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            custoAposta.className = `text-xl font-bold ${loteria.class} theme-text`;
+            
+            percentualAposta.textContent = `${percentualDoTotal.toFixed(8)}%`;
+            
+            // Mostrar o resultado
+            resultadoAposta.classList.remove('hidden');
+        }
+        
+        // Função para obter estatísticas baseadas no tamanho e modalidade
+        // (Usando os dados da imagem fornecida para o Dia de Sorte)
+        function getEstatisticasTamanho(tamanho, modalidade) {
+            // Dados fixos baseados na imagem (para o Dia de Sorte)
+            const estatisticasDiaSorte = {
+                3: { totalCombinacoes: 120, jogosPossiveis: 351, cobertura: 0.01334816 },
+                4: { totalCombinacoes: 210, jogosPossiveis: 27146, cobertura: 1.03233412 },
+                5: { totalCombinacoes: 252, jogosPossiveis: 441210, cobertura: 16.77875702 },
+                6: { totalCombinacoes: 210, jogosPossiveis: 2737084, cobertura: 104.08845536 },
+                7: { totalCombinacoes: 120, jogosPossiveis: 8064190, cobertura: 306.67275130 },
+                8: { totalCombinacoes: 45, jogosPossiveis: 12140840, cobertura: 461.70350722 },
+                9: { totalCombinacoes: 10, jogosPossiveis: 9028292, cobertura: 343.33654678 },
+                10: { totalCombinacoes: 1, jogosPossiveis: 2629575, cobertura: 100.00000000 }
+            };
+            
+            // Para outras modalidades, vamos criar estimativas proporcionais
+            // (em uma aplicação real, você calcularia isso para cada modalidade)
+            if (modalidade === 'diasorte') {
+                return estatisticasDiaSorte[tamanho];
+            } else {
+                // Valores aproximados baseados nos dados do Dia de Sorte, ajustados pela proporção
+                const loteria = loterias[modalidade];
+                const baseCombinacoes = estatisticasDiaSorte[tamanho].totalCombinacoes;
+                
+                // Ajustar jogos possíveis proporcionalmente ao tamanho do espaço total
+                const fatorProporcao = loteria.totalJogos / loterias.diasorte.totalJogos;
+                const jogosAjustados = Math.round(estatisticasDiaSorte[tamanho].jogosPossiveis * fatorProporcao);
+                
+                // Limitar para não exceder o total de jogos da modalidade
+                const jogosPossiveis = Math.min(jogosAjustados, loteria.totalJogos);
+                
+                // Calcular cobertura
+                const cobertura = (jogosPossiveis / loteria.totalJogos) * 100;
+                
+                return {
+                    totalCombinacoes: baseCombinacoes,
+                    jogosPossiveis: jogosPossiveis,
+                    cobertura: cobertura
+                };
+            }
+        }
+        
+        // Função para gerar e mostrar o resumo de todos os grupos
+        function gerarResumoCompleto() {
+            const modalidade = modalidadeSelect.value;
+            const loteria = loterias[modalidade];
+            
+            // Mostrar o modal de resumo
+            resumoModalOverlay.classList.remove('hidden');
+            resumoLoading.classList.remove('hidden');
+            resumoContent.classList.add('hidden');
+            
+            // Atualizar o título e o tema
+            resumoModalTitle.textContent = `Resumo Completo para ${loteria.nome}`;
+            resumoModalHeader.className = `${loteria.class} theme-bg text-white p-4 rounded-t-xl flex justify-between items-center`;
+            
+            // Verificar se já temos os dados no cache
+            const cacheKey = modalidade;
+            if (resumoCache[cacheKey]) {
+                // Usar os dados do cache
+                mostrarConteudoResumo(resumoCache[cacheKey], loteria);
+                return;
+            }
+            
+            // Array para armazenar os resultados
+            const resultadosResumo = [];
+            
+            // Processar cada tamanho de grupo assincronamente
+            setTimeout(() => {
+                try {
+                    for (let tamanho = 3; tamanho <= 10; tamanho++) {
+                        // Obter estatísticas
+                        const estatisticas = getEstatisticasTamanho(tamanho, modalidade);
+                        
+                        // Calcular custo
+                        const custoTotal = estatisticas.jogosPossiveis * loteria.preco;
+                        
+                        // Adicionar ao array de resultados
+                        resultadosResumo.push({
+                            tamanho,
+                            totalCombinacoes: estatisticas.totalCombinacoes,
+                            jogosPossiveis: estatisticas.jogosPossiveis,
+                            cobertura: estatisticas.cobertura,
+                            custo: custoTotal
+                        });
+                    }
+                    
+                    // Armazenar no cache
+                    resumoCache[cacheKey] = resultadosResumo;
+                    
+                    // Mostrar os resultados
+                    mostrarConteudoResumo(resultadosResumo, loteria);
+                } catch (error) {
+                    console.error('Erro ao gerar resumo:', error);
+                    resumoLoading.classList.add('hidden');
+                    alert('Ocorreu um erro ao gerar o resumo. Por favor, tente novamente.');
+                }
+            }, 100);
+        }
+        
+        // Função para mostrar o conteúdo do resumo
+        function mostrarConteudoResumo(resultados, loteria) {
+            // Esconder o loading e mostrar o conteúdo
+            resumoLoading.classList.add('hidden');
+            resumoContent.classList.remove('hidden');
+            
+            // Construir o conteúdo HTML
+            let html = `
+                <h3 class="text-lg font-bold mb-4">Estatísticas por Tamanho de Grupo</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 dark:bg-gray-700">
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Tamanho</th>
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Total Combinações</th>
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Jogos Possíveis</th>
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Cobertura (%)</th>
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Custo (R$)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // Adicionar linhas para cada tamanho
+            resultados.forEach(resultado => {
+                // Determinar a classe para cobertura
+                const coberturaClass = resultado.cobertura > 100 ? 
+                    'text-green-600 dark:text-green-400 font-bold' : 
+                    (resultado.cobertura > 50 ? 'text-blue-600 dark:text-blue-400' : '');
+                
+                html += `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
+                        <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center font-medium">${resultado.tamanho} dígitos</td>
+                        <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">${resultado.totalCombinacoes.toLocaleString()}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">${resultado.jogosPossiveis.toLocaleString()}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center ${coberturaClass}">${resultado.cobertura.toFixed(8)}%</td>
+                        <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center font-medium">
+                            R$ ${resultado.custo.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                    <h3 class="font-semibold text-lg mb-3">Análise Comparativa</h3>
+                    <p>O resumo acima mostra como a cobertura de jogos possíveis varia de acordo com o tamanho do grupo de dígitos.</p>
+                    <p class="mt-2">Observe que quanto maior o grupo, maior a cobertura, mas o número de combinações também cresce significativamente.</p>
+                    <p class="mt-2">Para jogos como o ${loteria.nome}, um equilíbrio entre cobertura e custo pode ser a estratégia ideal.</p>
+                </div>
+                
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
+                        <h3 class="font-semibold text-lg mb-3">Melhor Cobertura</h3>
+                        <div class="text-xl font-bold mb-2">${getMelhorCobertura(resultados).tamanho} dígitos</div>
+                        <p>Oferece a maior cobertura de jogos possíveis (${getMelhorCobertura(resultados).cobertura.toFixed(8)}%).</p>
+                        <p class="mt-2">Custo: R$ ${getMelhorCobertura(resultados).custo.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    </div>
+                    
+                    <div class="p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg">
+                        <h3 class="font-semibold text-lg mb-3">Melhor Relação Custo/Cobertura</h3>
+                        <div class="text-xl font-bold mb-2">${getMelhorRelacao(resultados).tamanho} dígitos</div>
+                        <p>Equilíbrio entre custo e cobertura de jogos.</p>
+                        <p class="mt-2">Cobertura: ${getMelhorRelacao(resultados).cobertura.toFixed(8)}%</p>
+                        <p class="mt-1">Custo: R$ ${getMelhorRelacao(resultados).custo.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                    <h3 class="font-semibold text-lg mb-3">Informações da Modalidade</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-sm mb-1">Preço por jogo:</div>
+                            <div class="text-xl font-bold ${loteria.class} theme-text">R$ ${loteria.preco.toFixed(2)}</div>
+                        </div>
+                        <div>
+                            <div class="text-sm mb-1">Custo para jogar todas as combinações:</div>
+                            <div class="text-xl font-bold">R$ ${(loteria.totalJogos * loteria.preco).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Adicionar ao conteúdo do modal
+            resumoContent.innerHTML = html;
+        }
+        
+        // Função para encontrar o tamanho com melhor cobertura
+        function getMelhorCobertura(resultados) {
+            return resultados.reduce((melhor, atual) => 
+                atual.cobertura > melhor.cobertura ? atual : melhor, 
+                resultados[0]);
+        }
+        
+        // Função para encontrar o tamanho com melhor relação custo/cobertura
+        function getMelhorRelacao(resultados) {
+            return resultados.reduce((melhor, atual) => {
+                const relacaoAtual = atual.cobertura / atual.custo;
+                const relacaoMelhor = melhor.cobertura / melhor.custo;
+                return relacaoAtual > relacaoMelhor ? atual : melhor;
+            }, resultados[0]);
+        }
+        
+        // Event listeners
+        modalidadeSelect.addEventListener('change', atualizarInfoModalidade);
+        calcularBtn.addEventListener('click', calcularCusto);
+        resumoBtn.addEventListener('click', gerarResumoCompleto);
+        calcularApostaBtn.addEventListener('click', calcularApostaEspecifica);
+        
+        // Fechar modal de resumo
+        resumoModalClose.addEventListener('click', () => {
+            resumoModalOverlay.classList.add('hidden');
+        });
+        
+        // Clicar fora do modal de resumo para fechar
+        resumoModalOverlay.addEventListener('click', (e) => {
+            if (e.target === resumoModalOverlay) {
+                resumoModalOverlay.classList.add('hidden');
+            }
+        });
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar a interface
+            atualizarInfoModalidade();
+            
+            // Executar um cálculo inicial
+            calcularBtn.click();
+        });
+    </script>
+</body>
+</html>

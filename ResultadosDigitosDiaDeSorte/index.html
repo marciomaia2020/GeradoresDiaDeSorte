@@ -1,0 +1,3345 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dígitos Dia de Sorte</title>
+    <style>
+        /* === Base Styles === */
+        :root {
+            --primary-color: #5D5CDE;
+            --secondary-color: #4949ca;
+            --primary-text: #333333;
+            --background-color: #FFFFFF;
+            --table-background: #F0F8FF;
+            --border-color: #5D5CDE;
+            --button-hover: #4949ca;
+            --highlight-color: #d9534f;
+        }
+        
+        .dark {
+            --primary-color: #5D5CDE;
+            --secondary-color: #6e6ee3;
+            --primary-text: #e0e0e0;
+            --background-color: #181818;
+            --table-background: #2a2a2a;
+            --border-color: #5D5CDE;
+            --button-hover: #6e6ee3;
+            --highlight-color: #e05c5c;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--primary-text);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: var(--secondary-color);
+        }
+
+        .destaque {
+            color: var(--primary-color);
+        }
+
+        .centralizado {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* === Buttons and Actions === */
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* === Cache Status === */
+        .cache-status {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .cache-hit {
+            background-color: rgba(82, 196, 26, 0.1);
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+        }
+
+        .cache-miss {
+            background-color: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffe58f;
+            color: #fa8c16;
+        }
+
+        /* === Loading Status === */
+        .loading, .completed {
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .loading {
+            color: #0050b3;
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            animation: pulse 1.5s infinite;
+        }
+
+        .completed {
+            color: #52c41a;
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        /* === Tables === */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: var(--table-background);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        th {
+            background-color: var(--border-color);
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(249, 249, 249, 0.1);
+        }
+
+        tr:nth-child(odd) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .copy-button {
+            background-color: var(--border-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+
+        .copy-button:hover {
+            background-color: var(--button-hover);
+            transform: scale(1.05);
+        }
+
+        /* === Digit Statistics === */
+        .statistics-container {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: rgba(240, 248, 255, 0.1);
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .digit-stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .digit-frequency, .digit-charts {
+            flex: 1;
+            min-width: 300px;
+            margin: 10px;
+        }
+
+        .digit-box {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            margin: 5px;
+            background-color: var(--border-color);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .digit-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .digit-count {
+            font-size: 14px;
+            display: block;
+            color: var(--primary-text);
+        }
+
+        /* === Filters === */
+        .filter-container {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: rgba(240, 248, 255, 0.1);
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .filter-item label {
+            margin-right: 5px;
+            font-weight: bold;
+        }
+
+        .filter-item select, .filter-item input {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--background-color);
+            color: var(--primary-text);
+            min-width: 100px;
+        }
+
+        .results-info {
+            margin: 10px 0;
+            font-style: italic;
+            color: #666;
+            text-align: center;
+        }
+
+        /* === Combination Analysis === */
+        .combination-analysis {
+            margin: 30px 0;
+        }
+
+        .combinations-table, .summary-table, .similares-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .details-button {
+            background-color: var(--border-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+
+        .details-button:hover {
+            background-color: var(--button-hover);
+            transform: scale(1.05);
+        }
+
+        /* === Modal === */
+        .modal {
+            display: block;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: var(--background-color);
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            width: 80%;
+            max-width: 800px;
+            border-radius: 5px;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-button:hover {
+            color: white;
+        }
+
+        .diferencas .de {
+            color: var(--highlight-color);
+        }
+
+        .diferencas .para {
+            color: #5bc0de;
+        }
+
+        .combo-info, .similares-info {
+            margin: 15px 0;
+        }
+
+        /* === Download Buttons === */
+        .download-buttons {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* === Footer === */
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 10px;
+            font-size: 14px;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+
+        /* === Resume Style === */
+        #resumo {
+            margin: 30px auto;
+            padding: 20px;
+            background-color: rgba(249, 249, 249, 0.05);
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 90%;
+            animation: highlightResume 0.5s;
+        }
+
+        @keyframes highlightResume {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 rgba(93, 92, 222, 0); }
+            50% { transform: scale(1.02); box-shadow: 0 0 20px rgba(93, 92, 222, 0.3); }
+            100% { transform: scale(1); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        }
+
+        #resumo h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid rgba(221, 221, 221, 0.2);
+            padding-bottom: 10px;
+            margin-top: 25px;
+        }
+
+        #resumo h2:first-child {
+            margin-top: 0;
+        }
+
+        #resumo p {
+            text-align: justify;
+            line-height: 1.6;
+        }
+
+        #resumo ol {
+            padding-left: 25px;
+        }
+
+        #resumo li {
+            margin-bottom: 15px;
+        }
+
+        #resumo strong {
+            color: var(--highlight-color);
+            font-weight: bold;
+        }
+
+        /* === Table Responsive === */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 1rem;
+            width: 100%;
+            max-width: 100%;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* === Status Indicators === */
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-live {
+            background-color: #52c41a;
+            box-shadow: 0 0 5px #52c41a;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        .data-timestamp {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin: 5px 0;
+        }
+
+        /* === Auto Update Control === */
+        .auto-update-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .auto-update-control label {
+            margin-right: 10px;
+            font-size: 14px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--border-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(16px);
+        }
+
+        /* === Row highlighting === */
+        .row-highlighted {
+            background-color: rgba(217, 83, 79, 0.15) !important;
+            animation: highlightRow 1.5s infinite;
+        }
+
+        @keyframes highlightRow {
+            0% { background-color: rgba(217, 83, 79, 0.05); }
+            50% { background-color: rgba(217, 83, 79, 0.15); }
+            100% { background-color: rgba(217, 83, 79, 0.05); }
+        }
+
+        .cell-highlighted {
+            font-weight: bold !important;
+            color: var(--highlight-color) !important;
+        }
+
+        /* === Error messages === */
+        .error-message {
+            background-color: rgba(255, 242, 240, 0.8);
+            border: 1px solid #ffccc7;
+            color: #f5222d;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .warning-message {
+            background-color: rgba(255, 251, 230, 0.8);
+            border: 1px solid #ffe58f;
+            color: #fa8c16;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        /* === Debug Info === */
+        .debug-info {
+            font-size: 12px;
+            color: #888;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: rgba(249, 249, 249, 0.05);
+            border-radius: 5px;
+            display: none;
+        }
+
+        /* === Progress Indicator === */
+        .progress-container {
+            width: 100%;
+            background-color: rgba(241, 241, 241, 0.2);
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: var(--primary-color);
+            width: 0%;
+            border-radius: 5px;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            transition: width 0.3s;
+        }
+
+        /* === Frequency Analysis Modal === */
+        .frequency-analysis-container {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: rgba(240, 248, 255, 0.1);
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* === Responsiveness === */
+        @media (max-width: 1200px) {
+            .container {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .digit-stats {
+                flex-direction: column;
+            }
+            
+            .actions {
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-item {
+                margin: 5px 0;
+                width: 100%;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+            
+            .download-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .download-buttons .button {
+                width: 80%;
+            }
+            
+            table th, table td {
+                padding: 8px 5px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
+            h3 {
+                font-size: 1.1rem;
+            }
+            
+            .button {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+            
+            .digit-box {
+                width: 30px;
+                height: 30px;
+                line-height: 30px;
+                font-size: 14px;
+            }
+            
+            .digit-count {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Análise de Dígitos do <span class="destaque">Dia de Sorte</span> - Versão Otimizada</h1>
+        
+        <div class="centralizado">
+            <p>Análise otimizada dos dígitos de todos os sorteios do Dia de Sorte</p>
+            <div class="auto-update-control">
+                <label for="autoUpdateToggle">Atualização automática:</label>
+                <label class="switch">
+                    <input type="checkbox" id="autoUpdateToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="data-timestamp">
+                <span class="status-indicator status-live"></span>
+                <span id="lastUpdateTime">Dados atualizados em: Carregando...</span>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="button" id="loadButton">Recarregar Dados</button>
+            <button class="button" id="analisarFrequenciaButton">Analisar Frequência</button>
+            <button class="button" id="resumoButton">Gerar Resumo</button>
+            <button class="button" id="clearCacheButton">Limpar Cache</button>
+            <button class="button" id="toggleThemeButton">Alternar Tema</button>
+        </div>
+
+        <div id="cacheStatus" class="cache-status" style="display: none;"></div>
+        <div id="loadingMessage" class="loading" style="display: block;">Verificando cache e carregando dados otimizados...</div>
+        <div id="completedMessage" class="completed" style="display: none;">Carregamento concluído!</div>
+        <div id="errorMessage" class="error-message" style="display: none;">Erro ao carregar os dados</div>
+        
+        <!-- Progress Bar -->
+        <div class="progress-container" id="progressContainer" style="display: none;">
+            <div class="progress-bar" id="progressBar">0%</div>
+        </div>
+
+        <!-- Resume Area - will be populated automatically -->
+        <div id="resumoContainer"></div>
+
+        <!-- Frequency Analysis Area -->
+        <div id="frequencyAnalysisContainer" class="frequency-analysis-container" style="display: none;">
+            <h2>Análise Avançada de Frequência</h2>
+            <div id="frequencyAnalysisContent"></div>
+        </div>
+
+        <!-- Filters -->
+        <div id="filterContainer" class="filter-container">
+            <!-- Will be filled by JavaScript -->
+        </div>
+
+        <!-- Digit Statistics -->
+        <div class="statistics-container">
+            <h2>Estatísticas de Dígitos</h2>
+            <div id="digitStats" class="digit-stats">
+                <div class="digit-frequency">
+                    <h3>Frequência de Dígitos</h3>
+                    <div id="digitFrequency"></div>
+                </div>
+                <div class="digit-charts">
+                    <h3>Gráfico de Frequência</h3>
+                    <div id="digitChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Combination Analysis -->
+        <div id="combinationAnalysis" class="combination-analysis">
+            <!-- Will be filled by JavaScript -->
+        </div>
+
+        <!-- Results Table -->
+        <h2>Resultados Detalhados</h2>
+        <div class="table-responsive">
+            <table id="diaDeSorteResults">
+                <thead>
+                    <tr>
+                        <th>Concurso</th>
+                        <th>Data</th>
+                        <th>Dezenas</th>
+                        <th>Dígitos</th>
+                        <th>Dígitos Ordenados</th>
+                        <th>Qtd. Dígitos</th>
+                        <th>Copiar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Download Buttons -->
+        <div class="download-buttons">
+            <button class="button" id="downloadCSV">Baixar XLS</button>
+            <button class="button" id="downloadJSON">Baixar HTML</button>
+            <button class="button" id="downloadTXT">Baixar TXT</button>
+        </div>
+        
+        <!-- Debug Info -->
+        <div id="debugInfo" class="debug-info"></div>
+    </div>
+
+    <footer>Feito por: <i>Márcio Fernando Maia - Todos os direitos reservados - 2025</i></footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ===== Global Configuration =====
+            const UPDATE_INTERVAL = 300000; // 5 minutes in milliseconds
+            let updateTimer = null;
+            let allResults = [];
+            let filteredResults = [];
+            let digitStats = {};
+            let combinationStats = {};
+            let lastUpdateTime = new Date();
+            let isLoading = false;
+            let hasError = false;
+            
+            // ===== Cache Configuration =====
+            const CACHE_KEY = 'diadesorte_resultados_cache';
+            const CACHE_VERSION = '1.0';
+            let cachedResults = [];
+            let lastCachedContest = 0;
+            
+            // APIs for "Dia de Sorte" lottery
+            const API_CONFIG = {
+                // Available APIs for "Dia de Sorte"
+                DIA_DE_SORTE_STATIC: {
+                    url: "https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte",
+                    description: "API Oficial da Caixa"
+                },
+                DIA_DE_SORTE_LOTERIA_FREE: {
+                    url: "https://loteriascaixa-api.herokuapp.com/api/dia-de-sorte",
+                    description: "API Loteria Completa (todos os concursos)"
+                },
+                DIA_DE_SORTE_CONCURSO: (numero) => {
+                    return {
+                        url: `https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/${numero}`,
+                        description: `API Oficial Caixa - Concurso ${numero}`
+                    };
+                },
+                // CORS proxy services
+                PROXIES: [
+                    '',  // First try direct
+                    'https://corsproxy.io/?',
+                    'https://api.allorigins.win/raw?url=',
+                    'https://cors-anywhere.herokuapp.com/',
+                    'https://api.codetabs.com/v1/proxy?quest='
+                ]
+            };
+            
+            // ===== Dark Mode Detection =====
+            function setThemeBasedOnPreference() {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }
+            
+            setThemeBasedOnPreference();
+            
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+                setThemeBasedOnPreference();
+            });
+            
+            // Toggle theme manually
+            document.getElementById('toggleThemeButton').addEventListener('click', function() {
+                document.documentElement.classList.toggle('dark');
+            });
+            
+            // ===== UI Elements =====
+            const loadButton = document.getElementById('loadButton');
+            const analisarFrequenciaButton = document.getElementById('analisarFrequenciaButton');
+            const resumoButton = document.getElementById('resumoButton');
+            const clearCacheButton = document.getElementById('clearCacheButton');
+            const downloadCSVButton = document.getElementById('downloadCSV');
+            const downloadJSONButton = document.getElementById('downloadJSON');
+            const downloadTXTButton = document.getElementById('downloadTXT');
+            const autoUpdateToggle = document.getElementById('autoUpdateToggle');
+            const loadingMessage = document.getElementById('loadingMessage');
+            const completedMessage = document.getElementById('completedMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const cacheStatus = document.getElementById('cacheStatus');
+            const tableBody = document.getElementById('diaDeSorteResults').querySelector('tbody');
+            const digitFrequencyDiv = document.getElementById('digitFrequency');
+            const digitChartDiv = document.getElementById('digitChart');
+            const combinationAnalysisDiv = document.getElementById('combinationAnalysis');
+            const filterContainerDiv = document.getElementById('filterContainer');
+            const debugInfoDiv = document.getElementById('debugInfo');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const frequencyAnalysisContainer = document.getElementById('frequencyAnalysisContainer');
+            const frequencyAnalysisContent = document.getElementById('frequencyAnalysisContent');
+            
+            // ===== Cache Management Functions =====
+            
+            // Load cache from localStorage (emulated since not available in iframe)
+            function loadCache() {
+                try {
+                    // Since localStorage is not available in iframe, we'll use a memory cache
+                    // In a real application, this would be: JSON.parse(localStorage.getItem(CACHE_KEY) || '{}')
+                    const emptyCache = {
+                        version: CACHE_VERSION,
+                        results: [],
+                        lastUpdate: 0,
+                        lastContest: 0
+                    };
+                    
+                    addDebugInfo("Cache simulado carregado (localStorage não disponível no iframe)");
+                    return emptyCache;
+                } catch (error) {
+                    addDebugInfo(`Erro ao carregar cache: ${error.message}`);
+                    return {
+                        version: CACHE_VERSION,
+                        results: [],
+                        lastUpdate: 0,
+                        lastContest: 0
+                    };
+                }
+            }
+            
+            // Save cache to localStorage (emulated)
+            function saveCache(results, lastContest) {
+                try {
+                    const cacheData = {
+                        version: CACHE_VERSION,
+                        results: results,
+                        lastUpdate: Date.now(),
+                        lastContest: lastContest
+                    };
+                    
+                    // In a real application: localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+                    cachedResults = results;
+                    lastCachedContest = lastContest;
+                    
+                    addDebugInfo(`Cache atualizado com ${results.length} resultados até o concurso ${lastContest}`);
+                    return true;
+                } catch (error) {
+                    addDebugInfo(`Erro ao salvar cache: ${error.message}`);
+                    return false;
+                }
+            }
+            
+            // Clear cache
+            function clearCache() {
+                try {
+                    // In a real application: localStorage.removeItem(CACHE_KEY);
+                    cachedResults = [];
+                    lastCachedContest = 0;
+                    
+                    addDebugInfo("Cache limpo com sucesso");
+                    
+                    // Update UI
+                    const cacheStatus = document.getElementById('cacheStatus');
+                    if (cacheStatus) {
+                        cacheStatus.style.display = 'block';
+                        cacheStatus.className = 'cache-status cache-miss';
+                        cacheStatus.textContent = 'Cache limpo! Próximo carregamento buscará todos os dados novamente.';
+                        
+                        setTimeout(() => {
+                            cacheStatus.style.display = 'none';
+                        }, 3000);
+                    }
+                    
+                    return true;
+                } catch (error) {
+                    addDebugInfo(`Erro ao limpar cache: ${error.message}`);
+                    return false;
+                }
+            }
+            
+            // Show cache status
+            function showCacheStatus(isHit, cachedCount, newCount) {
+                if (!cacheStatus) return;
+                
+                cacheStatus.style.display = 'block';
+                
+                if (isHit && cachedCount > 0) {
+                    cacheStatus.className = 'cache-status cache-hit';
+                    cacheStatus.innerHTML = `
+                        ⚡ <strong>Cache Hit!</strong> ${cachedCount} concursos carregados do cache. 
+                        ${newCount > 0 ? `${newCount} novos concursos buscados da API.` : 'Nenhum concurso novo.'}
+                        <br><small>Carregamento ultra-rápido ativado!</small>
+                    `;
+                } else {
+                    cacheStatus.className = 'cache-status cache-miss';
+                    cacheStatus.innerHTML = `
+                        🔄 <strong>Cache Miss</strong> - Buscando todos os concursos da API. 
+                        ${newCount} concursos carregados.
+                        <br><small>Próximos carregamentos serão mais rápidos!</small>
+                    `;
+                }
+                
+                // Hide after 5 seconds
+                setTimeout(() => {
+                    cacheStatus.style.display = 'none';
+                }, 5000);
+            }
+            
+            // ===== Register Events =====
+            loadButton.addEventListener('click', () => {
+                resetUI();
+                fetchCompleteDiaDeSorteResults();
+            });
+            
+            clearCacheButton.addEventListener('click', () => {
+                if (confirm('Tem certeza que deseja limpar o cache? Isso fará com que o próximo carregamento seja mais lento.')) {
+                    clearCache();
+                }
+            });
+            
+            analisarFrequenciaButton.addEventListener('click', () => {
+                analisarFrequenciaEntreSequencias();
+            });
+            
+            resumoButton.addEventListener('click', gerarResumo);
+            downloadCSVButton.addEventListener('click', downloadCSV);
+            downloadJSONButton.addEventListener('click', downloadJSON);
+            downloadTXTButton.addEventListener('click', downloadTXT);
+            
+            autoUpdateToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    startAutoUpdate();
+                    document.querySelector('.status-indicator').classList.add('status-live');
+                } else {
+                    stopAutoUpdate();
+                    document.querySelector('.status-indicator').classList.remove('status-live');
+                }
+            });
+            
+            // ===== Helper Functions =====
+            
+            // Reset UI when needed
+            function resetUI() {
+                // Clear content areas
+                tableBody.innerHTML = '';
+                digitFrequencyDiv.innerHTML = '';
+                digitChartDiv.innerHTML = '';
+                combinationAnalysisDiv.innerHTML = '';
+                filterContainerDiv.innerHTML = '';
+                
+                // Hide frequency analysis area
+                frequencyAnalysisContainer.style.display = 'none';
+                frequencyAnalysisContent.innerHTML = '';
+                
+                // Show loading message
+                loadingMessage.style.display = 'block';
+                completedMessage.style.display = 'none';
+                errorMessage.style.display = 'none';
+                
+                // Reset progress bar
+                progressContainer.style.display = 'none';
+                progressBar.style.width = '0%';
+                progressBar.textContent = '0%';
+                
+                // Debug log
+                addDebugInfo("UI reset for new loading");
+            }
+            
+            // Function to add debug information
+            function addDebugInfo(message) {
+                const now = new Date();
+                const timestamp = now.toLocaleTimeString();
+                const debugLine = document.createElement('div');
+                debugLine.textContent = `[${timestamp}] ${message}`;
+                debugInfoDiv.appendChild(debugLine);
+                console.log(`[DEBUG] ${message}`);
+                
+                // Keep only the last 100 messages
+                if (debugInfoDiv.children.length > 100) {
+                    debugInfoDiv.removeChild(debugInfoDiv.firstChild);
+                }
+            }
+            
+            // ===== Function to fetch data with CORS proxy =====
+            async function fetchWithProxy(url, attempts = 0) {
+                const corsProxies = API_CONFIG.PROXIES;
+                
+                if (attempts >= corsProxies.length) {
+                    throw new Error('All CORS proxies failed');
+                }
+                
+                try {
+                    // Some proxies need different URL encoding
+                    let proxyUrl;
+                    if (corsProxies[attempts].includes('?url=') || corsProxies[attempts].includes('?quest=')) {
+                        proxyUrl = corsProxies[attempts] + encodeURIComponent(url);
+                    } else {
+                        proxyUrl = corsProxies[attempts] + url;
+                    }
+                    
+                    addDebugInfo(`Tentando proxy ${attempts + 1}/${corsProxies.length}: ${proxyUrl}`);
+                    
+                    const response = await fetch(proxyUrl);
+                    if (!response.ok) {
+                        throw new Error(`HTTP Error: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    addDebugInfo(`Proxy ${attempts + 1} falhou: ${error.message}`);
+                    // Try next proxy
+                    if (attempts < corsProxies.length - 1) {
+                        return fetchWithProxy(url, attempts + 1);
+                    } else {
+                        throw error;
+                    }
+                }
+            }
+
+            // ===== Function to get the latest contest number =====
+            async function getLatestConcursoNumber() {
+                try {
+                    // First, try to get the last contest from the official Caixa API
+                    const lastConcursoData = await fetchWithProxy(API_CONFIG.DIA_DE_SORTE_STATIC.url);
+                    if (lastConcursoData && lastConcursoData.numero) {
+                        return parseInt(lastConcursoData.numero);
+                    }
+                    
+                    throw new Error("Could not get the latest contest number");
+                } catch (error) {
+                    addDebugInfo(`Erro ao obter último concurso: ${error.message}`);
+                    // Default value in case of failure (adjust as needed)
+                    return 800; // An approximate current value
+                }
+            }
+
+            // ===== Optimized function to fetch only new contests =====
+            async function fetchNewConcursos(fromContest, toContest) {
+                const newResults = [];
+                
+                if (fromContest > toContest) {
+                    addDebugInfo("Nenhum concurso novo para buscar");
+                    return newResults;
+                }
+                
+                addDebugInfo(`Buscando concursos ${fromContest} a ${toContest}...`);
+                
+                try {
+                    // Set up progress bar
+                    progressContainer.style.display = 'block';
+                    
+                    // To avoid overloading the Caixa API, let's make batch requests
+                    const batchSize = 10;
+                    
+                    for (let i = fromContest; i <= toContest; i += batchSize) {
+                        const batchEnd = Math.min(i + batchSize - 1, toContest);
+                        loadingMessage.textContent = `Buscando novos concursos ${i} a ${batchEnd}...`;
+                        
+                        // Update progress bar
+                        const progressPercent = ((i - fromContest) / (toContest - fromContest)) * 100;
+                        updateProgress(progressPercent);
+                        
+                        // Create an array of promises for each contest in the batch
+                        const requests = [];
+                        for (let concursoNum = i; concursoNum <= batchEnd; concursoNum++) {
+                            // Add a small delay to avoid overloading
+                            const delay = (concursoNum - i) * 100; // 100ms between each request
+                            
+                            requests.push(
+                                new Promise(resolve => {
+                                    setTimeout(async () => {
+                                        try {
+                                            const url = API_CONFIG.DIA_DE_SORTE_CONCURSO(concursoNum).url;
+                                            const concursoData = await fetchWithProxy(url);
+                                            
+                                            if (concursoData && concursoData.numero && concursoData.dataApuracao && concursoData.listaDezenas) {
+                                                resolve({
+                                                    concurso: concursoData.numero.toString(),
+                                                    data: concursoData.dataApuracao,
+                                                    dezenas: concursoData.listaDezenas
+                                                });
+                                            } else {
+                                                resolve(null);
+                                            }
+                                        } catch (error) {
+                                            addDebugInfo(`Erro ao buscar concurso ${concursoNum}: ${error.message}`);
+                                            resolve(null);
+                                        }
+                                    }, delay);
+                                })
+                            );
+                        }
+                        
+                        // Wait for all requests in the batch
+                        const results = await Promise.all(requests);
+                        
+                        // Add valid results to the final array
+                        for (const result of results) {
+                            if (result) {
+                                newResults.push(result);
+                            }
+                        }
+                        
+                        // Small pause between batches to avoid overloading the API
+                        await new Promise(resolve => setTimeout(resolve, 300));
+                    }
+                    
+                    updateProgress(100);
+                    
+                } catch (error) {
+                    addDebugInfo(`Erro na busca otimizada: ${error.message}`);
+                    throw error;
+                }
+                
+                return newResults;
+            }
+
+            // ===== Optimized main function to fetch results using cache =====
+            async function fetchCompleteDiaDeSorteResults() {
+                loadingMessage.style.display = 'block';
+                loadingMessage.textContent = 'Verificando cache e otimizando carregamento...';
+                completedMessage.style.display = 'none';
+                errorMessage.style.display = 'none';
+                isLoading = true;
+                loadButton.disabled = true;
+                
+                try {
+                    // 1. Load cache
+                    const cache = loadCache();
+                    cachedResults = cache.results || [];
+                    lastCachedContest = cache.lastContest || 0;
+                    
+                    addDebugInfo(`Cache carregado: ${cachedResults.length} resultados até o concurso ${lastCachedContest}`);
+                    
+                    // 2. Get the latest contest number
+                    const latestContest = await getLatestConcursoNumber();
+                    addDebugInfo(`Último concurso disponível: ${latestContest}`);
+                    
+                    // 3. Determine if we need to fetch new data
+                    const needNewData = lastCachedContest < latestContest;
+                    let newResults = [];
+                    
+                    if (needNewData) {
+                        // Fetch only new contests
+                        const fromContest = lastCachedContest + 1;
+                        addDebugInfo(`Buscando concursos novos: ${fromContest} a ${latestContest}`);
+                        
+                        loadingMessage.textContent = `Carregamento otimizado: buscando apenas ${latestContest - fromContest + 1} concursos novos...`;
+                        
+                        newResults = await fetchNewConcursos(fromContest, latestContest);
+                        addDebugInfo(`${newResults.length} novos concursos obtidos`);
+                    } else {
+                        addDebugInfo("Todos os concursos já estão no cache!");
+                    }
+                    
+                    // 4. If we have no cached data and couldn't get new data, try the complete API
+                    if (cachedResults.length === 0 && newResults.length === 0) {
+                        addDebugInfo("Cache vazio e API individual falhou. Tentando API completa...");
+                        loadingMessage.textContent = 'Fallback: buscando todos os concursos da API completa...';
+                        
+                        try {
+                            const allData = await fetchWithProxy(API_CONFIG.DIA_DE_SORTE_LOTERIA_FREE.url);
+                            
+                            if (Array.isArray(allData) && allData.length > 0) {
+                                newResults = allData.map(concurso => ({
+                                    concurso: concurso.concurso.toString(),
+                                    data: concurso.data,
+                                    dezenas: concurso.dezenas
+                                }));
+                                addDebugInfo(`API completa retornou ${newResults.length} concursos`);
+                            }
+                        } catch (e) {
+                            addDebugInfo(`API completa também falhou: ${e.message}`);
+                            throw new Error("Todas as APIs falharam");
+                        }
+                    }
+                    
+                    // 5. Combine cached + new results
+                    const allConcursos = [...cachedResults, ...newResults];
+                    
+                    // Remove duplicates and sort
+                    const uniqueConcursos = [];
+                    const seen = new Set();
+                    
+                    for (const concurso of allConcursos) {
+                        const key = concurso.concurso;
+                        if (!seen.has(key)) {
+                            seen.add(key);
+                            uniqueConcursos.push(concurso);
+                        }
+                    }
+                    
+                    // Sort by contest number
+                    uniqueConcursos.sort((a, b) => parseInt(a.concurso) - parseInt(b.concurso));
+                    
+                    addDebugInfo(`Total de concursos únicos: ${uniqueConcursos.length}`);
+                    
+                    // 6. Update cache with complete data
+                    if (newResults.length > 0) {
+                        const newLastContest = Math.max(...uniqueConcursos.map(c => parseInt(c.concurso)));
+                        saveCache(uniqueConcursos, newLastContest);
+                    }
+                    
+                    // 7. Process the results
+                    if (uniqueConcursos.length === 0) {
+                        throw new Error("Nenhum concurso foi carregado");
+                    }
+                    
+                    const success = processDirectApiData(uniqueConcursos);
+                    
+                    if (success) {
+                        // Show cache status
+                        showCacheStatus(cachedResults.length > 0, cachedResults.length, newResults.length);
+                        
+                        // Show success message
+                        loadingMessage.style.display = 'none';
+                        completedMessage.style.display = 'block';
+                        completedMessage.textContent = `⚡ Carregamento otimizado concluído! ${allResults.length} concursos (${cachedResults.length} do cache + ${newResults.length} novos)`;
+                        
+                        // Update timestamp
+                        lastUpdateTime = new Date();
+                        updateTimestamp();
+                        
+                        // Generate summary automatically
+                        setTimeout(() => {
+                            gerarResumo();
+                        }, 500);
+                        
+                        updateProgress(100);
+                        
+                        // Hide progress bar after 3 seconds
+                        setTimeout(() => {
+                            progressContainer.style.display = 'none';
+                        }, 3000);
+                        
+                        return true;
+                    } else {
+                        throw new Error("Falha ao processar os dados dos concursos");
+                    }
+                    
+                } catch (error) {
+                    console.error("Erro no carregamento otimizado:", error);
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = `Erro no carregamento otimizado: ${error.message}`;
+                    loadingMessage.style.display = 'none';
+                    
+                    // Show cache miss status on error
+                    showCacheStatus(false, 0, 0);
+                    
+                    updateProgress(100);
+                    
+                    // Hide progress bar after 3 seconds
+                    setTimeout(() => {
+                        progressContainer.style.display = 'none';
+                    }, 3000);
+                    
+                    return false;
+                } finally {
+                    // Re-enable button
+                    loadButton.disabled = false;
+                    isLoading = false;
+                }
+            }
+            
+            // Update progress bar
+            function updateProgress(percent) {
+                if (progressBar && progressContainer) {
+                    progressContainer.style.display = 'block';
+                    progressBar.style.width = `${percent}%`;
+                    progressBar.textContent = `${Math.round(percent)}%`;
+                }
+            }
+            
+            // ===== Function to process data directly from the lottery API =====
+            function processDirectApiData(data) {
+                try {
+                    // Ensure it's an array
+                    if (!Array.isArray(data)) {
+                        addDebugInfo('Data is not in array format');
+                        return false;
+                    }
+                    
+                    // Check if there's data
+                    if (data.length === 0) {
+                        addDebugInfo('Empty data array');
+                        return false;
+                    }
+                    
+                    addDebugInfo(`Processing ${data.length} contests...`);
+                    
+                    // Process digits
+                    let resultados = [];
+                    let frequencia_digitos = {
+                        '0': 0, '1': 0, '2': 0, '3': 0, '4': 0,
+                        '5': 0, '6': 0, '7': 0, '8': 0, '9': 0
+                    };
+                    
+                    // Sort contests from oldest to newest
+                    data.sort((a, b) => {
+                        const concursoA = parseInt(a.concurso || 0);
+                        const concursoB = parseInt(b.concurso || 0);
+                        return concursoA - concursoB;
+                    });
+                    
+                    // Process each contest
+                    for (const concurso of data) {
+                        // Check if we have the contest number and numbers
+                        if (!concurso.concurso || !concurso.dezenas) continue;
+                        
+                        const dezenas = concurso.dezenas;
+                        if (!Array.isArray(dezenas) || dezenas.length === 0) continue;
+                        
+                        // Extract unique digits from the numbers
+                        const digitos_unicos_set = new Set();
+                        for (const dezena of dezenas) {
+                            // Make sure we're working with strings
+                            const dezenaStr = dezena.toString();
+                            
+                            for (const digito of dezenaStr) {
+                                if (/\d/.test(digito)) { // Ensure it's a digit
+                                    digitos_unicos_set.add(digito);
+                                    frequencia_digitos[digito]++;
+                                }
+                            }
+                        }
+                        
+                        // Convert to list and sort
+                        const digitos_unicos = Array.from(digitos_unicos_set).sort((a, b) => b.localeCompare(a));
+                        const digitos_ordenados = Array.from(digitos_unicos_set).sort();
+                        
+                        resultados.push({
+                            'concurso': concurso.concurso,
+                            'data': concurso.data,
+                            'dezenas': dezenas,
+                            'digitos': digitos_unicos,
+                            'digitos_ordenados': digitos_ordenados,
+                            'digitos_para_copia': digitos_ordenados.join(','),
+                            'digitos_para_exibicao': digitos_unicos.join(' '),
+                            'contagem_digitos': digitos_unicos_set.size
+                        });
+                    }
+                    
+                    // Check if we processed enough contests
+                    if (resultados.length === 0) {
+                        addDebugInfo('No valid contests were processed');
+                        return false;
+                    }
+                    
+                    addDebugInfo(`Successfully processed ${resultados.length} contests`);
+                    
+                    // Create the result object
+                    const resultado_final = {
+                        'resultados': resultados,
+                        'frequencia_digitos': frequencia_digitos
+                    };
+                    
+                    // Process the results
+                    return processResults(resultado_final);
+                } catch (error) {
+                    addDebugInfo(`Error processing direct data: ${error.message}`);
+                    return false;
+                }
+            }
+            
+            // ===== Function to process results =====
+            function processResults(data) {
+                try {
+                    addDebugInfo('Processing results...');
+                    
+                    // Check data format
+                    if (!data.resultados || !Array.isArray(data.resultados)) {
+                        addDebugInfo('Invalid data format');
+                        return false;
+                    }
+                    
+                    // Check if there's data
+                    if (data.resultados.length === 0) {
+                        addDebugInfo('No results to process');
+                        return false;
+                    }
+                    
+                    // Store data globally
+                    allResults = data.resultados;
+                    filteredResults = [...allResults]; // Initially, all results
+                    digitStats = data.frequencia_digitos;
+                    
+                    // Share results in global scope
+                    window.allResults = allResults;
+                    window.digitStats = digitStats;
+                    
+                    // Sort results by contest number (ascending)
+                    allResults.sort((a, b) => parseInt(a.concurso) - parseInt(b.concurso));
+                    
+                    // IMPORTANT: Ensure filteredResults is in DESCENDING order
+                    filteredResults.sort((a, b) => parseInt(b.concurso) - parseInt(a.concurso));
+                    
+                    // Log the first and last loaded contest
+                    if (allResults.length > 0) {
+                        const first = allResults[0].concurso;
+                        const last = allResults[allResults.length-1].concurso;
+                        const total = allResults.length;
+                        addDebugInfo(`First contest: ${first}, Last contest: ${last}, Total: ${total}`);
+                    }
+                    
+                    // Analyze digit combinations
+                    if (!analisarCombinacoes(allResults)) {
+                        addDebugInfo('Failed to analyze combinations');
+                        return false;
+                    }
+                    
+                    // Render everything
+                    renderFilterOptions();
+                    renderResults(filteredResults);
+                    renderDigitStats(digitStats);
+                    renderCombinationAnalysis();
+                    
+                    addDebugInfo('Processing completed successfully!');
+                    return true;
+                } catch (error) {
+                    addDebugInfo(`Error processing results: ${error.message}`);
+                    return false;
+                }
+            }
+            
+            // ===== Function to analyze digit combinations =====
+            function analisarCombinacoes(results) {
+                try {
+                    combinationStats = {
+                        porQuantidade: {}, // Group by number of digits
+                        combinacoesFrequentes: {}, // Most frequent combinations
+                        digitosExclusivos: {} // Digits that appear only in some draws
+                    };
+                    
+                    // Group results by number of digits
+                    results.forEach(result => {
+                        const qtd = result.contagem_digitos;
+                        if (!combinationStats.porQuantidade[qtd]) {
+                            combinationStats.porQuantidade[qtd] = [];
+                        }
+                        combinationStats.porQuantidade[qtd].push(result);
+                    });
+                    
+                    // Find frequent combinations
+                    results.forEach(result => {
+                        const combinacao = result.digitos_ordenados.join(',');
+                        if (!combinationStats.combinacoesFrequentes[combinacao]) {
+                            combinationStats.combinacoesFrequentes[combinacao] = {
+                                combinacao: combinacao,
+                                concursos: [],
+                                digitos: result.digitos_ordenados,
+                                quantidade: result.contagem_digitos
+                            };
+                        }
+                        combinationStats.combinacoesFrequentes[combinacao].concursos.push(result.concurso);
+                    });
+                    
+                    // Sort combinations by frequency
+                    combinationStats.combinacoesFrequentes = Object.values(combinationStats.combinacoesFrequentes)
+                        .sort((a, b) => b.concursos.length - a.concursos.length);
+                    
+                    // Analyze similarities and differences between combinations
+                    for (let i = 0; i < combinationStats.combinacoesFrequentes.length; i++) {
+                        const combo = combinationStats.combinacoesFrequentes[i];
+                        combo.similares = [];
+                        
+                        for (let j = 0; j < combinationStats.combinacoesFrequentes.length; j++) {
+                            if (i === j) continue;
+                            
+                            const outroCombo = combinationStats.combinacoesFrequentes[j];
+                            
+                            // Compare digits
+                            const digitosCombo = new Set(combo.digitos);
+                            const digitosOutroCombo = new Set(outroCombo.digitos);
+                            
+                            // Differences
+                            const digitosExclusivosCombo1 = [...digitosCombo].filter(d => !digitosOutroCombo.has(d));
+                            const digitosExclusivosCombo2 = [...digitosOutroCombo].filter(d => !digitosCombo.has(d));
+                            
+                            // Intersection
+                            const digitosComuns = [...digitosCombo].filter(d => digitosOutroCombo.has(d));
+                            
+                            // If there's significant similarity (more than 70% in common)
+                            if (digitosComuns.length >= combo.digitos.length * 0.7) {
+                                combo.similares.push({
+                                    concursos: outroCombo.concursos,
+                                    digitosComuns: digitosComuns,
+                                    digitosDiferentes: {
+                                        de: digitosExclusivosCombo1,
+                                        para: digitosExclusivosCombo2
+                                    }
+                                });
+                            }
+                        }
+                        
+                        // Limit to 5 similar combinations per combination
+                        combo.similares = combo.similares.slice(0, 5);
+                    }
+                    
+                    // Calculate additional statistics for frequent combinations
+                    combinationStats.combinacoesFrequentes.forEach(combo => {
+                        // Sort contests
+                        combo.concursos.sort((a, b) => parseInt(a) - parseInt(b));
+                        
+                        // Calculate intervals
+                        const intervalos = [];
+                        for (let i = 1; i < combo.concursos.length; i++) {
+                            intervalos.push(parseInt(combo.concursos[i]) - parseInt(combo.concursos[i-1]));
+                        }
+                        
+                        if (intervalos.length > 0) {
+                            combo.intervalos = intervalos;
+                            combo.mediaIntervalos = Math.round(intervalos.reduce((a, b) => a + b, 0) / intervalos.length);
+                            combo.menorIntervalo = Math.min(...intervalos);
+                            combo.maiorIntervalo = Math.max(...intervalos);
+                            combo.ultimoIntervalo = intervalos[intervalos.length - 1];
+                        }
+                    });
+                    
+                    // Limit the most frequent combinations to the top 10
+                    combinationStats.combinacoesFrequentes = combinationStats.combinacoesFrequentes.slice(0, 10);
+                    
+                    // Share analyzed results in global scope
+                    window.resultadosAnalisados = {
+                        combinacoesOrdenadas: combinationStats.combinacoesFrequentes,
+                        mediaGeral: combinationStats.combinacoesFrequentes.reduce((acc, c) => acc + (c.mediaIntervalos || 0), 0) / 
+                                    combinationStats.combinacoesFrequentes.filter(c => c.mediaIntervalos).length
+                    };
+                    
+                    return true;
+                } catch (error) {
+                    addDebugInfo(`Error analyzing combinations: ${error.message}`);
+                    return false;
+                }
+            }
+            
+            // ===== Function to render filter options =====
+            function renderFilterOptions() {
+                if (!filterContainerDiv) return;
+                
+                try {
+                    // Clear filters container
+                    filterContainerDiv.innerHTML = '';
+                    
+                    // Create title
+                    const filterTitle = document.createElement('h3');
+                    filterTitle.textContent = 'Filtros';
+                    filterContainerDiv.appendChild(filterTitle);
+                    
+                    // Create filters container
+                    const filtersDiv = document.createElement('div');
+                    filtersDiv.className = 'filters';
+                    
+                    // 1. Filter by number of digits
+                    const qtdDigitosDiv = document.createElement('div');
+                    qtdDigitosDiv.className = 'filter-item';
+                    
+                    const qtdDigitosLabel = document.createElement('label');
+                    qtdDigitosLabel.textContent = 'Qtd. Dígitos: ';
+                    
+                    const qtdDigitosSelect = document.createElement('select');
+                    qtdDigitosSelect.id = 'qtdDigitosFilter';
+                    
+                    // "All" option
+                    const optionTodos = document.createElement('option');
+                    optionTodos.value = '';
+                    optionTodos.textContent = 'Todos';
+                    qtdDigitosSelect.appendChild(optionTodos);
+                    
+                    // Available quantities
+                    const quantidades = Object.keys(combinationStats.porQuantidade)
+                        .sort((a, b) => parseInt(a) - parseInt(b));
+                    
+                    quantidades.forEach(qtd => {
+                        const option = document.createElement('option');
+                        option.value = qtd;
+                        option.textContent = `${qtd} dígitos (${combinationStats.porQuantidade[qtd].length} resultados)`;
+                        qtdDigitosSelect.appendChild(option);
+                    });
+                    
+                    qtdDigitosDiv.appendChild(qtdDigitosLabel);
+                    qtdDigitosDiv.appendChild(qtdDigitosSelect);
+                    
+                    // 2. Filter by specific digit
+                    const digitoEspecificoDiv = document.createElement('div');
+                    digitoEspecificoDiv.className = 'filter-item';
+                    
+                    const digitoEspecificoLabel = document.createElement('label');
+                    digitoEspecificoLabel.textContent = 'Contém Dígito: ';
+                    
+                    const digitoEspecificoSelect = document.createElement('select');
+                    digitoEspecificoSelect.id = 'digitoEspecificoFilter';
+                    
+                    // "All" option
+                    const optionTodosDigitos = document.createElement('option');
+                    optionTodosDigitos.value = '';
+                    optionTodosDigitos.textContent = 'Todos';
+                    digitoEspecificoSelect.appendChild(optionTodosDigitos);
+                    
+                    // List all digits ordered by frequency
+                    const digitosPorFrequencia = Object.entries(digitStats)
+                        .sort((a, b) => b[1] - a[1]);
+                    
+                    digitosPorFrequencia.forEach(([digito, frequencia]) => {
+                        const option = document.createElement('option');
+                        option.value = digito;
+                        option.textContent = `Dígito ${digito} (${frequencia} ocorrências)`;
+                        digitoEspecificoSelect.appendChild(option);
+                    });
+                    
+                    digitoEspecificoDiv.appendChild(digitoEspecificoLabel);
+                    digitoEspecificoDiv.appendChild(digitoEspecificoSelect);
+                    
+                    // 3. Filter by contest range
+                    const concursoRangeDiv = document.createElement('div');
+                    concursoRangeDiv.className = 'filter-item';
+                    
+                    const concursoRangeLabel = document.createElement('label');
+                    concursoRangeLabel.textContent = 'Concursos: ';
+                    
+                    const concursoMinInput = document.createElement('input');
+                    concursoMinInput.type = 'number';
+                    concursoMinInput.id = 'concursoMinFilter';
+                    concursoMinInput.placeholder = 'Mín';
+                    concursoMinInput.min = allResults.length > 0 ? allResults[0].concurso : 1;
+                    concursoMinInput.max = allResults.length > 0 ? allResults[allResults.length-1].concurso : 1000;
+                    concursoMinInput.style.width = '80px';
+                    
+                    const concursoMaxInput = document.createElement('input');
+                    concursoMaxInput.type = 'number';
+                    concursoMaxInput.id = 'concursoMaxFilter';
+                    concursoMaxInput.placeholder = 'Máx';
+                    concursoMaxInput.min = allResults.length > 0 ? allResults[0].concurso : 1;
+                    concursoMaxInput.max = allResults.length > 0 ? allResults[allResults.length-1].concurso : 1000;
+                    concursoMaxInput.style.width = '80px';
+                    
+                    const separador = document.createElement('span');
+                    separador.textContent = ' a ';
+                    
+                    concursoRangeDiv.appendChild(concursoRangeLabel);
+                    concursoRangeDiv.appendChild(concursoMinInput);
+                    concursoRangeDiv.appendChild(separador);
+                    concursoRangeDiv.appendChild(concursoMaxInput);
+                    
+                    // 4. Filter buttons
+                    const botoesDiv = document.createElement('div');
+                    botoesDiv.className = 'filter-item';
+                    
+                    const aplicarFiltroBtn = document.createElement('button');
+                    aplicarFiltroBtn.textContent = 'Aplicar Filtros';
+                    aplicarFiltroBtn.className = 'button';
+                    aplicarFiltroBtn.onclick = aplicarFiltros;
+                    
+                    const limparFiltroBtn = document.createElement('button');
+                    limparFiltroBtn.textContent = 'Limpar Filtros';
+                    limparFiltroBtn.className = 'button';
+                    limparFiltroBtn.onclick = limparFiltros;
+                    
+                    botoesDiv.appendChild(aplicarFiltroBtn);
+                    botoesDiv.appendChild(limparFiltroBtn);
+                    
+                    // Add all elements to the container
+                    filtersDiv.appendChild(qtdDigitosDiv);
+                    filtersDiv.appendChild(digitoEspecificoDiv);
+                    filtersDiv.appendChild(concursoRangeDiv);
+                    filtersDiv.appendChild(botoesDiv);
+                    
+                    filterContainerDiv.appendChild(filtersDiv);
+                    
+                    addDebugInfo('Filters rendered successfully');
+                } catch (error) {
+                    addDebugInfo(`Error rendering filters: ${error.message}`);
+                }
+            }
+            
+            // ===== Function to apply filters =====
+            function aplicarFiltros() {
+                try {
+                    const qtdDigitosFilter = document.getElementById('qtdDigitosFilter').value;
+                    const digitoEspecificoFilter = document.getElementById('digitoEspecificoFilter').value;
+                    const concursoMinFilter = document.getElementById('concursoMinFilter').value;
+                    const concursoMaxFilter = document.getElementById('concursoMaxFilter').value;
+                    
+                    filteredResults = [...allResults]; // Reset with all results
+                    
+                    // Apply filter by number of digits
+                    if (qtdDigitosFilter) {
+                        filteredResults = filteredResults.filter(
+                            result => result.contagem_digitos == parseInt(qtdDigitosFilter)
+                        );
+                    }
+                    
+                    // Apply filter by specific digit
+                    if (digitoEspecificoFilter) {
+                        filteredResults = filteredResults.filter(
+                            result => result.digitos_ordenados.includes(digitoEspecificoFilter)
+                        );
+                    }
+                    
+                    // Apply filter by contest range
+                    if (concursoMinFilter) {
+                        filteredResults = filteredResults.filter(
+                            result => parseInt(result.concurso) >= parseInt(concursoMinFilter)
+                        );
+                    }
+                    
+                    if (concursoMaxFilter) {
+                        filteredResults = filteredResults.filter(
+                            result => parseInt(result.concurso) <= parseInt(concursoMaxFilter)
+                        );
+                    }
+                    
+                    // Render filtered results
+                    renderResults(filteredResults);
+                    
+                    // Update results message
+                    const resultadosInfo = document.getElementById('resultadosInfo');
+                    if (resultadosInfo) {
+                        resultadosInfo.textContent = `Exibindo ${filteredResults.length} de ${allResults.length} resultados em ordem decrescente`;
+                    }
+                    
+                    addDebugInfo(`Filters applied: ${filteredResults.length} results`);
+                } catch (error) {
+                    addDebugInfo(`Error applying filters: ${error.message}`);
+                }
+            }
+            
+            // ===== Function to clear filters =====
+            function limparFiltros() {
+                try {
+                    document.getElementById('qtdDigitosFilter').value = '';
+                    document.getElementById('digitoEspecificoFilter').value = '';
+                    
+                    const concursoMinFilter = document.getElementById('concursoMinFilter');
+                    const concursoMaxFilter = document.getElementById('concursoMaxFilter');
+                    
+                    if (concursoMinFilter) concursoMinFilter.value = '';
+                    if (concursoMaxFilter) concursoMaxFilter.value = '';
+                    
+                    filteredResults = [...allResults]; // Reset with all results
+                    
+                    // Sort again in descending order
+                    filteredResults.sort((a, b) => parseInt(b.concurso) - parseInt(a.concurso));
+                    
+                    renderResults(filteredResults);
+                    
+                    // Update results message
+                    const resultadosInfo = document.getElementById('resultadosInfo');
+                    if (resultadosInfo) {
+                        resultadosInfo.textContent = `Exibindo todos os ${filteredResults.length} concursos em ordem decrescente`;
+                    }
+                    
+                    addDebugInfo('Filters cleared');
+                } catch (error) {
+                    addDebugInfo(`Error clearing filters: ${error.message}`);
+                }
+            }
+            
+            // ===== Function to render the combination analysis =====
+            function renderCombinationAnalysis() {
+                if (!combinationAnalysisDiv) return;
+                
+                try {
+                    // Clear previous content
+                    combinationAnalysisDiv.innerHTML = '';
+                    
+                    // Check if we have data to display
+                    if (!combinationStats.combinacoesFrequentes || combinationStats.combinacoesFrequentes.length === 0) {
+                        const noDataMsg = document.createElement('p');
+                        noDataMsg.textContent = 'Não há dados de combinações para exibir.';
+                        noDataMsg.style.textAlign = 'center';
+                        noDataMsg.style.fontStyle = 'italic';
+                        combinationAnalysisDiv.appendChild(noDataMsg);
+                        return;
+                    }
+                    
+                    // Section title
+                    const title = document.createElement('h3');
+                    title.textContent = 'Análise de Combinações de Dígitos';
+                    combinationAnalysisDiv.appendChild(title);
+                    
+                    // 1. Most frequent combinations
+                    const combinacoesFrequentesTitle = document.createElement('h4');
+                    combinacoesFrequentesTitle.textContent = 'Combinações Mais Frequentes';
+                    combinationAnalysisDiv.appendChild(combinacoesFrequentesTitle);
+                    
+                    // Responsive wrapper for the table
+                    const tableWrapper = document.createElement('div');
+                    tableWrapper.className = 'table-responsive';
+                    
+                    const combinacoesTable = document.createElement('table');
+                    combinacoesTable.className = 'combinations-table';
+                    
+                    // Table header
+                    const headerRow = document.createElement('tr');
+                    [
+                        'Combinação', 
+                        'Qtd. Dígitos', 
+                        'Frequência',
+                        'Média Intervalos',
+                        'Menor Intervalo',
+                        'Maior Intervalo',
+                        'Último Intervalo',
+                        'Detalhes'
+                    ].forEach(text => {
+                        const th = document.createElement('th');
+                        th.textContent = text;
+                        headerRow.appendChild(th);
+                    });
+                    
+                    combinacoesTable.appendChild(headerRow);
+                    
+                    // Table data
+                    combinationStats.combinacoesFrequentes.forEach(combo => {
+                        const row = document.createElement('tr');
+                        
+                        // Combination
+                        const tdCombo = document.createElement('td');
+                        tdCombo.textContent = combo.digitos.join(',');
+                        row.appendChild(tdCombo);
+                        
+                        // Number of digits
+                        const tdQtd = document.createElement('td');
+                        tdQtd.textContent = combo.quantidade;
+                        row.appendChild(tdQtd);
+                        
+                        // Frequency (number of contests)
+                        const tdFreq = document.createElement('td');
+                        tdFreq.textContent = combo.concursos.length;
+                        row.appendChild(tdFreq);
+                        
+                        // Average interval
+                        const tdMediaInt = document.createElement('td');
+                        tdMediaInt.textContent = combo.mediaIntervalos || '-';
+                        row.appendChild(tdMediaInt);
+                        
+                        // Smallest interval
+                        const tdMenorInt = document.createElement('td');
+                        tdMenorInt.textContent = combo.menorIntervalo || '-';
+                        row.appendChild(tdMenorInt);
+                        
+                        // Largest interval
+                        const tdMaiorInt = document.createElement('td');
+                        tdMaiorInt.textContent = combo.maiorIntervalo || '-';
+                        row.appendChild(tdMaiorInt);
+                        
+                        // Last interval
+                        const tdUltimoInt = document.createElement('td');
+                        tdUltimoInt.textContent = combo.ultimoIntervalo || '-';
+                        row.appendChild(tdUltimoInt);
+                        
+                        // Button to see details
+                        const tdDetails = document.createElement('td');
+                        const detailsBtn = document.createElement('button');
+                        detailsBtn.textContent = 'Ver Detalhes';
+                        detailsBtn.className = 'details-button';
+                        detailsBtn.onclick = () => {
+                            mostrarDetalhesCombinacao(combo);
+                        };
+                        tdDetails.appendChild(detailsBtn);
+                        row.appendChild(tdDetails);
+                        
+                        combinacoesTable.appendChild(row);
+                    });
+                    
+                    tableWrapper.appendChild(combinacoesTable);
+                    combinationAnalysisDiv.appendChild(tableWrapper);
+                    
+                    // 2. Summary by number of digits
+                    const resumoQtdTitle = document.createElement('h4');
+                    resumoQtdTitle.textContent = 'Resumo por Quantidade de Dígitos';
+                    combinationAnalysisDiv.appendChild(resumoQtdTitle);
+                    
+                    // Responsive wrapper for the summary table
+                    const resumoWrapper = document.createElement('div');
+                    resumoWrapper.className = 'table-responsive';
+                    
+                    const resumoTable = document.createElement('table');
+                    resumoTable.className = 'summary-table';
+                    
+                    // Table header
+                    const resumoHeader = document.createElement('tr');
+                    ['Qtd. Dígitos', 'Número de Sorteios', 'Porcentagem'].forEach(text => {
+                        const th = document.createElement('th');
+                        th.textContent = text;
+                        resumoHeader.appendChild(th);
+                    });
+                    resumoTable.appendChild(resumoHeader);
+                    
+                    // Table data
+                    const qtdKeys = Object.keys(combinationStats.porQuantidade)
+                        .sort((a, b) => parseInt(a) - parseInt(b));
+                    
+                    qtdKeys.forEach(qtd => {
+                        const row = document.createElement('tr');
+                        
+                        // Number of digits
+                        const tdQtd = document.createElement('td');
+                        tdQtd.textContent = qtd;
+                        row.appendChild(tdQtd);
+                        
+                        // Number of draws
+                        const count = combinationStats.porQuantidade[qtd].length;
+                        const tdCount = document.createElement('td');
+                        tdCount.textContent = count;
+                        row.appendChild(tdCount);
+                        
+                        // Percentage
+                        const percentage = ((count / allResults.length) * 100).toFixed(2);
+                        const tdPercentage = document.createElement('td');
+                        tdPercentage.textContent = `${percentage}%`;
+                        row.appendChild(tdPercentage);
+                        
+                        resumoTable.appendChild(row);
+                    });
+                    
+                    resumoWrapper.appendChild(resumoTable);
+                    combinationAnalysisDiv.appendChild(resumoWrapper);
+                    
+                    // Highlight maximum values in tables
+                    highlightMaxValues();
+                    
+                    addDebugInfo('Combination analysis rendered successfully');
+                } catch (error) {
+                    addDebugInfo(`Error rendering combination analysis: ${error.message}`);
+                    
+                    // Show error message in UI
+                    combinationAnalysisDiv.innerHTML = `
+                        <div class="warning-message">
+                            Não foi possível exibir a análise de combinações. Por favor, recarregue os dados.
+                        </div>
+                    `;
+                }
+            }
+            
+            // ===== Function to show details of a combination =====
+            function mostrarDetalhesCombinacao(combo) {
+                try {
+                    const modal = document.createElement('div');
+                    modal.className = 'modal';
+                    
+                    const modalContent = document.createElement('div');
+                    modalContent.className = 'modal-content';
+                    
+                    // Close modal
+                    const closeBtn = document.createElement('span');
+                    closeBtn.className = 'close-button';
+                    closeBtn.innerHTML = '&times;';
+                    closeBtn.onclick = () => {
+                        document.body.removeChild(modal);
+                    };
+                    
+                    // Title
+                    const title = document.createElement('h3');
+                    title.textContent = `Detalhes da Combinação: ${combo.digitos.join(',')}`;
+                    
+                    // Basic information
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'combo-info';
+                    
+                    infoDiv.innerHTML = `
+                        <p><strong>Quantidade de dígitos:</strong> ${combo.quantidade}</p>
+                        <p><strong>Aparece em ${combo.concursos.length} concursos:</strong> ${combo.concursos.slice(0, 20).join(', ')}${combo.concursos.length > 20 ? '...' : ''}</p>
+                        <p><strong>Média de intervalo:</strong> ${combo.mediaIntervalos || '-'} concursos</p>
+                        <p><strong>Menor intervalo:</strong> ${combo.menorIntervalo || '-'} concursos</p>
+                        <p><strong>Maior intervalo:</strong> ${combo.maiorIntervalo || '-'} concursos</p>
+                        <p><strong>Último intervalo:</strong> ${combo.ultimoIntervalo || '-'} concursos</p>
+                    `;
+                    
+                    // Intervals between contests
+                    if (combo.intervalos && combo.intervalos.length > 0) {
+                        const intervalosDiv = document.createElement('div');
+                        intervalosDiv.className = 'intervalos-info';
+                        
+                        const intervalosTitle = document.createElement('h4');
+                        intervalosTitle.textContent = 'Intervalos entre Concursos (Primeiros 50)';
+                        intervalosDiv.appendChild(intervalosTitle);
+                        
+                        // Responsive wrapper for table
+                        const tabelaWrapper = document.createElement('div');
+                        tabelaWrapper.className = 'table-responsive';
+                        
+                        const intervalosTable = document.createElement('table');
+                        intervalosTable.className = 'intervalos-table';
+                        
+                        // Header
+                        const headerRow = document.createElement('tr');
+                        ['De Concurso', 'Para Concurso', 'Intervalo'].forEach(text => {
+                            const th = document.createElement('th');
+                            th.textContent = text;
+                            headerRow.appendChild(th);
+                        });
+                        intervalosTable.appendChild(headerRow);
+                        
+                        // Limit to 50 intervals for performance
+                        const maxIntervalos = Math.min(combo.concursos.length - 1, 50);
+                        
+                        // Interval data
+                        for (let i = 1; i <= maxIntervalos; i++) {
+                            const row = document.createElement('tr');
+                            
+                            // From contest
+                            const tdDe = document.createElement('td');
+                            tdDe.textContent = combo.concursos[i-1];
+                            row.appendChild(tdDe);
+                            
+                            // To contest
+                            const tdPara = document.createElement('td');
+                            tdPara.textContent = combo.concursos[i];
+                            row.appendChild(tdPara);
+                            
+                            // Interval
+                            const tdIntervalo = document.createElement('td');
+                            const intervalo = parseInt(combo.concursos[i]) - parseInt(combo.concursos[i-1]);
+                            tdIntervalo.textContent = intervalo;
+                            
+                            // Highlight larger or smaller intervals
+                            if (intervalo === combo.maiorIntervalo) {
+                                tdIntervalo.classList.add('cell-highlighted');
+                                row.classList.add('row-highlighted');
+                            } else if (intervalo === combo.menorIntervalo) {
+                                tdIntervalo.style.fontWeight = 'bold';
+                                tdIntervalo.style.color = '#4CAF50';
+                            }
+                            
+                            row.appendChild(tdIntervalo);
+                            
+                            intervalosTable.appendChild(row);
+                        }
+                        
+                        // Add note if there are more intervals
+                        if (combo.concursos.length - 1 > 50) {
+                            const noteRow = document.createElement('tr');
+                            const noteCell = document.createElement('td');
+                            noteCell.colSpan = 3;
+                            noteCell.style.textAlign = 'center';
+                            noteCell.style.fontStyle = 'italic';
+                            noteCell.textContent = `Mostrando apenas os primeiros 50 de ${combo.concursos.length - 1} intervalos`;
+                            noteRow.appendChild(noteCell);
+                            intervalosTable.appendChild(noteRow);
+                        }
+                        
+                        tabelaWrapper.appendChild(intervalosTable);
+                        intervalosDiv.appendChild(tabelaWrapper);
+                        infoDiv.appendChild(intervalosDiv);
+                    }
+                    
+                    // Similar combinations
+                    const similaresDiv = document.createElement('div');
+                    similaresDiv.className = 'similares-info';
+                    
+                    if (combo.similares && combo.similares.length > 0) {
+                        const similaresTitle = document.createElement('h4');
+                        similaresTitle.textContent = 'Combinações Similares';
+                        similaresDiv.appendChild(similaresTitle);
+                        
+                        // Responsive wrapper for table
+                        const tabelaWrapper = document.createElement('div');
+                        tabelaWrapper.className = 'table-responsive';
+                        
+                        const similaresTable = document.createElement('table');
+                        similaresTable.className = 'similares-table';
+                        
+                        // Header
+                        const headerRow = document.createElement('tr');
+                        ['Dígitos Comuns', 'Dígitos Diferentes', 'Aparece em', 'Frequência'].forEach(text => {
+                            const th = document.createElement('th');
+                            th.textContent = text;
+                            headerRow.appendChild(th);
+                        });
+                        similaresTable.appendChild(headerRow);
+                        
+                        // Data of similar combinations
+                        combo.similares.forEach(similar => {
+                            const row = document.createElement('tr');
+                            
+                            // Common digits
+                            const tdComuns = document.createElement('td');
+                            tdComuns.textContent = similar.digitosComuns.join(',');
+                            row.appendChild(tdComuns);
+                            
+                            // Different digits
+                            const tdDiferentes = document.createElement('td');
+                            tdDiferentes.innerHTML = `
+                                <span class="diferencas">
+                                    <span class="de">${similar.digitosDiferentes.de.join(',') || '-'}</span> →
+                                    <span class="para">${similar.digitosDiferentes.para.join(',') || '-'}</span>
+                                </span>
+                            `;
+                            row.appendChild(tdDiferentes);
+                            
+                            // Appears in
+                            const tdConcursos = document.createElement('td');
+                            tdConcursos.textContent = similar.concursos.slice(0, 5).join(', ');
+                            if (similar.concursos.length > 5) {
+                                tdConcursos.textContent += ` (+ ${similar.concursos.length - 5} outros)`;
+                            }
+                            row.appendChild(tdConcursos);
+                            
+                            // Frequency
+                            const tdFreq = document.createElement('td');
+                            tdFreq.textContent = similar.concursos.length;
+                            row.appendChild(tdFreq);
+                            
+                            similaresTable.appendChild(row);
+                        });
+                        
+                        tabelaWrapper.appendChild(similaresTable);
+                        similaresDiv.appendChild(tabelaWrapper);
+                    } else {
+                        similaresDiv.innerHTML = '<p>Nenhuma combinação similar encontrada.</p>';
+                    }
+                    
+                    // Add all elements to the modal
+                    modalContent.appendChild(closeBtn);
+                    modalContent.appendChild(title);
+                    modalContent.appendChild(infoDiv);
+                    modalContent.appendChild(similaresDiv);
+                    
+                    modal.appendChild(modalContent);
+                    document.body.appendChild(modal);
+                    
+                    // Close the modal when clicking outside of it
+                    window.onclick = (event) => {
+                        if (event.target === modal) {
+                            document.body.removeChild(modal);
+                        }
+                    };
+                    
+                    addDebugInfo('Details modal opened');
+                } catch (error) {
+                    addDebugInfo(`Error showing details: ${error.message}`);
+                }
+            }
+            
+            // ===== Function to render results in the table =====
+            function renderResults(results) {
+                if (!tableBody) return;
+                
+                try {
+                    tableBody.innerHTML = '';
+                    
+                    // Check if there's data to display
+                    if (!results || results.length === 0) {
+                        const noDataRow = tableBody.insertRow();
+                        const noDataCell = noDataRow.insertCell();
+                        noDataCell.colSpan = 7;
+                        noDataCell.textContent = 'Não há dados para exibir.';
+                        noDataCell.style.textAlign = 'center';
+                        noDataCell.style.padding = '20px';
+                        return;
+                    }
+                    
+                    // Update information about filtered results
+                    const resultsInfoDiv = document.getElementById('resultadosInfo');
+                    if (!resultsInfoDiv) {
+                        const infoDiv = document.createElement('div');
+                        infoDiv.id = 'resultadosInfo';
+                        infoDiv.className = 'results-info';
+                        infoDiv.textContent = `Exibindo todos os ${results.length} concursos em ordem decrescente`;
+                        
+                        // Insert before the table
+                        const tableContainer = document.getElementById('diaDeSorteResults').parentNode;
+                        tableContainer.insertBefore(infoDiv, document.getElementById('diaDeSorteResults'));
+                    } else {
+                        resultsInfoDiv.textContent = `Exibindo todos os ${results.length} concursos em ordem decrescente`;
+                    }
+                    
+                    // IMPORTANT: Sort results in DESCENDING order (from highest contest to lowest)
+                    // Create a copy to not modify the original array in case it's used elsewhere
+                    const resultadosOrdenados = [...results].sort((a, b) => parseInt(b.concurso) - parseInt(a.concurso));
+                    
+                    // Display ALL results without limitation
+                    const exibindo = resultadosOrdenados;
+                    
+                    // Fill the table with ALL contests
+                    exibindo.forEach(result => {
+                        const row = tableBody.insertRow();
+                        
+                        // Format date
+                        const dataParts = result.data ? result.data.split('/') : ['', '', ''];
+                        const dataFormatada = dataParts.length === 3 ? `${dataParts[0]}/${dataParts[1]}/${dataParts[2]}` : result.data;
+                        
+                        row.innerHTML = `
+                            <td>${result.concurso}</td>
+                            <td>${dataFormatada}</td>
+                            <td>${result.dezenas.join(' - ')}</td>
+                            <td>${result.digitos_para_exibicao || result.digitos.join(' ')}</td>
+                            <td>${result.digitos_ordenados.join(',')}</td>
+                            <td>${result.contagem_digitos}</td>
+                            <td>
+                                <button class="copy-button" data-digits="${result.digitos_para_copia}">
+                                    Copiar
+                                </button>
+                            </td>
+                        `;
+                    });
+                    
+                    // Add event listeners for copy buttons
+                    document.querySelectorAll('.copy-button').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const digits = this.getAttribute('data-digits');
+                            navigator.clipboard.writeText(digits)
+                                .then(() => {
+                                    // Visual feedback for the user
+                                    const originalText = this.textContent;
+                                    this.textContent = 'Copiado!';
+                                    setTimeout(() => {
+                                        this.textContent = originalText;
+                                    }, 1500);
+                                })
+                                .catch(err => {
+                                    console.error('Error copying: ', err);
+                                    alert('Erro ao copiar os dígitos.');
+                                });
+                        });
+                    });
+                    
+                    addDebugInfo(`Table rendered with ALL ${exibindo.length} results in DESCENDING order`);
+                } catch (error) {
+                    addDebugInfo(`Error rendering results: ${error.message}`);
+                    
+                    // Show error message in the table
+                    tableBody.innerHTML = '';
+                    const errorRow = tableBody.insertRow();
+                    const errorCell = errorRow.insertCell();
+                    errorCell.colSpan = 7;
+                    errorCell.textContent = 'Erro ao exibir os resultados. Por favor, recarregue a página.';
+                    errorCell.style.textAlign = 'center';
+                    errorCell.style.color = 'red';
+                    errorCell.style.padding = '20px';
+                }
+            }
+            
+            // ===== Function to render digit statistics =====
+            function renderDigitStats(stats) {
+                if (!digitFrequencyDiv || !digitChartDiv) return;
+                
+                try {
+                    digitFrequencyDiv.innerHTML = '';
+                    digitChartDiv.innerHTML = '';
+                    
+                    // Check if we have data to display
+                    if (!stats || Object.keys(stats).length === 0) {
+                        digitFrequencyDiv.innerHTML = '<p style="text-align:center;font-style:italic;">Não há dados para exibir.</p>';
+                        digitChartDiv.innerHTML = '<p style="text-align:center;font-style:italic;">Não há dados para exibir.</p>';
+                        return;
+                    }
+                    
+                    // Sort digits by frequency (highest to lowest)
+                    const sortedDigits = Object.entries(stats).sort((a, b) => b[1] - a[1]);
+                    
+                    // Create digit frequency visualization - Sorted by frequency
+                    sortedDigits.forEach(([digit, count]) => {
+                        const digitBox = document.createElement('div');
+                        digitBox.className = 'digit-box';
+                        digitBox.innerHTML = `${digit}<span class="digit-count">${count}</span>`;
+                        digitFrequencyDiv.appendChild(digitBox);
+                    });
+                    
+                    // Create bar chart for digit frequency - Sorted by frequency
+                    const maxCount = Math.max(...Object.values(stats));
+                    const chartHtml = sortedDigits.map(([digit, count]) => {
+                        const percentage = (count / maxCount) * 100;
+                        return `
+                            <div style="margin: 10px 0;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 20px; text-align: center;">${digit}</div>
+                                    <div style="flex-grow: 1; margin: 0 10px;">
+                                        <div style="background-color: var(--border-color); height: 20px; width: ${percentage}%;"></div>
+                                    </div>
+                                    <div style="width: 40px; text-align: right;">${count}</div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                    
+                    digitChartDiv.innerHTML = chartHtml;
+                    
+                    // Highlight the most frequent digit
+                    if (sortedDigits.length > 0) {
+                        const maxDigit = sortedDigits[0][0];
+                        const digitBoxes = digitFrequencyDiv.querySelectorAll('.digit-box');
+                        digitBoxes.forEach(box => {
+                            if (box.textContent.startsWith(maxDigit)) {
+                                box.style.backgroundColor = 'var(--highlight-color)';
+                                box.style.transform = 'scale(1.1)';
+                                box.style.boxShadow = '0 0 8px rgba(217, 83, 79, 0.7)';
+                            }
+                        });
+                    }
+                    
+                    addDebugInfo('Digit statistics rendered successfully');
+                } catch (error) {
+                    addDebugInfo(`Error rendering statistics: ${error.message}`);
+                    
+                    // Show error message
+                    digitFrequencyDiv.innerHTML = '<p style="color:red;">Erro ao exibir estatísticas de dígitos.</p>';
+                    digitChartDiv.innerHTML = '<p style="color:red;">Erro ao exibir gráfico de frequência.</p>';
+                }
+            }
+            
+            // ===== Function to highlight maximum values =====
+            function highlightMaxValues() {
+                try {
+                    // For combinations table
+                    const table = document.querySelector('.combinations-table');
+                    if (table) {
+                        // Columns to check: 2 (frequency), 3 (average), 4 (smallest), 5 (largest), 6 (last)
+                        highlightMaxInColumn(table, 2); // Frequency
+                        highlightMaxInColumn(table, 3); // Average intervals
+                        highlightMaxInColumn(table, 4); // Smallest interval
+                        highlightMaxInColumn(table, 5); // Largest interval
+                        highlightMaxInColumn(table, 6); // Last interval
+                    }
+                } catch (e) {
+                    addDebugInfo(`Error highlighting maximum values: ${e.message}`);
+                }
+            }
+            
+            // Helper function to highlight the maximum value in a column
+            function highlightMaxInColumn(table, colIndex) {
+                const rows = table.querySelectorAll('tbody tr');
+                let maxValue = -Infinity;
+                let maxRow = null;
+                
+                // Find the maximum value
+                rows.forEach(row => {
+                    const cell = row.cells[colIndex];
+                    if (!cell) return;
+                    
+                    const value = parseInt(cell.textContent.replace(/\D/g, ''));
+                    if (!isNaN(value) && value > maxValue) {
+                        maxValue = value;
+                        maxRow = row;
+                    }
+                });
+                
+                // Highlight the maximum value
+                if (maxRow) {
+                    const cell = maxRow.cells[colIndex];
+                    cell.classList.add('cell-highlighted');
+                }
+            }
+            
+            // ===== Function to generate summary =====
+            function gerarResumo() {
+                // Get the summary container
+                const resumoContainer = document.getElementById('resumoContainer');
+                if (!resumoContainer) return;
+                
+                try {
+                    // Clear the container
+                    resumoContainer.innerHTML = '';
+                    
+                    // Check if we have data to generate summary
+                    if (!allResults || allResults.length === 0) {
+                        resumoContainer.innerHTML = '<div class="warning-message">Carregue os resultados primeiro para gerar um resumo.</div>';
+                        return;
+                    }
+                    
+                    // Get data for the summary
+                    let combinacao = '0,1,2,3,5,7,9'; // Default value
+                    let frequencia = 22;
+                    let intervaloMedio = 41;
+                    let menorIntervalo = 3;
+                    let maiorIntervalo = 121;
+                    let ultimoIntervalo = 38;
+                    let ultimoConcurso = 0;
+                    
+                    // Try to extract real data
+                    if (combinationStats && combinationStats.combinacoesFrequentes && combinationStats.combinacoesFrequentes.length > 0) {
+                        const combo = combinationStats.combinacoesFrequentes[0]; // Most frequent combination
+                        
+                        combinacao = combo.digitos.join(',');
+                        frequencia = combo.concursos.length;
+                        intervaloMedio = combo.mediaIntervalos || intervaloMedio;
+                        menorIntervalo = combo.menorIntervalo || menorIntervalo;
+                        maiorIntervalo = combo.maiorIntervalo || maiorIntervalo;
+                        ultimoIntervalo = combo.ultimoIntervalo || ultimoIntervalo;
+                        
+                        // Calculate contests since last appearance
+                        if (combo.concursos && combo.concursos.length > 0) {
+                            const ultimaAparicao = Math.max(...combo.concursos.map(c => parseInt(c)));
+                            ultimoConcurso = parseInt(allResults[allResults.length - 1].concurso);
+                            const concursosSemAparecer = ultimoConcurso - ultimaAparicao;
+                            
+                            addDebugInfo(`Last appearance: ${ultimaAparicao}, Latest contest: ${ultimoConcurso}`);
+                            addDebugInfo(`Contests without appearing: ${concursosSemAparecer}`);
+                            
+                            // Include this information in the summary
+                            ultimoIntervalo = concursosSemAparecer;
+                        }
+                    }
+                    
+                    // Create the summary
+                    const resumo = document.createElement('div');
+                    resumo.id = 'resumo';
+                    
+                    // Update date
+                    const dataAtual = new Date().toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    // Combination status (likely to appear or not)
+                    let statusSaida = '';
+                    if (ultimoIntervalo >= intervaloMedio * 0.8) {
+                        statusSaida = `<span style="color: green; font-weight: bold;">FAVORÁVEL PARA SAIR</span>`;
+                    } else if (ultimoIntervalo < 5) {
+                        statusSaida = `<span style="color: red; font-weight: bold;">BAIXA PROBABILIDADE</span>`;
+                    } else {
+                        statusSaida = `<span style="color: orange; font-weight: bold;">PROBABILIDADE MÉDIA</span>`;
+                    }
+                    
+                    resumo.innerHTML = `
+                    <h2>RESUMO GERAL - VERSÃO OTIMIZADA</h2>
+                    <p style="text-align: right; font-size: 12px; color: #666;">⚡ Carregamento ultra-rápido ativado | Atualizado em: ${dataAtual}</p>
+                    
+                    <p>A análise otimizada dos dados mostra que a combinação <strong>${combinacao}</strong> apareceu <strong>${frequencia} vezes</strong> nos concursos do Dia de Sorte, com um intervalo médio de <strong>${intervaloMedio} concursos</strong> entre suas aparições. A menor sequência entre ocorrências foi de apenas <strong>${menorIntervalo} concursos</strong>, e a maior chegou a <strong>${maiorIntervalo} concursos</strong>.</p>
+                    
+                    <p>Esta combinação está <strong>${ultimoIntervalo} concursos</strong> sem aparecer. Status atual: ${statusSaida}</p>
+                    
+                    <h2>Estratégia de Aposta Recomendada:</h2>
+                    
+                    <ol>
+                        <li>
+                            <strong>Acompanhar o Intervalo Médio</strong>
+                            <p>Como a média entre aparições é de <strong>${intervaloMedio} concursos</strong>, um bom momento para apostar nessa sequência seria quando ela já estiver sem sair por algo próximo a esse número de concursos.</p>
+                        </li>
+                        <li>
+                            <strong>Apostar com Maior Frequência quando o Intervalo Estiver Próximo da Média</strong>
+                            <p>Se o intervalo entre as aparições da sequência atingir <strong>${Math.floor(intervaloMedio * 0.8)} a ${Math.ceil(intervaloMedio * 1.2)} concursos</strong>, pode ser um bom indicativo de que ela tem uma boa chance de sair.</p>
+                        </li>
+                        <li>
+                            <strong>Monitorar o Último Intervalo</strong>
+                            <p>O último intervalo até o momento é de <strong>${ultimoIntervalo} concursos</strong>, o que indica ${ultimoIntervalo >= intervaloMedio * 0.8 ? "que esta combinação está próxima de aparecer novamente." : "que ainda deve demorar um pouco até esta combinação aparecer novamente."}</p>
+                        </li>
+                        <li>
+                            <strong>Variar os Números Dentro da Combinação</strong>
+                            <p>Algumas combinações semelhantes também aparecem frequentemente. Fazer apostas variando um ou dois números pode aumentar as chances.</p>
+                        </li>
+                        <li>
+                            <strong>Evitar Apostar Quando a Sequência Saiu Recentemente</strong>
+                            <p>Se essa sequência apareceu nos últimos <strong>5 a 10 concursos</strong>, a chance de repetição imediata pode ser menor.</p>
+                        </li>
+                    </ol>
+                    
+                    <h2>Conclusão:</h2>
+                    
+                    <p>Se a combinação <strong>${combinacao}</strong> estiver sem aparecer por <strong>${intervaloMedio} concursos ou mais</strong>, pode valer a pena apostar nela ou em variações próximas. ${ultimoIntervalo >= intervaloMedio * 0.8 ? "<strong>Considerando que já se passaram " + ultimoIntervalo + " concursos desde sua última aparição, esta é uma boa oportunidade para apostar nesta sequência!</strong>" : "Aguarde mais alguns concursos antes de apostar nesta combinação."}</p>
+                    
+                    <p><em>⚡ Esta análise otimizada é baseada em padrões históricos e carregamento ultra-rápido de dados. Não garante resultados futuros. O Dia de Sorte é um jogo de sorte com resultados aleatórios.</em></p>
+                    `;
+                    
+                    // Add the summary to the page
+                    resumoContainer.appendChild(resumo);
+                    
+                    // Scroll to the summary
+                    resumo.scrollIntoView({ behavior: 'smooth' });
+                    
+                    addDebugInfo('Summary generated successfully');
+                } catch (error) {
+                    addDebugInfo(`Error generating summary: ${error.message}`);
+                    resumoContainer.innerHTML = `
+                        <div class="warning-message">
+                            Não foi possível gerar o resumo. Por favor, recarregue os dados e tente novamente.
+                        </div>
+                    `;
+                }
+            }
+            
+            // ===== Function to analyze frequency between sequences =====
+            function analisarFrequenciaEntreSequencias() {
+                addDebugInfo("Analyzing frequencies between digit sequences...");
+                
+                // Check if results were loaded
+                if (!allResults || allResults.length === 0) {
+                    alert("É necessário carregar os resultados primeiro antes de analisar frequências.\n\nPor favor, clique em 'Recarregar Dados' e tente novamente.");
+                    return;
+                }
+                
+                try {
+                    // Show frequency analysis area
+                    frequencyAnalysisContainer.style.display = 'block';
+                    frequencyAnalysisContent.innerHTML = '<div class="loading">Analisando frequências, aguarde...</div>';
+                    
+                    // Structure to store advanced statistics
+                    const estatisticas = {
+                        combinacoesFrequentes: {},  // To store all combinations found
+                        intervalos: {},             // To store interval analyses
+                        mediaGeral: 0,              // General interval average
+                        totalIntervalos: 0          // Total intervals analyzed
+                    };
+                    
+                    // 1. Use combinations already analyzed previously
+                    const combinacoesFrequentes = combinationStats.combinacoesFrequentes || [];
+                    
+                    // 2. Add additional information for each combination
+                    for (const combo of combinacoesFrequentes) {
+                        // Calculate additional trends and patterns
+                        if (combo.intervalos && combo.intervalos.length > 0) {
+                            // Trend analysis in intervals
+                            const intervalosOrdenados = [...combo.intervalos].sort((a, b) => a - b);
+                            const mediana = intervalosOrdenados[Math.floor(intervalosOrdenados.length / 2)];
+                            
+                            // Check for increasing or decreasing pattern
+                            let padrao = "Estável";
+                            let crescente = 0;
+                            let decrescente = 0;
+                            
+                            for (let i = 1; i < combo.intervalos.length; i++) {
+                                if (combo.intervalos[i] > combo.intervalos[i-1]) crescente++;
+                                else if (combo.intervalos[i] < combo.intervalos[i-1]) decrescente++;
+                            }
+                            
+                            const total = combo.intervalos.length - 1;
+                            if (crescente / total > 0.6) padrao = "Crescente";
+                            else if (decrescente / total > 0.6) padrao = "Decrescente";
+                            
+                            // Add this information to the combo
+                            combo.mediana = mediana;
+                            combo.padrao = padrao;
+                            combo.tendenciaCrescente = crescente / total;
+                            combo.tendenciaDecrescente = decrescente / total;
+                        }
+                    }
+                    
+                    // 3. Calculate general statistics
+                    estatisticas.combinacoesOrdenadas = combinacoesFrequentes;
+                    
+                    let somaIntervalos = 0;
+                    let totalIntervalos = 0;
+                    
+                    combinacoesFrequentes.forEach(combo => {
+                        if (combo.intervalos && combo.intervalos.length > 0) {
+                            somaIntervalos += combo.intervalos.reduce((a, b) => a + b, 0);
+                            totalIntervalos += combo.intervalos.length;
+                        }
+                    });
+                    
+                    estatisticas.mediaGeral = totalIntervalos > 0 ? Math.round(somaIntervalos / totalIntervalos) : 0;
+                    estatisticas.totalIntervalos = totalIntervalos;
+                    
+                    // 4. Find maximum values for highlighting
+                    estatisticas.maximos = {
+                        frequencia: Math.max(...combinacoesFrequentes.map(c => c.concursos.length)),
+                        mediaIntervalos: Math.max(...combinacoesFrequentes.map(c => c.mediaIntervalos || 0)),
+                        menorIntervalo: Math.max(...combinacoesFrequentes.map(c => c.menorIntervalo || 0)),
+                        maiorIntervalo: Math.max(...combinacoesFrequentes.map(c => c.maiorIntervalo || 0)),
+                        ultimoIntervalo: Math.max(...combinacoesFrequentes.map(c => c.ultimoIntervalo || 0))
+                    };
+                    
+                    // 5. Generate UI output
+                    gerarUIAnaliseFrequencia(estatisticas);
+                    
+                    // Scroll to the analysis
+                    frequencyAnalysisContainer.scrollIntoView({ behavior: 'smooth' });
+                    
+                    addDebugInfo("Frequency analysis completed successfully");
+                    return estatisticas;
+                } catch (error) {
+                    addDebugInfo(`Error analyzing frequencies: ${error.message}`);
+                    frequencyAnalysisContent.innerHTML = `
+                        <div class="error-message">
+                            Erro ao analisar frequências: ${error.message}<br>
+                            Por favor, recarregue os dados e tente novamente.
+                        </div>
+                    `;
+                    return null;
+                }
+            }
+            
+            // Function to generate the frequency analysis UI
+            function gerarUIAnaliseFrequencia(estatisticas) {
+                // Clear previous content
+                frequencyAnalysisContent.innerHTML = '';
+                
+                // Create analysis sections
+                
+                // 1. General statistics
+                const statsGerais = document.createElement('div');
+                statsGerais.className = 'estatisticas-gerais';
+                statsGerais.innerHTML = `
+                    <h3>Estatísticas Gerais de Intervalos</h3>
+                    <div class="stats-grid" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+                        <div class="stat-box" style="flex: 1; min-width: 200px; padding: 15px; background-color: rgba(240, 248, 255, 0.1); border-radius: 8px; text-align: center;">
+                            <div class="stat-title" style="font-weight: bold; font-size: 18px;">Média Geral</div>
+                            <div class="stat-value" style="font-size: 32px; margin: 10px 0; color: var(--primary-color);">${estatisticas.mediaGeral}</div>
+                            <div class="stat-desc" style="font-size: 14px; color: #888;">concursos entre aparições</div>
+                        </div>
+                        <div class="stat-box" style="flex: 1; min-width: 200px; padding: 15px; background-color: rgba(240, 248, 255, 0.1); border-radius: 8px; text-align: center;">
+                            <div class="stat-title" style="font-weight: bold; font-size: 18px;">Total de Intervalos</div>
+                            <div class="stat-value" style="font-size: 32px; margin: 10px 0; color: var(--primary-color);">${estatisticas.totalIntervalos}</div>
+                            <div class="stat-desc" style="font-size: 14px; color: #888;">analisados</div>
+                        </div>
+                        <div class="stat-box" style="flex: 1; min-width: 200px; padding: 15px; background-color: rgba(240, 248, 255, 0.1); border-radius: 8px; text-align: center;">
+                            <div class="stat-title" style="font-weight: bold; font-size: 18px;">Maior Frequência</div>
+                            <div class="stat-value destacado" style="font-size: 32px; margin: 10px 0; color: var(--highlight-color);">${estatisticas.maximos.frequencia}</div>
+                            <div class="stat-desc" style="font-size: 14px; color: #888;">aparições</div>
+                        </div>
+                        <div class="stat-box" style="flex: 1; min-width: 200px; padding: 15px; background-color: rgba(240, 248, 255, 0.1); border-radius: 8px; text-align: center;">
+                            <div class="stat-title" style="font-weight: bold; font-size: 18px;">Maior Intervalo</div>
+                            <div class="stat-value destacado" style="font-size: 32px; margin: 10px 0; color: var(--highlight-color);">${estatisticas.maximos.maiorIntervalo}</div>
+                            <div class="stat-desc" style="font-size: 14px; color: #888;">concursos</div>
+                        </div>
+                    </div>
+                `;
+                
+                // 2. Trend analysis
+                const tendenciasSection = document.createElement('div');
+                tendenciasSection.className = 'section-tendencias';
+                tendenciasSection.innerHTML = `
+                    <h3>Análise de Tendências</h3>
+                    <p>Esta análise mostra padrões identificados na aparição das combinações mais frequentes.</p>
+                `;
+                
+                // Create trends table
+                const tableTendencias = document.createElement('table');
+                tableTendencias.className = 'combinations-table';
+                
+                // Header
+                const headerTendencias = document.createElement('tr');
+                ['Combinação', 'Frequência', 'Média', 'Mediana', 'Padrão', 'Tendência Crescente', 'Tendência Decrescente', 'Último Intervalo'].forEach(text => {
+                    const th = document.createElement('th');
+                    th.textContent = text;
+                    headerTendencias.appendChild(th);
+                });
+                tableTendencias.appendChild(headerTendencias);
+                
+                // Trends table data (top 10 combinations)
+                estatisticas.combinacoesOrdenadas.slice(0, 10).forEach(combo => {
+                    const row = document.createElement('tr');
+                    
+                    // Combination
+                    const tdCombo = document.createElement('td');
+                    tdCombo.textContent = combo.digitos.join(',');
+                    row.appendChild(tdCombo);
+                    
+                    // Frequency
+                    const tdFreq = document.createElement('td');
+                    tdFreq.textContent = combo.concursos.length;
+                    row.appendChild(tdFreq);
+                    
+                    // Average
+                    const tdMedia = document.createElement('td');
+                    tdMedia.textContent = combo.mediaIntervalos || '-';
+                    row.appendChild(tdMedia);
+                    
+                    // Median
+                    const tdMediana = document.createElement('td');
+                    tdMediana.textContent = combo.mediana || '-';
+                    row.appendChild(tdMediana);
+                    
+                    // Pattern
+                    const tdPadrao = document.createElement('td');
+                    tdPadrao.textContent = combo.padrao || 'Indefinido';
+                    if (combo.padrao === 'Crescente') {
+                        tdPadrao.style.color = 'var(--highlight-color)';
+                        tdPadrao.style.fontWeight = 'bold';
+                    } else if (combo.padrao === 'Decrescente') {
+                        tdPadrao.style.color = '#5cb85c';
+                        tdPadrao.style.fontWeight = 'bold';
+                    }
+                    row.appendChild(tdPadrao);
+                    
+                    // Increasing trend
+                    const tdCrescente = document.createElement('td');
+                    tdCrescente.textContent = combo.tendenciaCrescente ? `${Math.round(combo.tendenciaCrescente * 100)}%` : '-';
+                    row.appendChild(tdCrescente);
+                    
+                    // Decreasing trend
+                    const tdDecrescente = document.createElement('td');
+                    tdDecrescente.textContent = combo.tendenciaDecrescente ? `${Math.round(combo.tendenciaDecrescente * 100)}%` : '-';
+                    row.appendChild(tdDecrescente);
+                    
+                    // Last interval
+                    const tdUltimo = document.createElement('td');
+                    tdUltimo.textContent = combo.ultimoIntervalo || '-';
+                    
+                    // Highlight last interval if much larger than average
+                    if (combo.ultimoIntervalo && combo.mediaIntervalos && combo.ultimoIntervalo > combo.mediaIntervalos * 1.5) {
+                        tdUltimo.style.color = 'var(--highlight-color)';
+                        tdUltimo.style.fontWeight = 'bold';
+                    }
+                    
+                    row.appendChild(tdUltimo);
+                    
+                    tableTendencias.appendChild(row);
+                });
+                
+                tendenciasSection.appendChild(tableTendencias);
+                
+                // 3. Best bets (recommendations) based on analysis
+                const recomendacoesSection = document.createElement('div');
+                recomendacoesSection.className = 'section-recomendacoes';
+                recomendacoesSection.innerHTML = `
+                    <h3>Recomendações para Apostas</h3>
+                    <p>Com base na análise estatística, estas são as combinações com maior probabilidade de aparecer nos próximos sorteios.</p>
+                `;
+                
+                // Identify combinations with the best potential for next bets
+                const combinacoesRecomendadas = estatisticas.combinacoesOrdenadas
+                    .filter(combo => combo.intervalos && combo.intervalos.length > 0)
+                    .map(combo => ({
+                        ...combo,
+                        potencial: calcularPotencialAposta(combo, estatisticas.mediaGeral)
+                    }))
+                    .sort((a, b) => b.potencial - a.potencial)
+                    .slice(0, 5); // Top 5 recommendations
+                
+                // Create recommendations table
+                const tableRecomendacoes = document.createElement('table');
+                tableRecomendacoes.className = 'combinations-table';
+                
+                // Header
+                const headerRecomendacoes = document.createElement('tr');
+                ['Combinação', 'Potencial', 'Atual vs Média', 'Aparições', 'Último Intervalo', 'Média', 'Próxima Esperada'].forEach(text => {
+                    const th = document.createElement('th');
+                    th.textContent = text;
+                    headerRecomendacoes.appendChild(th);
+                });
+                tableRecomendacoes.appendChild(headerRecomendacoes);
+                
+                // Fill data
+                combinacoesRecomendadas.forEach(combo => {
+                    const row = document.createElement('tr');
+                    
+                    // Combination
+                    const tdCombo = document.createElement('td');
+                    tdCombo.textContent = combo.digitos.join(',');
+                    tdCombo.style.fontWeight = 'bold';
+                    row.appendChild(tdCombo);
+                    
+                    // Potential (percentage)
+                    const tdPotencial = document.createElement('td');
+                    tdPotencial.textContent = `${Math.round(combo.potencial * 100)}%`;
+                    tdPotencial.style.fontWeight = 'bold';
+                    if (combo.potencial > 0.7) {
+                        tdPotencial.style.color = '#5cb85c'; // Green for high potential
+                    } else if (combo.potencial > 0.5) {
+                        tdPotencial.style.color = '#f0ad4e'; // Yellow for medium potential
+                    } else {
+                        tdPotencial.style.color = 'var(--highlight-color)'; // Red for low potential
+                    }
+                    row.appendChild(tdPotencial);
+                    
+                    // Current vs Average (how much of the average interval has passed)
+                    const percentualIntervalo = Math.round((combo.ultimoIntervalo / combo.mediaIntervalos) * 100);
+                    const tdPercentual = document.createElement('td');
+                    tdPercentual.textContent = `${percentualIntervalo}%`;
+                    if (percentualIntervalo >= 100) {
+                        tdPercentual.style.color = '#5cb85c';
+                        tdPercentual.style.fontWeight = 'bold';
+                    }
+                    row.appendChild(tdPercentual);
+                    
+                    // Appearances
+                    const tdAparicoes = document.createElement('td');
+                    tdAparicoes.textContent = combo.concursos.length;
+                    row.appendChild(tdAparicoes);
+                    
+                    // Last interval
+                    const tdUltimo = document.createElement('td');
+                    tdUltimo.textContent = combo.ultimoIntervalo;
+                    row.appendChild(tdUltimo);
+                    
+                    // Average
+                    const tdMedia = document.createElement('td');
+                    tdMedia.textContent = combo.mediaIntervalos;
+                    row.appendChild(tdMedia);
+                    
+                    // Next expected (last contest + average)
+                    const ultimoConcurso = Math.max(...combo.concursos.map(c => parseInt(c)));
+                    const proximaEsperada = ultimoConcurso + combo.mediaIntervalos;
+                    const tdProxima = document.createElement('td');
+                    tdProxima.textContent = proximaEsperada;
+                    row.appendChild(tdProxima);
+                    
+                    tableRecomendacoes.appendChild(row);
+                });
+                
+                recomendacoesSection.appendChild(tableRecomendacoes);
+                
+                // Add all sections to the container
+                frequencyAnalysisContent.appendChild(statsGerais);
+                frequencyAnalysisContent.appendChild(tendenciasSection);
+                frequencyAnalysisContent.appendChild(recomendacoesSection);
+            }
+            
+            // Function to calculate the potential of a combination for betting
+            function calcularPotencialAposta(combo, mediaGeral) {
+                if (!combo.mediaIntervalos || !combo.ultimoIntervalo) return 0;
+                
+                // Factors considered:
+                // 1. How much of the average interval has passed (more is better)
+                const fatorIntervalo = Math.min(combo.ultimoIntervalo / combo.mediaIntervalos, 1.5);
+                
+                // 2. Relative frequency (more is better)
+                const fatorFrequencia = Math.min(combo.concursos.length / 30, 1);
+                
+                // 3. Stability (less variation is better)
+                const variacao = combo.maiorIntervalo && combo.menorIntervalo 
+                    ? (combo.maiorIntervalo - combo.menorIntervalo) / combo.mediaIntervalos
+                    : 1;
+                const fatorEstabilidade = Math.max(0, 1 - (variacao / 2));
+                
+                // 4. Trend (decreasing is slightly better)
+                const fatorTendencia = combo.padrao === 'Decrescente' ? 1.1 : 
+                                       combo.padrao === 'Crescente' ? 0.9 : 1;
+                
+                // Combine factors (with weights)
+                const potencial = (
+                    (fatorIntervalo * 0.6) + 
+                    (fatorFrequencia * 0.2) + 
+                    (fatorEstabilidade * 0.1) + 
+                    (fatorTendencia * 0.1)
+                ) / 1;
+                
+                return Math.min(1, Math.max(0, potencial));
+            }
+
+            // ===== Download functions =====
+            function downloadCSV() {
+                if (allResults.length === 0) {
+                    alert('Carregue os resultados primeiro!');
+                    return;
+                }
+                
+                try {
+                    // Sort results in descending order for XLS too
+                    const resultadosOrdenados = [...filteredResults].sort((a, b) => parseInt(b.concurso) - parseInt(a.concurso));
+                    
+                    // Creating an HTML table that Excel can import correctly
+                    let excelContent = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
+                    excelContent += '<head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Dígitos Dia de Sorte</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->';
+                    excelContent += '<style>th { background-color: #000000; color: #ffffff; text-align: left; font-weight: bold; } td { text-align: left; } .concurso { mso-number-format:"0"; }</style>';
+                    excelContent += '</head>';
+                    excelContent += '<body><table border="1">';
+                    
+                    // Add header
+                    excelContent += '<tr>';
+                    excelContent += '<th style="background-color: #000000; color: #ffffff;">Concurso</th>';
+                    excelContent += '<th style="background-color: #000000; color: #ffffff;">Data</th>';
+                    excelContent += '<th style="background-color: #000000; color: #ffffff;">Dezenas</th>';
+                    excelContent += '<th style="background-color: #000000; color: #ffffff;">Dígitos</th>';
+                    excelContent += '<th style="background-color: #000000; color: #ffffff;">Dígitos Ordenados</th>';
+                    excelContent += '<th style="background-color: #000000; color: #ffffff;">Qtd. Dígitos</th>';
+                    excelContent += '</tr>';
+                    
+                    // Add data - ALL results, without limitation
+                    for (let i = 0; i < resultadosOrdenados.length; i++) {
+                        const result = resultadosOrdenados[i];
+                        excelContent += '<tr>';
+                        excelContent += `<td class="concurso" style="text-align: left;">${result.concurso}</td>`;
+                        excelContent += `<td style="text-align: left;">${result.data}</td>`;
+                        excelContent += `<td style="text-align: left;">${result.dezenas.join(' - ')}</td>`;
+                        excelContent += `<td style="text-align: left;">${result.digitos_para_exibicao || result.digitos.join(' ')}</td>`;
+                        excelContent += `<td style="text-align: left;">${result.digitos_ordenados.join(',')}</td>`;
+                        excelContent += `<td style="text-align: left;">${result.contagem_digitos}</td>`;
+                        excelContent += '</tr>';
+                    }
+                    
+                    excelContent += '</table></body></html>';
+                    
+                    // Create blob and start download
+                    const blob = new Blob([excelContent], {type: 'application/vnd.ms-excel'});
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'analise_digitos_diadesorte_otimizado.xls';
+                    link.click();
+                    
+                    addDebugInfo('XLS download started');
+                } catch (error) {
+                    addDebugInfo(`Error generating XLS: ${error.message}`);
+                    alert('Erro ao gerar arquivo XLS.');
+                }
+            }
+            
+            function downloadJSON() {
+                if (allResults.length === 0) {
+                    alert('Carregue os resultados primeiro!');
+                    return;
+                }
+                
+                try {
+                    // Sort results in descending order for HTML too
+                    const resultadosOrdenados = [...filteredResults].sort((a, b) => parseInt(b.concurso) - parseInt(a.concurso));
+                    
+                    // Create formatted HTML content
+                    let htmlContent = `
+                    <!DOCTYPE html>
+                    <html lang="pt-br">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Análise de Dígitos do Dia de Sorte - Versão Otimizada</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f0f8ff; color: #333; }
+                            .container { max-width: 1200px; margin: 0 auto; padding: 20px; background-color: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 5px; }
+                            h1, h2, h3 { color: #5D5CDE; text-align: center; }
+                            .section { margin-bottom: 30px; padding: 15px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid #ddd; }
+                            table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+                            th { background-color: #5D5CDE; color: white; padding: 10px; text-align: left; }
+                            td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+                            tr:nth-child(even) { background-color: #f2f2f2; }
+                            .digit-box { display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; margin: 5px; background-color: #5D5CDE; color: white; border-radius: 50%; font-weight: bold; }
+                            .digit-count { font-size: 12px; color: #666; display: block; text-align: center; }
+                            .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; padding: 10px; border-top: 1px solid #ddd; }
+                            .optimized-badge { background: linear-gradient(45deg, #5D5CDE, #00d4aa); color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
+                            
+                            @media (prefers-color-scheme: dark) {
+                                body { background-color: #181818; color: #e0e0e0; }
+                                .container { background-color: #222; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+                                .section { background-color: #333; border-color: #444; }
+                                td { border-color: #444; }
+                                tr:nth-child(even) { background-color: #2a2a2a; }
+                                tr:nth-child(odd) { background-color: #333; }
+                                .digit-count { color: #aaa; }
+                                .footer { color: #aaa; border-top-color: #444; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <h1>⚡ Análise de Dígitos do Dia de Sorte <span class="optimized-badge">OTIMIZADO</span></h1>
+                            
+                            <div class="section">
+                                <h2>Estatísticas de Frequência dos Dígitos</h2>
+                                <div style="display: flex; justify-content: center; flex-wrap: wrap; margin: 20px 0;">
+                    `;
+                    
+                    // Add digit statistics
+                    const sortedDigits = Object.entries(digitStats).sort((a, b) => b[1] - a[1]);
+                    sortedDigits.forEach(([digit, count]) => {
+                        htmlContent += `
+                            <div class="digit-box">${digit}
+                                <span class="digit-count">${count} vezes</span>
+                            </div>
+                        `;
+                    });
+                    
+                    htmlContent += `
+                                </div>
+                                
+                                <h3>Gráfico de Frequência</h3>
+                                <div style="padding: 15px;">
+                    `;
+                    
+                    // Add simple bar chart
+                    const maxCount = Math.max(...Object.values(digitStats));
+                    sortedDigits.forEach(([digit, count]) => {
+                        const percentage = (count / maxCount) * 100;
+                        htmlContent += `
+                            <div style="margin: 10px 0; display: flex; align-items: center;">
+                                <div style="width: 30px; text-align: center; font-weight: bold;">${digit}</div>
+                                <div style="flex-grow: 1; margin: 0 10px;">
+                                    <div style="background-color: #5D5CDE; height: 24px; width: ${percentage}%;"></div>
+                                </div>
+                                <div style="width: 60px; text-align: right;">${count}</div>
+                            </div>
+                        `;
+                    });
+                    
+                    htmlContent += `
+                                </div>
+                            </div>
+                            
+                            <div class="section">
+                                <h2>Resumo por Quantidade de Dígitos</h2>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Qtd. Dígitos</th>
+                                            <th>Número de Sorteios</th>
+                                            <th>Porcentagem</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                    `;
+                    
+                    // Add summary by number of digits
+                    const qtdKeys = Object.keys(combinationStats.porQuantidade)
+                        .sort((a, b) => parseInt(a) - parseInt(b));
+                    
+                    qtdKeys.forEach(qtd => {
+                        const count = combinationStats.porQuantidade[qtd].length;
+                        const percentage = ((count / allResults.length) * 100).toFixed(2);
+                        htmlContent += `
+                            <tr>
+                                <td>${qtd}</td>
+                                <td>${count}</td>
+                                <td>${percentage}%</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    htmlContent += `
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="section">
+                                <h2>Combinações Mais Frequentes</h2>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Combinação</th>
+                                            <th>Qtd. Dígitos</th>
+                                            <th>Frequência</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                    `;
+                    
+                    // Add most frequent combinations
+                    combinationStats.combinacoesFrequentes.slice(0, 10).forEach(combo => {
+                        htmlContent += `
+                            <tr>
+                                <td>${combo.digitos.join(',')}</td>
+                                <td>${combo.quantidade}</td>
+                                <td>${combo.concursos.length}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    htmlContent += `
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="section">
+                                <h2>Resultados Detalhados</h2>
+                                <p style="text-align: center; font-style: italic;">⚡ Carregamento otimizado: ${resultadosOrdenados.length} concursos em ordem decrescente.</p>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Concurso</th>
+                                            <th>Data</th>
+                                            <th>Dezenas</th>
+                                            <th>Dígitos</th>
+                                            <th>Dígitos Ordenados</th>
+                                            <th>Qtd. Dígitos</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                    `;
+                    
+                    // Add ALL results, without limitation
+                    resultadosOrdenados.forEach(result => {
+                        htmlContent += `
+                            <tr>
+                                <td>${result.concurso}</td>
+                                <td>${result.data || ''}</td>
+                                <td>${result.dezenas.join(' - ')}</td>
+                                <td>${result.digitos_para_exibicao || result.digitos.join(' ')}</td>
+                                <td>${result.digitos_ordenados.join(',')}</td>
+                                <td>${result.contagem_digitos}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    htmlContent += `
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="footer">
+                                <p><span class="optimized-badge">VERSÃO OTIMIZADA</span></p>
+                                <p>Relatório gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+                                <p>Total de resultados analisados: ${allResults.length} (carregamento ultra-rápido)</p>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                    `;
+                    
+                    // Create blob and start download
+                    const blob = new Blob([htmlContent], {type: 'text/html;charset=utf-8'});
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'analise_digitos_diadesorte_otimizado.html';
+                    link.click();
+                    
+                    addDebugInfo('HTML download started');
+                } catch (error) {
+                    addDebugInfo(`Error generating HTML: ${error.message}`);
+                    alert('Erro ao gerar arquivo HTML.');
+                }
+            }
+            
+            function downloadTXT() {
+                if (allResults.length === 0) {
+                    alert('Carregue os resultados primeiro!');
+                    return;
+                }
+                
+                try {
+                    // Sort results in descending order for TXT too
+                    const resultadosOrdenados = [...filteredResults].sort((a, b) => parseInt(b.concurso) - parseInt(a.concurso));
+                    
+                    let txtContent = "⚡ Análise de Dígitos do Dia de Sorte - VERSÃO OTIMIZADA\n\n";
+                    
+                    // Add statistics - sort by frequency
+                    txtContent += "ESTATÍSTICAS DE FREQUÊNCIA DOS DÍGITOS (ORDEM DECRESCENTE):\n";
+                    const sortedStats = Object.entries(digitStats).sort((a, b) => b[1] - a[1]);
+                    sortedStats.forEach(([digit, count]) => {
+                        txtContent += `Dígito ${digit}: ${count} ocorrências\n`;
+                    });
+                    
+                    // Add combination summary
+                    txtContent += "\n\nRESUMO POR QUANTIDADE DE DÍGITOS:\n";
+                    const qtdKeys = Object.keys(combinationStats.porQuantidade)
+                        .sort((a, b) => parseInt(a) - parseInt(b));
+                    
+                    qtdKeys.forEach(qtd => {
+                        const count = combinationStats.porQuantidade[qtd].length;
+                        const percentage = ((count / allResults.length) * 100).toFixed(2);
+                        txtContent += `${qtd} dígitos: ${count} sorteios (${percentage}%)\n`;
+                    });
+                    
+                    // Add most frequent combinations
+                    txtContent += "\n\nCOMBINAÇÕES MAIS FREQUENTES:\n";
+                    combinationStats.combinacoesFrequentes.slice(0, 5).forEach((combo, index) => {
+                        txtContent += `${index + 1}. Combinação [${combo.digitos.join(',')}]: Aparece em ${combo.concursos.length} sorteios\n`;
+                        if (combo.mediaIntervalos) {
+                            txtContent += `   Média entre aparições: ${combo.mediaIntervalos} concursos\n`;
+                        }
+                    });
+                    
+                    txtContent += "\n\nRESULTADOS DETALHADOS (em ordem decrescente):\n";
+                    // Add ALL results, without limitation
+                    resultadosOrdenados.forEach(result => {
+                        const digitos = result.digitos_para_exibicao || result.digitos.join(' ');
+                        const digitosOrdenados = result.digitos_ordenados.join(',');
+                        txtContent += `Concurso: ${result.concurso} | Data: ${result.data} | Dezenas: ${result.dezenas.join('-')} | `;
+                        txtContent += `Dígitos: ${digitos} | Ordenados: ${digitosOrdenados} | `;
+                        txtContent += `Quantidade: ${result.contagem_digitos}\n`;
+                    });
+                    
+                    // Add total information
+                    txtContent += `\n\n⚡ VERSÃO OTIMIZADA - CARREGAMENTO ULTRA-RÁPIDO`;
+                    txtContent += `\nTOTAL DE CONCURSOS ANALISADOS: ${allResults.length}`;
+                    txtContent += `\nPrimeiro concurso: ${allResults[0].concurso}`;
+                    txtContent += `\nÚltimo concurso: ${allResults[allResults.length - 1].concurso}`;
+                    
+                    // Add generated at
+                    txtContent += `\n\nGerado em: ${new Date().toLocaleString('pt-BR')}`;
+                    txtContent += `\nProcessamento otimizado com cache inteligente`;
+                    
+                    // Create blob and start download
+                    const blob = new Blob([txtContent], {type: 'text/plain;charset=utf-8'});
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'analise_digitos_diadesorte_otimizado.txt';
+                    link.click();
+                    
+                    addDebugInfo('TXT download started');
+                } catch (error) {
+                    addDebugInfo(`Error generating TXT: ${error.message}`);
+                    alert('Erro ao gerar arquivo TXT.');
+                }
+            }
+            
+            // ===== Auto-update system =====
+            function startAutoUpdate() {
+                if (updateTimer) clearInterval(updateTimer);
+                
+                updateTimer = setInterval(async () => {
+                    addDebugInfo("Auto-updating data...");
+                    
+                    if (isLoading) {
+                        addDebugInfo("A loading is already in progress, postponing automatic update");
+                        return;
+                    }
+                    
+                    // Update loading message
+                    const loadingMessage = document.getElementById('loadingMessage');
+                    if (loadingMessage) {
+                        loadingMessage.style.display = 'block';
+                        loadingMessage.textContent = '⚡ Atualizando dados automaticamente (modo otimizado)...';
+                    }
+                    
+                    // Clear previous messages
+                    const completedMessage = document.getElementById('completedMessage');
+                    const errorMessage = document.getElementById('errorMessage');
+                    if (completedMessage) completedMessage.style.display = 'none';
+                    if (errorMessage) errorMessage.style.display = 'none';
+                    
+                    // Make the update
+                    const success = await fetchCompleteDiaDeSorteResults();
+                    
+                    // Hide loading message
+                    if (loadingMessage) {
+                        loadingMessage.style.display = 'none';
+                    }
+                    
+                    // Notify user
+                    if (completedMessage && success) {
+                        completedMessage.style.display = 'block';
+                        completedMessage.textContent = '⚡ Dados atualizados em modo ultra-rápido!';
+                        setTimeout(() => {
+                            completedMessage.style.display = 'none';
+                        }, 3000);
+                    }
+                    
+                    // Update summary automatically
+                    if (success) {
+                        gerarResumo();
+                    }
+                }, UPDATE_INTERVAL);
+                
+                addDebugInfo(`Automatic update enabled every ${UPDATE_INTERVAL/60000} minutes (optimized mode)`);
+            }
+            
+            function stopAutoUpdate() {
+                if (updateTimer) {
+                    clearInterval(updateTimer);
+                    updateTimer = null;
+                    addDebugInfo("Automatic update disabled");
+                }
+            }
+            
+            // ===== Update timestamp =====
+            function updateTimestamp() {
+                const timestampElem = document.getElementById('lastUpdateTime');
+                if (timestampElem) {
+                    const formattedTime = lastUpdateTime.toLocaleString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                    
+                    timestampElem.textContent = `⚡ Dados atualizados em: ${formattedTime}`;
+                }
+            }
+            
+            // ===== Show/hide debug info =====
+            // Shortcut key Ctrl+Shift+D to show/hide debug info
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+                    const debugInfoDiv = document.getElementById('debugInfo');
+                    if (debugInfoDiv) {
+                        debugInfoDiv.style.display = debugInfoDiv.style.display === 'none' ? 'block' : 'none';
+                    }
+                }
+            });
+            
+            // ===== Initialize =====
+            addDebugInfo("⚡ Starting optimized loading of Dia de Sorte contests...");
+            
+            // Load cache first
+            const cache = loadCache();
+            if (cache.results && cache.results.length > 0) {
+                addDebugInfo(`Cache encontrado com ${cache.results.length} resultados`);
+            }
+            
+            resetUI();
+            fetchCompleteDiaDeSorteResults(); // Load data automatically on start with optimization
+        });
+    </script>
+</body>
+</html>

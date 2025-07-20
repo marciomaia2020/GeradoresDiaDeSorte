@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisador de Combinações para Jogos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+        
+        .combination-card {
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        .combination-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        /* Animação de carregamento */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6">
+            <h1 class="text-2xl font-bold text-center mb-6">Analisador de Combinações para Jogos</h1>
+            
+            <div class="flex flex-wrap gap-4 items-center mb-6">
+                <label for="tamanho" class="font-medium">Tamanho do grupo:</label>
+                <select id="tamanho" class="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-base">
+                    <option value="3">3 dígitos</option>
+                    <option value="4">4 dígitos</option>
+                    <option value="5">5 dígitos</option>
+                    <option value="6" selected>6 dígitos</option>
+                    <option value="7">7 dígitos</option>
+                    <option value="8">8 dígitos</option>
+                    <option value="9">9 dígitos</option>
+                    <option value="10">10 dígitos</option>
+                </select>
+                <div class="flex-wrap gap-2">
+                    <label for="jogo-tipo" class="font-medium">Modalidade:</label>
+                    <select id="jogo-tipo" class="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-base">
+                        <option value="dia-sorte" selected>Dia de Sorte (7 números de 1-31)</option>
+                        <option value="mega-sena">Mega-Sena (6 números de 1-60)</option>
+                        <option value="lotofacil">Lotofácil (15 números de 1-25)</option>
+                    </select>
+                </div>
+                <button id="gerar" class="bg-primary hover:bg-opacity-90 text-white px-4 py-2 rounded-lg font-medium">
+                    Analisar Combinações
+                </button>
+                <button id="ver-resumo" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium">
+                    Ver Resumo Completo
+                </button> <p><small><-- Análise de todos os grupos</small></p>
+
+                <p><small>Selecione o "<strong>Tamanho do grupo</strong>" e depois em "<strong>Analisar Combinações</strong>", ao clicar em "<strong>Ver Resumo Completo</strong>" , você verá as combinações possivel para cada grupo</small></p>
+            </div>
+            
+            <div class="mb-6">
+                <div class="relative">
+                    <input type="text" id="pesquisar" placeholder="Pesquisar combinações..." 
+                           class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-10 text-base">
+                    <button id="limpar-pesquisa" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hidden">
+                        &times;
+                    </button>
+                </div>
+                <div id="resultado-pesquisa" class="text-sm text-gray-600 dark:text-gray-400 mt-2 hidden"></div>
+            </div>
+            
+            <div id="loading" class="hidden flex justify-center my-6">
+                <div class="spinner w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+            </div>
+            
+            <div id="resultado-container" class="hidden">
+                <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 mb-6 rounded">
+                    <h2 class="text-lg font-semibold mb-2">Informações de Jogos</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                            <span class="font-semibold">Total de combinações:</span>
+                            <div id="total-combinacoes" class="text-xl font-bold">0</div>
+                        </div>
+                        <div>
+                            <span class="font-semibold">Combinações válidas:</span>
+                            <div id="combinacoes-validas" class="text-xl font-bold text-green-600 dark:text-green-400">0</div>
+                        </div>
+                        <div>
+                            <span class="font-semibold">Jogos possíveis:</span>
+                            <div id="jogos-possiveis" class="text-xl font-bold text-primary">0</div>
+                        </div>
+                        <div>
+                            <span class="font-semibold">Cobertura total:</span>
+                            <div id="cobertura-total" class="text-xl font-bold">0%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h2 id="resultado-titulo" class="text-xl font-semibold mb-4">Combinações Analisadas</h2>
+                
+                <div id="combinacoes" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6"></div>
+                
+                <div class="flex justify-center gap-4 mb-2">
+                    <button id="anterior" disabled class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-lg font-medium disabled:opacity-50">
+                        Anterior
+                    </button>
+                    <button id="proximo" disabled class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-lg font-medium disabled:opacity-50">
+                        Próximo
+                    </button>
+                </div>
+                <div id="pagina-info" class="text-center text-sm text-gray-600 dark:text-gray-400"></div>
+            </div>
+        </div>
+        
+        <!-- Modal para detalhes da combinação -->
+        <div id="modal-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+            <div class="modal-content bg-white dark:bg-gray-800 rounded-xl shadow-xl w-11/12 max-w-3xl max-h-[90vh] overflow-y-auto">
+                <div class="bg-primary text-white p-4 rounded-t-xl flex justify-between items-center">
+                    <h2 id="modal-title" class="text-xl font-bold">Detalhes da Combinação</h2>
+                    <button id="modal-close" class="text-3xl font-light">&times;</button>
+                </div>
+                <div id="modal-body" class="p-6">
+                    <!-- Conteúdo do modal será preenchido dinamicamente -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal para resumo completo -->
+        <div id="resumo-modal-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+            <div class="resumo-modal-content bg-white dark:bg-gray-800 rounded-xl shadow-xl w-11/12 max-w-5xl max-h-[90vh] overflow-y-auto">
+                <div class="bg-green-600 text-white p-4 rounded-t-xl flex justify-between items-center">
+                    <h2 id="resumo-modal-title" class="text-xl font-bold">Resumo Completo por Grupos</h2>
+                    <button id="resumo-modal-close" class="text-3xl font-light">&times;</button>
+                </div>
+                <div id="resumo-modal-body" class="p-6">
+                    <div id="resumo-loading" class="flex justify-center my-6">
+                        <div class="spinner w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full"></div>
+                        <p class="ml-3 text-lg">Gerando resumo completo...</p>
+                    </div>
+                    <div id="resumo-content" class="hidden">
+                        <!-- Conteúdo do resumo será preenchido dinamicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-4 py-4 text-center text-sm text-gray-600 dark:text-gray-400 mt-8">
+        Análise de Combinações para Jogos - 2025
+    </footer>
+
+    <script>
+        // Detecção de dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Funções matemáticas
+        function factorial(n) {
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) {
+                result *= i;
+            }
+            return result;
+        }
+
+        function comb(n, k) {
+            // Combinação: C(n,k) = n! / (k! * (n-k)!)
+            if (k < 0 || k > n) return 0;
+            if (k === 0 || k === n) return 1;
+            
+            // Otimização para números grandes
+            let result = 1;
+            for (let i = 1; i <= k; i++) {
+                result *= (n - (k - i));
+                result /= i;
+            }
+            return Math.round(result);
+        }
+
+        // Função para gerar combinações
+        function gerarCombinacoes(conjunto, tamanho) {
+            const combinacoes = [];
+            
+            function combinar(inicio, atual) {
+                if (atual.length === tamanho) {
+                    combinacoes.push([...atual]);
+                    return;
+                }
+                
+                for (let i = inicio; i < conjunto.length; i++) {
+                    atual.push(conjunto[i]);
+                    combinar(i + 1, atual);
+                    atual.pop();
+                }
+            }
+            
+            combinar(0, []);
+            return combinacoes;
+        }
+
+        // Analisar se uma combinação pode formar jogos válidos
+        function analisarCombinacao(combinacao, tipoJogo) {
+            // Converter para array se for uma string
+            if (typeof combinacao === 'string') {
+                combinacao = combinacao.split(',').map(d => parseInt(d.trim()));
+            }
+            
+            // Definir os parâmetros do jogo
+            let limiteInferior, limiteSuperior, tamanhoJogo;
+            
+            if (tipoJogo === 'dia-sorte') {
+                limiteInferior = 1;
+                limiteSuperior = 31;
+                tamanhoJogo = 7;
+            } else if (tipoJogo === 'mega-sena') {
+                limiteInferior = 1;
+                limiteSuperior = 60;
+                tamanhoJogo = 6;
+            } else if (tipoJogo === 'lotofacil') {
+                limiteInferior = 1;
+                limiteSuperior = 25;
+                tamanhoJogo = 15;
+            }
+            
+            // Verificar quais números podem ser formados com os dígitos
+            const numerosFormaveis = [];
+            const setDigitos = new Set(combinacao);
+            
+            for (let i = limiteInferior; i <= limiteSuperior; i++) {
+                let podeFormar = true;
+                
+                // Converter o número para string
+                const numStr = i.toString();
+                
+                // Verificar se todos os dígitos estão na combinação
+                for (let d of numStr) {
+                    if (!setDigitos.has(parseInt(d))) {
+                        podeFormar = false;
+                        break;
+                    }
+                }
+                
+                if (podeFormar) {
+                    numerosFormaveis.push(i);
+                }
+            }
+            
+            // Calcular estatísticas
+            const totalNumerosFormaveis = numerosFormaveis.length;
+            const ehValido = totalNumerosFormaveis >= tamanhoJogo;
+            let jogosPossiveis = 0;
+            
+            if (ehValido) {
+                jogosPossiveis = comb(totalNumerosFormaveis, tamanhoJogo);
+            }
+            
+            // Total de jogos possíveis no jogo selecionado
+            const totalJogosPossiveis = comb(limiteSuperior, tamanhoJogo);
+            
+            // Calcular porcentagem de cobertura
+            const cobertura = jogosPossiveis / totalJogosPossiveis * 100;
+            
+            return {
+                combinacao: combinacao,
+                tipoJogo: tipoJogo,
+                parametrosJogo: {
+                    limiteInferior,
+                    limiteSuperior,
+                    tamanhoJogo
+                },
+                numerosFormaveis: numerosFormaveis,
+                totalNumerosFormaveis: totalNumerosFormaveis,
+                ehValido: ehValido,
+                jogosPossiveis: jogosPossiveis,
+                totalJogosPossiveis: totalJogosPossiveis,
+                cobertura: cobertura
+            };
+        }
+
+        // Analisar múltiplas combinações
+        function analisarTodasCombinacoes(combinacoes, tipoJogo) {
+            const resultados = [];
+            
+            for (const combinacao of combinacoes) {
+                const resultado = analisarCombinacao(combinacao, tipoJogo);
+                resultados.push(resultado);
+            }
+            
+            return resultados;
+        }
+
+        // Elementos DOM
+        const tamanhoSelect = document.getElementById('tamanho');
+        const jogoTipoSelect = document.getElementById('jogo-tipo');
+        const gerarBtn = document.getElementById('gerar');
+        const verResumoBtn = document.getElementById('ver-resumo');
+        const loading = document.getElementById('loading');
+        const resultadoContainer = document.getElementById('resultado-container');
+        const totalCombinacoes = document.getElementById('total-combinacoes');
+        const combinacoesValidas = document.getElementById('combinacoes-validas');
+        const jogosPossiveis = document.getElementById('jogos-possiveis');
+        const coberturaTotal = document.getElementById('cobertura-total');
+        const resultadoTitulo = document.getElementById('resultado-titulo');
+        const combinacoesContainer = document.getElementById('combinacoes');
+        const anteriorBtn = document.getElementById('anterior');
+        const proximoBtn = document.getElementById('proximo');
+        const paginaInfo = document.getElementById('pagina-info');
+        
+        // Elementos de pesquisa
+        const pesquisarInput = document.getElementById('pesquisar');
+        const limparPesquisaBtn = document.getElementById('limpar-pesquisa');
+        const resultadoPesquisa = document.getElementById('resultado-pesquisa');
+        
+        // Modal
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const modalClose = document.getElementById('modal-close');
+        
+        // Modal de Resumo
+        const resumoModalOverlay = document.getElementById('resumo-modal-overlay');
+        const resumoModalTitle = document.getElementById('resumo-modal-title');
+        const resumoModalBody = document.getElementById('resumo-modal-body');
+        const resumoModalClose = document.getElementById('resumo-modal-close');
+        const resumoLoading = document.getElementById('resumo-loading');
+        const resumoContent = document.getElementById('resumo-content');
+
+        // Variáveis de controle da interface
+        let todasCombinacoes = [];
+        let resultadosCombinacoes = [];
+        let combinacoesFiltradas = [];
+        let paginaAtual = 1;
+        let pesquisaAtiva = false;
+        const itensPorPagina = 12;
+        
+        // Cache para resultados do resumo
+        let resumoCache = {};
+
+        // Função para mostrar o modal com detalhes da combinação
+        function mostrarDetalhesCombinacao(resultado) {
+            modalTitle.textContent = `Detalhes: ${resultado.combinacao.join(',')}`;
+            
+            // Construir o conteúdo do modal
+            let conteudo = `
+                <div class="space-y-6">
+                    <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+                        <h3 class="font-semibold text-lg mb-2">Informações Gerais</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div><span class="font-medium">Combinação:</span> ${resultado.combinacao.join(',')}</div>
+                            <div><span class="font-medium">Tipo de Jogo:</span> ${getJogoName(resultado.tipoJogo)}</div>
+                            <div><span class="font-medium">Total de Números:</span> ${resultado.totalNumerosFormaveis}</div>
+                            <div><span class="font-medium">Combinação Válida:</span> 
+                                <span class="${resultado.ehValido ? 'text-green-600 dark:text-green-400 font-bold' : 'text-red-600 dark:text-red-400'}">
+                                    ${resultado.ehValido ? 'Sim' : 'Não'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold text-lg mb-2">Estatísticas de Jogos</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div><span class="font-medium">Jogos Possíveis:</span> ${resultado.jogosPossiveis.toLocaleString()}</div>
+                            <div><span class="font-medium">Total de Jogos no ${getJogoName(resultado.tipoJogo)}:</span> ${resultado.totalJogosPossiveis.toLocaleString()}</div>
+                            <div><span class="font-medium">Cobertura:</span> ${resultado.cobertura.toFixed(8)}%</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold text-lg mb-3">Números Formáveis (${resultado.totalNumerosFormaveis})</h3>
+                        <div class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-2 max-h-60 overflow-y-auto p-2">
+            `;
+            
+            // Adicionar os números formáveis
+            resultado.numerosFormaveis.forEach(num => {
+                conteudo += `
+                    <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-2 text-center font-mono">
+                        ${num}
+                    </div>
+                `;
+            });
+            
+            conteudo += `
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg">
+                        <h3 class="font-semibold text-lg mb-2">Requisitos para Jogo Completo</h3>
+                        <p>Para formar um jogo completo no ${getJogoName(resultado.tipoJogo)}, você precisa de pelo menos 
+                           ${resultado.parametrosJogo.tamanhoJogo} números entre ${resultado.parametrosJogo.limiteInferior} e ${resultado.parametrosJogo.limiteSuperior}.</p>
+                        <p class="mt-2">Esta combinação ${resultado.ehValido ? 'atende' : 'não atende'} aos requisitos mínimos.</p>
+                    </div>
+                </div>
+            `;
+            
+            modalBody.innerHTML = conteudo;
+            modalOverlay.classList.remove('hidden');
+        }
+
+        // Função auxiliar para obter o nome formatado do jogo
+        function getJogoName(tipoJogo) {
+            switch(tipoJogo) {
+                case 'dia-sorte': return 'Dia de Sorte';
+                case 'mega-sena': return 'Mega-Sena';
+                case 'lotofacil': return 'Lotofácil';
+                default: return tipoJogo;
+            }
+        }
+
+        // Função para pesquisar combinações
+        function pesquisarCombinacoes(termo) {
+            if (!termo.trim()) {
+                // Se o termo de pesquisa estiver vazio, mostrar todas as combinações
+                pesquisaAtiva = false;
+                combinacoesFiltradas = [...resultadosCombinacoes];
+                paginaAtual = 1;
+                resultadoPesquisa.classList.add('hidden');
+                limparPesquisaBtn.classList.add('hidden');
+                mostrarCombinacoes();
+                return;
+            }
+
+            // Ativar a pesquisa
+            pesquisaAtiva = true;
+            limparPesquisaBtn.classList.remove('hidden');
+            
+            // Filtrar combinações com base no termo
+            combinacoesFiltradas = resultadosCombinacoes.filter(resultado => {
+                const combStr = resultado.combinacao.join(',');
+                return combStr.includes(termo);
+            });
+            
+            // Atualizar a interface
+            paginaAtual = 1;
+            
+            // Mostrar resultados
+            resultadoPesquisa.classList.remove('hidden');
+            resultadoPesquisa.textContent = `Encontradas ${combinacoesFiltradas.length} combinações contendo "${termo}"`;
+            
+            mostrarCombinacoes();
+        }
+
+        // Função para limpar a pesquisa
+        function limparPesquisa() {
+            pesquisarInput.value = '';
+            pesquisaAtiva = false;
+            combinacoesFiltradas = [...resultadosCombinacoes];
+            paginaAtual = 1;
+            resultadoPesquisa.classList.add('hidden');
+            limparPesquisaBtn.classList.add('hidden');
+            mostrarCombinacoes();
+        }
+
+        // Função para mostrar as combinações na interface
+        function mostrarCombinacoes() {
+            combinacoesContainer.innerHTML = '';
+            
+            // Usar a lista filtrada ou a lista completa
+            const listaCombinacoes = pesquisaAtiva ? combinacoesFiltradas : resultadosCombinacoes;
+            
+            const inicio = (paginaAtual - 1) * itensPorPagina;
+            const fim = Math.min(inicio + itensPorPagina, listaCombinacoes.length);
+            
+            for (let i = inicio; i < fim; i++) {
+                const resultado = listaCombinacoes[i];
+                const ehValido = resultado.ehValido;
+                
+                const card = document.createElement('div');
+                card.classList.add('combination-card', 'bg-white', 'dark:bg-gray-800', 'rounded-xl', 'shadow-md', 'p-4', 'border');
+                
+                if (ehValido) {
+                    card.classList.add('border-green-300', 'dark:border-green-700');
+                } else {
+                    card.classList.add('border-red-300', 'dark:border-red-700');
+                }
+                
+                // Criar o conteúdo do card
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="font-bold text-lg">${resultado.combinacao.join(',')}</h3>
+                        <span class="px-2 py-1 rounded-full text-xs ${ehValido ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200'}">
+                            ${ehValido ? 'Válida' : 'Inválida'}
+                        </span>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span>Números formáveis:</span>
+                            <span class="font-medium">${resultado.totalNumerosFormaveis}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Jogos possíveis:</span>
+                            <span class="font-medium">${ehValido ? resultado.jogosPossiveis.toLocaleString() : '0'}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Cobertura:</span>
+                            <span class="font-medium">${resultado.cobertura.toFixed(6)}%</span>
+                        </div>
+                    </div>
+                    <button class="ver-detalhes mt-3 w-full bg-primary bg-opacity-10 hover:bg-opacity-20 text-primary py-1 rounded-lg text-sm font-medium transition-all">
+                        Ver Detalhes
+                    </button>
+                `;
+                
+                // Adicionar evento para mostrar detalhes
+                const verDetalhesBtn = card.querySelector('.ver-detalhes');
+                verDetalhesBtn.addEventListener('click', () => {
+                    mostrarDetalhesCombinacao(resultado);
+                });
+                
+                combinacoesContainer.appendChild(card);
+            }
+            
+            // Atualizar informações de paginação
+            const totalPaginas = Math.ceil(listaCombinacoes.length / itensPorPagina);
+            paginaInfo.textContent = `Página ${paginaAtual} de ${totalPaginas > 0 ? totalPaginas : 1}`;
+            anteriorBtn.disabled = paginaAtual === 1;
+            proximoBtn.disabled = paginaAtual === totalPaginas || listaCombinacoes.length === 0;
+        }
+
+        // Função para atualizar as estatísticas gerais
+        function atualizarEstatisticasGerais() {
+            // Contar combinações válidas
+            const validas = resultadosCombinacoes.filter(r => r.ehValido);
+            
+            // Calcular total de jogos possíveis
+            let totalJogos = 0;
+            let totalJogosPossiveis = 0;
+            
+            if (validas.length > 0) {
+                totalJogos = validas.reduce((sum, r) => sum + r.jogosPossiveis, 0);
+                totalJogosPossiveis = validas[0].totalJogosPossiveis;
+            }
+            
+            // Calcular cobertura total
+            const coberturaPercentual = totalJogosPossiveis > 0 ? 
+                (totalJogos / totalJogosPossiveis) * 100 : 0;
+            
+            // Atualizar a interface
+            totalCombinacoes.textContent = resultadosCombinacoes.length.toLocaleString();
+            combinacoesValidas.textContent = validas.length.toLocaleString();
+            jogosPossiveis.textContent = totalJogos.toLocaleString();
+            coberturaTotal.textContent = coberturaPercentual.toFixed(8) + '%';
+            
+            return {
+                tamanho: resultadosCombinacoes.length > 0 ? resultadosCombinacoes[0].combinacao.length : 0,
+                total: resultadosCombinacoes.length,
+                validas: validas.length,
+                totalJogos: totalJogos,
+                coberturaPercentual: coberturaPercentual
+            };
+        }
+        
+        // Função para gerar e mostrar o resumo de todos os grupos
+        async function gerarResumoCompleto() {
+            const tipoJogo = jogoTipoSelect.value;
+            
+            // Mostrar o modal de resumo
+            resumoModalOverlay.classList.remove('hidden');
+            resumoLoading.classList.remove('hidden');
+            resumoContent.classList.add('hidden');
+            
+            // Atualizar o título
+            resumoModalTitle.textContent = `Resumo Completo para ${getJogoName(tipoJogo)}`;
+            
+            // Verificar se já temos os dados no cache
+            const cacheKey = tipoJogo;
+            if (resumoCache[cacheKey]) {
+                // Usar os dados do cache
+                mostrarConteudoResumo(resumoCache[cacheKey]);
+                return;
+            }
+            
+            // Array para armazenar os resultados
+            const resultadosResumo = [];
+            
+            // Processar cada tamanho de grupo assincronamente
+            for (let tamanho = 3; tamanho <= 10; tamanho++) {
+                // Executar análise em um timeout para não travar a UI
+                await new Promise(resolve => {
+                    setTimeout(async () => {
+                        try {
+                            // Gerar combinações
+                            const digitos = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                            const combinacoes = gerarCombinacoes(digitos, tamanho);
+                            
+                            // Analisar combinações
+                            const resultados = analisarTodasCombinacoes(combinacoes, tipoJogo);
+                            
+                            // Contar combinações válidas
+                            const validas = resultados.filter(r => r.ehValido);
+                            
+                            // Calcular total de jogos possíveis
+                            let totalJogos = 0;
+                            let totalJogosPossiveis = 0;
+                            
+                            if (validas.length > 0) {
+                                totalJogos = validas.reduce((sum, r) => sum + r.jogosPossiveis, 0);
+                                totalJogosPossiveis = validas[0].totalJogosPossiveis;
+                            }
+                            
+                            // Calcular cobertura total
+                            const coberturaPercentual = totalJogosPossiveis > 0 ? 
+                                (totalJogos / totalJogosPossiveis) * 100 : 0;
+                            
+                            // Adicionar ao array de resultados
+                            resultadosResumo.push({
+                                tamanho,
+                                total: combinacoes.length,
+                                validas: validas.length,
+                                totalJogos,
+                                coberturaPercentual
+                            });
+                            
+                            resolve();
+                        } catch (error) {
+                            console.error(`Erro ao analisar tamanho ${tamanho}:`, error);
+                            resolve();
+                        }
+                    }, 0);
+                });
+            }
+            
+            // Ordenar por tamanho
+            resultadosResumo.sort((a, b) => a.tamanho - b.tamanho);
+            
+            // Armazenar no cache
+            resumoCache[cacheKey] = resultadosResumo;
+            
+            // Mostrar os resultados
+            mostrarConteudoResumo(resultadosResumo);
+        }
+        
+        // Função para mostrar o conteúdo do resumo
+        function mostrarConteudoResumo(resultados) {
+            // Esconder o loading e mostrar o conteúdo
+            resumoLoading.classList.add('hidden');
+            resumoContent.classList.remove('hidden');
+            
+            // Construir o conteúdo HTML
+            let html = `
+                <h3 class="text-lg font-bold mb-4">Estatísticas por Tamanho de Grupo</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 dark:bg-gray-700">
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Tamanho</th>
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Total Combinações</th>
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Combinações Válidas</th>
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Jogos Possíveis</th>
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Cobertura (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // Adicionar linhas para cada tamanho
+            resultados.forEach(resultado => {
+                const percentValidasClass = resultado.validas / resultado.total > 0.5 ? 
+                    'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+                
+                html += `
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-750">
+                        <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center font-medium">${resultado.tamanho} dígitos</td>
+                        <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">${resultado.total.toLocaleString()}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">
+                            <span class="${percentValidasClass} font-medium">${resultado.validas.toLocaleString()}</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">(${Math.round(resultado.validas / resultado.total * 100)}%)</span>
+                        </td>
+                        <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">${resultado.totalJogos.toLocaleString()}</td>
+                        <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center font-medium">${resultado.coberturaPercentual.toFixed(8)}%</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                    <h3 class="font-semibold text-lg mb-3">Análise Comparativa</h3>
+                    <p>O resumo acima mostra como a cobertura de jogos possíveis varia de acordo com o tamanho do grupo de dígitos.</p>
+                    <p class="mt-2">Observe que quanto maior o grupo, maior a cobertura, mas o número de combinações também cresce significativamente.</p>
+                    <p class="mt-2">Para jogos como o ${getJogoName(jogoTipoSelect.value)}, um equilíbrio entre cobertura e quantidade de combinações pode ser a estratégia ideal.</p>
+                </div>
+                
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
+                        <h3 class="font-semibold text-lg mb-3">Melhor Cobertura</h3>
+                        <div class="text-xl font-bold mb-2">${getMelhorCobertura(resultados).tamanho} dígitos</div>
+                        <p>Oferece a maior cobertura de jogos possíveis (${getMelhorCobertura(resultados).coberturaPercentual.toFixed(8)}%).</p>
+                    </div>
+                    
+                    <div class="p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg">
+                        <h3 class="font-semibold text-lg mb-3">Melhor Relação Cobertura/Combinações</h3>
+                        <div class="text-xl font-bold mb-2">${getMelhorRelacao(resultados).tamanho} dígitos</div>
+                        <p>Equilíbrio entre quantidade de combinações e cobertura de jogos.</p>
+                    </div>
+                </div>
+            `;
+            
+            // Adicionar ao conteúdo do modal
+            resumoContent.innerHTML = html;
+        }
+        
+        // Função para encontrar o tamanho com melhor cobertura
+        function getMelhorCobertura(resultados) {
+            return resultados.reduce((melhor, atual) => 
+                atual.coberturaPercentual > melhor.coberturaPercentual ? atual : melhor, 
+                resultados[0]);
+        }
+        
+        // Função para encontrar o tamanho com melhor relação cobertura/combinações
+        function getMelhorRelacao(resultados) {
+            return resultados.reduce((melhor, atual) => {
+                const relacaoAtual = atual.coberturaPercentual / atual.total;
+                const relacaoMelhor = melhor.coberturaPercentual / melhor.total;
+                return relacaoAtual > relacaoMelhor ? atual : melhor;
+            }, resultados[0]);
+        }
+
+        // Event listeners
+        gerarBtn.addEventListener('click', async () => {
+            const tamanho = parseInt(tamanhoSelect.value);
+            const tipoJogo = jogoTipoSelect.value;
+            
+            // Mostrar loading
+            loading.classList.remove('hidden');
+            resultadoContainer.classList.add('hidden');
+            
+            // Resetar pesquisa
+            limparPesquisa();
+            
+            // Executar análise em um timeout para permitir que a UI atualize
+            setTimeout(async () => {
+                try {
+                    // Gerar combinações
+                    const digitos = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+                    todasCombinacoes = gerarCombinacoes(digitos, tamanho);
+                    
+                    // Analisar cada combinação
+                    resultadosCombinacoes = analisarTodasCombinacoes(todasCombinacoes, tipoJogo);
+                    combinacoesFiltradas = [...resultadosCombinacoes];
+                    
+                    // Resetar paginação
+                    paginaAtual = 1;
+                    
+                    // Atualizar estatísticas gerais
+                    atualizarEstatisticasGerais();
+                    
+                    // Atualizar título
+                    resultadoTitulo.textContent = `Combinações com ${tamanho} dígito(s) para ${getJogoName(tipoJogo)}`;
+                    
+                    // Mostrar combinações
+                    mostrarCombinacoes();
+                    
+                    // Esconder loading e mostrar resultados
+                    loading.classList.add('hidden');
+                    resultadoContainer.classList.remove('hidden');
+                } catch (error) {
+                    console.error('Erro ao analisar combinações:', error);
+                    loading.classList.add('hidden');
+                    alert('Ocorreu um erro ao analisar as combinações. Por favor, tente novamente.');
+                }
+            }, 100);
+        });
+
+        // Event listener para o botão de resumo
+        verResumoBtn.addEventListener('click', gerarResumoCompleto);
+
+        // Event listeners para a funcionalidade de busca
+        pesquisarInput.addEventListener('input', (e) => {
+            pesquisarCombinacoes(e.target.value);
+        });
+
+        limparPesquisaBtn.addEventListener('click', limparPesquisa);
+
+        // Event listeners para paginação
+        anteriorBtn.addEventListener('click', () => {
+            if (paginaAtual > 1) {
+                paginaAtual--;
+                mostrarCombinacoes();
+            }
+        });
+
+        proximoBtn.addEventListener('click', () => {
+            const listaCombinacoes = pesquisaAtiva ? combinacoesFiltradas : resultadosCombinacoes;
+            if (paginaAtual < Math.ceil(listaCombinacoes.length / itensPorPagina)) {
+                paginaAtual++;
+                mostrarCombinacoes();
+            }
+        });
+
+        // Fechar modal
+        modalClose.addEventListener('click', () => {
+            modalOverlay.classList.add('hidden');
+        });
+
+        // Clicar fora do modal para fechar
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.add('hidden');
+            }
+        });
+
+        // Fechar modal de resumo
+        resumoModalClose.addEventListener('click', () => {
+            resumoModalOverlay.classList.add('hidden');
+        });
+
+        // Clicar fora do modal de resumo para fechar
+        resumoModalOverlay.addEventListener('click', (e) => {
+            if (e.target === resumoModalOverlay) {
+                resumoModalOverlay.classList.add('hidden');
+            }
+        });
+
+        // Executar análise inicial após o carregamento da página
+        document.addEventListener('DOMContentLoaded', () => {
+            // Executar uma análise inicial com os valores padrão
+            gerarBtn.click();
+        });
+    </script>
+</body>
+</html>

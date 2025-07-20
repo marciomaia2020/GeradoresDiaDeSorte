@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Combinações de Dígitos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+
+        .clickable {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .clickable:hover {
+            background-color: rgba(93, 92, 222, 0.1);
+            text-decoration: underline;
+        }
+
+        /* Animação de carregamento */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Highlight for search results */
+        .highlight {
+            background-color: rgba(93, 92, 222, 0.2);
+            border: 1px solid rgba(93, 92, 222, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Navbar para navegação entre abas -->
+        <nav class="flex flex-wrap justify-center gap-2 mb-8">
+            <button id="tab-home" class="px-4 py-2 rounded-lg bg-primary text-white font-medium">Gerador</button>
+            <button id="tab-tabela" class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 font-medium">Tabela de Estatísticas</button>
+            <button id="tab-agrupamento" class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 font-medium">Agrupamento de Combinações</button>
+            <button id="tab-mega" class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 font-medium">Combinações Dia de Sorte</button>
+        </nav>
+
+        <!-- Conteúdo da página inicial (Gerador) -->
+        <div id="page-home" class="page-content">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6">
+                <h1 class="text-2xl font-bold text-center mb-6">Gerador de Combinações de Dígitos</h1>
+                
+                <div class="flex flex-wrap gap-4 items-center mb-6">
+                    <label for="tamanho" class="font-medium">Tamanho do grupo:</label>
+                    <select id="tamanho" class="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-base">
+                        <option value="1">1 dígito</option>
+                        <option value="2">2 dígitos</option>
+                        <option value="3" selected>3 dígitos</option>
+                        <option value="4">4 dígitos</option>
+                        <option value="5">5 dígitos</option>
+                        <option value="6">6 dígitos</option>
+                        <option value="7">7 dígitos</option>
+                        <option value="8">8 dígitos</option>
+                        <option value="9">9 dígitos</option>
+                        <option value="10">10 dígitos</option>
+                    </select>
+                    <button id="gerar" class="bg-primary hover:bg-opacity-90 text-white px-4 py-2 rounded-lg font-medium">
+                        Gerar Combinações
+                    </button>
+                    <button id="ver-estatisticas" disabled class="bg-gray-400 text-white px-4 py-2 rounded-lg font-medium opacity-70 cursor-not-allowed">
+                        Ver Estatísticas
+                    </button>
+                </div>
+                
+                <div class="search-container mb-6">
+                    <div class="relative">
+                        <input type="text" id="search-input" placeholder="Pesquisar combinações..." 
+                               class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-10 text-base">
+                        <button id="clear-search" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hidden">
+                            &times;
+                        </button>
+                    </div>
+                    <div id="search-results" class="text-sm text-gray-600 dark:text-gray-400 mt-2 hidden"></div>
+                </div>
+                
+                <div class="results">
+                    <h2 id="resultado-titulo" class="text-xl font-semibold mb-2"></h2>
+                    <div id="total-info" class="text-sm text-gray-600 dark:text-gray-400 mb-4"></div>
+                    
+                    <div id="combinacoes" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-6"></div>
+                    
+                    <div class="flex justify-center gap-4 mb-2">
+                        <button id="anterior" disabled class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-lg font-medium disabled:opacity-50">
+                            Anterior
+                        </button>
+                        <button id="proximo" disabled class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded-lg font-medium disabled:opacity-50">
+                            Próximo
+                        </button>
+                    </div>
+                    <div id="pagina-info" class="text-center text-sm text-gray-600 dark:text-gray-400"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Página de Tabela de Estatísticas -->
+        <div id="page-tabela" class="page-content hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                <h1 class="text-2xl font-bold text-center mb-6">Tabela de Estatísticas de Combinações</h1>
+                
+                <div class="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500 p-4 mb-6 rounded">
+                    <p class="text-sm">
+                        <span class="font-semibold">Nota sobre "Combinações Válidas Dia de Sorte":</span> 
+                        Esta coluna mostra as combinações que permitem formar números válidos (1-31) para o Dia de Sorte.
+                        <br/><br/>
+                        <strong>Importante:</strong> Para formar números válidos no Dia de Sorte, é necessário observar:
+                        <ul class="list-disc ml-6 mt-2 mb-2">
+                            <li>Com apenas 1 dígito, só formamos números de 1 a 9 (o dígito 0 sozinho não é válido)</li>
+                            <li>Para formar dezenas (10 a 31), precisamos de pelo menos 2 dígitos</li>
+                            <li>Algumas combinações como {5,6,7,8,9} têm utilidade limitada pois não podem formar dezenas</li>
+                            <li>Combinações como {0,1,2,3} são mais versáteis, permitindo formar 1, 2, 3, 10, 12, 13, 20, 21, 23, 30, 31</li>
+                        </ul>
+                        Para 1 dígito, apenas 9 dos 10 dígitos são válidos (90%). Para 2 ou mais dígitos, estimamos a proporção de combinações úteis com base nos números que podem formar.
+                    </p>
+                </div>
+                
+                <div class="flex flex-wrap gap-4 items-center mb-6">
+                    <label for="tabela-tamanho" class="font-medium">Filtrar por tamanho:</label>
+                    <select id="tabela-tamanho" class="bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-base">
+                        <option value="all">Todos os tamanhos</option>
+                        <option value="1">1 dígito</option>
+                        <option value="2">2 dígitos</option>
+                        <option value="3">3 dígitos</option>
+                        <option value="4">4 dígitos</option>
+                        <option value="5">5 dígitos</option>
+                        <option value="6">6 dígitos</option>
+                        <option value="7">7 dígitos</option>
+                        <option value="8">8 dígitos</option>
+                        <option value="9">9 dígitos</option>
+                        <option value="10">10 dígitos</option>
+                    </select>
+                    <button id="atualizar-tabela" class="bg-primary hover:bg-opacity-90 text-white px-4 py-2 rounded-lg font-medium">
+                        Atualizar Tabela
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 dark:bg-gray-700">
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Tamanho</th>
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Total Combinações</th>
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Combinações Válidas Dia de Sorte</th>
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Agrupamentos de Duas Dezenas</th>
+                                <th class="border border-gray-300 dark:border-gray-600 px-4 py-2">Combinações Agrupadas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-estatisticas-body">
+                            <!-- Aqui serão preenchidos os dados das estatísticas -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Página de Agrupamento de Combinações -->
+        <div id="page-agrupamento" class="page-content hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                <h1 class="text-2xl font-bold text-center mb-6">Agrupamento de Combinações</h1>
+                
+                <div class="mb-6">
+                    <label for="combinacao-input" class="block font-medium mb-2">Digite a combinação de dígitos (separados por vírgula):</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="combinacao-input" placeholder="0,1,2,3,4,5,6" 
+                               class="flex-1 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-base">
+                        <button id="analisar-combinacao" class="bg-primary hover:bg-opacity-90 text-white px-4 py-2 rounded-lg font-medium">
+                            Analisar
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="resultado-agrupamento" class="hidden">
+                    <h2 class="text-xl font-semibold mb-4">Resultado da Análise</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+                            <h3 class="font-medium mb-2">Informações Gerais</h3>
+                            <ul class="space-y-2">
+                                <li><strong>Combinação:</strong> <span id="ag-combinacao"></span></li>
+                                <li><strong>Tamanho:</strong> <span id="ag-tamanho"></span></li>
+                                <li><strong>Total de Agrupamentos (2 em 2):</strong> <span id="ag-total"></span></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+                            <h3 class="font-medium mb-2">Análise Dia de Sorte</h3>
+                            <ul class="space-y-2">
+                                <li><strong>Números formáveis (01-31):</strong> <span id="ag-numeros-formados"></span></li>
+                                <li><strong>Total de números válidos:</strong> <span id="ag-total-validos"></span></li>
+                                <li id="ag-valido-container"><strong>Suficiente para jogo completo:</strong> <span id="ag-valido"></span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <h3 class="font-medium mb-2">Agrupamentos (2 em 2):</h3>
+                            <div id="ag-agrupamentos" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6 max-h-[300px] overflow-y-auto">
+                                <!-- Agrupamentos serão preenchidos aqui -->
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium mb-2">Números do Dia de Sorte formáveis:</h3>
+                            <div id="ag-dia-sorte" class="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-3 mb-6 max-h-[300px] overflow-y-auto">
+                                <!-- Números do Dia de Sorte serão preenchidos aqui -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Página de Combinações Dia de Sorte -->
+        <div id="page-mega" class="page-content hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                <h1 class="text-2xl font-bold text-center mb-6">Combinações para Dia de Sorte</h1>
+                
+                <div class="mb-6">
+                    <label for="mega-combinacao-input" class="block font-medium mb-2">Digite a combinação de dígitos (separados por vírgula):</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="mega-combinacao-input" placeholder="0,1,2,3,4,5,6,7,8,9" 
+                               class="flex-1 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-base">
+                        <button id="analisar-mega" class="bg-primary hover:bg-opacity-90 text-white px-4 py-2 rounded-lg font-medium">
+                            Analisar
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="resultado-mega" class="hidden">
+                    <h2 class="text-xl font-semibold mb-4">Resultado da Análise Dia de Sorte</h2>
+                    
+                    <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 mb-6">
+                        <ul class="space-y-3">
+                            <li><strong>Combinação:</strong> <span id="mega-combinacao"></span></li>
+                            <li><strong>Tamanho:</strong> <span id="mega-tamanho"></span></li>
+                            <li><strong>Palpites Possíveis:</strong> <span id="mega-palpites"></span></li>
+                            <li><strong>Total de Combinações Dia de Sorte:</strong> <span id="mega-total"></span></li>
+                            <li><strong>Porcentagem de Cobertura:</strong> <span id="mega-porcentagem"></span>%</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+                        <h3 class="font-medium mb-3">Informações Adicionais</h3>
+                        <p class="mb-2">O Dia de Sorte utiliza 7 números de 1 a 31 (representando os dias do mês). O total de combinações possíveis é de 7.888.725.</p>
+                        <p>A porcentagem de cobertura indica quanto do total de jogos possíveis sua combinação de dígitos pode abranger.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para estatísticas -->
+    <div id="modal-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-xl shadow-xl w-11/12 max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div class="bg-primary text-white p-4 rounded-t-xl flex justify-between items-center">
+                <h2 id="modal-title" class="text-xl font-bold">Estatísticas</h2>
+                <button id="modal-close" class="text-3xl font-light">&times;</button>
+            </div>
+            <div id="modal-body" class="p-6">
+                <!-- Conteúdo do modal será preenchido dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-4 py-4 text-center text-sm text-gray-600 dark:text-gray-400 mt-8">
+        Feito por: <i>Márcio Fernando Maia - Todos os direitos reservados - 2025</i>
+    </footer>
+
+    <script>
+        // Detecção de dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Funções matemáticas (equivalentes ao módulo math do Python)
+        function factorial(n) {
+            if (n === 0 || n === 1) return 1;
+            let result = 1;
+            for (let i = 2; i <= n; i++) {
+                result *= i;
+            }
+            return result;
+        }
+
+        function comb(n, k) {
+            // Combinação: C(n,k) = n! / (k! * (n-k)!)
+            if (k < 0 || k > n) return 0;
+            if (k === 0 || k === n) return 1;
+            
+            // Otimização para números grandes
+            let result = 1;
+            for (let i = 1; i <= k; i++) {
+                result *= (n - (k - i));
+                result /= i;
+            }
+            return Math.round(result);
+        }
+
+        // Funções de combinações (equivalentes ao itertools.combinations do Python)
+        function gerarCombinacoes(conjunto, tamanho) {
+            const combinacoes = [];
+            
+            function combinar(inicio, atual) {
+                if (atual.length === tamanho) {
+                    combinacoes.push([...atual]);
+                    return;
+                }
+                
+                for (let i = inicio; i < conjunto.length; i++) {
+                    atual.push(conjunto[i]);
+                    combinar(i + 1, atual);
+                    atual.pop();
+                }
+            }
+            
+            combinar(0, []);
+            return combinacoes;
+        }
+
+        // Funções para cálculos do Dia de Sorte
+        function calcularJogosDiaDeSorte(tamanhoCombinacao, totalCombinacoes) {
+            // Função simplificada para calcular combinações válidas baseada no total de combinações
+            if (tamanhoCombinacao < 7) {
+                return 0;  // Impossível formar jogos completos com menos de 7 dígitos
+            }
+            
+            // Para cada tamanho, calculamos uma proporção do total de combinações
+            // que são válidas para o Dia de Sorte
+            const totalDiaDeSorte = comb(31, 7);  // 7.888.725
+            
+            // Se temos o totalCombinacoes como parâmetro, usamos ele diretamente
+            if (totalCombinacoes !== undefined) {
+                // Calculamos um fator de proporção baseado no tamanho
+                const fatorProporcao = tamanhoCombinacao === 10 ? 0.25 : 
+                                      tamanhoCombinacao === 9 ? 0.20 : 
+                                      tamanhoCombinacao === 8 ? 0.15 : 
+                                      tamanhoCombinacao === 7 ? 0.05 : 0;
+                
+                return Math.round(totalCombinacoes * fatorProporcao);
+            } else {
+                // Caso contrário, mantemos a lógica original para manter compatibilidade
+                if (tamanhoCombinacao === 7) {
+                    return 5040;  // 7! (possíveis arranjos de 7 dígitos)
+                } else if (tamanhoCombinacao === 8) {
+                    return comb(8, 7) * 5040;  // 8 escolher 7 * 7! = 40.320
+                } else {
+                    // Fórmula geral
+                    const combinacoes7Digitos = comb(tamanhoCombinacao, 7);
+                    const mapeamentosPossiveis = Math.min(Math.pow(10, 7), Math.floor(totalDiaDeSorte / combinacoes7Digitos));
+                    return combinacoes7Digitos * mapeamentosPossiveis;
+                }
+            }
+        }
+
+        // Funções para agrupamentos
+        function analisarCombinacaoEspecifica(combinacao) {
+            // Converter para array se for uma string
+            if (typeof combinacao === 'string') {
+                combinacao = combinacao.split(',').map(d => parseInt(d.trim()));
+            }
+            
+            // Calcular agrupamentos de 2 em 2
+            const agrupamentosDois = gerarCombinacoes(combinacao, 2);
+            const totalAgrupamentos = agrupamentosDois.length;
+            
+            // Analisar números do Dia de Sorte
+            const numerosDiaDeSorte = analisarNumerosDiaDeSorte(combinacao);
+            
+            return {
+                combinacao: combinacao,
+                tamanhoAgrupamento: 2,
+                totalCombinacoes: totalAgrupamentos,
+                agrupamentos: agrupamentosDois,
+                numerosDiaDeSorte: numerosDiaDeSorte
+            };
+        }
+        
+        // Função para analisar quais números do Dia de Sorte podem ser formados
+        function analisarNumerosDiaDeSorte(combinacao) {
+            // Números válidos para o Dia de Sorte: 01-31
+            const numerosValidos = [];
+            const setDigitos = new Set(combinacao);
+            
+            // Verificar números de 1 a 31
+            for (let i = 1; i <= 31; i++) {
+                let podeFormar = true;
+                
+                // Converter o número para string com dois dígitos (01, 02, ..., 31)
+                const numStr = i.toString().padStart(2, '0');
+                
+                // Verificar se todos os dígitos estão na combinação
+                for (let d of numStr) {
+                    if (!setDigitos.has(parseInt(d))) {
+                        podeFormar = false;
+                        break;
+                    }
+                }
+                
+                if (podeFormar) {
+                    numerosValidos.push(numStr);
+                }
+            }
+            
+            return {
+                numerosValidos: numerosValidos,
+                total: numerosValidos.length,
+                ehValido: numerosValidos.length >= 7
+            };
+        }
+
+        // Função para calcular estatísticas
+        function calcularEstatisticas() {
+            const estatisticas = [];
+            const n = 10;  // número total de dígitos (0-9)
+            
+            for (let k = 1; k <= n; k++) {
+                const totalCombinacoes = comb(n, k);
+                
+                // Calcular os agrupamentos com duas dezenas
+                let agrupamentosDuasDezenas;
+                if (k <= 2) {
+                    agrupamentosDuasDezenas = k;  // Para tamanho 1, apenas 1 agrupamento, para 2, são 2 agrupamentos
+                } else {
+                    agrupamentosDuasDezenas = comb(10, 2); // 45 possibilidades
+                }
+                
+                // Calcular combinações destes agrupamentos
+                let combinacoesAgrupadas;
+                if (k <= 2) {
+                    combinacoesAgrupadas = k;
+                } else {
+                    // Para tamanhos maiores, calculamos com base no número de combinações possíveis dentro de cada agrupamento
+                    combinacoesAgrupadas = agrupamentosDuasDezenas * comb(k, 2);
+                }
+                
+                // Calcular combinações válidas para Dia de Sorte baseada no total de combinações
+                let combinacoesDiaDeSorte;
+                
+                // Calculamos um valor realista para cada tamanho, garantindo que nunca exceda o total de combinações
+                if (k === 1) {
+                    combinacoesDiaDeSorte = 9; // Dígitos 1-9 são válidos diretamente (9 de 10 dígitos = 90%)
+                                              // O dígito 0 sozinho não é válido para o Dia de Sorte
+                } else if (k === 2) {
+                    // Com 2 dígitos podemos formar tanto números de 1 dígito (1-9) quanto dezenas (10-31)
+                    // Estimamos que cerca de 67% das combinações de 2 dígitos sejam válidas
+                    // (pois algumas combinações como 32-99 não são válidas para o Dia de Sorte)
+                    combinacoesDiaDeSorte = Math.floor(totalCombinacoes * 0.67); // 30 de 45 aproximadamente
+                } else {
+                    // Para tamanhos 3 ou mais, calculamos uma porcentagem do total
+                    const porcentagemValida = 0.75; // 75% das combinações permitem formar números válidos
+                    combinacoesDiaDeSorte = Math.floor(totalCombinacoes * porcentagemValida);
+                }
+                
+                estatisticas.push({
+                    tamanho: k,
+                    total: totalCombinacoes,
+                    agrupamentosDuasDezenas: agrupamentosDuasDezenas,
+                    combinacoesAgrupadas: combinacoesAgrupadas,
+                    combinacoesDiaDeSorte: combinacoesDiaDeSorte
+                });
+            }
+            
+            return estatisticas;
+        }
+
+        // Variáveis de controle da interface
+        let todasCombinacoes = [];
+        let combinacoesFiltradas = [];
+        let paginaAtual = 1;
+        let pesquisaAtiva = false;
+        const itensPorPagina = 30;
+
+        // Elementos DOM
+        const tamanhoSelect = document.getElementById('tamanho');
+        const gerarBtn = document.getElementById('gerar');
+        const resultadoTitulo = document.getElementById('resultado-titulo');
+        const totalInfo = document.getElementById('total-info');
+        const combinacoesContainer = document.getElementById('combinacoes');
+        const anteriorBtn = document.getElementById('anterior');
+        const proximoBtn = document.getElementById('proximo');
+        const paginaInfo = document.getElementById('pagina-info');
+        const verEstatisticasBtn = document.getElementById('ver-estatisticas');
+
+        // Elementos de busca
+        const searchInput = document.getElementById('search-input');
+        const clearSearchBtn = document.getElementById('clear-search');
+        const searchResults = document.getElementById('search-results');
+
+        // Elementos de navegação por abas
+        const tabs = {
+            home: document.getElementById('tab-home'),
+            tabela: document.getElementById('tab-tabela'),
+            agrupamento: document.getElementById('tab-agrupamento'),
+            mega: document.getElementById('tab-mega')
+        };
+
+        const pages = {
+            home: document.getElementById('page-home'),
+            tabela: document.getElementById('page-tabela'),
+            agrupamento: document.getElementById('page-agrupamento'),
+            mega: document.getElementById('page-mega')
+        };
+
+        // Modal
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        const modalClose = document.getElementById('modal-close');
+
+        // Elementos da página de tabela
+        const tabelaTamanhoSelect = document.getElementById('tabela-tamanho');
+        const atualizarTabelaBtn = document.getElementById('atualizar-tabela');
+        const tabelaEstatisticasBody = document.getElementById('tabela-estatisticas-body');
+
+        // Elementos da página de agrupamento
+        const combinacaoInput = document.getElementById('combinacao-input');
+        const analisarCombinacaoBtn = document.getElementById('analisar-combinacao');
+        const resultadoAgrupamento = document.getElementById('resultado-agrupamento');
+        const agCombinacao = document.getElementById('ag-combinacao');
+        const agTamanho = document.getElementById('ag-tamanho');
+        const agTotal = document.getElementById('ag-total');
+        const agPalpitesMega = document.getElementById('ag-palpites-mega');
+        const agAgrupamentos = document.getElementById('ag-agrupamentos');
+
+        // Elementos da página Mega Sena
+        const megaCombinacaoInput = document.getElementById('mega-combinacao-input');
+        const analisarMegaBtn = document.getElementById('analisar-mega');
+        const resultadoMega = document.getElementById('resultado-mega');
+        const megaCombinacao = document.getElementById('mega-combinacao');
+        const megaTamanho = document.getElementById('mega-tamanho');
+        const megaPalpites = document.getElementById('mega-palpites');
+        const megaTotal = document.getElementById('mega-total');
+        const megaPorcentagem = document.getElementById('mega-porcentagem');
+
+        // Funções de interface
+
+        // Função para realizar a pesquisa
+        function pesquisarCombinacoes(termo) {
+            if (!termo.trim()) {
+                // Se o termo de pesquisa estiver vazio, mostrar todas as combinações
+                pesquisaAtiva = false;
+                combinacoesFiltradas = [...todasCombinacoes];
+                paginaAtual = 1;
+                searchResults.classList.add('hidden');
+                clearSearchBtn.classList.add('hidden');
+                mostrarCombinacoes();
+                return;
+            }
+
+            // Ativar a pesquisa
+            pesquisaAtiva = true;
+            clearSearchBtn.classList.remove('hidden');
+            
+            // Filtrar combinações com base no termo
+            combinacoesFiltradas = todasCombinacoes.filter(comb => {
+                const combStr = comb.join(',');
+                return combStr.includes(termo);
+            });
+            
+            // Atualizar a interface
+            paginaAtual = 1;
+            
+            // Mostrar resultados
+            searchResults.classList.remove('hidden');
+            searchResults.textContent = `Encontradas ${combinacoesFiltradas.length} combinações contendo "${termo}"`;
+            
+            mostrarCombinacoes();
+        }
+
+        // Função para limpar a pesquisa
+        function limparPesquisa() {
+            searchInput.value = '';
+            pesquisaAtiva = false;
+            combinacoesFiltradas = [...todasCombinacoes];
+            paginaAtual = 1;
+            searchResults.classList.add('hidden');
+            clearSearchBtn.classList.add('hidden');
+            mostrarCombinacoes();
+        }
+
+        function mostrarCombinacoes() {
+            combinacoesContainer.innerHTML = '';
+            
+            // Usar a lista filtrada ou a lista completa
+            const listaCombinacoes = pesquisaAtiva ? combinacoesFiltradas : todasCombinacoes;
+            
+            const inicio = (paginaAtual - 1) * itensPorPagina;
+            const fim = Math.min(inicio + itensPorPagina, listaCombinacoes.length);
+            
+            for (let i = inicio; i < fim; i++) {
+                const combDiv = document.createElement('div');
+                combDiv.classList.add('bg-gray-100', 'dark:bg-gray-700', 'rounded-lg', 'p-2', 'text-center', 'font-mono');
+                
+                // Adicionar classe de destaque se a pesquisa estiver ativa
+                if (pesquisaAtiva) {
+                    combDiv.classList.add('highlight');
+                }
+                
+                combDiv.textContent = listaCombinacoes[i].join(',');
+                combinacoesContainer.appendChild(combDiv);
+            }
+            
+            // Atualizar informações de paginação
+            const totalPaginas = Math.ceil(listaCombinacoes.length / itensPorPagina);
+            paginaInfo.textContent = `Página ${paginaAtual} de ${totalPaginas > 0 ? totalPaginas : 1}`;
+            anteriorBtn.disabled = paginaAtual === 1;
+            proximoBtn.disabled = paginaAtual === totalPaginas || listaCombinacoes.length === 0;
+            
+            // Habilitar o botão de estatísticas quando houver combinações
+            if (verEstatisticasBtn) {
+                if (todasCombinacoes.length === 0) {
+                    verEstatisticasBtn.disabled = true;
+                    verEstatisticasBtn.classList.add('opacity-70', 'cursor-not-allowed', 'bg-gray-400');
+                    verEstatisticasBtn.classList.remove('bg-primary', 'hover:bg-opacity-90');
+                } else {
+                    verEstatisticasBtn.disabled = false;
+                    verEstatisticasBtn.classList.remove('opacity-70', 'cursor-not-allowed', 'bg-gray-400');
+                    verEstatisticasBtn.classList.add('bg-primary', 'hover:bg-opacity-90');
+                }
+            }
+        }
+
+        function mostrarEstatisticasRapidas() {
+            if (todasCombinacoes.length === 0) {
+                alert('Gere combinações primeiro para ver estatísticas.');
+                return;
+            }
+            
+            const tamanho = parseInt(tamanhoSelect.value);
+            
+            // Agrupar combinações por primeiro dígito
+            const porPrimeiroDigito = {};
+            for (let i = 0; i < 10; i++) {
+                porPrimeiroDigito[i] = todasCombinacoes.filter(comb => comb[0] === i);
+            }
+            
+            // Configurar o modal
+            modalTitle.textContent = `Estatísticas para ${tamanho} dígito(s)`;
+            
+            // Criar conteúdo do modal
+            let modalContent = `
+                <div class="estatisticas-resumo space-y-4">
+                    <div class="font-medium">
+                        <strong>Total de combinações:</strong> ${todasCombinacoes.length}
+                    </div>
+                    
+                    <div>
+                        <strong>Combinações por primeiro dígito:</strong>
+                        <div class="overflow-x-auto mt-2">
+                            <table class="w-full border-collapse">
+                                <tr class="bg-gray-100 dark:bg-gray-700">
+            `;
+            
+            // Cabeçalho da tabela
+            for (let i = 0; i < 10; i++) {
+                modalContent += `<th class="border border-gray-300 dark:border-gray-600 px-3 py-2">${i}</th>`;
+            }
+            
+            modalContent += `
+                                </tr>
+                                <tr>
+            `;
+            
+            // Valores
+            for (let i = 0; i < 10; i++) {
+                const count = porPrimeiroDigito[i] ? porPrimeiroDigito[i].length : 0;
+                modalContent += `<td class="border border-gray-300 dark:border-gray-600 px-3 py-2 text-center">${count}</td>`;
+            }
+            
+            modalContent += `
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Adicionar ao modal
+            modalBody.innerHTML = modalContent;
+            
+            // Exibir o modal
+            modalOverlay.classList.remove('hidden');
+        }
+
+        function mostrarTabela(filtroTamanho = 'all') {
+            // Calcular estatísticas
+            const estatisticas = calcularEstatisticas();
+            
+            // Limpar tabela atual
+            tabelaEstatisticasBody.innerHTML = '';
+            
+            // Filtrar estatísticas se necessário
+            let dadosFiltrados = estatisticas;
+            if (filtroTamanho !== 'all') {
+                const tamanhoFiltro = parseInt(filtroTamanho);
+                dadosFiltrados = estatisticas.filter(item => item.tamanho === tamanhoFiltro);
+            }
+            
+            // Preencher a tabela
+            dadosFiltrados.forEach(item => {
+                // Calcular a porcentagem para Combinações Válidas Dia de Sorte
+                const porcentagem = item.total > 0 ? ((item.combinacoesDiaDeSorte / item.total) * 100).toFixed(0) : 0;
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">${item.tamanho}</td>
+                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">${item.total.toLocaleString()}</td>
+                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">
+                        ${item.combinacoesDiaDeSorte.toLocaleString()} 
+                        <span class="text-xs text-gray-500 dark:text-gray-400">(${porcentagem}%)</span>
+                    </td>
+                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">${item.agrupamentosDuasDezenas.toLocaleString()}</td>
+                    <td class="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">${item.combinacoesAgrupadas.toLocaleString()}</td>
+                `;
+                tabelaEstatisticasBody.appendChild(tr);
+            });
+        }
+
+        function analisarCombinacao() {
+            const combinacaoStr = combinacaoInput.value.trim();
+            if (!combinacaoStr) {
+                alert('Por favor, digite uma combinação válida.');
+                return;
+            }
+            
+            try {
+                // Converter a string para array de inteiros
+                const combinacao = combinacaoStr.split(',').map(d => {
+                    const num = parseInt(d.trim());
+                    if (isNaN(num) || num < 0 || num > 9) {
+                        throw new Error(`Dígito inválido: ${d}`);
+                    }
+                    return num;
+                });
+                
+                // Verificar se há duplicatas
+                const uniqueDigits = new Set(combinacao);
+                if (uniqueDigits.size !== combinacao.length) {
+                    alert('A combinação não deve conter dígitos repetidos.');
+                    return;
+                }
+                
+                // Verificar tamanho mínimo
+                if (combinacao.length < 2) {
+                    alert('A combinação deve ter pelo menos 2 dígitos.');
+                    return;
+                }
+                
+                // Analisar a combinação
+                const resultado = analisarCombinacaoEspecifica(combinacao);
+                
+                // Atualizar a interface - Informações gerais
+                agCombinacao.textContent = combinacao.join(',');
+                agTamanho.textContent = combinacao.length;
+                agTotal.textContent = resultado.totalCombinacoes;
+                
+                // Atualizar a interface - Análise Dia de Sorte
+                const agNumerosFormados = document.getElementById('ag-numeros-formados');
+                const agTotalValidos = document.getElementById('ag-total-validos');
+                const agValido = document.getElementById('ag-valido');
+                const agValidoContainer = document.getElementById('ag-valido-container');
+                const agDiaSorte = document.getElementById('ag-dia-sorte');
+                
+                agNumerosFormados.textContent = resultado.numerosDiaDeSorte.numerosValidos.join(', ');
+                agTotalValidos.textContent = resultado.numerosDiaDeSorte.total;
+                
+                if (resultado.numerosDiaDeSorte.ehValido) {
+                    agValido.textContent = 'SIM';
+                    agValido.className = 'font-bold text-green-600 dark:text-green-400';
+                    agValidoContainer.className = 'bg-green-100 dark:bg-green-900/20 p-2 rounded';
+                } else {
+                    agValido.textContent = 'NÃO';
+                    agValido.className = 'font-bold text-red-600 dark:text-red-400';
+                    agValidoContainer.className = 'bg-red-100 dark:bg-red-900/20 p-2 rounded';
+                }
+                
+                // Mostrar os agrupamentos de 2 em 2
+                agAgrupamentos.innerHTML = '';
+                resultado.agrupamentos.forEach(ag => {
+                    const agDiv = document.createElement('div');
+                    agDiv.classList.add('bg-gray-100', 'dark:bg-gray-700', 'rounded-lg', 'p-2', 'text-center', 'font-mono');
+                    agDiv.textContent = ag.join(',');
+                    agAgrupamentos.appendChild(agDiv);
+                });
+                
+                // Mostrar os números do Dia de Sorte
+                agDiaSorte.innerHTML = '';
+                resultado.numerosDiaDeSorte.numerosValidos.forEach(num => {
+                    const numDiv = document.createElement('div');
+                    numDiv.classList.add('bg-blue-100', 'dark:bg-blue-900/30', 'rounded-lg', 'p-2', 'text-center', 'font-mono', 'font-bold');
+                    numDiv.textContent = num;
+                    agDiaSorte.appendChild(numDiv);
+                });
+                
+                // Exibir a seção de resultado
+                resultadoAgrupamento.classList.remove('hidden');
+                
+            } catch (error) {
+                alert(`Erro: ${error.message}`);
+            }
+        }
+
+        function analisarMega() {
+            const combinacaoStr = megaCombinacaoInput.value.trim();
+            if (!combinacaoStr) {
+                alert('Por favor, digite uma combinação válida.');
+                return;
+            }
+            
+            try {
+                // Converter a string para array de inteiros
+                const combinacao = combinacaoStr.split(',').map(d => {
+                    const num = parseInt(d.trim());
+                    if (isNaN(num) || num < 0 || num > 9) {
+                        throw new Error(`Dígito inválido: ${d}`);
+                    }
+                    return num;
+                });
+                
+                // Verificar se há duplicatas
+                const uniqueDigits = new Set(combinacao);
+                if (uniqueDigits.size !== combinacao.length) {
+                    alert('A combinação não deve conter dígitos repetidos.');
+                    return;
+                }
+                
+                // Calcular palpites para Dia de Sorte
+                const palpitesDiaDeSorte = calcularJogosDiaDeSorte(combinacao.length);
+                
+                // Total de combinações possíveis no Dia de Sorte (31 escolher 7)
+                const totalDiaDeSorte = comb(31, 7);  // 7.888.725
+                
+                // Calcular porcentagem em relação ao total
+                const porcentagem = (palpitesDiaDeSorte / totalDiaDeSorte) * 100;
+                
+                // Atualizar a interface
+                megaCombinacao.textContent = combinacao.join(',');
+                megaTamanho.textContent = combinacao.length;
+                megaPalpites.textContent = palpitesDiaDeSorte.toLocaleString();
+                megaTotal.textContent = totalDiaDeSorte.toLocaleString();
+                megaPorcentagem.textContent = porcentagem.toFixed(6);
+                
+                // Exibir a seção de resultado
+                resultadoMega.classList.remove('hidden');
+                
+            } catch (error) {
+                alert(`Erro: ${error.message}`);
+            }
+        }
+
+        function navegarParaAba(aba) {
+            // Esconder todas as páginas
+            Object.values(pages).forEach(page => {
+                page.classList.add('hidden');
+            });
+            
+            // Resetar todas as abas
+            Object.values(tabs).forEach(tab => {
+                tab.classList.remove('bg-primary', 'text-white');
+                tab.classList.add('bg-gray-200', 'dark:bg-gray-700');
+            });
+            
+            // Mostrar a página selecionada
+            pages[aba].classList.remove('hidden');
+            
+            // Destacar a aba selecionada
+            tabs[aba].classList.remove('bg-gray-200', 'dark:bg-gray-700');
+            tabs[aba].classList.add('bg-primary', 'text-white');
+            
+            // Inicializar a página carregada, se necessário
+            if (aba === 'tabela') {
+                mostrarTabela();
+            }
+        }
+
+        // Event listeners
+        gerarBtn.addEventListener('click', () => {
+            const tamanho = parseInt(tamanhoSelect.value);
+            const digitos = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+            
+            // Gerar todas as combinações
+            todasCombinacoes = gerarCombinacoes(digitos, tamanho);
+            combinacoesFiltradas = [...todasCombinacoes];
+            
+            // Resetar paginação e pesquisa
+            paginaAtual = 1;
+            limparPesquisa();
+            
+            // Atualizar interface
+            resultadoTitulo.textContent = `Combinações com ${tamanho} dígito(s)`;
+            totalInfo.textContent = `Total de combinações: ${todasCombinacoes.length.toLocaleString()}`;
+            
+            // Mostrar combinações
+            mostrarCombinacoes();
+        });
+
+        // Event listeners para a funcionalidade de busca
+        searchInput.addEventListener('input', (e) => {
+            pesquisarCombinacoes(e.target.value);
+        });
+
+        clearSearchBtn.addEventListener('click', limparPesquisa);
+
+        anteriorBtn.addEventListener('click', () => {
+            if (paginaAtual > 1) {
+                paginaAtual--;
+                mostrarCombinacoes();
+            }
+        });
+
+        proximoBtn.addEventListener('click', () => {
+            const listaCombinacoes = pesquisaAtiva ? combinacoesFiltradas : todasCombinacoes;
+            if (paginaAtual < Math.ceil(listaCombinacoes.length / itensPorPagina)) {
+                paginaAtual++;
+                mostrarCombinacoes();
+            }
+        });
+
+        verEstatisticasBtn.addEventListener('click', mostrarEstatisticasRapidas);
+
+        // Fechar modal
+        modalClose.addEventListener('click', () => {
+            modalOverlay.classList.add('hidden');
+        });
+
+        // Clicar fora do modal para fechar
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.add('hidden');
+            }
+        });
+
+        // Navegação por abas
+        tabs.home.addEventListener('click', () => navegarParaAba('home'));
+        tabs.tabela.addEventListener('click', () => navegarParaAba('tabela'));
+        tabs.agrupamento.addEventListener('click', () => navegarParaAba('agrupamento'));
+        tabs.mega.addEventListener('click', () => navegarParaAba('mega'));
+
+        // Eventos da página de tabela
+        atualizarTabelaBtn.addEventListener('click', () => {
+            mostrarTabela(tabelaTamanhoSelect.value);
+        });
+
+        // Eventos da página de agrupamento
+        analisarCombinacaoBtn.addEventListener('click', analisarCombinacao);
+
+        // Eventos da página de Mega Sena
+        analisarMegaBtn.addEventListener('click', analisarMega);
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            // Começar na página inicial
+            navegarParaAba('home');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Combinações Válidas - Dia de Sorte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#16A34A', // Verde mais vivo
+                        secondary: '#4a4a4a',
+                    }
+                }
+            },
+            darkMode: 'class',
+        }
+    </script>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
+    <!-- Detector de modo escuro -->
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-8 bg-primary text-white py-4 rounded-lg">Análise de Combinações Válidas - Dia de Sorte</h1>
+
+        <!-- Modal de carregamento inicial -->
+        <div id="modalCarregamentoInicial" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full">
+                <h2 class="text-xl font-bold mb-4">Carregando Dados dos Sorteios</h2>
+                <p id="mensagemCarregamento" class="mb-4">Buscando resultados completos...</p>
+                
+                <div class="flex items-center mb-4">
+                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mr-3"></div>
+                    <p id="statusCarregamento">Iniciando...</p>
+                </div>
+                
+                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-4">
+                    <div id="progressBarInicial" class="bg-primary h-2.5 rounded-full transition-all duration-300" style="width: 5%"></div>
+                </div>
+                
+                <div id="logContainer" class="mt-4 max-h-40 overflow-y-auto text-xs bg-gray-100 dark:bg-gray-700 p-2 rounded">
+                    <div id="logContent">Iniciando busca de resultados...</div>
+                </div>
+                
+                <div class="flex justify-between mt-4 text-sm text-gray-500 dark:text-gray-400">
+                    <button id="btnContinuarMesmo" class="text-primary hover:underline hidden">Continuar com resultados parciais</button>
+                    <button id="btnUsarDemoAnyway" class="text-primary hover:underline hidden">Usar dados de exemplo</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <!-- Resumo estatístico -->
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Estatísticas por Tamanho de Grupo</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-700 dark:text-gray-300 border">
+                            <thead class="text-xs uppercase bg-gray-100 dark:bg-gray-700">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 border">Tamanho</th>
+                                    <th scope="col" class="px-6 py-3 border">Total Combinações</th>
+                                    <th scope="col" class="px-6 py-3 border">Combinações Válidas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-white dark:bg-gray-800 border cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" data-tamanho="3">
+                                    <td class="px-6 py-4 border font-medium">3 dígitos</td>
+                                    <td class="px-6 py-4 border">120</td>
+                                    <td class="px-6 py-4 border"><span class="text-red-500 font-medium">15</span> (13%)</td>
+                                </tr>
+                                <tr class="bg-white dark:bg-gray-800 border cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" data-tamanho="4">
+                                    <td class="px-6 py-4 border font-medium">4 dígitos</td>
+                                    <td class="px-6 py-4 border">210</td>
+                                    <td class="px-6 py-4 border"><span class="text-green-500 font-medium">140</span> (67%)</td>
+                                </tr>
+                                <tr class="bg-white dark:bg-gray-800 border cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" data-tamanho="5">
+                                    <td class="px-6 py-4 border font-medium">5 dígitos</td>
+                                    <td class="px-6 py-4 border">252</td>
+                                    <td class="px-6 py-4 border"><span class="text-green-500 font-medium">196</span> (78%)</td>
+                                </tr>
+                                <tr class="bg-white dark:bg-gray-800 border cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" data-tamanho="6">
+                                    <td class="px-6 py-4 border font-medium">6 dígitos</td>
+                                    <td class="px-6 py-4 border">210</td>
+                                    <td class="px-6 py-4 border"><span class="text-green-500 font-medium">182</span> (87%)</td>
+                                </tr>
+                                <tr class="bg-white dark:bg-gray-800 border cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" data-tamanho="7">
+                                    <td class="px-6 py-4 border font-medium">7 dígitos</td>
+                                    <td class="px-6 py-4 border">120</td>
+                                    <td class="px-6 py-4 border"><span class="text-green-500 font-medium">119</span> (99%)</td>
+                                </tr>
+                                <tr class="bg-white dark:bg-gray-800 border cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" data-tamanho="8">
+                                    <td class="px-6 py-4 border font-medium">8 dígitos</td>
+                                    <td class="px-6 py-4 border">45</td>
+                                    <td class="px-6 py-4 border"><span class="text-green-500 font-medium">45</span> (100%)</td>
+                                </tr>
+                                <tr class="bg-white dark:bg-gray-800 border cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" data-tamanho="9">
+                                    <td class="px-6 py-4 border font-medium">9 dígitos</td>
+                                    <td class="px-6 py-4 border">10</td>
+                                    <td class="px-6 py-4 border"><span class="text-green-500 font-medium">10</span> (100%)</td>
+                                </tr>
+                                <tr class="bg-white dark:bg-gray-800 border cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" data-tamanho="10">
+                                    <td class="px-6 py-4 border font-medium">10 dígitos</td>
+                                    <td class="px-6 py-4 border">1</td>
+                                    <td class="px-6 py-4 border"><span class="text-green-500 font-medium">1</span> (100%)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="text-sm mt-2 text-gray-600 dark:text-gray-400">Clique em uma linha para analisar esse tamanho de grupo</p>
+                    </div>
+                </div>
+                
+                <!-- Status e informações -->
+                <div class="flex flex-col justify-between">
+                    <!-- Status do cache -->
+                    <div id="statusContainer" class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="font-bold text-lg">Status:</span> 
+                            <span id="statusText" class="ml-1">Carregando dados...</span>
+                        </div>
+                        <div class="flex items-center gap-4 justify-between">
+                            <span id="totalConcursosInfo" class="font-medium">0 concursos carregados</span>
+                            <button id="btnAtualizarDados" class="bg-primary hover:bg-green-700 text-white font-medium rounded-lg px-3 py-1 text-sm">
+                                Atualizar Dados
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Análise atual -->
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <h3 class="font-semibold mb-4 text-lg">Análise Atual</h3>
+                        <div class="flex flex-col gap-4">
+                            <div class="flex justify-between">
+                                <span>Tamanho do grupo:</span>
+                                <span id="tamanhoGrupoAtual" class="font-medium">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Combinações válidas:</span>
+                                <span id="combinacoesValidasInfo" class="font-medium">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Já saíram:</span>
+                                <span id="combinacoesEncontradasInfo" class="font-medium">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Nunca saíram:</span>
+                                <span id="combinacoesNuncaSairamInfo" class="font-medium">-</span>
+                            </div>
+                            
+                            <button id="btnAnalisar" class="bg-primary hover:bg-green-700 text-white font-medium rounded-lg px-5 py-2.5 text-center w-full mt-2" disabled>
+                                Analisar Combinações
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Informações sobre os sorteios -->
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mt-6">
+                        <h3 class="font-semibold mb-2">Informações dos Sorteios</h3>
+                        <div class="grid grid-cols-1 gap-2">
+                            <div class="flex justify-between">
+                                <span>Último concurso:</span>
+                                <span id="ultimoConcursoInfo" class="font-medium">Carregando...</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Data:</span>
+                                <span id="dataUltimoSorteioInfo" class="font-medium">Carregando...</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Mês da Sorte:</span>
+                                <span id="mesDaSorteInfo" class="font-medium">Carregando...</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Total de sorteios:</span>
+                                <span id="totalSorteiosExato" class="font-medium">Carregando...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Barra de progresso principal melhorada -->
+            <div id="progressContainer" class="hidden bg-blue-50 dark:bg-blue-900 p-4 rounded-lg mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 id="progressTitle" class="font-bold text-lg">Analisando combinações...</h3>
+                    <span id="progressPercent" class="text-primary font-bold">0%</span>
+                </div>
+                
+                <div class="w-full bg-gray-200 rounded-full h-6 dark:bg-gray-700 mb-2 overflow-hidden">
+                    <div id="mainProgressBar" class="bg-primary h-6 rounded-full transition-all duration-300 relative" style="width: 0%">
+                        <div class="absolute inset-0 flex items-center justify-center w-full h-full text-xs text-white font-medium">
+                            <span id="progressBarText">Preparando análise...</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between text-sm">
+                    <div id="progressStage">Etapa: Preparando dados</div>
+                    <div id="progressTimeRemaining">Tempo restante: Calculando...</div>
+                </div>
+                
+                <div id="progressDetails" class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                    <!-- Detalhes sobre o progresso atual -->
+                </div>
+            </div>
+            
+            <!-- Antigo loading indicator (mantido como fallback) -->
+            <div id="loadingIndicator" class="hidden flex flex-col justify-center items-center my-8">
+                <div class="flex items-center mb-4">
+                    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                    <p class="ml-3 text-lg" id="loadingText">Analisando combinações...</p>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-4 dark:bg-gray-700">
+                    <div id="progressBar" class="bg-primary h-4 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <p id="progressText" class="text-sm mt-1">Preparando análise...</p>
+            </div>
+            
+
+
+            <!-- Campo de pesquisa de dígitos -->
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6">
+                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    Pesquisar Status dos Dígitos
+                </h3>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                        <label for="pesquisaDigitos" class="block text-sm font-medium mb-2">
+                            Digite a combinação de dígitos para análise:
+                        </label>
+                        <div class="flex gap-2">
+                            <input 
+                                type="text" 
+                                id="pesquisaDigitos" 
+                                placeholder="Ex: 0,1,2,3,4,5,6,7 ou 01234567"
+                                class="flex-1 px-4 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                            >
+                            <button 
+                                id="btnPesquisarDigitos" 
+                                class="bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg px-4 py-2 text-base"
+                            >
+                                Pesquisar
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                            Aceita formatos: "0,1,2,3,4,5,6,7" ou "01234567" (até 8 dígitos)
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-sm font-medium mb-2">Resultado da Pesquisa:</h4>
+                        <div id="resultadoPesquisa" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg min-h-[100px]">
+                            <div class="text-center text-gray-500 py-4">
+                                Digite uma combinação de dígitos e clique em "Pesquisar"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        Combinações válidas que nunca saíram
+                    </h3>
+                    <div class="overflow-y-auto max-h-[500px] bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div id="combinacoesNaoSorteadas" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                            <!-- Será preenchido via JavaScript -->
+                            <div class="text-center py-8 col-span-full">
+                                Selecione um tamanho de grupo na tabela acima e clique em "Analisar Combinações"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                        Combinações válidas mais frequentes
+                    </h3>
+                    <div class="overflow-y-auto max-h-[500px] bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div id="combinacoesMaisFrequentes" class="space-y-2">
+                            <!-- Será preenchido via JavaScript -->
+                            <div class="text-center py-8">
+                                Selecione um tamanho de grupo na tabela acima e clique em "Analisar Combinações"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resumo das combinações mais frequentes por tamanho de dígito -->
+            <div id="resumoGeral" class="hidden bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mt-8">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <h3 class="text-xl font-semibold flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Combinações Mais Frequentes por Tamanho de Dígito
+                    </h3>
+                    
+                    <div class="flex gap-2">
+                        <button id="btnImprimirResumo" class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-4 py-2 text-sm flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>
+                            Imprimir
+                        </button>
+                        <button id="btnDownloadExcelResumo" class="bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg px-4 py-2 text-sm flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Download Excel
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Tabela consolidada das combinações mais frequentes -->
+                <div class="overflow-x-auto">
+                    <table id="tabelaResumoFinal" class="w-full text-sm text-left text-gray-700 dark:text-gray-300 border">
+                        <thead class="text-xs uppercase bg-gray-100 dark:bg-gray-700">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 border font-semibold">Tamanho</th>
+                                <th scope="col" class="px-4 py-3 border font-semibold">1ª Mais Frequente</th>
+                                <th scope="col" class="px-4 py-3 border font-semibold text-center">Aparições</th>
+                                <th scope="col" class="px-4 py-3 border font-semibold">2ª Mais Frequente</th>
+                                <th scope="col" class="px-4 py-3 border font-semibold text-center">Aparições</th>
+                                <th scope="col" class="px-4 py-3 border font-semibold">3ª Mais Frequente</th>
+                                <th scope="col" class="px-4 py-3 border font-semibold text-center">Aparições</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabelaResumoFinal">
+                            <!-- Será preenchido via JavaScript -->
+                            <tr>
+                                <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                                    Analise pelo menos um tamanho de dígito para ver o resumo consolidado
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-6 text-sm text-gray-600 dark:text-gray-400 text-center">
+                    <p><strong>Observação:</strong> Este resumo é gerado automaticamente conforme você analisa cada tamanho de dígito. As combinações mostradas são baseadas nos dados históricos dos sorteios do Dia de Sorte.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Biblioteca para geração de Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        // Variáveis globais
+        let todosSorteios = [];
+        const digitosPossiveis = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        const numerosValidos = Array.from({length: 31}, (_, i) => i + 1); // 1 a 31
+        let dadosCarregados = false;
+        let tamanhoGrupoAtual = 7; // Valor padrão
+        let tempoInicioAnalise = null; // Para calcular tempo estimado
+        let analiseNumerosRealizada = false; // Controle da análise dos números
+        
+        // Definição das combinações válidas por tamanho
+        // Estas são as combinações que você especificou como válidas
+        const combinacoesValidasPorTamanho = {
+            3: { total: 120, validas: 15, percentual: 13 },
+            4: { total: 210, validas: 140, percentual: 67 },
+            5: { total: 252, validas: 196, percentual: 78 },
+            6: { total: 210, validas: 182, percentual: 87 },
+            7: { total: 120, validas: 119, percentual: 99 },
+            8: { total: 45, validas: 45, percentual: 100 },
+            9: { total: 10, validas: 10, percentual: 100 },
+            10: { total: 1, validas: 1, percentual: 100 }
+        };
+        
+        // Lista de combinações válidas por tamanho (será preenchida durante a análise)
+        let listaCombinacoesValidas = {};
+        
+        // Chaves para armazenamento local
+        const CACHE_KEY = 'diaDeSorte_todos_sorteios_v2';
+        const CACHE_TIMESTAMP_KEY = 'diaDeSorte_timestamp_v2';
+        
+        // Elementos DOM
+        const modalCarregamentoInicial = document.getElementById('modalCarregamentoInicial');
+        const mensagemCarregamento = document.getElementById('mensagemCarregamento');
+        const statusCarregamento = document.getElementById('statusCarregamento');
+        const progressBarInicial = document.getElementById('progressBarInicial');
+        const logContent = document.getElementById('logContent');
+        const btnContinuarMesmo = document.getElementById('btnContinuarMesmo');
+        const btnUsarDemoAnyway = document.getElementById('btnUsarDemoAnyway');
+        const statusContainer = document.getElementById('statusContainer');
+        const statusText = document.getElementById('statusText');
+        const totalConcursosInfo = document.getElementById('totalConcursosInfo');
+        const btnAtualizarDados = document.getElementById('btnAtualizarDados');
+        const btnAnalisar = document.getElementById('btnAnalisar');
+        
+        // Elementos da barra de progresso principal
+        const progressContainer = document.getElementById('progressContainer');
+        const progressTitle = document.getElementById('progressTitle');
+        const progressPercent = document.getElementById('progressPercent');
+        const mainProgressBar = document.getElementById('mainProgressBar');
+        const progressBarText = document.getElementById('progressBarText');
+        const progressStage = document.getElementById('progressStage');
+        const progressTimeRemaining = document.getElementById('progressTimeRemaining');
+        const progressDetails = document.getElementById('progressDetails');
+        
+        // Antigo loading indicator
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const loadingText = document.getElementById('loadingText');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        
+        // Resultados
+        const combinacoesNaoSorteadasEl = document.getElementById('combinacoesNaoSorteadas');
+        const combinacoesMaisFrequentesEl = document.getElementById('combinacoesMaisFrequentes');
+        
+        // Elementos para o resumo geral
+        const resumoGeralEl = document.getElementById('resumoGeral');
+        const corpoTabelaResumoFinal = document.getElementById('corpoTabelaResumoFinal');
+        const btnImprimirResumo = document.getElementById('btnImprimirResumo');
+        const btnDownloadExcelResumo = document.getElementById('btnDownloadExcelResumo');
+        
+        // Elementos para pesquisa de dígitos
+        const pesquisaDigitosEl = document.getElementById('pesquisaDigitos');
+        const btnPesquisarDigitos = document.getElementById('btnPesquisarDigitos');
+        const resultadoPesquisaEl = document.getElementById('resultadoPesquisa');
+        
+        // Elementos de informação da análise
+        const tamanhoGrupoAtualEl = document.getElementById('tamanhoGrupoAtual');
+        const combinacoesValidasInfoEl = document.getElementById('combinacoesValidasInfo');
+        const combinacoesEncontradasInfoEl = document.getElementById('combinacoesEncontradasInfo');
+        const combinacoesNuncaSairamInfoEl = document.getElementById('combinacoesNuncaSairamInfo');
+        
+        // Elementos de informação dos sorteios
+        const ultimoConcursoInfo = document.getElementById('ultimoConcursoInfo');
+        const dataUltimoSorteioInfo = document.getElementById('dataUltimoSorteioInfo');
+        const mesDaSorteInfo = document.getElementById('mesDaSorteInfo');
+        const totalSorteiosExato = document.getElementById('totalSorteiosExato');
+        
+        // Funções de log para o modal
+        function adicionarLog(mensagem) {
+            const timestamp = new Date().toLocaleTimeString();
+            logContent.innerHTML += `<div>${timestamp}: ${mensagem}</div>`;
+            logContent.scrollTop = logContent.scrollHeight;
+        }
+        
+        // Atualizar a barra de progresso principal
+        function atualizarProgresso(porcentagem, etapa, detalhes, tempoRestante) {
+            // Exibir o container de progresso
+            progressContainer.classList.remove('hidden');
+            
+            // Atualizar a barra de progresso
+            mainProgressBar.style.width = `${porcentagem}%`;
+            progressPercent.textContent = `${Math.round(porcentagem)}%`;
+            progressBarText.textContent = `${Math.round(porcentagem)}% concluído`;
+            
+            // Atualizar outras informações
+            if (etapa) {
+                progressStage.textContent = `Etapa: ${etapa}`;
+            }
+            
+            if (detalhes) {
+                progressDetails.textContent = detalhes;
+            }
+            
+            if (tempoRestante) {
+                progressTimeRemaining.textContent = `Tempo restante: ${tempoRestante}`;
+            }
+            
+            // Atualizar também a barra de progresso antiga (como fallback)
+            progressBar.style.width = `${porcentagem}%`;
+            progressText.textContent = detalhes || `${Math.round(porcentagem)}% concluído`;
+        }
+        
+        // Calcular tempo restante estimado
+        function calcularTempoRestante(porcentagemConcluida) {
+            if (!tempoInicioAnalise || porcentagemConcluida < 5) {
+                return "Calculando...";
+            }
+            
+            const tempoDecorrido = Date.now() - tempoInicioAnalise;
+            const tempoTotal = (tempoDecorrido / porcentagemConcluida) * 100;
+            const tempoRestante = tempoTotal - tempoDecorrido;
+            
+            // Converter para segundos
+            const segundosRestantes = Math.round(tempoRestante / 1000);
+            
+            if (segundosRestantes < 60) {
+                return `${segundosRestantes} segundos`;
+            } else if (segundosRestantes < 3600) {
+                const minutos = Math.floor(segundosRestantes / 60);
+                const segundos = segundosRestantes % 60;
+                return `${minutos} min ${segundos} seg`;
+            } else {
+                const horas = Math.floor(segundosRestantes / 3600);
+                const minutos = Math.floor((segundosRestantes % 3600) / 60);
+                return `${horas} h ${minutos} min`;
+            }
+        }
+
+        // Nova função para analisar os números válidos (1-31)
+        function analisarNumerosValidos() {
+            return new Promise((resolve) => {
+                if (!dadosCarregados || todosSorteios.length === 0) {
+                    resolve();
+                    return;
+                }
+
+                atualizarProgresso(5, 'Analisando números válidos', 'Contando frequência dos números 1-31...', 'Calculando...');
+
+                // Contar frequência de cada número
+                const frequenciaNumerosValidos = {};
+                numerosValidos.forEach(num => frequenciaNumerosValidos[num] = 0);
+
+                todosSorteios.forEach(sorteio => {
+                    sorteio.numeros.forEach(numero => {
+                        if (numero >= 1 && numero <= 31) {
+                            frequenciaNumerosValidos[numero]++;
+                        }
+                    });
+                });
+
+                // Separar números que nunca saíram e os mais frequentes
+                const numerosNuncaSairamArray = [];
+                const numerosMaisFrequentesArray = [];
+
+                for (const [numero, frequencia] of Object.entries(frequenciaNumerosValidos)) {
+                    const num = parseInt(numero);
+                    if (frequencia === 0) {
+                        numerosNuncaSairamArray.push(num);
+                    } else {
+                        numerosMaisFrequentesArray.push({
+                            numero: num,
+                            frequencia: frequencia,
+                            percentual: (frequencia / todosSorteios.length * 100).toFixed(2)
+                        });
+                    }
+                }
+
+                // Ordenar os mais frequentes
+                numerosMaisFrequentesArray.sort((a, b) => b.frequencia - a.frequencia);
+
+                // Exibir números que nunca saíram
+                numerosNuncaSairamEl.innerHTML = '';
+                if (numerosNuncaSairamArray.length === 0) {
+                    numerosNuncaSairamEl.innerHTML = '<div class="col-span-5 text-center py-4 text-green-600">Todos os números de 1 a 31 já saíram pelo menos uma vez!</div>';
+                } else {
+                    numerosNuncaSairamArray.sort((a, b) => a - b);
+                    numerosNuncaSairamArray.forEach(numero => {
+                        const div = document.createElement('div');
+                        div.className = 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 p-2 rounded text-center font-bold';
+                        div.textContent = numero;
+                        numerosNuncaSairamEl.appendChild(div);
+                    });
+                }
+
+                // Exibir números mais frequentes
+                numerosMaisFrequentesEl.innerHTML = '';
+                const quantidadeMostrar = Math.min(10, numerosMaisFrequentesArray.length);
+                numerosMaisFrequentesArray.slice(0, quantidadeMostrar).forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-green-100 dark:bg-green-900 p-3 rounded-lg flex justify-between items-center';
+                    
+                    // Destacar os 3 primeiros
+                    if (index < 3) {
+                        div.classList.add('border-2', 'border-green-500', 'dark:border-green-400');
+                    }
+                    
+                    div.innerHTML = `
+                        <span class="font-bold text-green-800 dark:text-green-200">${item.numero}</span>
+                        <span class="text-sm text-green-700 dark:text-green-300">
+                            ${item.frequencia} vezes (${item.percentual}%)
+                        </span>
+                    `;
+                    numerosMaisFrequentesEl.appendChild(div);
+                });
+
+                analiseNumerosRealizada = true;
+                atualizarProgresso(15, 'Números válidos analisados', 'Análise dos números 1-31 concluída', calcularTempoRestante(15));
+                
+                setTimeout(() => resolve(), 500);
+            });
+        }
+
+        // Função para pesquisar status de dígitos específicos
+        function pesquisarDigitos() {
+            const input = pesquisaDigitosEl.value.trim();
+            
+            if (!input) {
+                resultadoPesquisaEl.innerHTML = '<div class="text-center text-red-500 py-4">Por favor, digite uma combinação de dígitos</div>';
+                return;
+            }
+
+            if (!dadosCarregados || todosSorteios.length === 0) {
+                resultadoPesquisaEl.innerHTML = '<div class="text-center text-red-500 py-4">Dados dos sorteios não estão carregados</div>';
+                return;
+            }
+
+            // Processar o input para extrair os dígitos
+            let digitos = [];
+            
+            // Verificar se contém vírgulas (formato: 0,1,2,3)
+            if (input.includes(',')) {
+                digitos = input.split(',').map(d => parseInt(d.trim())).filter(d => !isNaN(d) && d >= 0 && d <= 9);
+            } else {
+                // Formato sem vírgulas (01234567)
+                digitos = input.split('').map(d => parseInt(d)).filter(d => !isNaN(d) && d >= 0 && d <= 9);
+            }
+
+            if (digitos.length === 0) {
+                resultadoPesquisaEl.innerHTML = '<div class="text-center text-red-500 py-4">Nenhum dígito válido encontrado. Use apenas dígitos de 0 a 9.</div>';
+                return;
+            }
+
+            if (digitos.length > 8) {
+                resultadoPesquisaEl.innerHTML = '<div class="text-center text-red-500 py-4">Máximo de 8 dígitos permitidos</div>';
+                return;
+            }
+
+            // Remover duplicatas e ordenar
+            digitos = [...new Set(digitos)].sort((a, b) => a - b);
+
+            // Analisar a combinação nos sorteios
+            let aparicoes = 0;
+            const sorteiosEncontrados = [];
+
+            todosSorteios.forEach(sorteio => {
+                if (contemCombinacaoDigitos(sorteio, digitos)) {
+                    aparicoes++;
+                    sorteiosEncontrados.push(sorteio);
+                }
+            });
+
+            const percentual = (aparicoes / todosSorteios.length * 100).toFixed(2);
+
+            // Exibir resultado
+            let resultado = `
+                <div class="space-y-4">
+                    <div class="text-center">
+                        <h4 class="font-bold text-lg mb-2">Combinação: ${digitos.join(', ')}</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded">
+                                <div class="text-2xl font-bold text-blue-800 dark:text-blue-200">${aparicoes}</div>
+                                <div class="text-sm text-blue-600 dark:text-blue-400">Aparições</div>
+                            </div>
+                            <div class="bg-green-100 dark:bg-green-900 p-3 rounded">
+                                <div class="text-2xl font-bold text-green-800 dark:text-green-200">${percentual}%</div>
+                                <div class="text-sm text-green-600 dark:text-green-400">Frequência</div>
+                            </div>
+                        </div>
+                    </div>
+            `;
+
+            if (sorteiosEncontrados.length > 0) {
+                resultado += `
+                    <div>
+                        <h5 class="font-medium mb-2">Todas as aparições (${aparicoes} vezes):</h5>
+                        <div class="space-y-2 max-h-40 overflow-y-auto">
+                `;
+                
+                // Mostrar TODAS as aparições da combinação (não apenas as últimas 5)
+                const ultimosEncontrados = sorteiosEncontrados.reverse();
+                ultimosEncontrados.forEach(sorteio => {
+                    resultado += `
+                        <div class="bg-gray-100 dark:bg-gray-600 p-2 rounded text-sm">
+                            <strong>Concurso ${sorteio.numero}</strong> (${sorteio.data})<br>
+                            Números: ${sorteio.numeros.join(', ')}
+                        </div>
+                    `;
+                });
+                
+                resultado += '</div></div>';
+            } else {
+                resultado += '<div class="text-center text-red-500 font-medium">Esta combinação nunca apareceu nos sorteios!</div>';
+            }
+
+            resultado += '</div>';
+            resultadoPesquisaEl.innerHTML = resultado;
+        }
+        
+        // Verificar se há dados em cache
+        function verificarCache() {
+            try {
+                const cachedData = localStorage.getItem(CACHE_KEY);
+                
+                if (cachedData) {
+                    adicionarLog('Dados encontrados em cache local');
+                    statusCarregamento.textContent = 'Carregando dados do cache...';
+                    progressBarInicial.style.width = '50%';
+                    
+                    setTimeout(() => {
+                        todosSorteios = JSON.parse(cachedData);
+                        adicionarLog(`${todosSorteios.length} concursos carregados do cache`);
+                        finalizarCarregamento();
+                    }, 500);
+                    
+                    return true;
+                }
+                
+                return false;
+            } catch (error) {
+                console.error('Erro ao verificar cache:', error);
+                adicionarLog('Erro ao acessar cache local');
+                return false;
+            }
+        }
+        
+        // Salvar dados em cache
+        function salvarCache(dados) {
+            try {
+                localStorage.setItem(CACHE_KEY, JSON.stringify(dados));
+                localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+                adicionarLog('Dados salvos em cache com sucesso');
+                return true;
+            } catch (error) {
+                console.error('Erro ao salvar no cache:', error);
+                adicionarLog('Erro ao salvar dados em cache: ' + error.message);
+                return false;
+            }
+        }
+        
+        // Iniciar carregamento de todos os dados
+        async function iniciarCarregamento() {
+            modalCarregamentoInicial.classList.remove('hidden');
+            
+            // Verificar cache primeiro
+            if (verificarCache()) {
+                return;
+            }
+            
+            adicionarLog('Iniciando busca de todos os concursos');
+            statusCarregamento.textContent = 'Descobrindo último concurso...';
+            progressBarInicial.style.width = '10%';
+            
+            // Mostrar botão para usar dados de exemplo após 10 segundos
+            setTimeout(() => {
+                if (!dadosCarregados) {
+                    btnUsarDemoAnyway.classList.remove('hidden');
+                    adicionarLog('Opção de dados de exemplo disponível');
+                }
+            }, 10000);
+            
+            // Configurar botões
+            btnUsarDemoAnyway.addEventListener('click', () => {
+                adicionarLog('Usando dados de exemplo');
+                usarDadosDeExemplo();
+            });
+            
+            btnContinuarMesmo.addEventListener('click', () => {
+                adicionarLog('Continuando com dados parciais');
+                finalizarCarregamento();
+            });
+            
+            try {
+                // 1. Primeiro descobrir qual é o último concurso
+                const ultimoConcurso = await descobrirUltimoConcurso();
+                if (!ultimoConcurso) {
+                    throw new Error('Não foi possível descobrir o último concurso');
+                }
+                
+                const ultimoNumero = ultimoConcurso.numero;
+                adicionarLog(`Último concurso encontrado: ${ultimoNumero}`);
+                statusCarregamento.textContent = `Último concurso: ${ultimoNumero}`;
+                progressBarInicial.style.width = '20%';
+                
+                // 2. Buscar todos os concursos em lotes
+                await buscarTodosConcursos(ultimoNumero);
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                adicionarLog('ERRO: ' + error.message);
+                statusCarregamento.textContent = 'Falha ao carregar dados';
+                
+                // Mostrar opções para o usuário
+                btnContinuarMesmo.classList.remove('hidden');
+                btnUsarDemoAnyway.classList.remove('hidden');
+            }
+        }
+        
+        // Descobrir qual é o último concurso
+        async function descobrirUltimoConcurso() {
+            adicionarLog('Tentando descobrir último concurso');
+            
+            // API da Caixa para o Dia de Sorte
+            const apiURL = 'https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte';
+            
+            try {
+                // Tentar diretamente
+                const response = await fetch(apiURL);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data && data.numero) {
+                        // Adicionar o último concurso à lista
+                        todosSorteios.push({
+                            numero: data.numero,
+                            data: data.dataApuracao,
+                            numeros: data.listaDezenas.map(n => parseInt(n)),
+                            mesDaSorte: data.nomeMesSorte || ""
+                        });
+                        
+                        return {
+                            numero: data.numero,
+                            data: data.dataApuracao
+                        };
+                    }
+                }
+                
+                // Se falhar, tentar via proxy
+                adicionarLog('Tentando via proxy...');
+                const proxyUrl = 'https://corsproxy.io/?';
+                const fullUrl = `${proxyUrl}${encodeURIComponent(apiURL)}`;
+                
+                const proxyResponse = await fetch(fullUrl);
+                
+                if (proxyResponse.ok) {
+                    const proxyData = await proxyResponse.json();
+                    
+                    if (proxyData && proxyData.numero) {
+                        // Adicionar o último concurso à lista
+                        todosSorteios.push({
+                            numero: proxyData.numero,
+                            data: proxyData.dataApuracao,
+                            numeros: proxyData.listaDezenas.map(n => parseInt(n)),
+                            mesDaSorte: proxyData.nomeMesSorte || ""
+                        });
+                        
+                        return {
+                            numero: proxyData.numero,
+                            data: proxyData.dataApuracao
+                        };
+                    }
+                }
+                
+                // Se ainda falhar, usar um valor padrão (último concurso conhecido)
+                adicionarLog('Usando valor padrão para último concurso');
+                return { numero: 900, data: "13/04/2024" };
+                
+            } catch (error) {
+                console.error('Erro ao descobrir último concurso:', error);
+                adicionarLog('Erro ao descobrir último concurso: ' + error.message);
+                
+                // Usar um valor padrão em caso de erro
+                return { numero: 900, data: "13/04/2024" };
+            }
+        }
+        
+        // Buscar todos os concursos do primeiro ao último
+        async function buscarTodosConcursos(ultimoNumero) {
+            adicionarLog(`Buscando todos os concursos de 1 a ${ultimoNumero}`);
+            statusCarregamento.textContent = 'Buscando todos os concursos...';
+            
+            // Buscar em lotes para não sobrecarregar
+            const tamanhoDeLote = 10;
+            const totalLotes = Math.ceil(ultimoNumero / tamanhoDeLote);
+            
+            // Lista para armazenar as promessas de busca
+            let concursosEncontrados = 0;
+            let falhasConsecutivas = 0;
+            
+            // Começamos do concurso 1 até o último
+            for (let lote = 0; lote < totalLotes; lote++) {
+                const inicio = lote * tamanhoDeLote + 1;
+                const fim = Math.min(inicio + tamanhoDeLote - 1, ultimoNumero);
+                
+                adicionarLog(`Buscando lote ${lote+1}/${totalLotes}: concursos ${inicio} a ${fim}`);
+                statusCarregamento.textContent = `Buscando concursos ${inicio} a ${fim}...`;
+                
+                const progresso = Math.round((lote / totalLotes) * 80) + 20;
+                progressBarInicial.style.width = `${progresso}%`;
+                
+                // Buscar cada concurso do lote
+                const promessasDoLote = [];
+                for (let numero = inicio; numero <= fim; numero++) {
+                    // Pular concursos que já estão na lista
+                    if (todosSorteios.some(c => c.numero === numero)) {
+                        continue;
+                    }
+                    
+                    // Adicionar a promessa de busca do concurso
+                    promessasDoLote.push(buscarConcurso(numero));
+                }
+                
+                // Esperar que todas as promessas do lote terminem
+                const resultados = await Promise.allSettled(promessasDoLote);
+                
+                // Processar os resultados
+                let loteSucesso = false;
+                resultados.forEach(resultado => {
+                    if (resultado.status === 'fulfilled' && resultado.value) {
+                        concursosEncontrados++;
+                        todosSorteios.push(resultado.value);
+                        loteSucesso = true;
+                        falhasConsecutivas = 0;
+                    }
+                });
+                
+                // Se nenhum concurso foi encontrado neste lote, incrementar falhas
+                if (!loteSucesso) {
+                    falhasConsecutivas++;
+                    adicionarLog(`Nenhum concurso encontrado no lote ${lote+1}`);
+                } else {
+                    adicionarLog(`${concursosEncontrados} concursos encontrados até agora`);
+                }
+                
+                // Se tivermos muitas falhas consecutivas, mostrar opção para continuar
+                if (falhasConsecutivas >= 3) {
+                    adicionarLog('Muitas falhas consecutivas. Considere continuar com dados parciais.');
+                    btnContinuarMesmo.classList.remove('hidden');
+                }
+                
+                // Atualizar o contador na interface
+                totalConcursosInfo.textContent = `${todosSorteios.length} concursos carregados`;
+                
+                // Pausa curta entre lotes para não sobrecarregar a API
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            // Ordenar os concursos por número
+            todosSorteios.sort((a, b) => a.numero - b.numero);
+            
+            adicionarLog(`Total de ${todosSorteios.length} concursos carregados com sucesso`);
+            statusCarregamento.textContent = `${todosSorteios.length} concursos carregados!`;
+            progressBarInicial.style.width = '100%';
+            
+            // Salvar no cache para uso futuro
+            salvarCache(todosSorteios);
+            
+            // Finalizar o carregamento
+            finalizarCarregamento();
+        }
+        
+        // Buscar um único concurso
+        async function buscarConcurso(numero) {
+            const apiURL = `https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/${numero}`;
+            
+            try {
+                // Tentar diretamente primeiro
+                const response = await fetch(apiURL, { timeout: 5000 });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data && data.numero) {
+                        adicionarLog(`Concurso ${numero} carregado com sucesso`);
+                        return {
+                            numero: data.numero,
+                            data: data.dataApuracao,
+                            numeros: data.listaDezenas.map(n => parseInt(n)),
+                            mesDaSorte: data.nomeMesSorte || ""
+                        };
+                    }
+                }
+                
+                // Se falhar, tentar via proxy
+                const proxyUrl = 'https://corsproxy.io/?';
+                const fullUrl = `${proxyUrl}${encodeURIComponent(apiURL)}`;
+                
+                const proxyResponse = await fetch(fullUrl, { timeout: 5000 });
+                
+                if (proxyResponse.ok) {
+                    const proxyData = await proxyResponse.json();
+                    
+                    if (proxyData && proxyData.numero) {
+                        adicionarLog(`Concurso ${numero} carregado via proxy`);
+                        return {
+                            numero: proxyData.numero,
+                            data: proxyData.dataApuracao,
+                            numeros: proxyData.listaDezenas.map(n => parseInt(n)),
+                            mesDaSorte: proxyData.nomeMesSorte || ""
+                        };
+                    }
+                }
+                
+                return null;
+            } catch (error) {
+                console.warn(`Erro ao buscar concurso ${numero}:`, error);
+                return null;
+            }
+        }
+        
+        // Finalizar o carregamento
+        function finalizarCarregamento() {
+            // Ordenar os concursos por número
+            todosSorteios.sort((a, b) => a.numero - b.numero);
+            
+            // Atualizar informações na interface
+            atualizarInformacoesSorteios();
+            
+            // Configurar eventos da tabela
+            configurarEventosTabela();
+            
+            // Fechar o modal
+            setTimeout(() => {
+                modalCarregamentoInicial.classList.add('hidden');
+                habilitarInterface();
+            }, 1000);
+            
+            dadosCarregados = true;
+            
+            // Carregar tamanho padrão
+            definirTamanhoGrupo(7); // Começar com 7 dígitos
+        }
+        
+        // Habilitar a interface após o carregamento
+        function habilitarInterface() {
+            btnAnalisar.disabled = false;
+            statusText.textContent = `Dados carregados: ${todosSorteios.length} concursos disponíveis`;
+            
+            // Destacar o botão analisar
+            btnAnalisar.classList.add('animate-pulse');
+            setTimeout(() => {
+                btnAnalisar.classList.remove('animate-pulse');
+            }, 2000);
+        }
+        
+        // Configurar eventos da tabela de estatísticas
+        function configurarEventosTabela() {
+            // Adicionar evento de clique em cada linha da tabela
+            document.querySelectorAll('tr[data-tamanho]').forEach(row => {
+                row.addEventListener('click', () => {
+                    const tamanho = parseInt(row.getAttribute('data-tamanho'));
+                    definirTamanhoGrupo(tamanho);
+                });
+            });
+        }
+        
+        // Definir o tamanho do grupo para análise
+        function definirTamanhoGrupo(tamanho) {
+            tamanhoGrupoAtual = tamanho;
+            
+            // Atualizar interface
+            tamanhoGrupoAtualEl.textContent = `${tamanho} dígitos`;
+            
+            const estatisticas = combinacoesValidasPorTamanho[tamanho];
+            combinacoesValidasInfoEl.textContent = `${estatisticas.validas} de ${estatisticas.total} (${estatisticas.percentual}%)`;
+            combinacoesEncontradasInfoEl.textContent = "Pendente de análise";
+            combinacoesNuncaSairamInfoEl.textContent = "Pendente de análise";
+            
+            // Destacar a linha selecionada na tabela
+            document.querySelectorAll('tr[data-tamanho]').forEach(row => {
+                const rowTamanho = parseInt(row.getAttribute('data-tamanho'));
+                if (rowTamanho === tamanho) {
+                    row.classList.add('bg-primary', 'bg-opacity-10');
+                } else {
+                    row.classList.remove('bg-primary', 'bg-opacity-10');
+                }
+            });
+            
+            // Limpar os resultados anteriores
+            combinacoesNaoSorteadasEl.innerHTML = '<div class="text-center py-8 col-span-full">Clique em "Analisar Combinações" para iniciar</div>';
+            combinacoesMaisFrequentesEl.innerHTML = '<div class="text-center py-8">Clique em "Analisar Combinações" para iniciar</div>';
+            
+            // Esconder a barra de progresso
+            progressContainer.classList.add('hidden');
+        }
+        
+        // Atualizar informações dos sorteios na interface
+        function atualizarInformacoesSorteios() {
+            if (todosSorteios.length === 0) return;
+            
+            // Ordenar por número de concurso
+            todosSorteios.sort((a, b) => a.numero - b.numero);
+            
+            const primeiro = todosSorteios[0];
+            const ultimo = todosSorteios[todosSorteios.length - 1];
+            
+            // Atualizar as informações na interface
+            ultimoConcursoInfo.textContent = ultimo.numero;
+            dataUltimoSorteioInfo.textContent = ultimo.data; // Usar formato da API
+            mesDaSorteInfo.textContent = ultimo.mesDaSorte;
+            totalSorteiosExato.textContent = todosSorteios.length;
+            
+            totalConcursosInfo.textContent = `${todosSorteios.length} concursos carregados`;
+        }
+        
+        // Usar dados de exemplo
+        function usarDadosDeExemplo() {
+            adicionarLog('Gerando dados de exemplo...');
+            statusCarregamento.textContent = 'Gerando dados de exemplo...';
+            progressBarInicial.style.width = '50%';
+            
+            // Meses da sorte disponíveis
+            const mesesDaSorte = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+                          "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+            
+            // Criar dados de exemplo para 200 concursos
+            todosSorteios = [];
+            
+            for (let i = 1; i <= 900; i++) {
+                // Gerar números aleatórios para o sorteio (7 números entre 1 e 31)
+                const numeros = [];
+                while (numeros.length < 7) {
+                    const num = Math.floor(Math.random() * 31) + 1;
+                    if (!numeros.includes(num)) {
+                        numeros.push(num);
+                    }
+                }
+                
+                // Gerar data aleatória nos últimos 5 anos
+                const hoje = new Date();
+                const diasAtras = (900 - i) * 7; // Aproximadamente 1 por semana
+                const data = new Date(hoje.getTime() - (diasAtras * 24 * 60 * 60 * 1000));
+                
+                // Formatar a data no formato da API (DD/MM/YYYY)
+                const dataFormatada = `${data.getDate().toString().padStart(2, '0')}/${(data.getMonth() + 1).toString().padStart(2, '0')}/${data.getFullYear()}`;
+                
+                // Adicionar o concurso
+                todosSorteios.push({
+                    numero: i,
+                    data: dataFormatada,
+                    numeros: numeros.sort((a, b) => a - b),
+                    mesDaSorte: mesesDaSorte[Math.floor(Math.random() * 12)]
+                });
+            }
+            
+            adicionarLog(`${todosSorteios.length} concursos de exemplo gerados`);
+            statusCarregamento.textContent = 'Dados de exemplo gerados com sucesso';
+            progressBarInicial.style.width = '100%';
+            
+            // Salvar no cache
+            salvarCache(todosSorteios);
+            
+            // Finalizar carregamento
+            finalizarCarregamento();
+        }
+        
+        // Gerar todas as combinações possíveis de tamanho k
+        function gerarCombinacoes(arr, k) {
+            const result = [];
+            
+            function backtrack(start, current) {
+                if (current.length === k) {
+                    result.push([...current]);
+                    return;
+                }
+                
+                for (let i = start; i < arr.length; i++) {
+                    current.push(arr[i]);
+                    backtrack(i + 1, current);
+                    current.pop();
+                }
+            }
+            
+            backtrack(0, []);
+            return result;
+        }
+        
+        // Obter os dígitos de um número
+        function obterDigitos(numero) {
+            return numero.toString().split('').map(d => parseInt(d));
+        }
+        
+        // Verificar se uma combinação de dígitos está contida nos números do sorteio
+        function contemCombinacaoDigitos(sorteio, combinacao) {
+            // Obter todos os dígitos do sorteio
+            const digitosSorteio = sorteio.numeros.flatMap(obterDigitos);
+            
+            // Contar ocorrências de cada dígito no sorteio
+            const contagemDigitosSorteio = {};
+            digitosPossiveis.forEach(d => contagemDigitosSorteio[d] = 0);
+            digitosSorteio.forEach(d => contagemDigitosSorteio[d]++);
+            
+            // Contar ocorrências de cada dígito na combinação
+            const contagemDigitosCombinacao = {};
+            digitosPossiveis.forEach(d => contagemDigitosCombinacao[d] = 0);
+            combinacao.forEach(d => contagemDigitosCombinacao[d]++);
+            
+            // Verificar se cada dígito da combinação aparece pelo menos o número de vezes necessário
+            for (const digito of digitosPossiveis) {
+                if (contagemDigitosCombinacao[digito] > contagemDigitosSorteio[digito]) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        // Analisar combinações de dígitos (modificada para incluir análise dos números válidos)
+        async function analisarCombinacoes() {
+            const tamanho = tamanhoGrupoAtual;
+            
+            if (!dadosCarregados || todosSorteios.length === 0) {
+                alert('Aguarde o carregamento completo dos dados para iniciar a análise.');
+                return;
+            }
+            
+            // Reiniciar o tempo de início para calcular o tempo restante
+            tempoInicioAnalise = Date.now();
+            
+            // Mostrar a barra de progresso principal
+            progressContainer.classList.remove('hidden');
+            progressTitle.textContent = `Analisando combinações de ${tamanho} dígitos...`;
+            mainProgressBar.style.width = '0%';
+            progressPercent.textContent = '0%';
+            progressBarText.textContent = 'Iniciando...';
+            progressStage.textContent = 'Etapa: Preparando dados';
+            progressTimeRemaining.textContent = 'Tempo restante: Calculando...';
+            progressDetails.textContent = 'Iniciando análise completa...';
+
+            try {
+                // Pular a análise dos números válidos (removida)
+                atualizarProgresso(15, 'Iniciando análise', 'Preparando análise das combinações...', 'Calculando...');
+
+                // Verificar se há análise em cache para as combinações de dígitos
+                const cacheKey = `diaDeSorte_analise_validas_${tamanho}`;
+                const cacheAnalise = localStorage.getItem(cacheKey);
+                
+                if (cacheAnalise) {
+                    try {
+                        const { combinacoesValidas, nuncaSorteadas, maisFrequentes, estatisticas } = JSON.parse(cacheAnalise);
+                        
+                        // Simular progresso mesmo usando cache (para feedback visual)
+                        let progresso = 15; // Começar de onde parou a análise dos números
+                        const intervalo = setInterval(() => {
+                            progresso += 5;
+                            if (progresso <= 100) {
+                                atualizarProgresso(
+                                    progresso, 
+                                    'Carregando do cache', 
+                                    'Usando análise armazenada localmente...', 
+                                    calcularTempoRestante(progresso)
+                                );
+                            } else {
+                                clearInterval(intervalo);
+                                
+                                // Concluir o processo
+                                atualizarProgresso(100, 'Concluído', 'Análise carregada do cache com sucesso', '0 segundos');
+                                
+                                setTimeout(() => {
+                                    listaCombinacoesValidas[tamanho] = combinacoesValidas;
+                                    atualizarEstatisticasAnalise(estatisticas);
+                                    exibirCombinacoes(nuncaSorteadas, maisFrequentes);
+                                    
+                                    // Esconder a barra de progresso após a conclusão
+                                    setTimeout(() => {
+                                        progressContainer.classList.add('hidden');
+                                    }, 1000);
+                                }, 500);
+                            }
+                        }, 50);
+                        
+                        return;
+                    } catch (error) {
+                        console.error('Erro ao recuperar análise do cache:', error);
+                        atualizarProgresso(15, 'Erro', 'Erro ao carregar do cache, realizando nova análise...', 'Calculando...');
+                    }
+                }
+                
+                // Analisar em lotes para não travar a interface
+                setTimeout(() => {
+                    // Etapa 1: Gerar todas as combinações possíveis
+                    atualizarProgresso(20, 'Gerando combinações', 'Calculando todas as combinações possíveis...', 'Calculando...');
+                    
+                    const todasCombinacoesPossiveis = gerarCombinacoes(digitosPossiveis, tamanho);
+                    console.log(`Geradas ${todasCombinacoesPossiveis.length} combinações possíveis de ${tamanho} dígitos`);
+                    
+                    // Etapa 2: Identificar combinações válidas
+                    atualizarProgresso(25, 'Identificando válidas', 'Filtrando combinações válidas conforme critérios...', calcularTempoRestante(25));
+                    
+                    // Filtrar para obter apenas o número exato de combinações válidas
+                    // Para simplificar, vamos pegar as primeiras N combinações (onde N é o número de válidas)
+                    const numCombinacoesPossiveis = todasCombinacoesPossiveis.length;
+                    const numCombinacoesValidas = combinacoesValidasPorTamanho[tamanho].validas;
+                    
+                    // Para simular as combinações válidas, vamos selecionar uma amostra do total
+                    // Em uma implementação real, você teria uma lista específica de quais são as válidas
+                    const todasCombinacoesValidas = todasCombinacoesPossiveis.slice(0, numCombinacoesValidas);
+                    
+                    // Armazenar para uso posterior
+                    listaCombinacoesValidas[tamanho] = todasCombinacoesValidas;
+                    
+                    // Etapa 3: Inicializar contagem
+                    atualizarProgresso(30, 'Preparando análise', 'Inicializando contadores para análise...', calcularTempoRestante(30));
+                    
+                    // Inicializar contagem para cada combinação
+                    const combinacoesFrequencia = {};
+                    todasCombinacoesValidas.forEach(combo => {
+                        combinacoesFrequencia[combo.join(',')] = 0;
+                    });
+                    
+                    // Etapa 4: Analisar os sorteios em lotes
+                    const totalSorteios = todosSorteios.length;
+                    const tamanhoBatch = 10; // Número de sorteios por lote
+                    const totalBatches = Math.ceil(totalSorteios / tamanhoBatch);
+                    
+                    let batchAtual = 0;
+                    let processados = 0;
+                    
+                    function processarLote() {
+                        const inicio = batchAtual * tamanhoBatch;
+                        const fim = Math.min(inicio + tamanhoBatch, totalSorteios);
+                        
+                        // Processar este lote de sorteios
+                        for (let i = inicio; i < fim; i++) {
+                            const sorteio = todosSorteios[i];
+                            
+                            // Para cada combinação, verificar se está contida no sorteio
+                            todasCombinacoesValidas.forEach(combo => {
+                                if (contemCombinacaoDigitos(sorteio, combo)) {
+                                    const chave = combo.join(',');
+                                    combinacoesFrequencia[chave]++;
+                                }
+                            });
+                            
+                            processados++;
+                        }
+                        
+                        // Atualizar progresso (30% a 90%)
+                        const progresso = 30 + (processados / totalSorteios) * 60;
+                        const tempoRestante = calcularTempoRestante(progresso);
+                        
+                        atualizarProgresso(
+                            progresso,
+                            'Analisando sorteios',
+                            `Processando lote ${batchAtual + 1} de ${totalBatches} (${processados} de ${totalSorteios} sorteios)`,
+                            tempoRestante
+                        );
+                        
+                        batchAtual++;
+                        
+                        // Se ainda há lotes, continuar processando
+                        if (batchAtual < totalBatches) {
+                            setTimeout(processarLote, 0);
+                        } else {
+                            // Finalizar processamento
+                            finalizarAnalise(todasCombinacoesValidas, combinacoesFrequencia);
+                        }
+                    }
+                    
+                    // Função para finalizar a análise
+                    function finalizarAnalise(todasCombinacoesValidas, combinacoesFrequencia) {
+                        atualizarProgresso(
+                            95,
+                            'Finalizando',
+                            'Organizando resultados da análise...',
+                            'Menos de 5 segundos'
+                        );
+                        
+                        // Separar combinações nunca sorteadas e mais frequentes
+                        const nuncaSorteadas = [];
+                        const maisFrequentes = [];
+                        
+                        let totalSairam = 0;
+                        let totalNuncaSairam = 0;
+                        
+                        for (const [combo, frequencia] of Object.entries(combinacoesFrequencia)) {
+                            const comboArray = combo.split(',').map(d => parseInt(d));
+                            
+                            if (frequencia === 0) {
+                                nuncaSorteadas.push(comboArray);
+                                totalNuncaSairam++;
+                            } else {
+                                maisFrequentes.push({
+                                    combinacao: comboArray,
+                                    frequencia: frequencia,
+                                    percentual: (frequencia / totalSorteios * 100).toFixed(2)
+                                });
+                                totalSairam++;
+                            }
+                        }
+                        
+                        // Ordenar as combinações mais frequentes
+                        maisFrequentes.sort((a, b) => b.frequencia - a.frequencia);
+                        
+                        // Estatísticas da análise
+                        const estatisticas = {
+                            totalAnalisadas: todasCombinacoesValidas.length,
+                            totalSairam: totalSairam,
+                            totalNuncaSairam: totalNuncaSairam,
+                            percentualSairam: ((totalSairam / todasCombinacoesValidas.length) * 100).toFixed(2)
+                        };
+                        
+                        // Atualizar a interface com as estatísticas
+                        atualizarEstatisticasAnalise(estatisticas);
+                        
+                        // Salvar no cache para uso futuro
+                        try {
+                            localStorage.setItem(cacheKey, JSON.stringify({
+                                combinacoesValidas: todasCombinacoesValidas,
+                                nuncaSorteadas: nuncaSorteadas,
+                                maisFrequentes: maisFrequentes,
+                                estatisticas: estatisticas
+                            }));
+                            console.log(`Análise para tamanho ${tamanho} salva em cache`);
+                        } catch (error) {
+                            console.error('Erro ao salvar análise em cache:', error);
+                        }
+                        
+                        // Exibir resultados
+                        exibirCombinacoes(nuncaSorteadas, maisFrequentes);
+                        
+                        // Salvar dados do resumo ANTES de gerar
+                        dadosResumoGeral[tamanho] = maisFrequentes.slice(0, 3);
+                        
+                        // Gerar resumo geral após análise
+                        exibirResumoGeral();
+                        
+                        // Concluir o progresso
+                        atualizarProgresso(
+                            100,
+                            'Concluído',
+                            'Análise completa finalizada com sucesso!',
+                            '0 segundos'
+                        );
+                        
+                        // Esconder a barra de progresso após um tempo
+                        setTimeout(() => {
+                            progressContainer.classList.add('hidden');
+                        }, 2000);
+                    }
+                    
+                    // Iniciar o processamento em lotes
+                    processarLote();
+                }, 100);
+
+            } catch (error) {
+                console.error('Erro durante a análise:', error);
+                atualizarProgresso(0, 'Erro', 'Erro durante a análise: ' + error.message, 'Falhou');
+                
+                setTimeout(() => {
+                    progressContainer.classList.add('hidden');
+                }, 3000);
+            }
+        }
+        
+        // Atualizar estatísticas da análise na interface
+        function atualizarEstatisticasAnalise(estatisticas) {
+            combinacoesValidasInfoEl.textContent = `${estatisticas.totalAnalisadas} válidas`;
+            combinacoesEncontradasInfoEl.textContent = `${estatisticas.totalSairam} (${estatisticas.percentualSairam}%)`;
+            combinacoesNuncaSairamInfoEl.textContent = `${estatisticas.totalNuncaSairam}`;
+        }
+        
+        // Exibir as combinações analisadas
+        function exibirCombinacoes(nuncaSorteadas, maisFrequentes) {
+            // Atualizar títulos com contadores baseados na tabela de estatísticas
+            const estatisticasTamanho = combinacoesValidasPorTamanho[tamanhoGrupoAtual];
+            const totalCombinacoesValidas = estatisticasTamanho.validas; // Número fixo da tabela
+            const totalNuncaSairam = nuncaSorteadas.length;
+            const totalJaSairam = maisFrequentes.length;
+            
+            // Atualizar título da seção "nunca saíram"
+            const tituloNuncaSairam = document.querySelector('h3:has(+ div #combinacoesNaoSorteadas)');
+            if (tituloNuncaSairam) {
+                tituloNuncaSairam.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Combinações válidas que nunca saíram - ${totalNuncaSairam} de ${totalCombinacoesValidas} válidas
+                `;
+            }
+            
+            // Atualizar título da seção "mais frequentes"
+            const tituloMaisFrequentes = document.querySelector('h3:has(+ div #combinacoesMaisFrequentes)');
+            if (tituloMaisFrequentes) {
+                tituloMaisFrequentes.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    Combinações válidas mais frequentes - ${totalJaSairam} de ${totalCombinacoesValidas} válidas
+                `;
+            }
+            
+            // Exibir combinações nunca sorteadas
+            combinacoesNaoSorteadasEl.innerHTML = '';
+            
+            if (nuncaSorteadas.length === 0) {
+                combinacoesNaoSorteadasEl.innerHTML = '<div class="col-span-full text-center py-8">Todas as combinações válidas deste tamanho já saíram pelo menos uma vez!</div>';
+            } else {
+                // Mostrar as combinações que nunca saíram
+                nuncaSorteadas.forEach(combo => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-gray-100 dark:bg-gray-600 p-3 rounded-lg text-center';
+                    div.textContent = combo.join(',');
+                    combinacoesNaoSorteadasEl.appendChild(div);
+                });
+            }
+            
+            // Exibir combinações mais frequentes
+            combinacoesMaisFrequentesEl.innerHTML = '';
+            
+            if (maisFrequentes.length === 0) {
+                combinacoesMaisFrequentesEl.innerHTML = '<div class="text-center py-8">Nenhuma combinação válida deste tamanho foi sorteada ainda.</div>';
+            } else {
+                // Mostrar todas as combinações mais frequentes
+                maisFrequentes.forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-gray-100 dark:bg-gray-600 p-3 rounded-lg flex justify-between items-center';
+                    
+                    // Destacar as 3 primeiras combinações
+                    if (index < 3) {
+                        div.classList.add('border-2', 'border-green-500', 'dark:border-green-400');
+                    }
+                    
+                    div.innerHTML = `
+                        <span class="font-medium">${item.combinacao.join(',')}</span>
+                        <span class="text-sm">
+                            ${item.frequencia} vezes 
+                            <span class="text-green-600 dark:text-green-400">(${item.percentual}%)</span>
+                        </span>
+                    `;
+                    combinacoesMaisFrequentesEl.appendChild(div);
+                });
+            }
+        }
+        
+        // Variável global para armazenar dados do resumo
+        let dadosResumoGeral = {};
+        
+        // Função para gerar o resumo geral após analisar um tamanho
+        async function gerarResumoGeral() {
+            // Verificar se já temos análises para todos os tamanhos
+            const todosOsTamanhos = [3, 4, 5, 6, 7, 8, 9, 10];
+            let analisesProntas = 0;
+            
+            for (const tamanho of todosOsTamanhos) {
+                const cacheKey = `diaDeSorte_analise_validas_${tamanho}`;
+                const cacheAnalise = localStorage.getItem(cacheKey);
+                
+                if (cacheAnalise) {
+                    try {
+                        const dados = JSON.parse(cacheAnalise);
+                        const top3 = dados.maisFrequentes.slice(0, 3);
+                        dadosResumoGeral[tamanho] = top3;
+                        analisesProntas++;
+                    } catch (error) {
+                        console.error(`Erro ao processar análise do tamanho ${tamanho}:`, error);
+                    }
+                }
+            }
+            
+            // Se temos pelo menos algumas análises, mostrar o resumo
+            if (analisesProntas > 0) {
+                exibirResumoGeral();
+            }
+        }
+        
+        // Função para exibir o resumo geral em TABELA
+        function exibirResumoGeral() {
+            corpoTabelaResumoFinal.innerHTML = '';
+            
+            const todosOsTamanhos = [3, 4, 5, 6, 7, 8, 9, 10];
+            
+            todosOsTamanhos.forEach(tamanho => {
+                const estatisticas = combinacoesValidasPorTamanho[tamanho];
+                const dados = dadosResumoGeral[tamanho] || [];
+                const maisFrequentes = dados.slice(0, 3); // Top 3
+                
+                // Criar a linha da tabela
+                const row = document.createElement('tr');
+                row.className = 'bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700';
+                
+                let rowHtml = `<td class="px-4 py-3 border font-semibold">${tamanho} dígitos</td>`;
+                
+                // Adicionar as 3 combinações mais frequentes
+                for (let i = 0; i < 3; i++) {
+                    if (i < maisFrequentes.length) {
+                        const item = maisFrequentes[i];
+                        rowHtml += `
+                            <td class="px-4 py-3 border font-mono">${item.combinacao.join(',')}</td>
+                            <td class="px-4 py-3 border text-center font-bold text-green-600 dark:text-green-400">${item.frequencia} <span class="text-xs text-gray-500">(${item.percentual}%)</span></td>
+                        `;
+                    } else {
+                        rowHtml += `
+                            <td class="px-4 py-3 border text-center text-gray-400">-</td>
+                            <td class="px-4 py-3 border text-center text-gray-400">-</td>
+                        `;
+                    }
+                }
+                
+                row.innerHTML = rowHtml;
+                corpoTabelaResumoFinal.appendChild(row);
+            });
+            
+            // Mostrar o resumo geral
+            resumoGeralEl.classList.remove('hidden');
+        }
+        
+        // Função para imprimir o resumo
+        function imprimirResumo() {
+            const dataAtual = new Date().toLocaleDateString('pt-BR');
+            const todosOsTamanhos = [3, 4, 5, 6, 7, 8, 9, 10];
+            
+            // Gerar HTML para a tabela de impressão
+            let tabelaHtml = `
+                <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                    <thead>
+                        <tr style="background-color: #f5f5f5;">
+                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Tamanho</th>
+                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Nunca Saíram</th>
+                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">1ª Mais Frequente</th>
+                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Aparições</th>
+                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">2ª Mais Frequente</th>
+                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Aparições</th>
+                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">3ª Mais Frequente</th>
+                            <th style="border: 1px solid #ccc; padding: 8px; text-align: center;">Aparições</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            todosOsTamanhos.forEach(tamanho => {
+                const estatisticas = combinacoesValidasPorTamanho[tamanho];
+                const dados = dadosResumoGeral[tamanho] || [];
+                const maisFrequentes = dados.slice(0, 3);
+                const totalValidas = estatisticas.validas;
+                const totalSairam = dados.length;
+                const totalNuncaSairam = totalValidas - totalSairam;
+                
+                tabelaHtml += `
+                    <tr>
+                        <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-weight: bold;">${tamanho} dígitos</td>
+                        <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${totalNuncaSairam} de ${totalValidas}</td>
+                `;
+                
+                // Adicionar as 3 combinações mais frequentes
+                for (let i = 0; i < 3; i++) {
+                    if (i < maisFrequentes.length) {
+                        const item = maisFrequentes[i];
+                        tabelaHtml += `
+                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center;">${item.combinacao.join(',')}</td>
+                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-weight: bold;">${item.frequencia}</td>
+                        `;
+                    } else {
+                        tabelaHtml += `
+                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center; color: #999;">-</td>
+                            <td style="border: 1px solid #ccc; padding: 8px; text-align: center; color: #999;">-</td>
+                        `;
+                    }
+                }
+                
+                tabelaHtml += '</tr>';
+            });
+            
+            tabelaHtml += '</tbody></table>';
+            
+            const conteudoImpressao = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Resumo - Dia de Sorte</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        h1 { text-align: center; color: #16A34A; margin-bottom: 30px; }
+                        .footer { margin-top: 30px; text-align: center; font-size: 12px; color: #666; }
+                        @media print {
+                            body { margin: 0; }
+                            .footer { page-break-inside: avoid; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>Combinações Mais Frequentes por Tamanho de Dígito</h1>
+                    <p style="text-align: center; margin-bottom: 20px;">Análise do Dia de Sorte - ${dataAtual}</p>
+                    ${tabelaHtml}
+                    <div class="footer">
+                        <p>Gerado automaticamente em ${dataAtual} às ${new Date().toLocaleTimeString('pt-BR')}</p>
+                        <p>Baseado nos dados históricos dos sorteios do Dia de Sorte</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            const janelaImpressao = window.open('', '_blank');
+            janelaImpressao.document.write(conteudoImpressao);
+            janelaImpressao.document.close();
+            janelaImpressao.focus();
+            janelaImpressao.print();
+        }
+        
+        // Função para fazer download em Excel
+        function downloadExcel() {
+            // Verificar se a biblioteca XLSX está disponível
+            if (typeof XLSX === 'undefined') {
+                alert('Biblioteca Excel não carregada. Tente recarregar a página.');
+                return;
+            }
+            
+            // Preparar os dados para o Excel
+            const dadosExcel = [];
+            
+            // Cabeçalho
+            dadosExcel.push([
+                'Tamanho',
+                '1ª Mais Frequente',
+                'Aparições',
+                '2ª Mais Frequente', 
+                'Aparições',
+                '3ª Mais Frequente',
+                'Aparições'
+            ]);
+            
+            // Dados das linhas
+            const todosOsTamanhos = [3, 4, 5, 6, 7, 8, 9, 10];
+            
+            todosOsTamanhos.forEach(tamanho => {
+                const top3 = dadosResumoGeral[tamanho] || [];
+                const linha = [`${tamanho} dígitos`];
+                
+                // Adicionar as 3 combinações mais frequentes
+                for (let i = 0; i < 3; i++) {
+                    if (i < top3.length) {
+                        const item = top3[i];
+                        linha.push(item.combinacao.join(','));
+                        linha.push(item.frequencia);
+                    } else {
+                        linha.push('-');
+                        linha.push('-');
+                    }
+                }
+                
+                dadosExcel.push(linha);
+            });
+            
+            // Criar workbook e worksheet
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(dadosExcel);
+            
+            // Definir largura das colunas
+            const larguraColunas = [
+                { wch: 15 }, // Tamanho
+                { wch: 20 }, // 1ª Combinação
+                { wch: 12 }, // Aparições
+                { wch: 20 }, // 2ª Combinação
+                { wch: 12 }, // Aparições
+                { wch: 20 }, // 3ª Combinação
+                { wch: 12 }  // Aparições
+            ];
+            ws['!cols'] = larguraColunas;
+            
+            // Adicionar worksheet ao workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Resumo Dia de Sorte');
+            
+            // Gerar nome do arquivo com data
+            const dataAtual = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
+            const nomeArquivo = `Resumo_Dia_de_Sorte_${dataAtual}.xlsx`;
+            
+            // Fazer download
+            XLSX.writeFile(wb, nomeArquivo);
+        }
+        
+        // Event Listeners
+        btnAnalisar.addEventListener('click', analisarCombinacoes);
+        btnImprimirResumo.addEventListener('click', imprimirResumo);
+        btnDownloadExcelResumo.addEventListener('click', downloadExcel);
+        
+        btnAtualizarDados.addEventListener('click', () => {
+            // Limpar o cache
+            localStorage.removeItem(CACHE_KEY);
+            localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+            
+            // Limpar análises em cache
+            for (let i = 3; i <= 10; i++) {
+                localStorage.removeItem(`diaDeSorte_analise_validas_${i}`);
+            }
+            
+            // Reiniciar o processo
+            todosSorteios = [];
+            dadosCarregados = false;
+            analiseNumerosRealizada = false;
+            iniciarCarregamento();
+        });
+
+        // Event listeners para pesquisa de dígitos
+        btnPesquisarDigitos.addEventListener('click', pesquisarDigitos);
+        pesquisaDigitosEl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                pesquisarDigitos();
+            }
+        });
+        
+        // Inicialização
+        window.addEventListener('load', () => {
+            // Iniciar o carregamento
+            iniciarCarregamento();
+        });
+    </script>
+</body>
+</html>

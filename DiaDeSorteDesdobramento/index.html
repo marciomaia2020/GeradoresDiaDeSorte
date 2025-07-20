@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desdobramento Dia de Sorte</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #F09300; /* Laranja (Dia de Sorte) */
+            --secondary-color: #FFC866;
+            --accent-color: #FF7B00;
+            --background-color: #FFF9EE;
+            --text-color: #333333;
+            --border-color: #E0E0E0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        h3 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .table-container {
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        #numeros td {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            font-weight: bold;
+            background-color: white;
+            transition: all 0.2s ease;
+        }
+
+        #numeros td:hover {
+            background-color: #FFF0D4;
+            transform: scale(1.05);
+        }
+
+        #numeros td.selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        #numeros td.fixed {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        #numeros td.excluded {
+            background-color: #E0E0E0;
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .instructions {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .instructions p {
+            margin-bottom: 10px;
+        }
+
+        .instructions ol, .instructions ul {
+            padding-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        .input-container {
+            margin-bottom: 15px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .input-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .input-container input, .input-container select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .input-container input:focus, .input-container select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(240, 147, 0, 0.2);
+        }
+
+        .erro {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        button:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .userInformation, .userInformationUnderstanding {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .userInformation p, .userInformationUnderstanding p {
+            margin-bottom: 10px;
+        }
+
+        #jogosGerados {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .jogo {
+            padding: 10px;
+            margin-bottom: 5px;
+            background-color: #f8f9fa;
+            border-left: 3px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .numero-jogo {
+            margin-right: 10px;
+            font-weight: bold;
+            color: var(--primary-color);
+            min-width: 30px;
+        }
+
+        .dezenas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .dezena {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        .mes-sorte {
+            margin-left: auto;
+            padding: 5px 10px;
+            background-color: var(--secondary-color);
+            color: var(--accent-color);
+            border-radius: 15px;
+            font-weight: bold;
+        }
+
+        .info-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .info-container h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .info-container h3 {
+            color: var(--accent-color);
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+
+        #mensagemSucesso {
+            background-color: rgba(40, 167, 69, 0.9);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+
+        @media (max-width: 768px) {
+            .button-container {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            #numeros td {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Desdobramento Dia de Sorte</h1>
+        <h3>Números disponíveis (Desdobramento para 15 dezenas)</h3>
+       
+        <div class="table-container">
+            <table id="numeros">
+                <tr>
+                    <!-- Os números serão inseridos aqui via JavaScript -->
+                </tr>
+            </table>
+        </div>
+        <div class="instructions">
+            <p><strong>INSTRUÇÕES:</strong></p>
+            <p>No universo de <strong><i>31 dezenas</i></strong> do Dia de Sorte.</p>
+
+            <ol>
+                <li>Selecione <strong><i>5 dezenas Pares</i></strong> e <strong><i>5 Ímpares</i></strong> para excluir.</li>
+                <li>Selecione <strong><i>1 dezena</i></strong> para fixar.</li>
+                <li>Escolha o <strong><i>Mês da Sorte</i></strong> que deseja fixar (ou deixe "Aleatório").</li>
+                <li>Selecione a <strong><i>quantidade de jogos</i></strong> a ser gerado. (Máximo 4000)</li>
+                <li>Selecione <strong><i>quantas dezenas</i></strong> quer adicionar (<span style="color: #FF7B00;">opcional</span>).</li>
+                <li><strong><i>Salve</i></strong> o jogo para abrir no Bloco de Notas, "*.txt" ou exportar para o Excel *.xlxs".</li>
+            </ol>
+            <ul>
+                <li>Obs: Para gerar vários jogos, o sistema precisará de alguns segundos.</li>
+                <li>Obs: Se seu navegador travar, use outro como alternativa. Recomendado <span style="color: #FF7B00;">"Mozilla Firefox"</span>.</li>
+                <li>Obs: O Dia de Sorte exige a seleção de 7 números entre 1 e 31, mais o Mês da Sorte.</li>
+            </ul>
+        </div>
+        <div class="input-container">
+            <label for="excluir-pares">1 - Dezenas pares a excluir:</label>
+            <input type="text" id="excluir-pares" placeholder="Digite 5 dezenas pares separadas por vírgula (ex: 2,4,8,10,30)">
+            <div id="erro-pares" class="erro"></div>
+        </div>
+        <div class="input-container">
+            <label for="excluir-impares">2 - Dezenas ímpares a excluir:</label>
+            <input type="text" id="excluir-impares" placeholder="Digite 5 dezenas ímpares separadas por vírgula (ex: 1,3,9,15,31)">
+            <div id="erro-impares" class="erro"></div>
+        </div>
+        <div class="input-container">
+            <label for="fixar">3 - Dezena a fixar:</label>
+            <input type="text" id="fixar" placeholder="Ex: 07">
+            <div id="erro-fixar" class="erro"></div>
+        </div>
+        <div class="input-container">
+            <label for="mes-sorte">4 - Mês da Sorte:</label>
+            <select id="mes-sorte">
+                <option value="aleatorio">Aleatório</option>
+                <option value="Janeiro">Janeiro</option>
+                <option value="Fevereiro">Fevereiro</option>
+                <option value="Março">Março</option>
+                <option value="Abril">Abril</option>
+                <option value="Maio">Maio</option>
+                <option value="Junho">Junho</option>
+                <option value="Julho">Julho</option>
+                <option value="Agosto">Agosto</option>
+                <option value="Setembro">Setembro</option>
+                <option value="Outubro">Outubro</option>
+                <option value="Novembro">Novembro</option>
+                <option value="Dezembro">Dezembro</option>
+            </select>
+        </div>
+        <div class="input-container">
+            <label for="jogos">5 - Quantidade de jogos: (<small><span style="color: #FF7B00;">Até 4000</span></small>)</label>
+            <input type="number" id="jogos" min="1" max="4000" placeholder="Ex: 5">
+            <div id="erro-jogos" class="erro"></div>
+        </div>
+        <div class="input-container">
+            <label for="dezenas-adicionais">6 - Dezenas adicionais: <small>Adicione entre 0 e 7</small> (<span style="color: #FF7B00;">opcional</span>)</label>
+            <input type="number" id="dezenas-adicionais" min="0" max="7" placeholder="Ex: entre 0 e 7">
+            <div id="erro-dezenas-adicionais" class="erro"></div>
+        </div>
+        <div class="button-container">
+            <button onclick="gerarJogos()">Gerar Jogos</button>
+            <button onclick="salvarJogo()">Salvar Jogo</button>
+            <button onclick="exportarParaExcel()">Exportar para Excel</button>
+            <button onclick="resetarJogo()">Resetar Jogo</button>
+        </div>
+        <div class="userInformation">
+            <p>Os jogos serão gerados com no mínimo 7 dezenas (regra do Dia de Sorte). Caso não haja adição de dezenas (<span style="color: #FF7B00;">opcional</span>).</p>
+            <p>Os jogos gerados são checados automaticamente afim de não haver duplicidade.</p>
+            <p>O limite para a geração de jogos está setado para 4000.</p>
+        </div>
+
+        <!-- Elemento HTML onde deseja que a mensagem seja exibida -->
+        <div id="mensagemSucesso" style="display: none;"></div>
+
+        <div id="jogosGerados">
+            <!-- Os jogos gerados serão inseridos aqui via JavaScript -->
+        </div>
+
+        <div class="userInformationUnderstanding">
+            <th><b><i>RESUMO</i></b></th>
+            <ol>
+                <li>A <b>dezena à fixar</b> estará presente em todos os jogos gerados.</li>
+                <li>As <b>dezenas excluídas</b> serão removidas da lista de <i>números disponíveis</i>.</li>
+                <li>Ao <b>gerar jogos</b> o formato sempre será 01, 02, ... </li>
+                <li>Cada jogo terá o <b>Mês da Sorte</b> definido (fixo ou aleatório).</li>
+                <li>Ao clicar em <b>salvar jogo</b> será gerado um arquivo *.txt para download.</li>
+                <li>O <i>formato do arquivo para download</i> virá pronto para usar no volante.</li>
+            </ol>
+        </div>
+    
+        <div class="info-container">
+            <h2>Resumo do Processo de Desdobramento para o Dia de Sorte</h2>
+            <p>A técnica utilizada para gerar os jogos é uma forma de desdobramento adaptada para o Dia de Sorte, considerando suas regras específicas. Veja como isso funciona:</p>
+    
+            <h3>Como Funciona o Desdobramento</h3>
+            <ul>
+                <li><strong>Inclusão da Dezena Fixa:</strong> A dezena escolhida para fixar estará presente em todos os jogos gerados, garantindo que você sempre aposte neste número.</li>
+                <li><strong>Exclusão Estratégica:</strong> Ao excluir 10 dezenas (5 pares e 5 ímpares), você reduz o universo de 31 para 21 dezenas, tornando o jogo mais estratégico.</li>
+                <li><strong>Sete Números por Jogo:</strong> Cada jogo terá 7 números, conforme exigido pelo Dia de Sorte, incluindo sua dezena fixa.</li>
+                <li><strong>Mês da Sorte:</strong> Você pode escolher um mês específico ou deixar que seja gerado aleatoriamente para cada jogo.</li>
+            </ul>
+    
+            <h3>Vantagens do Desdobramento</h3>
+            <ul>
+                <li><strong>Cobertura Ampliada:</strong> Com esta técnica, você cobre mais possibilidades com menos jogos, aumentando suas chances.</li>
+                <li><strong>Personalização:</strong> Adapte o desdobramento às suas preferências, fixando números ou meses que você acredita terem mais chances.</li>
+                <li><strong>Economia:</strong> Em vez de apostar em todas as combinações possíveis, você joga de forma mais estratégica e econômica.</li>
+            </ul>
+    
+            <h3>Dicas para Melhores Resultados</h3>
+            <p>Para maximizar suas chances no Dia de Sorte:</p>
+            <ul>
+                <li>Escolha uma dezena fixa baseada em análise estatística (números que mais saem).</li>
+                <li>Exclua números que raramente são sorteados.</li>
+                <li>Considere escolher o Mês da Sorte fixo se você tiver preferência por algum mês específico.</li>
+                <li>Gere entre 5 e 10 jogos com este sistema para ter uma boa cobertura.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Array com os meses para sorteio aleatório
+        const mesesDaSorte = [
+            'Janeiro', 'Fevereiro', 'Março', 'Abril', 
+            'Maio', 'Junho', 'Julho', 'Agosto', 
+            'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+        ];
+
+        // Jogos gerados
+        let jogosGerados = [];
+
+        // Inicialização da tabela de números
+        document.addEventListener('DOMContentLoaded', function() {
+            inicializarTabela();
+        });
+
+        // Função para inicializar a tabela de números
+        function inicializarTabela() {
+            const tabela = document.getElementById('numeros');
+            const tr = tabela.getElementsByTagName('tr')[0];
+            tr.innerHTML = ''; // Limpar a linha
+
+            // Criar células para os números de 1 a 31 (Dia de Sorte)
+            for (let i = 1; i <= 31; i++) {
+                const td = document.createElement('td');
+                td.textContent = i < 10 ? '0' + i : i;
+                td.dataset.numero = i;
+                td.addEventListener('click', toggleNumero);
+                tr.appendChild(td);
+            }
+        }
+
+        // Função para alternar a seleção de um número
+        function toggleNumero(event) {
+            const td = event.target;
+            const numero = parseInt(td.dataset.numero);
+            
+            // Verificar se já está excluído
+            if (td.classList.contains('excluded')) {
+                td.classList.remove('excluded');
+            } 
+            // Verificar se já está fixado
+            else if (td.classList.contains('fixed')) {
+                td.classList.remove('fixed');
+                document.getElementById('fixar').value = '';
+            } 
+            // Verificar se o número deve ser fixado
+            else if (document.getElementById('fixar').value === '') {
+                td.classList.add('fixed');
+                document.getElementById('fixar').value = numero < 10 ? '0' + numero : numero;
+            } 
+            // Caso contrário, marcar como excluído
+            else {
+                td.classList.add('excluded');
+                
+                // Determinar se é par ou ímpar e adicionar ao campo apropriado
+                const isPar = numero % 2 === 0;
+                const campo = isPar ? 'excluir-pares' : 'excluir-impares';
+                const input = document.getElementById(campo);
+                
+                // Adicionar à lista de excluídos
+                const valores = input.value ? input.value.split(',').map(num => parseInt(num.trim())) : [];
+                if (!valores.includes(numero)) {
+                    valores.push(numero);
+                    input.value = valores.join(', ');
+                }
+            }
+        }
+
+        // Função para validar entradas
+        function validarEntradas() {
+            let valido = true;
+            
+            // Validar dezenas pares
+            const excluirPares = document.getElementById('excluir-pares').value.trim();
+            const erroPares = document.getElementById('erro-pares');
+            if (excluirPares) {
+                const pares = excluirPares.split(',').map(num => parseInt(num.trim()));
+                
+                // Verificar se todos são pares
+                const todosPares = pares.every(num => num % 2 === 0);
+                
+                // Verificar se estão no intervalo 1-31
+                const todosNoIntervalo = pares.every(num => num >= 2 && num <= 30);
+                
+                // Verificar quantidade (até 5)
+                const quantidadeCorreta = pares.length <= 5;
+                
+                if (!todosPares || !todosNoIntervalo || !quantidadeCorreta) {
+                    erroPares.textContent = "Informe até 5 dezenas pares válidas entre 2 e 30, separadas por vírgula.";
+                    erroPares.style.display = 'block';
+                    valido = false;
+                } else {
+                    erroPares.style.display = 'none';
+                }
+            } else {
+                erroPares.style.display = 'none';
+            }
+            
+            // Validar dezenas ímpares
+            const excluirImpares = document.getElementById('excluir-impares').value.trim();
+            const erroImpares = document.getElementById('erro-impares');
+            if (excluirImpares) {
+                const impares = excluirImpares.split(',').map(num => parseInt(num.trim()));
+                
+                // Verificar se todos são ímpares
+                const todosImpares = impares.every(num => num % 2 !== 0);
+                
+                // Verificar se estão no intervalo 1-31
+                const todosNoIntervalo = impares.every(num => num >= 1 && num <= 31);
+                
+                // Verificar quantidade (até 5)
+                const quantidadeCorreta = impares.length <= 5;
+                
+                if (!todosImpares || !todosNoIntervalo || !quantidadeCorreta) {
+                    erroImpares.textContent = "Informe até 5 dezenas ímpares válidas entre 1 e 31, separadas por vírgula.";
+                    erroImpares.style.display = 'block';
+                    valido = false;
+                } else {
+                    erroImpares.style.display = 'none';
+                }
+            } else {
+                erroImpares.style.display = 'none';
+            }
+            
+            // Validar dezena fixa
+            const fixar = document.getElementById('fixar').value.trim();
+            const erroFixar = document.getElementById('erro-fixar');
+            if (!fixar) {
+                erroFixar.textContent = "Informe uma dezena para fixar.";
+                erroFixar.style.display = 'block';
+                valido = false;
+            } else {
+                const dezenaFixa = parseInt(fixar);
+                if (isNaN(dezenaFixa) || dezenaFixa < 1 || dezenaFixa > 31) {
+                    erroFixar.textContent = "A dezena fixa deve ser um número entre 1 e 31.";
+                    erroFixar.style.display = 'block';
+                    valido = false;
+                } else {
+                    erroFixar.style.display = 'none';
+                }
+            }
+            
+            // Validar quantidade de jogos
+            const jogos = document.getElementById('jogos').value.trim();
+            const erroJogos = document.getElementById('erro-jogos');
+            if (!jogos) {
+                erroJogos.textContent = "Informe a quantidade de jogos.";
+                erroJogos.style.display = 'block';
+                valido = false;
+            } else {
+                const qtdJogos = parseInt(jogos);
+                if (isNaN(qtdJogos) || qtdJogos < 1 || qtdJogos > 4000) {
+                    erroJogos.textContent = "A quantidade de jogos deve ser entre 1 e 4000.";
+                    erroJogos.style.display = 'block';
+                    valido = false;
+                } else {
+                    erroJogos.style.display = 'none';
+                }
+            }
+            
+            // Validar dezenas adicionais
+            const dezenasAdicionais = document.getElementById('dezenas-adicionais').value.trim();
+            const erroDezenasAdicionais = document.getElementById('erro-dezenas-adicionais');
+            if (dezenasAdicionais) {
+                const qtdAdicionais = parseInt(dezenasAdicionais);
+                if (isNaN(qtdAdicionais) || qtdAdicionais < 0 || qtdAdicionais > 7) {
+                    erroDezenasAdicionais.textContent = "A quantidade de dezenas adicionais deve ser entre 0 e 7.";
+                    erroDezenasAdicionais.style.display = 'block';
+                    valido = false;
+                } else {
+                    erroDezenasAdicionais.style.display = 'none';
+                }
+            } else {
+                erroDezenasAdicionais.style.display = 'none';
+            }
+            
+            return valido;
+        }
+
+        // Função para gerar jogos
+        function gerarJogos() {
+            // Validar entradas
+            if (!validarEntradas()) {
+                return;
+            }
+            
+            // Mostrar overlay de carregamento
+            mostrarLoading();
+            
+            // Executar a geração em uma função assíncrona para não travar a UI
+            setTimeout(() => {
+                try {
+                    // Obter valores
+                    const fixar = parseInt(document.getElementById('fixar').value.trim());
+                    const excluirPares = document.getElementById('excluir-pares').value.trim() 
+                        ? document.getElementById('excluir-pares').value.trim().split(',').map(num => parseInt(num.trim())) 
+                        : [];
+                    const excluirImpares = document.getElementById('excluir-impares').value.trim() 
+                        ? document.getElementById('excluir-impares').value.trim().split(',').map(num => parseInt(num.trim())) 
+                        : [];
+                    const qtdJogos = parseInt(document.getElementById('jogos').value.trim());
+                    const qtdAdicionais = parseInt(document.getElementById('dezenas-adicionais').value.trim() || "0");
+                    const mesSorte = document.getElementById('mes-sorte').value;
+                    
+                    // Calcular quantas dezenas serão geradas por jogo (7 é o mínimo para o Dia de Sorte)
+                    // 1 já é fixo, então precisamos de mais 6 + adicionais
+                    const dezenasParaGerar = 6 + qtdAdicionais;
+                    
+                    // Criar lista de números disponíveis (1 a 31, excluindo os escolhidos)
+                    const numerosExcluidos = [...excluirPares, ...excluirImpares, fixar];
+                    const numerosDisponiveis = [];
+                    for (let i = 1; i <= 31; i++) {
+                        if (!numerosExcluidos.includes(i)) {
+                            numerosDisponiveis.push(i);
+                        }
+                    }
+                    
+                    // Verificar se temos dezenas suficientes
+                    if (numerosDisponiveis.length < dezenasParaGerar) {
+                        alert(`Não há dezenas suficientes disponíveis. Você precisa de pelo menos ${dezenasParaGerar} dezenas, mas tem apenas ${numerosDisponiveis.length} após as exclusões.`);
+                        esconderLoading();
+                        return;
+                    }
+                    
+                    // Limpar jogos anteriores
+                    jogosGerados = [];
+                    
+                    // Conjunto para verificar duplicatas
+                    const jogosSet = new Set();
+                    
+                    // Gerar jogos
+                    for (let i = 0; i < qtdJogos; i++) {
+                        let jogoValido = false;
+                        let tentativas = 0;
+                        let dezenasAleatorias = [];
+                        let jogoKey = '';
+                        
+                        // Tentar até 100 vezes para evitar loop infinito
+                        while (!jogoValido && tentativas < 100) {
+                            // Selecionar dezenas aleatórias
+                            dezenasAleatorias = obterDezenasAleatorias(numerosDisponiveis, dezenasParaGerar);
+                            
+                            // Criar o jogo incluindo a dezena fixa
+                            const dezenas = [fixar, ...dezenasAleatorias].sort((a, b) => a - b);
+                            
+                            // Gerar uma chave única para o jogo
+                            jogoKey = dezenas.join('-');
+                            
+                            // Verificar se este jogo já existe
+                            if (!jogosSet.has(jogoKey)) {
+                                jogoValido = true;
+                                jogosSet.add(jogoKey);
+                            }
+                            
+                            tentativas++;
+                        }
+                        
+                        if (jogoValido) {
+                            // Determinar mês da sorte (fixo ou aleatório)
+                            let mesSorteJogo = mesSorte;
+                            if (mesSorte === 'aleatorio') {
+                                mesSorteJogo = mesesDaSorte[Math.floor(Math.random() * mesesDaSorte.length)];
+                            }
+                            
+                            // Adicionar jogo
+                            const jogo = {
+                                numero: i + 1,
+                                dezenas: [fixar, ...dezenasAleatorias].sort((a, b) => a - b),
+                                mes: mesSorteJogo
+                            };
+                            
+                            jogosGerados.push(jogo);
+                        }
+                    }
+                    
+                    // Exibir jogos
+                    exibirJogos();
+                    
+                    // Mostrar mensagem de sucesso
+                    if (jogosGerados.length === 1) {
+                        mostrarMensagem("1 jogo foi gerado com sucesso!");
+                    } else {
+                        mostrarMensagem(`${jogosGerados.length} jogos foram gerados com sucesso!`);
+                    }
+                } catch (error) {
+                    console.error("Erro ao gerar jogos:", error);
+                    alert("Ocorreu um erro ao gerar os jogos. Verifique os dados e tente novamente.");
+                } finally {
+                    esconderLoading();
+                }
+            }, 100);
+        }
+
+        // Função para obter dezenas aleatórias
+        function obterDezenasAleatorias(disponiveis, quantidade) {
+            const resultado = [];
+            const copiaDisponiveis = [...disponiveis];
+            
+            for (let i = 0; i < quantidade; i++) {
+                if (copiaDisponiveis.length === 0) break;
+                
+                const indice = Math.floor(Math.random() * copiaDisponiveis.length);
+                resultado.push(copiaDisponiveis[indice]);
+                copiaDisponiveis.splice(indice, 1);
+            }
+            
+            return resultado;
+        }
+
+        // Função para exibir jogos gerados
+        function exibirJogos() {
+            const container = document.getElementById('jogosGerados');
+            container.innerHTML = '';
+            container.style.display = 'block';
+            
+            jogosGerados.forEach(jogo => {
+                const jogoDiv = document.createElement('div');
+                jogoDiv.className = 'jogo';
+                
+                // Número do jogo
+                const numeroSpan = document.createElement('span');
+                numeroSpan.className = 'numero-jogo';
+                numeroSpan.textContent = jogo.numero + '.';
+                jogoDiv.appendChild(numeroSpan);
+                
+                // Dezenas
+                const dezenasDiv = document.createElement('div');
+                dezenasDiv.className = 'dezenas';
+                
+                jogo.dezenas.forEach(dezena => {
+                    const dezenaSpan = document.createElement('span');
+                    dezenaSpan.className = 'dezena';
+                    dezenaSpan.textContent = dezena < 10 ? '0' + dezena : dezena;
+                    dezenasDiv.appendChild(dezenaSpan);
+                });
+                
+                jogoDiv.appendChild(dezenasDiv);
+                
+                // Mês da sorte
+                const mesSpan = document.createElement('span');
+                mesSpan.className = 'mes-sorte';
+                mesSpan.textContent = jogo.mes;
+                jogoDiv.appendChild(mesSpan);
+                
+                container.appendChild(jogoDiv);
+            });
+            
+            // Rolar para os jogos gerados
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Função para salvar jogos em TXT
+        function salvarJogo() {
+            if (jogosGerados.length === 0) {
+                alert("Não há jogos para salvar. Por favor, gere jogos primeiro.");
+                return;
+            }
+            
+            let conteudo = "JOGOS DIA DE SORTE\n\n";
+            
+            jogosGerados.forEach(jogo => {
+                const dezenas = jogo.dezenas.map(d => d < 10 ? '0' + d : d).join(' ');
+                conteudo += `Jogo ${jogo.numero}: ${dezenas} | Mês: ${jogo.mes}\n`;
+            });
+            
+            const blob = new Blob([conteudo], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'jogos_dia_de_sorte.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            mostrarMensagem("Arquivo TXT salvo com sucesso!");
+        }
+
+        // Função para exportar para Excel
+        function exportarParaExcel() {
+            if (jogosGerados.length === 0) {
+                alert("Não há jogos para exportar. Por favor, gere jogos primeiro.");
+                return;
+            }
+            
+            // Criar workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Preparar dados
+            const data = [['Jogo', 'Dezena 1', 'Dezena 2', 'Dezena 3', 'Dezena 4', 'Dezena 5', 'Dezena 6', 'Dezena 7', 'Mês da Sorte']];
+            
+            jogosGerados.forEach(jogo => {
+                const dezenas = jogo.dezenas.map(d => d < 10 ? '0' + d : '' + d);
+                data.push([jogo.numero, ...dezenas, jogo.mes]);
+            });
+            
+            // Criar worksheet
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            
+            // Adicionar ao workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Dia de Sorte');
+            
+            // Salvar arquivo
+            XLSX.writeFile(wb, 'jogos_dia_de_sorte.xlsx');
+            
+            mostrarMensagem("Arquivo Excel exportado com sucesso!");
+        }
+
+        // Função para resetar o jogo
+        function resetarJogo() {
+            // Limpar campos
+            document.getElementById('excluir-pares').value = '';
+            document.getElementById('excluir-impares').value = '';
+            document.getElementById('fixar').value = '';
+            document.getElementById('mes-sorte').value = 'aleatorio';
+            document.getElementById('jogos').value = '';
+            document.getElementById('dezenas-adicionais').value = '';
+            
+            // Limpar erros
+            document.querySelectorAll('.erro').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            // Limpar jogos gerados
+            jogosGerados = [];
+            document.getElementById('jogosGerados').innerHTML = '';
+            document.getElementById('jogosGerados').style.display = 'none';
+            
+            // Reinicializar tabela
+            inicializarTabela();
+            
+            mostrarMensagem("Jogo resetado com sucesso!");
+        }
+
+        // Função para mostrar overlay de carregamento
+        function mostrarLoading() {
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.className = 'loading-overlay';
+            loadingOverlay.id = 'loading-overlay';
+            
+            const spinner = document.createElement('div');
+            spinner.className = 'loading-spinner';
+            
+            loadingOverlay.appendChild(spinner);
+            document.body.appendChild(loadingOverlay);
+        }
+
+        // Função para esconder overlay de carregamento
+        function esconderLoading() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            if (loadingOverlay) {
+                loadingOverlay.remove();
+            }
+        }
+
+        // Função para mostrar mensagem de sucesso
+        function mostrarMensagem(mensagem) {
+            const mensagemElement = document.getElementById('mensagemSucesso');
+            mensagemElement.textContent = mensagem;
+            mensagemElement.style.display = 'block';
+            
+            // Esconder a mensagem após 3 segundos
+            setTimeout(() => {
+                mensagemElement.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

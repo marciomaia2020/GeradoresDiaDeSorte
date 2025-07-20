@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Combinações - Dia de Sorte</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/afb02bf9ac.js" crossorigin="anonymous"></script>
+    <!-- SheetJS para exportação Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #F09300; /* Cor laranja do Dia de Sorte */
+            --secondary-color: #FFC866;
+            --accent-color: #8B4513;
+            --bg-color: #f0f0f0;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #ddd;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: Arial, sans-serif;
+            color: var(--text-color);
+            padding-bottom: 50px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            padding: 15px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #d87c00;
+            border-color: #d87c00;
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .numeros-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 15px 0;
+        }
+
+        .numero {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            border-radius: 50%;
+            font-size: 0.9em;
+        }
+
+        .mes-sorte {
+            display: inline-block;
+            padding: 5px 15px;
+            background-color: var(--secondary-color);
+            color: var(--accent-color);
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+            border: 2px dashed var(--primary-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .tabela-excel {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .tabela-excel td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 8px;
+            height: 40px;
+            vertical-align: middle;
+            font-weight: 500;
+        }
+
+        .celula-excel {
+            user-select: all;
+            cursor: pointer;
+        }
+
+        .celula-excel:hover {
+            background-color: #e9ecef;
+        }
+
+        .resultado-box {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #198754;
+            color: white;
+            z-index: 1001;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification.error {
+            background-color: #dc3545;
+        }
+
+        .notification.info {
+            background-color: #0dcaf0;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .numeros-container {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gerador de Combinações - Dia de Sorte</h1>
+            <p class="lead">Combinações e palpites inteligentes para aumentar suas chances</p>
+        </header>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                Gerar Combinações de Dígitos
+            </div>
+            <div class="card-body">
+                <form id="formCombinacoes" onsubmit="calcularCombinacoes(event)">
+                    <div class="mb-3">
+                        <label for="numeros" class="form-label">Digite os dígitos (0-9) separados por vírgula:</label>
+                        <input type="text" class="form-control" id="numeros" placeholder="ex: 0,1,2,3,4,5" required>
+                        <div id="numerosError" class="error-message"></div>
+                        <div class="form-text">
+                            Escolha dígitos únicos entre 0 e 9. Eles serão usados para formar números de 1 a 31 para o Dia de Sorte.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tamanho" class="form-label">Tamanho do agrupamento:</label>
+                        <input type="number" class="form-control" id="tamanho" value="2" min="1" max="2" readonly>
+                        <div class="form-text">
+                            Para Dia de Sorte, usamos agrupamento de 2 dígitos para formar números de 1 a 31.
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-calculator"></i> Calcular Combinações
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="resultadoCard" class="card mb-4" style="display: none;">
+            <div class="card-header">
+                Resultado das Combinações
+            </div>
+            <div class="card-body">
+                <div id="totalCombinacoes" class="alert alert-success mb-4" style="display: none;">
+                    <strong>Total de combinações válidas (1-31):</strong> <span id="total">0</span>
+                </div>
+                <div class="resultado-box">
+                    <div id="combinacoes"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="palpitesControle" class="card mb-4" style="display: none;">
+            <div class="card-header">
+                Gerar Palpites para o Dia de Sorte
+            </div>
+            <div class="card-body">
+                <p>
+                    Com base nas combinações geradas, é possível criar até <span id="totalTeorico" class="fw-bold">0</span> palpites diferentes.
+                </p>
+                <div class="mb-3">
+                    <label for="quantidadePalpites" class="form-label">Quantidade de palpites a gerar:</label>
+                    <input type="range" class="form-range" id="quantidadePalpites" min="1" max="1000" value="10">
+                    <div class="d-flex justify-content-between">
+                        <span>1</span>
+                        <span id="valorQuantidadePalpites">10</span>
+                        <span id="valorMaximo">1000</span>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label for="mesSorte" class="form-label">Mês da Sorte:</label>
+                    <select id="mesSorte" class="form-select">
+                        <option value="Janeiro">Janeiro</option>
+                        <option value="Fevereiro">Fevereiro</option>
+                        <option value="Março">Março</option>
+                        <option value="Abril">Abril</option>
+                        <option value="Maio">Maio</option>
+                        <option value="Junho">Junho</option>
+                        <option value="Julho">Julho</option>
+                        <option value="Agosto">Agosto</option>
+                        <option value="Setembro">Setembro</option>
+                        <option value="Outubro">Outubro</option>
+                        <option value="Novembro">Novembro</option>
+                        <option value="Dezembro">Dezembro</option>
+                    </select>
+                </div>
+                <button id="btnGerarPalpites" class="btn btn-primary" onclick="gerarPalpitesDiaSorte()">
+                    <i class="fas fa-magic"></i> Gerar Palpites
+                </button>
+            </div>
+        </div>
+
+        <div id="palpitesCard" class="card mb-4" style="display: none;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Palpites Gerados</span>
+                <span id="paginaInfo" class="badge bg-light text-dark">Página 1</span>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-3">
+                    <strong>Total de palpites gerados:</strong> <span id="totalPalpites">0</span>
+                </div>
+                <div id="palpites" class="resultado-box"></div>
+                <div class="d-flex justify-content-between mt-3">
+                    <button class="btn btn-outline-primary" onclick="downloadPalpitesTxt()">
+                        <i class="fas fa-download"></i> Baixar TXT
+                    </button>
+                    <button class="btn btn-outline-success" onclick="downloadPalpitesExcel()">
+                        <i class="fas fa-file-excel"></i> Baixar Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="processamentoAssincrono" class="card mb-4" style="display: none;">
+            <div class="card-header">
+                Processamento em andamento
+            </div>
+            <div class="card-body">
+                <div id="mensagemTarefa" class="alert alert-info mb-3">
+                    <div class="progress mb-3">
+                        <div id="progressoTarefa" class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div id="statusTarefa">Iniciando processamento...</div>
+                </div>
+                <button id="btnNovoProcessamento" class="btn btn-primary" style="display: none;">
+                    <i class="fas fa-redo"></i> Novo Processamento
+                </button>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2023 Gerador de Combinações - Dia de Sorte. Todos os direitos reservados.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let combinacoesGeradas = [];
+        let paginaAtual = 1;
+        let totalPaginas = 1;
+        let carregandoPagina = false;
+        let todosOsPalpites = [];
+
+        // Inicializar quando o documento estiver carregado
+        document.addEventListener("DOMContentLoaded", function() {
+            // Garantir que o tamanho do agrupamento seja fixo em 2
+            const tamanhoInput = document.getElementById("tamanho");
+            tamanhoInput.value = "2";
+            tamanhoInput.setAttribute("readonly", "readonly");
+            tamanhoInput.style.backgroundColor = "#f8f9fa";
+            
+            // Inicializar validação de entrada
+            validarEntradaDigitos();
+            
+            // Configurar placeholder
+            const inputDigitos = document.getElementById("numeros");
+            inputDigitos.setAttribute("placeholder", "ex: 0,1,2,3,4,5");
+            
+            // Configurar o slider de quantidade de palpites
+            const rangeInput = document.getElementById("quantidadePalpites");
+            const valorSpan = document.getElementById("valorQuantidadePalpites");
+            
+            if (rangeInput && valorSpan) {
+                rangeInput.addEventListener("input", function() {
+                    valorSpan.textContent = formatarNumeroParaBR(parseInt(this.value));
+                });
+            }
+
+            // Exibir a div de erro (inicialmente escondida)
+            const errorDiv = document.getElementById("numerosError");
+            if (!errorDiv) {
+                // Se não existir, criar a div
+                const div = document.createElement("div");
+                div.id = "numerosError";
+                div.className = "error-message";
+                inputDigitos.parentNode.insertBefore(div, inputDigitos.nextSibling);
+            }
+        });
+
+        // Função para formatar número no padrão brasileiro
+        function formatarNumeroParaBR(numero) {
+            return numero.toLocaleString('pt-BR');
+        }
+
+        // Função para validar entrada de dígitos
+        function validarEntradaDigitos() {
+            const inputDigitos = document.getElementById("numeros");
+            const errorDiv = document.getElementById("numerosError");
+            
+            // Validar o padrão enquanto o usuário digita
+            inputDigitos.addEventListener("input", function(e) {
+                const valor = e.target.value;
+                
+                // Remover espaços em branco
+                const valorSemEspacos = valor.replace(/\s/g, "");
+                
+                // Verificar se contém apenas dígitos (0-9) e vírgulas
+                const regex = /^[0-9,]*$/;
+                if (!regex.test(valorSemEspacos)) {
+                    errorDiv.textContent = "Por favor, insira apenas dígitos (0-9) separados por vírgulas.";
+                    errorDiv.style.display = "block";
+                    return;
+                }
+                
+                // Verificar se tem números de dois dígitos (sem vírgula entre eles)
+                const digitos = valorSemEspacos.split(",");
+                for (const digito of digitos) {
+                    if (digito.length > 1) {
+                        errorDiv.textContent = "Cada dígito deve ser separado por vírgula. Insira apenas um dígito por vez (0-9).";
+                        errorDiv.style.display = "block";
+                        return;
+                    }
+                }
+                
+                // Verificar dígitos duplicados e se estão no intervalo 0-9
+                const digitosNumericos = digitos.filter(d => d !== "").map(d => parseInt(d, 10));
+                const digitosUnicos = new Set(digitosNumericos);
+                
+                if (digitosNumericos.length > digitosUnicos.size) {
+                    errorDiv.textContent = "Não é permitido repetir dígitos. Use cada dígito apenas uma vez.";
+                    errorDiv.style.display = "block";
+                    return;
+                }
+                
+                // Verificar se todos os dígitos estão no intervalo 0-9
+                for (const digito of digitosNumericos) {
+                    if (digito < 0 || digito > 9) {
+                        errorDiv.textContent = "Apenas dígitos entre 0 e 9 são permitidos.";
+                        errorDiv.style.display = "block";
+                        return;
+                    }
+                }
+                
+                // Se passou em todas as validações
+                errorDiv.style.display = "none";
+            });
+        }
+
+        // Função para gerar combinações
+        function calcularCombinacoes(event) {
+            event.preventDefault();
+            
+            // Obter valores do formulário
+            const numerosInput = document.getElementById("numeros").value;
+            const tamanhoInput = document.getElementById("tamanho").value;
+            
+            // Validar a entrada
+            const errorDiv = document.getElementById("numerosError");
+            
+            // Remover espaços em branco
+            const numerosStr = numerosInput.replace(/\s/g, "");
+            
+            // Verificar se contém apenas dígitos (0-9) e vírgulas
+            const regex = /^[0-9,]*$/;
+            if (!regex.test(numerosStr)) {
+                errorDiv.textContent = "Por favor, insira apenas dígitos (0-9) separados por vírgulas.";
+                errorDiv.style.display = "block";
+                return;
+            }
+            
+            // Verificar se cada elemento é um único dígito
+            const elementos = numerosStr.split(",");
+            for (const elem of elementos) {
+                if (elem && elem.length > 1) {
+                    errorDiv.textContent = "Cada elemento deve ser um único dígito (0-9).";
+                    errorDiv.style.display = "block";
+                    return;
+                }
+            }
+            
+            // Verificar se há dígitos duplicados
+            const digitos = elementos.filter(e => e).map(e => parseInt(e, 10));
+            if (digitos.length !== new Set(digitos).size) {
+                errorDiv.textContent = "Não é permitido repetir dígitos. Use cada dígito apenas uma vez.";
+                errorDiv.style.display = "block";
+                return;
+            }
+            
+            // Verificar se todos os dígitos estão no intervalo 0-9
+            for (const digito of digitos) {
+                if (digito < 0 || digito > 9) {
+                    errorDiv.textContent = "Apenas dígitos entre 0 e 9 são permitidos.";
+                    errorDiv.style.display = "block";
+                    return;
+                }
+            }
+            
+            // Se passar na validação, gerar as combinações
+            const numeros = digitos;
+            const tamanho = parseInt(tamanhoInput);
+            
+            // Calcular as combinações
+            const combinacoes = gerarCombinacoes(numeros, tamanho);
+            
+            // Filtrar para números entre 1 e 31 (Dia de Sorte)
+            const combinacoesFiltradas = [];
+            for (const comb of combinacoes) {
+                const num = parseInt(comb);
+                if (num >= 1 && num <= 31) {
+                    combinacoesFiltradas.push(comb);
+                }
+            }
+            
+            // Ordenar numericamente
+            combinacoesFiltradas.sort((a, b) => parseInt(a) - parseInt(b));
+            
+            // Exibir resultados
+            document.getElementById("totalCombinacoes").style.display = "block";
+            document.getElementById("total").textContent = combinacoesFiltradas.length;
+            
+            // Criar tabela de combinações
+            const tabela = criarTabelaCombinacoes(combinacoesFiltradas);
+            
+            const combinacoesDiv = document.getElementById("combinacoes");
+            combinacoesDiv.innerHTML = "";
+            combinacoesDiv.appendChild(tabela);
+            
+            document.getElementById("resultadoCard").style.display = "block";
+            
+            // Armazenar as combinações para uso posterior
+            combinacoesGeradas = combinacoesFiltradas;
+            
+            // Mostrar controles de palpites se tivermos combinações suficientes
+            const digitosInput = document.getElementById("numeros").value;
+            const quantidadeDigitos = digitosInput.split(",").filter(d => d.trim()).length;
+            
+            const palpitesControle = document.getElementById("palpitesControle");
+            if (quantidadeDigitos >= 4 && combinacoesFiltradas.length >= 12) {
+                palpitesControle.style.display = "block";
+                
+                // Calcular o total teórico de palpites possíveis
+                const numerosUnicosArray = extrairNumerosUnicos(combinacoesFiltradas);
+                console.log("Números únicos extraídos:", numerosUnicosArray);
+                
+                const totalTeorico = calcularTotalCombinacoesPossiveis(numerosUnicosArray.length, 7); // Dia de Sorte: 7 números
+                console.log("Total teórico calculado:", totalTeorico);
+                
+                // Mostrar o total teórico na interface
+                document.getElementById("totalTeorico").textContent = formatarNumeroParaBR(totalTeorico);
+                
+                // Configurar limite máximo do slider
+                const limiteMaximo = Math.min(10000, Math.max(1, totalTeorico));
+                const rangeInput = document.getElementById("quantidadePalpites");
+                rangeInput.max = limiteMaximo;
+                rangeInput.value = Math.min(10, limiteMaximo);
+                document.getElementById("valorQuantidadePalpites").textContent = formatarNumeroParaBR(parseInt(rangeInput.value));
+                
+                // Atualizar o texto do máximo
+                document.getElementById("valorMaximo").textContent = formatarNumeroParaBR(limiteMaximo);
+            } else {
+                palpitesControle.style.display = "none";
+                // Esconder o container de palpites caso esteja visível
+                document.getElementById("palpitesCard").style.display = "none";
+            }
+        }
+
+        // Função para gerar combinações
+        function gerarCombinacoes(numeros, tamanho) {
+            const resultado = [];
+            
+            // Função recursiva para gerar combinações
+            function combinar(start, combinacaoAtual) {
+                if (combinacaoAtual.length === tamanho) {
+                    resultado.push(combinacaoAtual.join(''));
+                    return;
+                }
+                
+                for (let i = start; i < numeros.length; i++) {
+                    combinar(i + 1, [...combinacaoAtual, numeros[i]]);
+                }
+            }
+            
+            combinar(0, []);
+            
+            // Adicionar números gêmeos (11, 22, etc.) se o tamanho for 2
+            if (tamanho === 2) {
+                for (const num of numeros) {
+                    if (num >= 1 && num <= 9) {  // Apenas dígitos válidos para formar números de dois dígitos
+                        resultado.push(`${num}${num}`);
+                    }
+                }
+            }
+            
+            return [...new Set(resultado)]; // Remover duplicatas
+        }
+
+        // Função para calcular o número total de combinações possíveis
+        function calcularTotalCombinacoesPossiveis(n, r) {
+            // Função para calcular fatorial
+            function fatorial(num) {
+                if (num <= 1) return 1;
+                let resultado = 1;
+                for (let i = 2; i <= num; i++) {
+                    resultado *= i;
+                }
+                return resultado;
+            }
+            
+            // Para números grandes, usamos uma abordagem mais eficiente
+            function calcularCombinacaoGrande(n, r) {
+                let resultado = 1;
+                // Calcular n! / (n-r)! diretamente
+                for (let i = n - r + 1; i <= n; i++) {
+                    resultado *= i;
+                }
+                // Dividir por r!
+                resultado /= fatorial(r);
+                return Math.floor(resultado);
+            }
+            
+            if (n < r) return 0;
+            
+            // Usar método apropriado baseado no tamanho dos números
+            if (n > 20) {
+                return calcularCombinacaoGrande(n, r);
+            } else {
+                return Math.floor(fatorial(n) / (fatorial(r) * fatorial(n - r)));
+            }
+        }
+
+        // Função para extrair números únicos das combinações
+        function extrairNumerosUnicos(combinacoes) {
+            const numerosUnicos = new Set();
+            
+            for (const combinacao of combinacoes) {
+                try {
+                    const numero = parseInt(combinacao);
+                    if (numero >= 1 && numero <= 31) { // Limitado a 31 para o Dia de Sorte
+                        numerosUnicos.add(numero);
+                    }
+                } catch (e) {}
+            }
+            
+            return [...numerosUnicos];
+        }
+
+        // Função para criar tabela de combinações
+        function criarTabelaCombinacoes(combinacoes) {
+            // Filtrar para remover completamente números acima de 31
+            const combinacoesFiltradas = combinacoes.filter(comb => {
+                const num = parseInt(comb);
+                return num > 0 && num <= 31; // Garantir que esteja no intervalo 1-31
+            });
+            
+            // Ordenar numericamente
+            combinacoesFiltradas.sort((a, b) => parseInt(a) - parseInt(b));
+            
+            // Configurar tabela com 7 números por linha (Dia de Sorte)
+            const numeroColunas = 7;
+            const numeroLinhas = Math.ceil(combinacoesFiltradas.length / numeroColunas);
+            
+            const tabela = document.createElement('table');
+            tabela.className = 'table table-bordered tabela-excel';
+            
+            const tbody = document.createElement('tbody');
+            let index = 0;
+            
+            for (let i = 0; i < numeroLinhas; i++) {
+                const row = document.createElement('tr');
+                
+                for (let j = 0; j < numeroColunas; j++) {
+                    const cell = document.createElement('td');
+                    
+                    if (index < combinacoesFiltradas.length) {
+                        const num = parseInt(combinacoesFiltradas[index]);
+                        
+                        // Formatar com zero à esquerda para números < 10
+                        cell.textContent = num < 10 ? `0${num}` : num;
+                        cell.className = 'celula-excel';
+                    } else {
+                        // Célula vazia para completar a linha
+                        cell.innerHTML = '&nbsp;';
+                    }
+                    
+                    row.appendChild(cell);
+                    index++;
+                }
+                
+                tbody.appendChild(row);
+            }
+            
+            tabela.appendChild(tbody);
+            
+            // Criar contêiner para a tabela e botão de cópia
+            const divContainer = document.createElement('div');
+            divContainer.className = 'tabela-container';
+            
+            const botaoCopiar = document.createElement('button');
+            botaoCopiar.className = 'btn btn-sm btn-outline-primary mt-2';
+            botaoCopiar.innerHTML = '<i class="fas fa-copy"></i> Copiar para área de transferência';
+            botaoCopiar.onclick = function() {
+                copiarTabelaParaClipboard(combinacoesFiltradas);
+            };
+            
+            divContainer.appendChild(tabela);
+            divContainer.appendChild(botaoCopiar);
+            
+            return divContainer;
+        }
+
+        // Função para copiar para a área de transferência
+        function copiarTabelaParaClipboard(combinacoes) {
+            // Formatar para colar no Excel (tabs entre colunas, nova linha entre linhas)
+            const numeroColunas = 7; // 7 colunas para Dia de Sorte
+            let textoFormatado = '';
+            
+            for (let i = 0; i < combinacoes.length; i++) {
+                const num = parseInt(combinacoes[i]);
+                // Formatar com zero à esquerda para números < 10
+                textoFormatado += (num < 10 ? `0${num}` : num);
+                
+                // Adicionar tab ou nova linha
+                if ((i + 1) % numeroColunas === 0) {
+                    textoFormatado += '\n'; // Nova linha após cada 7 números
+                } else if (i < combinacoes.length - 1) {
+                    textoFormatado += '\t'; // Tab entre colunas
+                }
+            }
+            
+            // Tentar usar a API Clipboard moderna
+            if (navigator.clipboard && window.isSecureContext) {
+                try {
+                    navigator.clipboard.writeText(textoFormatado)
+                        .then(() => mostrarMensagemSucesso())
+                        .catch((err) => {
+                            console.error('Erro ao usar clipboard API:', err);
+                            usarMetodoAlternativo();
+                        });
+                } catch (err) {
+                    console.error('Exceção ao usar clipboard API:', err);
+                    usarMetodoAlternativo();
+                }
+            } else {
+                // Método alternativo para navegadores sem suporte à API Clipboard
+                usarMetodoAlternativo();
+            }
+            
+            // Função para usar o método alternativo (textarea + execCommand)
+            function usarMetodoAlternativo() {
+                try {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = textoFormatado;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '0';
+                    textArea.style.top = '0';
+                    textArea.style.opacity = '0';
+                    textArea.style.pointerEvents = 'none';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    if (successful) {
+                        mostrarMensagemSucesso();
+                    } else {
+                        mostrarAreaSelecao();
+                    }
+                } catch (err) {
+                    console.error('Erro ao copiar usando execCommand:', err);
+                    mostrarAreaSelecao();
+                }
+            }
+            
+            // Função para mostrar área de seleção manual
+            function mostrarAreaSelecao() {
+                // Criar uma área de texto visível que o usuário pode selecionar manualmente
+                const divSelecao = document.createElement('div');
+                divSelecao.className = 'alert alert-info mt-3';
+                divSelecao.innerHTML = `
+                    <p class="mb-2">Não foi possível copiar automaticamente. Selecione o texto abaixo e use Ctrl+C para copiar:</p>
+                    <pre class="border p-2 bg-white" style="white-space: pre-wrap; word-break: break-all;">${textoFormatado}</pre>
+                    <button class="btn btn-sm btn-secondary mt-2" onclick="this.parentNode.remove()">Fechar</button>
+                `;
+                document.getElementById('combinacoes').appendChild(divSelecao);
+            }
+        }
+
+        // Função para mostrar mensagem de sucesso
+        function mostrarMensagemSucesso(container = 'combinacoes') {
+            const message = document.createElement('div');
+            message.className = 'alert alert-success mt-2';
+            message.innerHTML = `<i class="fas fa-check-circle"></i> ${container === 'palpites' ? 
+                'Palpites copiados para a área de transferência!' : 
+                'Combinações copiadas para a área de transferência!'}`;
+            
+            document.getElementById(container).appendChild(message);
+            
+            // Remover mensagem após 3 segundos
+            setTimeout(() => {
+                message.remove();
+            }, 3000);
+        }
+
+        // Função para gerar palpites para o Dia de Sorte
+        function gerarPalpitesDiaSorte() {
+            // Verificar se temos combinações geradas
+            if (!combinacoesGeradas || combinacoesGeradas.length === 0) {
+                alert("Por favor, gere as combinações primeiro.");
+                return;
+            }
+            
+            // Obter a quantidade desejada de palpites
+            const quantidadePalpites = parseInt(document.getElementById("quantidadePalpites").value);
+            const mesSorte = document.getElementById("mesSorte").value;
+            
+            // Mostrar indicador de carregamento
+            document.getElementById("palpitesCard").style.display = "block";
+            document.getElementById("palpites").innerHTML = 
+                `<div class="alert alert-info">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <span class="ms-2">Gerando palpites... Aguarde um momento.</span>
+                </div>`;
+            
+            // Extrair números únicos das combinações
+            const numerosDisponiveis = extrairNumerosUnicos(combinacoesGeradas);
+            
+            // Verificar se temos números suficientes (mínimo 7 para o Dia de Sorte)
+            if (numerosDisponiveis.length < 7) {
+                document.getElementById("palpites").innerHTML = 
+                    `<div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> Não há números suficientes para gerar palpites.
+                        <br>São necessários pelo menos 7 números diferentes entre 1 e 31.
+                        <br>Atualmente existem apenas ${numerosDisponiveis.length} números válidos.
+                    </div>`;
+                return;
+            }
+            
+            // Gerar palpites
+            setTimeout(() => {
+                const palpites = gerarPalpites(numerosDisponiveis, quantidadePalpites, mesSorte);
+                
+                // Exibir os palpites
+                exibirPalpites(palpites, mesSorte);
+                
+                // Atualizar o total
+                document.getElementById("totalPalpites").textContent = formatarNumeroParaBR(palpites.length);
+            }, 100); // Pequeno delay para permitir que a UI atualize
+        }
+
+        // Função para gerar palpites
+        function gerarPalpites(numerosDisponiveis, quantidadePalpites, mesSorte) {
+            // Garantir que temos pelo menos 7 números
+            if (numerosDisponiveis.length < 7) {
+                // Complementar se necessário
+                const numerosFaltantes = [];
+                for (let i = 1; i <= 31; i++) {
+                    if (!numerosDisponiveis.includes(i)) {
+                        numerosFaltantes.push(i);
+                    }
+                }
+                
+                // Adicionar números aleatórios até completar 7
+                const complementosNecessarios = 7 - numerosDisponiveis.length;
+                const complementosAleatorios = numerosFaltantes
+                    .sort(() => Math.random() - 0.5)
+                    .slice(0, complementosNecessarios);
+                
+                numerosDisponiveis.push(...complementosAleatorios);
+            }
+            
+            // Conjunto para verificar palpites duplicados
+            const palpitesSet = new Set();
+            const resultado = [];
+            
+            // Gerar a quantidade solicitada de palpites
+            let tentativas = 0;
+            const maxTentativas = quantidadePalpites * 10; // Limite para evitar loop infinito
+            
+            while (resultado.length < quantidadePalpites && tentativas < maxTentativas) {
+                tentativas++;
+                
+                // Selecionar 7 números aleatórios dentre os disponíveis
+                const palpite = [];
+                const numerosRestantes = [...numerosDisponiveis];
+                
+                // Selecionar exatamente 7 números
+                for (let i = 0; i < 7; i++) {
+                    const indiceAleatorio = Math.floor(Math.random() * numerosRestantes.length);
+                    palpite.push(numerosRestantes[indiceAleatorio]);
+                    numerosRestantes.splice(indiceAleatorio, 1);
+                }
+                
+                // Ordenar o palpite
+                palpite.sort((a, b) => a - b);
+                
+                // Verificar se já não temos esse palpite (usando string para comparação)
+                const palpiteStr = palpite.join(',');
+                
+                if (!palpitesSet.has(palpiteStr)) {
+                    palpitesSet.add(palpiteStr);
+                    resultado.push({
+                        numeros: palpite,
+                        mes: mesSorte
+                    });
+                }
+            }
+            
+            return resultado;
+        }
+
+        // Função para exibir os palpites gerados
+        function exibirPalpites(palpites, mesSorte) {
+            const palpitesDiv = document.getElementById("palpites");
+            palpitesDiv.innerHTML = "";
+            
+            if (palpites.length === 0) {
+                palpitesDiv.innerHTML = 
+                    `<div class="alert alert-warning">
+                        Não foi possível gerar palpites com os números disponíveis.
+                    </div>`;
+                return;
+            }
+            
+            // Criar tabela
+            const table = document.createElement("table");
+            table.className = "table table-striped";
+            
+            // Cabeçalho
+            const thead = document.createElement("thead");
+            const headerRow = document.createElement("tr");
+            
+            // Adicionar colunas para cada número
+            for (let i = 1; i <= 7; i++) {
+                const th = document.createElement("th");
+                th.textContent = `Nº ${i}`;
+                headerRow.appendChild(th);
+            }
+            
+            // Coluna para o mês da sorte
+            const thMes = document.createElement("th");
+            thMes.textContent = "Mês da Sorte";
+            headerRow.appendChild(thMes);
+            
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+            
+            // Corpo da tabela
+            const tbody = document.createElement("tbody");
+            
+            // Adicionar cada palpite
+            palpites.forEach((palpite) => {
+                const row = document.createElement("tr");
+                
+                // Adicionar cada número
+                palpite.numeros.forEach(numero => {
+                    const cell = document.createElement("td");
+                    // Formatar com zero à esquerda para números < 10
+                    cell.textContent = numero < 10 ? `0${numero}` : numero;
+                    row.appendChild(cell);
+                });
+                
+                // Adicionar o mês da sorte
+                const cellMes = document.createElement("td");
+                cellMes.textContent = palpite.mes;
+                row.appendChild(cellMes);
+                
+                tbody.appendChild(row);
+            });
+            
+            table.appendChild(tbody);
+            palpitesDiv.appendChild(table);
+            
+            // Adicionar botões de download abaixo da tabela (já estão no HTML)
+            
+            // Salvar palpites para download
+            window.palpitesGerados = palpites;
+        }
+
+        // Função para download dos palpites em TXT
+        function downloadPalpitesTxt() {
+            if (!window.palpitesGerados || window.palpitesGerados.length === 0) {
+                alert("Não há palpites para baixar.");
+                return;
+            }
+            
+            let conteudo = "PALPITES - DIA DE SORTE\n\n";
+            
+            window.palpitesGerados.forEach((palpite, index) => {
+                conteudo += `Palpite ${index + 1}: `;
+                conteudo += palpite.numeros.map(n => n < 10 ? `0${n}` : n).join('-');
+                conteudo += ` | Mês: ${palpite.mes}\n`;
+            });
+            
+            // Criar blob e link para download
+            const blob = new Blob([conteudo], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'palpites_dia_de_sorte.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Mostrar mensagem de sucesso
+            mostrarNotificacao('Download concluído!', 'success');
+        }
+
+        // Função para download dos palpites em Excel
+        function downloadPalpitesExcel() {
+            if (!window.palpitesGerados || window.palpitesGerados.length === 0) {
+                alert("Não há palpites para baixar.");
+                return;
+            }
+            
+            try {
+                // Preparar dados para Excel
+                const dados = window.palpitesGerados.map((palpite, index) => {
+                    return [
+                        index + 1, // Número sequencial
+                        ...palpite.numeros.map(n => n < 10 ? `0${n}` : `${n}`), // Números formatados
+                        palpite.mes // Mês da sorte
+                    ];
+                });
+                
+                // Cabeçalho
+                const cabecalho = ['#', 'Nº 1', 'Nº 2', 'Nº 3', 'Nº 4', 'Nº 5', 'Nº 6', 'Nº 7', 'Mês da Sorte'];
+                
+                // Criar worksheet
+                const ws = XLSX.utils.aoa_to_sheet([cabecalho, ...dados]);
+                
+                // Criar workbook e adicionar worksheet
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Dia de Sorte');
+                
+                // Salvar arquivo
+                XLSX.writeFile(wb, 'palpites_dia_de_sorte.xlsx');
+                
+                // Mostrar mensagem de sucesso
+                mostrarNotificacao('Download concluído!', 'success');
+            } catch (error) {
+                console.error('Erro ao gerar Excel:', error);
+                alert('Ocorreu um erro ao gerar o arquivo Excel.');
+            }
+        }
+
+        // Função para mostrar notificação
+        function mostrarNotificacao(mensagem, tipo = 'info') {
+            // Verificar se já existe uma notificação
+            let notificacao = document.querySelector('.notification');
+            
+            if (!notificacao) {
+                notificacao = document.createElement('div');
+                notificacao.className = 'notification';
+                document.body.appendChild(notificacao);
+            }
+            
+            // Resetar classes
+            notificacao.className = 'notification';
+            
+            // Adicionar classe de tipo
+            if (tipo) {
+                notificacao.classList.add(tipo);
+            }
+            
+            notificacao.textContent = mensagem;
+            
+            // Mostrar notificação
+            setTimeout(() => {
+                notificacao.classList.add('show');
+            }, 10);
+            
+            // Ocultar após alguns segundos
+            setTimeout(() => {
+                notificacao.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Bolão Dia de Sorte</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --sorte-primary: #F09300; /* Laranja Dia de Sorte */
+            --sorte-secondary: #D57E00;
+            --sorte-light: #FFF9EE;
+            --sorte-accent: #FF7B00;
+            --sorte-highlight: #FFCC00;
+            --text-color: #333333;
+            --error-color: #e74c3c;
+            --success-color: #27ae60;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--sorte-primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--sorte-primary);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0;
+        }
+
+        .form-section, .result-section {
+            padding: 25px;
+        }
+
+        .form-section {
+            flex: 1;
+            min-width: 300px;
+            border-right: 1px solid #eee;
+        }
+
+        .result-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: var(--sorte-light);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            color: var(--sorte-primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--sorte-light);
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .field-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .field-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--sorte-secondary);
+        }
+
+        .field-group input, .field-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .field-group input:focus, .field-group select:focus {
+            outline: none;
+            border-color: var(--sorte-primary);
+            box-shadow: 0 0 0 3px rgba(240, 147, 0, 0.2);
+        }
+
+        .field-group small {
+            display: block;
+            margin-top: 5px;
+            color: #777;
+            font-size: 0.85rem;
+        }
+
+        .error {
+            color: var(--error-color);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+        }
+
+        button {
+            background-color: var(--sorte-primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: var(--sorte-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: var(--sorte-primary);
+            color: white;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(240, 147, 0, 0.05);
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: rgba(240, 147, 0, 0.2) !important;
+        }
+
+        .highlight {
+            color: var(--sorte-secondary);
+            font-weight: bold;
+        }
+
+        .comissao {
+            color: var(--sorte-secondary);
+            font-weight: bold;
+        }
+
+        .balls-container {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .sorte-ball {
+            width: 35px;
+            height: 35px;
+            background-color: var(--sorte-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .mes-sorte {
+            background-color: var(--sorte-highlight);
+            color: var(--text-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .result-info {
+            text-align: center;
+            margin: 20px 0;
+            color: var(--sorte-secondary);
+        }
+
+        .empty-result {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        .empty-result i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--sorte-light);
+        }
+
+        .price-tag {
+            background-color: var(--sorte-highlight);
+            color: #333;
+            padding:
+            15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.4rem;
+            font-weight: bold;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .price-label {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .info-box {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            font-weight: bold;
+            color: var(--sorte-primary);
+        }
+
+        .alerta {
+            background-color: rgba(255, 204, 0, 0.2);
+            border-left: 3px solid var(--sorte-highlight);
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            border-radius: 5px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            color: white;
+            background-color: var(--sorte-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+
+            .form-section {
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <div class="logo">
+                    <div class="logo-text">SORTE</div>
+                </div>
+            </div>
+            <h1>Calculadora de Bolão do Dia de Sorte</h1>
+            <p class="subtitle">Organize seu bolão e calcule os valores para cada participante</p>
+        </header>
+
+        <div class="content">
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-calculator"></i> Configuração do Bolão</h2>
+                <form id="formBolao">
+                    <div class="field-group">
+                        <label for="valorAposta"><i class="fas fa-dollar-sign"></i> Valor da Aposta Simples (R$):</label>
+                        <input type="number" id="valorAposta" step="0.01" value="2.50">
+                        <small>Valor atual da aposta de 7 números do Dia de Sorte</small>
+                        <div class="error" id="error-valorAposta"></div>
+                    </div>
+                    
+                    <div class="field-group">
+                        <label for="dezenas"><i class="fas fa-dice"></i> Quantidade de Dezenas (7 a 15):</label>
+                        <input type="number" id="dezenas" min="7" max="15" value="7">
+                        <small>Quantidade de números entre 1 e 31</small>
+                        <div class="error" id="error-dezenas"></div>
+                    </div>
+                    
+                    <div class="field-group">
+                        <label for="mesSorte"><i class="fas fa-calendar-alt"></i> Mês da Sorte:</label>
+                        <select id="mesSorte">
+                            <option value="Janeiro">Janeiro</option>
+                            <option value="Fevereiro">Fevereiro</option>
+                            <option value="Março">Março</option>
+                            <option value="Abril">Abril</option>
+                            <option value="Maio">Maio</option>
+                            <option value="Junho">Junho</option>
+                            <option value="Julho">Julho</option>
+                            <option value="Agosto">Agosto</option>
+                            <option value="Setembro">Setembro</option>
+                            <option value="Outubro">Outubro</option>
+                            <option value="Novembro">Novembro</option>
+                            <option value="Dezembro">Dezembro</option>
+                        </select>
+                        <small>O Dia de Sorte exige a escolha de um mês</small>
+                    </div>
+                    
+                    <div class="field-group">
+                        <label for="quantidadeJogos"><i class="fas fa-ticket-alt"></i> Quantidade de Jogos:</label>
+                        <input type="number" id="quantidadeJogos" min="1" max="10" value="1">
+                        <small>Número de jogos diferentes (máximo 10)</small>
+                        <div class="error" id="error-quantidadeJogos"></div>
+                    </div>
+                    
+                    <div class="field-group">
+                        <label for="cotas"><i class="fas fa-users"></i> Quantidade de Cotas:</label>
+                        <input type="number" id="cotas" min="2" value="2">
+                        <small>Número de participantes no bolão (mínimo 2)</small>
+                        <div class="error" id="error-cotas"></div>
+                    </div>
+                    
+                    <div class="field-group">
+                        <label for="teimosinha"><i class="fas fa-redo"></i> Teimosinha (Concursos):</label>
+                        <input type="number" id="teimosinha" min="1" max="12" value="1">
+                        <small>Concursos consecutivos (3, 6, 9 ou 12)</small>
+                        <div class="error" id="error-teimosinha"></div>
+                    </div>
+                    
+                    <div class="field-group">
+                        <label for="comissao"><i class="fas fa-percentage"></i> Comissão (%):</label>
+                        <input type="number" id="comissao" min="0" max="35" step="0.01" value="35">
+                        <small>Percentual de comissão da lotérica (máximo 35%)</small>
+                        <div class="error" id="error-comissao"></div>
+                    </div>
+
+                    <div class="alerta">
+                        <i class="fas fa-info-circle"></i> Para o Dia de Sorte, o valor mínimo do bolão é de R$ 12,00 e cada cota não pode ser inferior a R$ 3,00.
+                    </div>
+                    
+                    <button type="button" onclick="calcularCustoDiaDeSorte()">
+                        <i class="fas fa-check-circle"></i> Calcular Valores
+                    </button>
+                </form>
+            </div>
+            
+            <div class="result-section">
+                <h2 class="section-title"><i class="fas fa-chart-pie"></i> Resultado do Cálculo</h2>
+                
+                <div id="resultado" class="empty-result">
+                    <i class="fas fa-calculator"></i>
+                    <p>Preencha o formulário e clique em "Calcular Valores" para ver os resultados do seu bolão</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            Desenvolvido por Márcio Fernando Maia &copy; 2025 - Todos os direitos reservados
+        </footer>
+    </div>
+
+    <script>
+        // Tabela de multiplicadores do Dia de Sorte
+        const multiplicadoresDiaDeSorte = {
+            7: 1,      // Aposta com 7 números
+            8: 8,      // Aposta com 8 números
+            9: 36,     // Aposta com 9 números
+            10: 120,   // Aposta com 10 números
+            11: 330,   // Aposta com 11 números
+            12: 792,   // Aposta com 12 números
+            13: 1716,  // Aposta com 13 números
+            14: 3432,  // Aposta com 14 números
+            15: 6435   // Aposta com 15 números
+        };
+
+        // Limites de cotas por quantidade de números
+        const limitesCotasDiaDeSorte = {
+            7: { min: 2, max: 8 },
+            8: { min: 2, max: 20 },
+            9: { min: 2, max: 25 },
+            10: { min: 2, max: 50 },
+            11: { min: 2, max: 60 },
+            12: { min: 2, max: 60 },
+            13: { min: 2, max: 60 },
+            14: { min: 2, max: 100 },
+            15: { min: 2, max: 100 }
+        };
+
+        // Valores mínimos de cota
+        const valoresMinimosCotas = {
+            7: 3.00,
+            8: 3.00,
+            9: 3.60,
+            10: 6.00,
+            11: 11.00,
+            12: 26.40,
+            13: 42.90,
+            14: 85.80,
+            15: 160.88
+        };
+
+        // Meses para sorteio
+        const mesesDaSorte = [
+            'Janeiro', 'Fevereiro', 'Março', 'Abril', 
+            'Maio', 'Junho', 'Julho', 'Agosto', 
+            'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+        ];
+
+        // Atualizar limites de cotas quando mudar o número de dezenas
+        document.getElementById('dezenas').addEventListener('change', function() {
+            const dezenas = parseInt(this.value);
+            const cotasInput = document.getElementById('cotas');
+            
+            if (limitesCotasDiaDeSorte[dezenas]) {
+                const limites = limitesCotasDiaDeSorte[dezenas];
+                cotasInput.min = limites.min;
+                cotasInput.max = limites.max;
+                cotasInput.value = Math.max(limites.min, Math.min(cotasInput.value, limites.max));
+                
+                const valorMinimoCota = valoresMinimosCotas[dezenas];
+                cotasInput.nextElementSibling.textContent = 
+                    `Número de participantes no bolão (${limites.min} a ${limites.max}, valor mínimo por cota: R$ ${valorMinimoCota.toFixed(2)})`;
+            }
+        });
+
+        // Função principal para calcular o custo do bolão Dia de Sorte
+        function calcularCustoDiaDeSorte() {
+            const valorAposta = parseFloat(document.getElementById('valorAposta').value);
+            const dezenas = parseInt(document.getElementById('dezenas').value);
+            const mesSorte = document.getElementById('mesSorte').value;
+            const quantidadeJogos = parseInt(document.getElementById('quantidadeJogos').value);
+            const cotas = parseInt(document.getElementById('cotas').value);
+            const teimosinha = parseInt(document.getElementById('teimosinha').value) || 1;
+            const comissao = parseFloat(document.getElementById('comissao').value) / 100;
+
+            // Limpar mensagens de erro
+            document.querySelectorAll('.error').forEach(el => el.innerText = '');
+
+            let valido = true;
+
+            // Validações
+            if (isNaN(valorAposta) || valorAposta <= 0) {
+                document.getElementById('error-valorAposta').innerText = 'Informe um valor válido para a aposta.';
+                valido = false;
+            }
+            
+            if (![7, 8, 9, 10, 11, 12, 13, 14, 15].includes(dezenas)) {
+                document.getElementById('error-dezenas').innerText = 'Apenas de 7 a 15 dezenas são permitidas.';
+                valido = false;
+            }
+            
+            if (isNaN(quantidadeJogos) || quantidadeJogos <= 0 || quantidadeJogos > 10) {
+                document.getElementById('error-quantidadeJogos').innerText = 'A quantidade de jogos deve ser entre 1 e 10.';
+                valido = false;
+            }
+            
+            // Validar cotas conforme a tabela
+            const limitesCotas = limitesCotasDiaDeSorte[dezenas] || { min: 2, max: 8 };
+            if (isNaN(cotas) || cotas < limitesCotas.min || cotas > limitesCotas.max) {
+                document.getElementById('error-cotas').innerText = 
+                    `Para ${dezenas} dezenas, as cotas devem ser entre ${limitesCotas.min} e ${limitesCotas.max}.`;
+                valido = false;
+            }
+            
+            // Validar teimosinha (3, 6, 9 ou 12 concursos)
+            const teimosinhasValidas = [1, 3, 6, 9, 12];
+            if (!teimosinhasValidas.includes(teimosinha)) {
+                document.getElementById('error-teimosinha').innerText = 'A teimosinha deve ser 1, 3, 6, 9 ou 12 concursos.';
+                valido = false;
+            }
+            
+            if (isNaN(comissao) || comissao < 0 || comissao > 0.35) {
+                document.getElementById('error-comissao').innerText = 'A comissão deve ser entre 0% e 35%.';
+                valido = false;
+            }
+
+            if (!valido) return;
+
+            // Cálculos
+            const multiplicador = multiplicadoresDiaDeSorte[dezenas];
+            const custoSemTeimosinha = valorAposta * multiplicador * quantidadeJogos;
+            const custoTotal = custoSemTeimosinha * teimosinha;
+            const custoComComissao = custoTotal * (1 + comissao);
+            const custoAcrescimoComissao = custoComComissao - custoTotal;
+            const custoPorCota = custoComComissao / cotas;
+            
+            // Verificar valor mínimo de bolão (R$ 12,00) e valor mínimo por cota (conforme tabela)
+            const valorMinimoCota = valoresMinimosCotas[dezenas] || 3.00;
+            let alertas = [];
+            
+            if (custoComComissao < 12.00) {
+                alertas.push("O valor mínimo para um bolão do Dia de Sorte é R$ 12,00.");
+            }
+            
+            if (custoPorCota < valorMinimoCota) {
+                alertas.push(`O valor mínimo por cota para ${dezenas} dezenas é de R$ ${valorMinimoCota.toFixed(2)}.`);
+            }
+
+            // Gerar dezenas aleatórias para ilustração
+            let dezenasAleatorias = [];
+            for (let i = 0; i < dezenas; i++) {
+                let numero;
+                do {
+                    numero = Math.floor(Math.random() * 31) + 1;
+                } while (dezenasAleatorias.includes(numero));
+                dezenasAleatorias.push(numero);
+            }
+            dezenasAleatorias.sort((a, b) => a - b);
+
+            // Gerar resultado
+            let resultadoHTML = `
+                <div class="result-info">
+                    <h3>Simulação de Jogo</h3>
+                    <p>Exemplo de um jogo com ${dezenas} dezenas:</p>
+                </div>
+                
+                <div class="balls-container">
+                    ${dezenasAleatorias.map(num => `<div class="sorte-ball">${num < 10 ? '0' + num : num}</div>`).join('')}
+                </div>
+                
+                <div class="text-center">
+                    <span class="mes-sorte"><i class="fas fa-calendar-alt"></i> ${mesSorte}</span>
+                </div>
+                
+                <div class="price-tag">
+                    <div class="price-label">Valor por Cota:</div>
+                    R$ ${custoPorCota.toFixed(2)}
+                </div>
+            `;
+            
+            // Adicionar alertas se houver
+            if (alertas.length > 0) {
+                resultadoHTML += `
+                    <div class="alerta">
+                        <strong><i class="fas fa-exclamation-triangle"></i> Atenção:</strong>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            ${alertas.map(alerta => `<li>${alerta}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            // Continuar com as informações do bolão
+            resultadoHTML += `
+                <div class="info-box">
+                    <div class="info-row">
+                        <span class="info-label">Quantidade de Jogos:</span>
+                        <span class="info-value">${quantidadeJogos}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Teimosinha:</span>
+                        <span class="info-value">${teimosinha} concurso${teimosinha > 1 ? 's' : ''}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Número de Cotas:</span>
+                        <span class="info-value">${cotas}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Comissão:</span>
+                        <span class="info-value">${(comissao * 100).toFixed(2)}%</span>
+                    </div>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Valor (R$)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Valor por jogo (${dezenas} dezenas)</td>
+                            <td>R$ ${(valorAposta * multiplicador).toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td>Custo Total sem Comissão</td>
+                            <td>R$ ${custoTotal.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td>Valor da Comissão</td>
+                            <td>R$ ${custoAcrescimoComissao.toFixed(2)}</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>Valor Total do Bolão</td>
+                            <td>R$ ${custoComComissao.toFixed(2)}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('resultado').innerHTML = resultadoHTML;
+            document.getElementById('resultado').className = '';
+        }
+
+        // Preencher valores iniciais para demonstração
+        window.onload = function() {
+            // Definir mês aleatório
+            const mesAleatorio = mesesDaSorte[Math.floor(Math.random() * mesesDaSorte.length)];
+            document.getElementById('mesSorte').value = mesAleatorio;
+            
+            // Atualizar limites de cotas para 7 dezenas
+            document.getElementById('dezenas').dispatchEvent(new Event('change'));
+            
+            // Calcular valores iniciais
+            calcularCustoDiaDeSorte();
+        };
+    </script>
+</body>
+</html>

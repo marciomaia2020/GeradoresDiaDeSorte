@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conferir Dia de Sorte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+
+                        
+                        'dia-sorte': {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d'
+                        }
+/*
+'dia-sorte': {
+    1000: '#ffffff', // 100%
+    950:  '#fff5e6', // 95%
+    900:  '#ffebcc', // 90%
+    850:  '#ffe0b3', // 85%
+    800:  '#ffd699', // 80%
+    750:  '#ffcc80', // 75%
+    700:  '#ffc266', // 70%
+    650:  '#ffb84d', // 65%
+    600:  '#ffad33', // 60%
+    550:  '#ffa31a'  // 55%
+}
+*/
+
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .loading {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid red;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div class="container mx-auto px-4 py-6 max-w-6xl">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-dia-sorte-600 to-dia-sorte-700 rounded-lg p-6 mb-6 text-white">
+            <h1 class="text-3xl font-bold mb-2">🍀 Conferir Dia de Sorte</h1>
+            <p class="text-dia-sorte-100">Confira seus jogos e veja quantos acertos você teve!</p>
+        </div>
+
+        <!-- Buscar Concurso -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Buscar Resultado do Concurso</h2>
+            <div class="flex gap-4 mb-4">
+                <input 
+                    type="number" 
+                    id="concursoInput" 
+                    placeholder="Digite o número do concurso" 
+                    class="flex-1 px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-dia-sorte-500 focus:border-dia-sorte-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+                <button 
+                    onclick="buscarConcurso()" 
+                    id="buscarBtn"
+                    class="px-6 py-3 bg-dia-sorte-600 text-white rounded-lg hover:bg-dia-sorte-700 transition-colors font-medium"
+                >
+                    Buscar
+                </button>
+            </div>
+            <div id="resultadoConcurso" class="hidden"></div>
+        </div>
+
+        <!-- Filtros e Estatísticas -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Filtros e Estatísticas</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <select id="filtroMes" class="px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-dia-sorte-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="">Todos os meses</option>
+                    <option value="JAN">Janeiro</option>
+                    <option value="FEV">Fevereiro</option>
+                    <option value="MAR">Março</option>
+                    <option value="ABR">Abril</option>
+                    <option value="MAI">Maio</option>
+                    <option value="JUN">Junho</option>
+                    <option value="JUL">Julho</option>
+                    <option value="AGO">Agosto</option>
+                    <option value="SET">Setembro</option>
+                    <option value="OUT">Outubro</option>
+                    <option value="NOV">Novembro</option>
+                    <option value="DEZ">Dezembro</option>
+                </select>
+                <select id="filtroAcertos" class="px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-dia-sorte-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <option value="">Todos os jogos</option>
+                    <option value="apenas-premiados">💰 APENAS PREMIADOS</option>
+                    <option value="nao-premiados">🚫 NÃO PREMIADOS</option>
+                    <option value="sorteados">🎯 Jogos Sorteados (1+)</option>
+                    <option value="nao-sorteados">❌ Jogos Não Sorteados (0)</option>
+                    <option value="premiados">🏆 Jogos Premiados (2+)</option>
+                    <option value="0">0 acertos</option>
+                    <option value="1">1 acerto</option>
+                    <option value="2">2 acertos</option>
+                    <option value="3">3 acertos</option>
+                    <option value="4">4 acertos</option>
+                    <option value="5">5 acertos</option>
+                    <option value="6">6 acertos</option>
+                    <option value="7">7 acertos</option>
+                </select>
+                <button 
+                    onclick="aplicarFiltros()" 
+                    class="px-4 py-3 bg-dia-sorte-600 text-white rounded-lg hover:bg-dia-sorte-700 transition-colors font-medium"
+                >
+                    Aplicar Filtros
+                </button>
+            </div>
+            <div id="estatisticas" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+        </div>
+
+        <!-- Lista de Jogos -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Seus Jogos</h2>
+            <div id="listaJogos" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        // Dados dos jogos fixos
+        const jogosFixos = [
+            [2, 5, 7, 9, 20, 22, 25, "JAN"], [2, 5, 7, 9, 20, 22, 27, "JAN"], [2, 5, 7, 9, 20, 22, 29, "JAN"],
+            [2, 5, 7, 9, 20, 25, 27, "JAN"], [2, 5, 7, 9, 20, 25, 29, "JAN"], [2, 5, 7, 9, 20, 27, 29, "JAN"],
+            [2, 5, 7, 9, 22, 25, 27, "JAN"], [2, 5, 7, 9, 22, 25, 29, "JAN"], [2, 5, 7, 9, 22, 27, 29, "JAN"],
+            [2, 5, 7, 9, 25, 27, 29, "JAN"], [2, 5, 7, 20, 22, 25, 27, "FEV"], [2, 5, 7, 20, 22, 25, 29, "FEV"],
+            [2, 5, 7, 20, 22, 27, 29, "FEV"], [2, 5, 7, 20, 25, 27, 29, "FEV"], [2, 5, 7, 22, 25, 27, 29, "FEV"],
+            [2, 5, 9, 20, 22, 25, 27, "FEV"], [2, 5, 9, 20, 22, 25, 29, "FEV"], [2, 5, 9, 20, 22, 27, 29, "FEV"],
+            [2, 5, 9, 20, 25, 27, 29, "FEV"], [2, 5, 9, 22, 25, 27, 29, "FEV"], [2, 5, 20, 22, 25, 27, 29, "MAR"],
+            [2, 7, 9, 20, 22, 25, 27, "MAR"], [2, 7, 9, 20, 22, 25, 29, "MAR"], [2, 7, 9, 20, 22, 27, 29, "MAR"],
+            [2, 7, 9, 20, 25, 27, 29, "MAR"], [2, 7, 9, 22, 25, 27, 29, "MAR"], [2, 7, 20, 22, 25, 27, 29, "MAR"],
+            [2, 9, 20, 22, 25, 27, 29, "MAR"], [5, 7, 9, 20, 22, 25, 27, "MAR"], [5, 7, 9, 20, 22, 25, 29, "MAR"],
+            [5, 7, 9, 20, 22, 27, 29, "ABR"], [5, 7, 9, 20, 25, 27, 29, "ABR"], [5, 7, 9, 22, 25, 27, 29, "ABR"],
+            [5, 7, 20, 22, 25, 27, 29, "ABR"], [5, 9, 20, 22, 25, 27, 29, "ABR"], [7, 9, 20, 22, 25, 27, 29, "ABR"],
+            [2, 5, 7, 9, 20, 22, 25, "ABR"], [2, 5, 7, 9, 20, 22, 27, "ABR"], [2, 5, 7, 9, 20, 22, 29, "ABR"],
+            [2, 5, 7, 9, 20, 25, 27, "ABR"], [2, 5, 7, 9, 20, 25, 29, "MAI"], [2, 5, 7, 9, 20, 27, 29, "MAI"],
+            [2, 5, 7, 9, 22, 25, 27, "MAI"], [2, 5, 7, 9, 22, 25, 29, "MAI"], [2, 5, 7, 9, 22, 27, 29, "MAI"],
+            [2, 5, 7, 9, 25, 27, 29, "MAI"], [2, 5, 7, 20, 22, 25, 27, "MAI"], [2, 5, 7, 20, 22, 25, 29, "MAI"],
+            [2, 5, 7, 20, 22, 27, 29, "MAI"], [2, 5, 7, 20, 25, 27, 29, "MAI"], [2, 5, 7, 22, 25, 27, 29, "JUN"],
+            [2, 5, 9, 20, 22, 25, 27, "JUN"], [2, 5, 9, 20, 22, 25, 29, "JUN"], [2, 5, 9, 20, 22, 27, 29, "JUN"],
+            [2, 5, 9, 20, 25, 27, 29, "JUN"], [2, 5, 9, 22, 25, 27, 29, "JUN"], [2, 5, 20, 22, 25, 27, 29, "JUN"],
+            [2, 7, 9, 20, 22, 25, 27, "JUN"], [2, 7, 9, 20, 22, 25, 29, "JUN"], [2, 7, 9, 20, 22, 27, 29, "JUN"],
+            [2, 7, 9, 20, 25, 27, 29, "JUL"], [2, 7, 9, 22, 25, 27, 29, "JUL"], [2, 7, 20, 22, 25, 27, 29, "JUL"],
+            [2, 9, 20, 22, 25, 27, 29, "JUL"], [5, 7, 9, 20, 22, 25, 27, "JUL"], [5, 7, 9, 20, 22, 25, 29, "JUL"],
+            [5, 7, 9, 20, 22, 27, 29, "JUL"], [5, 7, 9, 20, 25, 27, 29, "JUL"], [5, 7, 9, 22, 25, 27, 29, "JUL"],
+            [5, 7, 20, 22, 25, 27, 29, "JUL"], [5, 9, 20, 22, 25, 27, 29, "AGO"], [7, 9, 20, 22, 25, 27, 29, "AGO"],
+            [12, 13, 15, 22, 25, 26, 29, "AGO"], [12, 13, 15, 22, 24, 26, 30, "AGO"], [12, 13, 15, 22, 23, 26, 31, "AGO"],
+            [12, 13, 14, 22, 25, 28, 29, "AGO"], [11, 13, 15, 22, 25, 29, 31, "AGO"], [11, 12, 14, 22, 25, 26, 30, "AGO"],
+            [12, 13, 14, 22, 24, 26, 31, "AGO"], [11, 13, 15, 22, 24, 28, 30, "AGO"], [11, 12, 15, 22, 25, 27, 29, "SET"],
+            [12, 13, 15, 22, 25, 26, 28, "SET"], [12, 13, 15, 22, 24, 25, 29, "SET"], [12, 13, 15, 22, 23, 25, 28, "SET"],
+            [12, 13, 14, 22, 25, 26, 29, "SET"], [11, 13, 15, 22, 25, 26, 28, "SET"], [11, 12, 15, 22, 25, 26, 29, "SET"],
+            [12, 13, 15, 22, 25, 26, 27, "SET"], [12, 13, 15, 22, 24, 26, 29, "SET"], [11, 12, 15, 21, 25, 26, 27, "SET"],
+            [12, 13, 15, 22, 23, 26, 28, "OUT"], [12, 13, 14, 22, 25, 26, 29, "OUT"], [11, 13, 15, 22, 25, 26, 28, "OUT"],
+            [11, 12, 15, 22, 25, 26, 29, "OUT"], [12, 13, 15, 22, 25, 26, 27, "OUT"], [12, 13, 15, 22, 24, 26, 29, "OUT"],
+            [11, 12, 14, 22, 25, 26, 28, "OUT"], [12, 13, 15, 22, 23, 26, 27, "OUT"], [11, 13, 14, 22, 24, 26, 29, "OUT"],
+            [12, 13, 15, 22, 24, 25, 27, "OUT"], [12, 13, 15, 22, 25, 28, 31, "NOV"], [12, 13, 15, 22, 25, 27, 31, "NOV"],
+            [12, 13, 15, 22, 25, 28, 29, "NOV"], [12, 13, 15, 22, 25, 27, 28, "NOV"], [12, 13, 15, 22, 23, 29, 31, "NOV"],
+            [12, 13, 15, 21, 22, 25, 29, "NOV"], [11, 12, 15, 22, 25, 29, 31, "NOV"], [12, 13, 15, 22, 25, 27, 29, "NOV"],
+            [11, 13, 15, 22, 25, 28, 31, "NOV"], [1, 2, 13, 15, 22, 25, 31, "NOV"], [12, 13, 15, 22, 25, 28, 31, "DEZ"],
+            [12, 13, 15, 22, 25, 27, 31, "DEZ"], [12, 13, 15, 22, 25, 28, 29, "DEZ"], [12, 13, 15, 22, 25, 27, 28, "DEZ"],
+            [12, 13, 15, 22, 23, 29, 31, "DEZ"], [12, 13, 15, 21, 22, 25, 29, "DEZ"], [11, 12, 15, 22, 25, 29, 31, "DEZ"],
+            [12, 13, 15, 22, 25, 27, 29, "DEZ"], [11, 13, 15, 22, 25, 28, 31, "DEZ"], [11, 13, 15, 22, 25, 26, 28, "DEZ"]
+        ];
+
+        let resultadoAtual = null;
+        let jogosAnalisados = [];
+        let ordemCrescente = false;
+
+        // Configuração para dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        async function buscarConcurso() {
+            const concurso = document.getElementById('concursoInput').value;
+            if (!concurso) {
+                alert('Digite o número do concurso');
+                return;
+            }
+
+            const btn = document.getElementById('buscarBtn');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<div class="loading"></div>';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/${concurso}`);
+                const data = await response.json();
+                
+                resultadoAtual = data;
+                exibirResultado(data);
+                analisarJogos(data);
+                
+            } catch (error) {
+                document.getElementById('resultadoConcurso').innerHTML = `
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        Erro ao buscar concurso: ${error.message}
+                    </div>
+                `;
+                document.getElementById('resultadoConcurso').classList.remove('hidden');
+            } finally {
+                btn.innerHTML = original;
+                btn.disabled = false;
+            }
+        }
+
+        function exibirResultado(data) {
+            const container = document.getElementById('resultadoConcurso');
+            const dezenas = data.dezenasSorteadasOrdemSorteio || data.listaDezenas || [];
+            const mesSorte = data.nomeTimeCoracaoMesSorte || data.mesSorte || data.mesSorteado || '';
+            
+            // Aplicar ordem preferida do usuário
+            let numerosExibir = [...dezenas];
+            if (ordemCrescente) {
+                numerosExibir.sort((a, b) => parseInt(a) - parseInt(b));
+            }
+            
+            container.innerHTML = `
+                <div class="bg-dia-sorte-50 dark:bg-dia-sorte-900 border border-dia-sorte-200 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-semibold text-dia-sorte-800 dark:text-dia-sorte-200">
+                            Concurso ${data.numero} - ${data.dataApuracao}
+                        </h3>
+                        <button 
+                            onclick="toggleOrdemNumeros()" 
+                            id="btnOrdem"
+                            class="px-3 py-1 bg-dia-sorte-600 text-white rounded-lg hover:bg-dia-sorte-700 transition-colors text-sm font-medium"
+                        >
+                            ${ordemCrescente ? '🔄 Ordem Sorteio' : '🔄 Ordem Crescente'}
+                        </button>
+                    </div>
+                    <div id="numerosResultado" class="flex flex-wrap gap-2 mb-3">
+                        ${numerosExibir.map(num => `
+                            <span class="bg-dia-sorte-600 text-white px-3 py-1 rounded-full font-bold text-sm">
+                                ${num.toString().padStart(2, '0')}
+                            </span>
+                        `).join('')}
+                        <span class="bg-orange-500 text-white px-3 py-1 rounded-full font-bold text-sm">
+                            ${mesSorte}
+                        </span>
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-300">
+                        <p><strong>Valor Acumulado:</strong> ${data.valorAcumuladoProximoConcurso ? 
+                            'R$ ' + parseFloat(data.valorAcumuladoProximoConcurso).toLocaleString('pt-BR', {minimumFractionDigits: 2}) : 
+                            'Não informado'}</p>
+                    </div>
+                </div>
+            `;
+            container.classList.remove('hidden');
+        }
+
+        function toggleOrdemNumeros() {
+            if (!resultadoAtual) return;
+            
+            const dezenas = resultadoAtual.dezenasSorteadasOrdemSorteio || resultadoAtual.listaDezenas || [];
+            const mesSorte = resultadoAtual.nomeTimeCoracaoMesSorte || resultadoAtual.mesSorte || resultadoAtual.mesSorteado || '';
+            const btnOrdem = document.getElementById('btnOrdem');
+            const numerosContainer = document.getElementById('numerosResultado');
+            
+            ordemCrescente = !ordemCrescente;
+            
+            let numerosExibir = [...dezenas];
+            if (ordemCrescente) {
+                numerosExibir.sort((a, b) => parseInt(a) - parseInt(b));
+                btnOrdem.innerHTML = '🔄 Ordem Sorteio';
+            } else {
+                btnOrdem.innerHTML = '🔄 Ordem Crescente';
+            }
+            
+            numerosContainer.innerHTML = `
+                ${numerosExibir.map(num => `
+                    <span class="bg-dia-sorte-600 text-white px-3 py-1 rounded-full font-bold text-sm">
+                        ${num.toString().padStart(2, '0')}
+                    </span>
+                `).join('')}
+                <span class="bg-orange-500 text-white px-3 py-1 rounded-full font-bold text-sm">
+                    ${mesSorte}
+                </span>
+            `;
+        }
+
+        function converterMesParaAbreviacao(mesCompleto) {
+            const meses = {
+                'Janeiro': 'JAN',
+                'Fevereiro': 'FEV', 
+                'Março': 'MAR',
+                'Abril': 'ABR',
+                'Maio': 'MAI',
+                'Junho': 'JUN',
+                'Julho': 'JUL',
+                'Agosto': 'AGO',
+                'Setembro': 'SET',
+                'Outubro': 'OUT',
+                'Novembro': 'NOV',
+                'Dezembro': 'DEZ'
+            };
+            return meses[mesCompleto] || mesCompleto;
+        }
+
+        function analisarJogos(resultado) {
+            const dezenas = resultado.dezenasSorteadasOrdemSorteio || resultado.listaDezenas || [];
+            const mesSorteCompleto = resultado.nomeTimeCoracaoMesSorte || resultado.mesSorte || resultado.mesSorteado || '';
+            const mesSorte = converterMesParaAbreviacao(mesSorteCompleto);
+            
+            // Converter dezenas para números se vierem como strings
+            const dezenasNumeros = dezenas.map(d => parseInt(d));
+            
+            console.log('Dezenas sorteadas:', dezenasNumeros);
+            console.log('Mês sorte:', mesSorte);
+            
+            jogosAnalisados = jogosFixos.map((jogo, index) => {
+                const numerosJogo = jogo.slice(0, 7);
+                const mesJogo = jogo[7];
+                
+                const numerosAcertados = numerosJogo.filter(num => dezenasNumeros.includes(num));
+                const acertosNumeros = numerosAcertados.length;
+                const acertoMes = mesJogo === mesSorte ? 1 : 0;
+                const totalAcertos = acertosNumeros + acertoMes;
+                
+                // Calcular premiação
+                const premiacao = calcularPremiacao(acertosNumeros, acertoMes);
+                
+                console.log(`Jogo ${index + 1}:`, numerosJogo, 'vs', dezenasNumeros, '= acertos:', numerosAcertados);
+                
+                return {
+                    id: index + 1,
+                    numeros: numerosJogo,
+                    mes: mesJogo,
+                    acertosNumeros,
+                    acertoMes,
+                    totalAcertos,
+                    numerosAcertados,
+                    mesAcertado: acertoMes > 0,
+                    premiacao
+                };
+            });
+            
+            // Ordenar do maior para o menor número de acertos
+            jogosAnalisados.sort((a, b) => b.totalAcertos - a.totalAcertos);
+            
+            exibirJogos();
+            exibirEstatisticas();
+        }
+
+        function calcularPremiacao(acertosNumeros, acertoMes) {
+            let valor = 0;
+            
+            // Premiação por acertos de números (valores aproximados do Dia de Sorte)
+            if (acertosNumeros >= 4) {
+                if (acertosNumeros === 4) valor += 5.00;
+                else if (acertosNumeros === 5) valor += 20.00;
+                else if (acertosNumeros === 6) valor += 500.00;
+                else if (acertosNumeros === 7) valor += 50000.00;
+            }
+            
+            // Premiação por acerto do mês
+            if (acertoMes > 0) {
+                valor += 2.50;
+            }
+            
+            return valor;
+        }
+
+        function exibirJogos() {
+            const container = document.getElementById('listaJogos');
+            
+            container.innerHTML = jogosAnalisados.map(jogo => `
+                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 ${jogo.totalAcertos > 0 ? 'bg-orange-50 dark:bg-orange-900 border-orange-200' : ''}">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-semibold text-gray-800 dark:text-white">${jogo.id}. ${resultadoAtual.numero} - Mês de Sorte ${jogo.mes}</h4>
+                        <span class="px-2 py-1 rounded text-sm font-bold ${
+                            jogo.totalAcertos >= 4 ? 'bg-green-100 text-green-800' :
+                            jogo.totalAcertos >= 2 ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-gray-100 text-gray-800'
+                        }">
+                            ${jogo.totalAcertos} acerto${jogo.totalAcertos !== 1 ? 's' : ''}
+                        </span>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        ${jogo.numeros.map(num => `
+                            <span class="px-2 py-1 rounded text-sm font-bold ${
+                                jogo.numerosAcertados.includes(num) ? 
+                                'bg-orange-600 text-white' : 
+                                'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                            }">
+                                ${num.toString().padStart(2, '0')}
+                            </span>
+                        `).join('')}
+                        <span class="px-2 py-1 rounded text-sm font-bold ${
+                            jogo.mesAcertado ? 
+                            'bg-orange-600 text-white' : 
+                            'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                        }">
+                            ${jogo.mes}
+                        </span>
+                    </div>
+                    ${jogo.premiacao > 0 ? `
+                        <div class="bg-green-100 dark:bg-green-800 p-2 rounded mb-2">
+                            ${jogo.mesAcertado ? '<div class="text-sm font-bold text-green-700 dark:text-green-200">🏆 Você acertou o Mês!</div>' : ''}
+                            <div class="text-sm font-bold text-green-700 dark:text-green-200">Premiação: R$ ${jogo.premiacao.toFixed(2).replace('.', ',')}</div>
+                        </div>
+                    ` : ''}
+                    <div class="text-xs text-gray-600 dark:text-gray-400">
+                        ${jogo.acertosNumeros} número${jogo.acertosNumeros !== 1 ? 's' : ''} + ${jogo.acertoMes} mês
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function exibirEstatisticas() {
+            if (jogosAnalisados.length === 0) return;
+            
+            const container = document.getElementById('estatisticas');
+            
+            const totalJogos = jogosAnalisados.length;
+            const jogosPremiados = jogosAnalisados.filter(j => j.totalAcertos >= 2).length;
+            const maiorAcerto = Math.max(...jogosAnalisados.map(j => j.totalAcertos));
+            const acertosMes = jogosAnalisados.filter(j => j.acertoMes > 0).length;
+            const totalPremiacao = jogosAnalisados.reduce((total, jogo) => total + jogo.premiacao, 0);
+            
+            container.innerHTML = `
+                <div class="bg-green-100 dark:bg-green-800 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-green-800 dark:text-green-200">R$ ${totalPremiacao.toFixed(2).replace('.', ',')}</div>
+                    <div class="text-sm text-green-600 dark:text-green-300">Total em Premiação</div>
+                </div>
+                <div class="bg-dia-sorte-100 dark:bg-dia-sorte-800 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-dia-sorte-800 dark:text-dia-sorte-200">${jogosPremiados}</div>
+                    <div class="text-sm text-dia-sorte-600 dark:text-dia-sorte-300">Jogos Premiados</div>
+                </div>
+                <div class="bg-yellow-100 dark:bg-yellow-800 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-yellow-800 dark:text-yellow-200">${maiorAcerto}</div>
+                    <div class="text-sm text-yellow-600 dark:text-yellow-300">Maior Acerto</div>
+                </div>
+                <div class="bg-orange-100 dark:bg-orange-800 p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-orange-800 dark:text-orange-200">${acertosMes}</div>
+                    <div class="text-sm text-orange-600 dark:text-orange-300">Acertos do Mês</div>
+                </div>
+            `;
+        }
+
+        function aplicarFiltros() {
+            const filtroMes = document.getElementById('filtroMes').value;
+            const filtroAcertos = document.getElementById('filtroAcertos').value;
+            
+            let jogosFiltrados = [...jogosAnalisados];
+            
+            // Filtrar por mês se selecionado
+            if (filtroMes) {
+                jogosFiltrados = jogosFiltrados.filter(jogo => jogo.mes === filtroMes);
+            }
+            
+            // Filtrar por acertos específicos ou mostrar apenas premiados
+            if (filtroAcertos !== '') {
+                if (filtroAcertos === 'apenas-premiados') {
+                    // Mostrar APENAS jogos que ganharam dinheiro (premiacao > 0) em ordem decrescente
+                    jogosFiltrados = jogosFiltrados
+                        .filter(jogo => jogo.premiacao > 0)
+                        .sort((a, b) => b.premiacao - a.premiacao);
+                } else if (filtroAcertos === 'nao-premiados') {
+                    // Mostrar APENAS jogos que NÃO ganharam dinheiro (premiacao = 0)
+                    jogosFiltrados = jogosFiltrados.filter(jogo => jogo.premiacao === 0);
+                } else if (filtroAcertos === 'premiados') {
+                    // Mostrar apenas jogos premiados (2+ acertos) em ordem decrescente
+                    jogosFiltrados = jogosFiltrados
+                        .filter(jogo => jogo.totalAcertos >= 2)
+                        .sort((a, b) => b.totalAcertos - a.totalAcertos);
+                } else if (filtroAcertos === 'sorteados') {
+                    // Mostrar apenas jogos sorteados (1+ acertos) em ordem decrescente
+                    jogosFiltrados = jogosFiltrados
+                        .filter(jogo => jogo.totalAcertos >= 1)
+                        .sort((a, b) => b.totalAcertos - a.totalAcertos);
+                } else if (filtroAcertos === 'nao-sorteados') {
+                    // Mostrar apenas jogos não sorteados (0 acertos)
+                    jogosFiltrados = jogosFiltrados.filter(jogo => jogo.totalAcertos === 0);
+                } else {
+                    jogosFiltrados = jogosFiltrados.filter(jogo => jogo.totalAcertos == parseInt(filtroAcertos));
+                }
+            }
+            
+            // Atualizar exibição temporariamente
+            const container = document.getElementById('listaJogos');
+            container.innerHTML = jogosFiltrados.map(jogo => `
+                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 ${jogo.totalAcertos > 0 ? 'bg-dia-sorte-50 dark:bg-dia-sorte-900 border-dia-sorte-200' : ''}">
+                    <div class="flex justify-between items-center mb-2">
+                        <h4 class="font-semibold text-gray-800 dark:text-white">Jogo ${jogo.id}</h4>
+                        <span class="px-2 py-1 rounded text-sm font-bold ${
+                            jogo.totalAcertos >= 4 ? 'bg-green-100 text-green-800' :
+                            jogo.totalAcertos >= 2 ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-gray-100 text-gray-800'
+                        }">
+                            ${jogo.totalAcertos} acerto${jogo.totalAcertos !== 1 ? 's' : ''}
+                        </span>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mb-2">
+                        ${jogo.numeros.map(num => `
+                            <span class="px-2 py-1 rounded text-sm font-bold ${
+                                jogo.numerosAcertados.includes(num) ? 
+                                'bg-dia-sorte-600 text-white' : 
+                                'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                            }">
+                                ${num.toString().padStart(2, '0')}
+                            </span>
+                        `).join('')}
+                        <span class="px-2 py-1 rounded text-sm font-bold ${
+                            jogo.mesAcertado ? 
+                            'bg-orange-500 text-white' : 
+                            'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                        }">
+                            ${jogo.mes}
+                        </span>
+                    </div>
+                    <div class="text-xs text-gray-600 dark:text-gray-400">
+                        ${jogo.acertosNumeros} número${jogo.acertosNumeros !== 1 ? 's' : ''} + ${jogo.acertoMes} mês
+                    </div>
+                </div>
+            `).join('');
+            
+            // Atualizar estatísticas dos jogos filtrados
+            if (jogosFiltrados.length > 0) {
+                const estatContainer = document.getElementById('estatisticas');
+                const totalFiltrados = jogosFiltrados.length;
+                const premiadosFiltrados = jogosFiltrados.filter(j => j.totalAcertos >= 2).length;
+                const maiorAcertoFiltrado = Math.max(...jogosFiltrados.map(j => j.totalAcertos));
+                const acertosMesFiltrado = jogosFiltrados.filter(j => j.acertoMes > 0).length;
+                
+                estatContainer.innerHTML = `
+                    <div class="bg-dia-sorte-100 dark:bg-dia-sorte-800 p-4 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-dia-sorte-800 dark:text-dia-sorte-200">${totalFiltrados}</div>
+                        <div class="text-sm text-dia-sorte-600 dark:text-dia-sorte-300">Jogos Filtrados</div>
+                    </div>
+                    <div class="bg-green-100 dark:bg-green-800 p-4 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-green-800 dark:text-green-200">${premiadosFiltrados}</div>
+                        <div class="text-sm text-green-600 dark:text-green-300">Jogos Premiados</div>
+                    </div>
+                    <div class="bg-yellow-100 dark:bg-yellow-800 p-4 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-yellow-800 dark:text-yellow-200">${maiorAcertoFiltrado}</div>
+                        <div class="text-sm text-yellow-600 dark:text-yellow-300">Maior Acerto</div>
+                    </div>
+                    <div class="bg-orange-100 dark:bg-orange-800 p-4 rounded-lg text-center">
+                        <div class="text-2xl font-bold text-orange-800 dark:text-orange-200">${acertosMesFiltrado}</div>
+                        <div class="text-sm text-orange-600 dark:text-orange-300">Acertos do Mês</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Permitir busca com Enter
+        document.getElementById('concursoInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                buscarConcurso();
+            }
+        });
+
+        // Exibir jogos inicialmente (sem análise)
+        document.getElementById('listaJogos').innerHTML = jogosFixos.map((jogo, index) => `
+            <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="font-semibold text-gray-800 dark:text-white">Jogo ${index + 1}</h4>
+                    <span class="px-2 py-1 rounded text-sm font-bold bg-gray-100 text-gray-800">
+                        Aguardando resultado
+                    </span>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-2">
+                    ${jogo.slice(0, 7).map(num => `
+                        <span class="px-2 py-1 rounded text-sm font-bold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                            ${num.toString().padStart(2, '0')}
+                        </span>
+                    `).join('')}
+                    <span class="px-2 py-1 rounded text-sm font-bold bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        ${jogo[7]}
+                    </span>
+                </div>
+            </div>
+        `).join('');
+    </script>
+</body>
+</html>

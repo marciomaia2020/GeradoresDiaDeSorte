@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Combinações de 4 Dígitos - Dia de Sorte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS para exportação Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE'
+                    }
+                }
+            },
+            darkMode: 'class'
+        }
+    </script>
+    
+    <style>
+        .digit-card {
+            transition: all 0.3s ease;
+        }
+        .digit-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .digit-card.selected {
+            background: #5D5CDE;
+            color: white;
+            border-color: #5D5CDE;
+        }
+        .digit-card.selected:hover {
+            background: #4c46c7;
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
+    <!-- Detecção de tema escuro -->
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+
+    <!-- Conteúdo principal -->
+    <div class="container mx-auto p-4 max-w-6xl">
+        <h1 class="text-2xl font-bold text-center mb-6">Todas as Combinações de 4 Dígitos - Dia de Sorte</h1>
+        
+        <!-- Controles de filtro e busca -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between mb-4">
+                <div class="flex items-center gap-4">
+                    <label class="text-sm font-semibold">Filtros:</label>
+                    <select id="filter-by-combinations" class="border dark:border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-700">
+                        <option value="all">Todas as combinações</option>
+                        <option value="valid">Apenas com combinações válidas</option>
+                        <option value="high">Mais de 1000 combinações</option>
+                        <option value="medium">100-1000 combinações</option>
+                        <option value="low">Menos de 100 combinações</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="text" id="digits-search" placeholder="Buscar dígitos (ex: 0,1,2,3 ou 1,3,5,7)" 
+                        class="border dark:border-gray-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-700">
+                    <button id="generate-all-btn" class="bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-md font-bold text-sm">
+                        Gerar Todas
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de todas as combinações -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold">Todas as Combinações de 4 Dígitos:</h2>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                    Total: <span id="total-digit-combinations" class="font-bold text-primary dark:text-blue-400">0</span> combinações
+                </div>
+            </div>
+            
+            <div class="mb-4 overflow-auto max-h-96">
+                <table class="min-w-full border-collapse">
+                    <thead class="bg-gray-100 dark:bg-gray-700 sticky top-0">
+                        <tr>
+                            <th class="py-2 px-3 text-left text-sm font-semibold">#</th>
+                            <th class="py-2 px-3 text-left text-sm font-semibold">Dígitos</th>
+                            <th class="py-2 px-3 text-left text-sm font-semibold">Números Válidos</th>
+                            <th class="py-2 px-3 text-left text-sm font-semibold">Combinações Possíveis</th>
+                            <th class="py-2 px-3 text-left text-sm font-semibold">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="all-combinations-table-body">
+                        <tr>
+                            <td colspan="5" class="py-8 text-center">
+                                <div class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
+                                <p class="mt-2 text-sm">Calculando todas as combinações de 4 dígitos...</p>
+                                <p class="mt-1 text-xs text-gray-500">Isso pode levar alguns segundos...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Resumo Estatístico -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-lg font-semibold mb-4">📊 Resumo Estatístico das Combinações</h2>
+            
+            <div id="statistics-summary" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-red-600 dark:text-red-400" id="stat-insuficiente">-</div>
+                    <div class="text-sm text-red-700 dark:text-red-300">Insuficientes</div>
+                    <div class="text-xs text-red-600 dark:text-red-400 mt-1">(0 jogos)</div>
+                </div>
+                
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400" id="stat-baixo">-</div>
+                    <div class="text-sm text-yellow-700 dark:text-yellow-300">Baixo Volume</div>
+                    <div class="text-xs text-yellow-600 dark:text-yellow-400 mt-1">(1-99 jogos)</div>
+                </div>
+                
+                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" id="stat-medio">-</div>
+                    <div class="text-sm text-blue-700 dark:text-blue-300">Médio Volume</div>
+                    <div class="text-xs text-blue-600 dark:text-blue-400 mt-1">(100-999 jogos)</div>
+                </div>
+                
+                <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-bold text-green-600 dark:text-green-400" id="stat-alto">-</div>
+                    <div class="text-sm text-green-700 dark:text-green-300">Alto Volume</div>
+                    <div class="text-xs text-green-600 dark:text-green-400 mt-1">(1000+ jogos)</div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                    <h3 class="font-semibold mb-3 text-primary dark:text-blue-400">🎯 Volumes de jogos por Números Válidos:</h3>
+                    <div class="space-y-2 text-sm" id="specific-volumes">
+                        <!-- Conteúdo será gerado dinamicamente mostrando valores específicos -->
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                    <h3 class="font-semibold mb-3 text-primary dark:text-blue-400">🏆 Destaques:</h3>
+                    <div class="space-y-2 text-sm" id="highlights">
+                        <div class="flex justify-between">
+                            <span>Maior volume:</span>
+                            <span class="font-bold text-green-600 dark:text-green-400" id="max-volume">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Menor volume (válido):</span>
+                            <span class="font-bold text-blue-600 dark:text-blue-400" id="min-volume">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Média de jogos:</span>
+                            <span class="font-bold text-purple-600 dark:text-purple-400" id="avg-volume">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Total combinações:</span>
+                            <span class="font-bold" id="total-210">210</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
+                <p class="text-sm text-blue-800 dark:text-blue-200">
+                    <strong>💡 Dica:</strong> Com 4 dígitos, existem 210 combinações possíveis. 
+                    Esta configuração oferece excelente cobertura de números válidos, permitindo combinações muito robustas.
+                </p>
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-lg font-semibold mb-3">Escolha 4 dígitos (0-9):</h2>
+            
+            <div class="mb-4 p-3 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-md">
+                <p class="text-sm text-green-800 dark:text-green-200">
+                    <strong>Excelente:</strong> O jogo Dia de Sorte aceita apenas números de 1 a 31. 
+                    Com 4 dígitos, você terá excelente cobertura de números válidos, permitindo formar combinações muito robustas.
+                </p>
+            </div>
+            
+            <!-- Prévia das estatísticas -->
+            <div id="preview-stats" class="mb-4 p-3 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700 rounded-md">
+                <h3 class="font-bold mb-2">Prévia:</h3>
+                <p>Dígitos selecionados: <span id="preview-selected-digits" class="font-bold">Nenhum</span> (<span id="preview-digit-count">0</span>/4)</p>
+                <p>Números válidos possíveis: <span id="preview-valid-numbers" class="font-bold">0</span></p>
+                <p>Combinações possíveis: <span id="preview-combinations" class="font-bold text-primary dark:text-blue-400">0</span></p>
+            </div>
+            
+            <div class="grid grid-cols-5 gap-4 mb-6" id="digits-checkboxes">
+                <!-- Checkboxes serão criados dinamicamente via JavaScript -->
+            </div>
+            
+            <!-- Seletor de Mês da Sorte -->
+            <div class="mb-6">
+                <label for="lucky-month" class="block text-sm font-bold mb-2">Mês da Sorte:</label>
+                <select id="lucky-month" class="w-full border dark:border-gray-700 rounded-md px-3 py-2 text-base focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-700">
+                    <option value="Janeiro">Janeiro</option>
+                    <option value="Fevereiro">Fevereiro</option>
+                    <option value="Março">Março</option>
+                    <option value="Abril">Abril</option>
+                    <option value="Maio">Maio</option>
+                    <option value="Junho">Junho</option>
+                    <option value="Julho">Julho</option>
+                    <option value="Agosto">Agosto</option>
+                    <option value="Setembro">Setembro</option>
+                    <option value="Outubro">Outubro</option>
+                    <option value="Novembro">Novembro</option>
+                    <option value="Dezembro">Dezembro</option>
+                </select>
+            </div>
+            
+            <div class="flex flex-col space-y-3">
+                <div id="error-message" class="hidden text-red-500 text-center"></div>
+                <button id="generate-btn" class="bg-primary hover:bg-primary/90 text-white py-2 px-4 rounded-md font-bold transition">
+                    Gerar Combinações
+                </button>
+            </div>
+        </div>
+        
+        <div id="result-container" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hidden">
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold">Resumo:</h3>
+                <div class="p-3 mt-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
+                    <p><strong>Dígitos selecionados:</strong> <span id="selected-digits" class="font-bold"></span></p>
+                    <p><strong>Números válidos formados:</strong> <span id="valid-numbers-count" class="font-bold"></span> (entre 1 e 31)</p>
+                    <p class="text-lg mt-2"><strong>Total de combinações possíveis:</strong> <span id="total-combinations" class="font-semibold text-primary dark:text-blue-400"></span></p>
+                    <p class="text-xs mt-1 text-gray-600 dark:text-gray-400">
+                        As combinações são formadas pegando 7 números dentre os números válidos que podem ser formados com os dígitos selecionados.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-lg font-semibold">Combinações:</h3>
+                    <div class="flex space-x-2">
+                        <button id="download-txt-btn" class="text-primary hover:text-primary/80 text-sm font-bold">
+                            TXT
+                        </button>
+                        <button id="download-excel-btn" class="text-green-600 hover:text-green-800 text-sm font-bold">
+                            Excel
+                        </button>
+                        <button id="download-html-btn" class="text-orange-600 hover:text-orange-800 text-sm font-bold">
+                            HTML
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-2 relative">
+                    <input type="text" id="search-input" placeholder="Buscar combinações (ex: 01 03 07 ou 1,3,7,10,23,27,31)" 
+                        class="w-full border dark:border-gray-700 rounded-md px-3 py-2 text-base focus:outline-none focus:ring-1 focus:ring-primary dark:bg-gray-700">
+                    <div id="search-info" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Digite os números que deseja encontrar. Formatos aceitos: "01 03 07", "1,3,7", "01-03-07", etc.
+                    </div>
+                </div>
+            </div>
+            
+            <div id="combinations-container" class="max-h-96 overflow-y-auto border dark:border-gray-700 rounded-md p-3 text-sm">
+                <div id="combinations" class="grid grid-cols-3 sm:grid-cols-4 gap-2"></div>
+                <div id="loading" class="text-center py-4 hidden">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
+                    <p class="mt-2">Processando combinações...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Selecionando elementos do DOM
+        const generateBtn = document.getElementById('generate-btn');
+        const resultContainer = document.getElementById('result-container');
+        const selectedDigitsEl = document.getElementById('selected-digits');
+        const totalCombinationsEl = document.getElementById('total-combinations');
+        const combinationsEl = document.getElementById('combinations');
+        const errorMessageEl = document.getElementById('error-message');
+        const downloadBtn = document.getElementById('download-btn');
+        const searchInput = document.getElementById('search-input');
+        const loadingEl = document.getElementById('loading');
+        
+        // Variável global para armazenar as combinações atuais
+        let currentCombinations = [];
+        
+        // Função para gerar todas as combinações válidas para o Dia de Sorte (números de 1 a 31)
+        function generateCombinations(digits) {
+            // Array para armazenar todas as combinações válidas
+            const allCombinations = [];
+            
+            // Função para verificar se um número é válido para o Dia de Sorte (de 1 a 31)
+            function isValidNumber(num) {
+                return num >= 1 && num <= 31;
+            }
+            
+            // Função para verificar se todos os dígitos de um número estão no conjunto permitido
+            function containsOnlyAllowedDigits(num, allowedDigits) {
+                const numStr = num.toString();
+                return numStr.split('').every(digit => allowedDigits.includes(parseInt(digit)));
+            }
+            
+            // Gerar todos os números válidos usando apenas os dígitos permitidos
+            const validNumbers = [];
+            for (let i = 1; i <= 31; i++) {
+                if (containsOnlyAllowedDigits(i, digits)) {
+                    validNumbers.push(i);
+                }
+            }
+            
+            // Se não tiver números suficientes, retornar array vazio
+            if (validNumbers.length < 7) {
+                return [];
+            }
+            
+            // Função para gerar combinações de 7 números a partir do conjunto de números válidos
+            function getCombinations(arr, k) {
+                const combinations = [];
+                
+                // Função recursiva interna para gerar combinações
+                function backtrack(start, current) {
+                    if (current.length === k) {
+                        combinations.push([...current]);
+                        return;
+                    }
+                    
+                    for (let i = start; i < arr.length; i++) {
+                        current.push(arr[i]);
+                        backtrack(i + 1, current);
+                        current.pop();
+                    }
+                }
+                
+                backtrack(0, []);
+                return combinations;
+            }
+            
+            // Gerar todas as combinações possíveis de 7 números a partir dos números válidos
+            return getCombinations(validNumbers, 7);
+        }
+        
+        // Função para formatar números com dois dígitos (01, 02, etc.)
+        function formatTwoDigits(num) {
+            return num < 10 ? `0${num}` : `${num}`;
+        }
+        
+        // Função melhorada para extrair números da busca
+        function parseSearchNumbers(query) {
+            if (!query || !query.trim()) return [];
+            
+            // Remove espaços extras e converte para minúsculas
+            const cleanQuery = query.toLowerCase().trim();
+            
+            // Extrai todos os números da string usando regex mais robusta
+            // Aceita números de 1-2 dígitos separados por qualquer caractere não numérico
+            const numberMatches = cleanQuery.match(/\b\d{1,2}\b/g);
+            
+            if (!numberMatches) return [];
+            
+            // Converte para números e remove duplicatas
+            const numbers = [...new Set(numberMatches.map(num => parseInt(num)))];
+            
+            // Filtra apenas números válidos (1-31)
+            return numbers.filter(num => num >= 1 && num <= 31);
+        }
+        
+        // Função para exibir informações da busca
+        function updateSearchInfo(searchNumbers, filteredCount, totalCount) {
+            const searchInfo = document.getElementById('search-info');
+            
+            if (searchNumbers.length === 0) {
+                searchInfo.textContent = 'Digite os números que deseja encontrar. Formatos aceitos: "01 03 07", "1,3,7", "01-03-07", etc.';
+                searchInfo.className = 'text-xs text-gray-500 dark:text-gray-400 mt-1';
+            } else {
+                const numbersText = searchNumbers.map(n => formatTwoDigits(n)).join(', ');
+                searchInfo.innerHTML = `
+                    Buscando por: <strong>${numbersText}</strong> | 
+                    Encontradas: <strong class="text-primary dark:text-blue-400">${filteredCount}</strong> de ${totalCount} combinações
+                `;
+                searchInfo.className = 'text-xs text-blue-600 dark:text-blue-400 mt-1';
+            }
+        }
+        
+        // Função para exibir as combinações de forma paginada
+        function displayCombinations(combinations, searchQuery = '') {
+            combinationsEl.innerHTML = '';
+            
+            // Verificar se há combinações
+            if (combinations.length === 0) {
+                const noValidCombosDiv = document.createElement('div');
+                noValidCombosDiv.className = 'col-span-full text-center py-4 text-red-500';
+                noValidCombosDiv.textContent = 'Não foi possível formar 7 números válidos (1-31) com os dígitos selecionados. Tente selecionar outros dígitos.';
+                combinationsEl.appendChild(noValidCombosDiv);
+                totalCombinationsEl.textContent = '0';
+                updateSearchInfo([], 0, 0);
+                return;
+            }
+            
+            // Filtragem por pesquisa inteligente
+            let filteredCombinations = combinations;
+            let searchNumbers = [];
+            
+            if (searchQuery.trim()) {
+                searchNumbers = parseSearchNumbers(searchQuery);
+                
+                if (searchNumbers.length > 0) {
+                    filteredCombinations = combinations.filter(combo => {
+                        // Verifica se a combinação contém TODOS os números pesquisados
+                        return searchNumbers.every(searchNum => combo.includes(searchNum));
+                    });
+                } else {
+                    // Se não conseguiu extrair números válidos, usa busca de texto simples
+                    const cleanQuery = searchQuery.replace(/[^\d]/g, '');
+                    if (cleanQuery) {
+                        filteredCombinations = combinations.filter(combo => 
+                            combo.map(num => formatTwoDigits(num)).join('').includes(cleanQuery)
+                        );
+                    }
+                }
+            }
+            
+            // Atualizar informações da busca
+            updateSearchInfo(searchNumbers, filteredCombinations.length, combinations.length);
+            
+            // Exibir combinações
+            filteredCombinations.forEach((combination, index) => {
+                const comboDiv = document.createElement('div');
+                comboDiv.className = 'bg-gray-100 dark:bg-gray-700 p-2 rounded text-center transition-colors';
+                
+                // Formatar cada número com dois dígitos
+                const formattedCombo = combination.map(num => formatTwoDigits(num)).join(' ');
+                
+                // Destacar números pesquisados se houver busca ativa
+                if (searchNumbers.length > 0) {
+                    let highlightedCombo = formattedCombo;
+                    searchNumbers.forEach(searchNum => {
+                        const formattedSearchNum = formatTwoDigits(searchNum);
+                        const regex = new RegExp(`\\b${formattedSearchNum}\\b`, 'g');
+                        highlightedCombo = highlightedCombo.replace(regex, 
+                            `<span class="bg-yellow-200 dark:bg-yellow-600 px-1 rounded font-bold">${formattedSearchNum}</span>`
+                        );
+                    });
+                    comboDiv.innerHTML = highlightedCombo;
+                    
+                    // Adicionar efeito visual para combinações que atendem à busca
+                    comboDiv.classList.add('border-2', 'border-primary', 'dark:border-blue-400');
+                } else {
+                    comboDiv.textContent = formattedCombo;
+                }
+                
+                combinationsEl.appendChild(comboDiv);
+            });
+            
+            // Atualizar contagem
+            totalCombinationsEl.textContent = combinations.length;
+            
+            // Se não houver combinações após a filtragem
+            if (filteredCombinations.length === 0 && searchQuery.trim()) {
+                const noResultsDiv = document.createElement('div');
+                noResultsDiv.className = 'col-span-full text-center py-4 text-amber-600 dark:text-amber-400';
+                
+                if (searchNumbers.length > 0) {
+                    const numbersText = searchNumbers.map(n => formatTwoDigits(n)).join(', ');
+                    noResultsDiv.innerHTML = `
+                        <div class="text-lg mb-2">🔍</div>
+                        <div>Nenhuma combinação encontrada com todos os números:</div>
+                        <div class="font-bold mt-1">${numbersText}</div>
+                        <div class="text-sm mt-2 text-gray-500">Tente buscar por menos números ou números diferentes.</div>
+                    `;
+                } else {
+                    noResultsDiv.textContent = 'Nenhuma combinação encontrada com os termos pesquisados.';
+                }
+                
+                combinationsEl.appendChild(noResultsDiv);
+            }
+        }
+        
+        // Função para processar as combinações em lotes para evitar travamento da UI
+        function processCombinationsInBatches(digits) {
+            // Mostrar indicador de carregamento
+            loadingEl.classList.remove('hidden');
+            
+            // Calcular as combinações em segundo plano
+            setTimeout(() => {
+                // Primeiro, calcular os números válidos
+                const validNumbers = [];
+                for (let i = 1; i <= 31; i++) {
+                    const numStr = i.toString();
+                    if (numStr.split('').every(digit => digits.includes(parseInt(digit)))) {
+                        validNumbers.push(i);
+                    }
+                }
+                
+                // Atualizar a contagem de números válidos
+                document.getElementById('valid-numbers-count').textContent = validNumbers.length;
+                
+                // Gerar as combinações se tivermos pelo menos 7 números válidos
+                const combinations = validNumbers.length >= 7 ? 
+                    generateCombinations(digits) : [];
+                
+                // Armazenar combinações globalmente
+                currentCombinations = combinations;
+                
+                // Ocultar indicador de carregamento
+                loadingEl.classList.add('hidden');
+                
+                // Exibir as combinações
+                displayCombinations(combinations);
+                
+                // Configurar downloads para diferentes formatos
+                if (combinations.length > 0) {
+                    const luckyMonth = document.getElementById('lucky-month').value;
+                    setupDownloads(combinations, digits.join(''), luckyMonth);
+                }
+            }, 50);
+        }
+        
+        // Configurar botões de download para diferentes formatos
+        function setupDownloads(combinations, digitsStr, luckyMonth) {
+            const downloadTxtBtn = document.getElementById('download-txt-btn');
+            const downloadExcelBtn = document.getElementById('download-excel-btn');
+            const downloadHtmlBtn = document.getElementById('download-html-btn');
+            
+            // Remover event listeners antigos
+            downloadTxtBtn.replaceWith(downloadTxtBtn.cloneNode(true));
+            downloadExcelBtn.replaceWith(downloadExcelBtn.cloneNode(true));
+            downloadHtmlBtn.replaceWith(downloadHtmlBtn.cloneNode(true));
+            
+            // Reobter referências dos novos elementos
+            const newDownloadTxtBtn = document.getElementById('download-txt-btn');
+            const newDownloadExcelBtn = document.getElementById('download-excel-btn');
+            const newDownloadHtmlBtn = document.getElementById('download-html-btn');
+            
+            // Botão para download em TXT
+            newDownloadTxtBtn.addEventListener('click', () => {
+                const formattedCombos = combinations.map(combo => 
+                    combo.map(num => formatTwoDigits(num)).join(' ')
+                );
+                const content = formattedCombos.join('\n');
+                downloadFile(content, `combinacoes-${digitsStr}.txt`, 'text/plain');
+            });
+            
+            // Botão para download em Excel
+            newDownloadExcelBtn.addEventListener('click', () => {
+                const formattedCombos = combinations.map(combo => {
+                    const formattedNumbers = combo.map(num => formatTwoDigits(num));
+                    return [
+                        ...formattedNumbers,
+                        luckyMonth // Adicionar o mês da sorte como última coluna
+                    ];
+                });
+                
+                // Criar cabeçalho
+                const headers = ['Número 1', 'Número 2', 'Número 3', 'Número 4', 'Número 5', 'Número 6', 'Número 7', 'Mês da Sorte'];
+                
+                // Criar workbook e worksheet
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet([
+                    headers,
+                    ...formattedCombos
+                ]);
+                
+                // Adicionar worksheet ao workbook
+                XLSX.utils.book_append_sheet(wb, ws, 'Combinações');
+                
+                // Exportar como arquivo Excel
+                XLSX.writeFile(wb, `combinacoes-${digitsStr}.xlsx`);
+            });
+            
+            // Botão para download em HTML
+            newDownloadHtmlBtn.addEventListener('click', () => {
+                const formattedCombos = combinations.map(combo => 
+                    combo.map(num => formatTwoDigits(num)).join(' ')
+                );
+                
+                // Criar uma tabela HTML
+                let htmlContent = `
+                <!DOCTYPE html>
+                <html lang="pt-BR">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Combinações - Dia de Sorte</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        h1 { color: #5D5CDE; }
+                        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+                        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+                        tr:nth-child(even) { background-color: #f2f2f2; }
+                        .info { margin-bottom: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Combinações - Dia de Sorte</h1>
+                    <div class="info">
+                        <p><strong>Dígito selecionado:</strong> ${digitsStr}</p>
+                        <p><strong>Total de combinações:</strong> ${formattedCombos.length}</p>
+                        <p><strong>Mês da Sorte:</strong> ${luckyMonth}</p>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Combinação</th>
+                                <th>Mês da Sorte</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                formattedCombos.forEach((combo, index) => {
+                    htmlContent += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${combo}</td>
+                                <td>${luckyMonth}</td>
+                            </tr>
+                    `;
+                });
+                
+                htmlContent += `
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+                `;
+                
+                downloadFile(htmlContent, `combinacoes-${digitsStr}.html`, 'text/html');
+            });
+        }
+        
+        // Função auxiliar para download de arquivos
+        function downloadFile(content, filename, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+        }
+        
+        // Evento para gerar combinações
+        generateBtn.addEventListener('click', () => {
+            // Limpar mensagens de erro
+            errorMessageEl.classList.add('hidden');
+            errorMessageEl.textContent = '';
+            
+            // Obter dígitos selecionados
+            const selectedDigits = [];
+            for (let i = 0; i <= 9; i++) {
+                const checkbox = document.getElementById(`digit-${i}`);
+                if (checkbox && checkbox.checked) {
+                    selectedDigits.push(parseInt(checkbox.value));
+                }
+            }
+            
+            // Validar se exatamente 4 dígitos foram selecionados
+            if (selectedDigits.length !== 4) {
+                errorMessageEl.textContent = `Selecione exatamente 4 dígitos. Você selecionou ${selectedDigits.length}.`;
+                errorMessageEl.classList.remove('hidden');
+                return;
+            }
+            
+            // Exibir dígito selecionado
+            selectedDigitsEl.textContent = selectedDigits.join(', ');
+            
+            // Exibir contêiner de resultados
+            resultContainer.classList.remove('hidden');
+            
+            // Processar combinações
+            processCombinationsInBatches(selectedDigits);
+        });
+        
+        // Calcular combinações possíveis para uma lista de dígitos
+        function calculateCombinationStats(digits) {
+            // Se não tivermos exatamente 4 dígitos, não calcular as estatísticas completas
+            if (digits.length !== 4) {
+                return {
+                    validNumbers: [],
+                    combinations: []
+                };
+            }
+            
+            // Calcular números válidos
+            const validNumbers = [];
+            for (let i = 1; i <= 31; i++) {
+                const numStr = i.toString();
+                if (numStr.split('').every(digit => digits.includes(parseInt(digit)))) {
+                    validNumbers.push(i);
+                }
+            }
+            
+            // Se não tiver números suficientes para formar combinações
+            if (validNumbers.length < 7) {
+                return {
+                    validNumbers: validNumbers,
+                    combinations: []
+                };
+            }
+            
+            // Calcular número de combinações possíveis
+            // Usamos a fórmula C(n,r) = n! / (r! * (n-r)!)
+            function factorial(n) {
+                if (n <= 1) return 1;
+                return n * factorial(n - 1);
+            }
+            
+            function combinations(n, r) {
+                return factorial(n) / (factorial(r) * factorial(n - r));
+            }
+            
+            const totalCombinations = combinations(validNumbers.length, 7);
+            
+            return {
+                validNumbers: validNumbers,
+                totalCombinations: totalCombinations
+            };
+        }
+        
+        // Atualizar estatísticas de prévia quando a seleção mudar
+        function updatePreviewStats() {
+            // Obter dígitos selecionados
+            const selectedDigits = [];
+            for (let i = 0; i <= 9; i++) {
+                const checkbox = document.getElementById(`digit-${i}`);
+                if (checkbox && checkbox.checked) {
+                    selectedDigits.push(parseInt(checkbox.value));
+                }
+            }
+            
+            // Determinar número máximo de dígitos permitidos
+            const maxDigits = 4;
+            const remainingDigits = maxDigits - selectedDigits.length;
+            
+            // Desabilitar checkboxes adicionais se já tivermos atingido o limite
+            for (let i = 0; i <= 9; i++) {
+                const checkbox = document.getElementById(`digit-${i}`);
+                if (checkbox && !checkbox.checked) {
+                    checkbox.disabled = remainingDigits <= 0;
+                    checkbox.parentElement.classList.toggle('opacity-50', remainingDigits <= 0);
+                }
+            }
+            
+            // Atualizar contagem e dígitos selecionados
+            const previewDigitCount = document.getElementById('preview-digit-count');
+            const previewSelectedDigits = document.getElementById('preview-selected-digits');
+            const previewValidNumbers = document.getElementById('preview-valid-numbers');
+            const previewCombinations = document.getElementById('preview-combinations');
+            
+            if (previewDigitCount) previewDigitCount.textContent = selectedDigits.length;
+            
+            if (selectedDigits.length === 0) {
+                if (previewSelectedDigits) previewSelectedDigits.textContent = 'Nenhum';
+                if (previewValidNumbers) previewValidNumbers.textContent = '0';
+                if (previewCombinations) previewCombinations.textContent = '0';
+                return;
+            }
+            
+            if (previewSelectedDigits) previewSelectedDigits.textContent = selectedDigits.join(', ');
+            
+            // Calcular estatísticas
+            const stats = calculateCombinationStats(selectedDigits);
+            
+            // Atualizar números válidos
+            if (previewValidNumbers) previewValidNumbers.textContent = stats.validNumbers.length;
+            
+            // Atualizar combinações possíveis
+            if (previewCombinations) {
+                if (stats.totalCombinations) {
+                    previewCombinations.textContent = stats.totalCombinations.toLocaleString('pt-BR');
+                } else {
+                    previewCombinations.textContent = '0';
+                }
+            }
+        }
+        
+        // Função para gerar todas as combinações de 4 dígitos
+        function generateAllDigitCombinations() {
+            const allCombinations = [];
+            const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+            
+            // Gerar todas as combinações de 4 dígitos
+            for (let i = 0; i < digits.length; i++) {
+                for (let j = i + 1; j < digits.length; j++) {
+                    for (let k = j + 1; k < digits.length; k++) {
+                        for (let l = k + 1; l < digits.length; l++) {
+                            allCombinations.push([digits[i], digits[j], digits[k], digits[l]]);
+                        }
+                    }
+                }
+            }
+            
+            return allCombinations;
+        }
+        
+        // Função para atualizar as estatísticas do resumo
+        function updateStatistics(combinationsData) {
+            // Categorizar as combinações
+            let insuficiente = 0;
+            let baixo = 0;
+            let medio = 0;
+            let alto = 0;
+            
+            // Contador específico para cada valor exato de jogos
+            const exactGameCounts = {};
+            
+            let maxVolume = 0;
+            let minVolume = Infinity;
+            let totalVolume = 0;
+            let validCombinations = 0;
+            
+            combinationsData.forEach(data => {
+                const volume = data.totalCombinations;
+                
+                if (volume === 0) {
+                    insuficiente++;
+                    // Contar como "Insuficiente"
+                    exactGameCounts['insuficiente'] = (exactGameCounts['insuficiente'] || 0) + 1;
+                } else {
+                    // Contar o valor exato de jogos
+                    exactGameCounts[volume] = (exactGameCounts[volume] || 0) + 1;
+                    
+                    if (volume < 100) {
+                        baixo++;
+                    } else if (volume < 1000) {
+                        medio++;
+                    } else {
+                        alto++;
+                    }
+                    
+                    validCombinations++;
+                    totalVolume += volume;
+                    maxVolume = Math.max(maxVolume, volume);
+                    minVolume = Math.min(minVolume, volume);
+                }
+            });
+            
+            // Calcular média
+            const avgVolume = validCombinations > 0 ? Math.round(totalVolume / validCombinations) : 0;
+            
+            // Atualizar elementos na UI
+            const statElements = {
+                'stat-insuficiente': insuficiente,
+                'stat-baixo': baixo,
+                'stat-medio': medio,
+                'stat-alto': alto,
+                'max-volume': maxVolume > 0 ? maxVolume.toLocaleString('pt-BR') + ' jogos' : '-',
+                'min-volume': minVolume < Infinity ? minVolume.toLocaleString('pt-BR') + ' jogos' : '-',
+                'avg-volume': avgVolume > 0 ? avgVolume.toLocaleString('pt-BR') + ' jogos' : '-'
+            };
+            
+            Object.keys(statElements).forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = statElements[id];
+                }
+            });
+
+            // Criar dinamicamente a lista detalhada de volumes específicos
+            const specificVolumesContainer = document.getElementById('specific-volumes');
+            if (specificVolumesContainer) {
+                specificVolumesContainer.innerHTML = '';
+
+                // Ordenar os valores de jogos em ordem decrescente (maiores primeiro)
+                const sortedGameValues = Object.keys(exactGameCounts)
+                    .filter(key => key !== 'insuficiente')
+                    .map(key => parseInt(key))
+                    .sort((a, b) => b - a);
+
+                // Adicionar valores válidos primeiro
+                sortedGameValues.forEach(gameValue => {
+                    const count = exactGameCounts[gameValue];
+                    if (count > 0) {
+                        const div = document.createElement('div');
+                        div.className = 'flex justify-between';
+                        
+                        const label = document.createElement('span');
+                        label.textContent = `→ ${gameValue.toLocaleString('pt-BR')}:`;
+                        
+                        const value = document.createElement('span');
+                        // Definir cor baseada no volume
+                        let colorClass = 'text-red-500'; // padrão
+                        if (gameValue >= 1000) {
+                            colorClass = 'text-green-600 dark:text-green-400';
+                        } else if (gameValue >= 100) {
+                            colorClass = 'text-blue-600 dark:text-blue-400';
+                        } else if (gameValue > 0) {
+                            colorClass = 'text-yellow-600 dark:text-yellow-400';
+                        }
+                        
+                        value.className = `font-bold ${colorClass}`;
+                        value.textContent = `${count} combinações`;
+                        
+                        div.appendChild(label);
+                        div.appendChild(value);
+                        specificVolumesContainer.appendChild(div);
+                    }
+                });
+
+                // Adicionar "Insuficiente" por último, se existir
+                if (exactGameCounts['insuficiente'] > 0) {
+                    const div = document.createElement('div');
+                    div.className = 'flex justify-between';
+                    
+                    const label = document.createElement('span');
+                    label.textContent = '→ Insuficiente:';
+                    
+                    const value = document.createElement('span');
+                    value.className = 'font-bold text-red-500';
+                    value.textContent = `${exactGameCounts['insuficiente']} combinações`;
+                    
+                    div.appendChild(label);
+                    div.appendChild(value);
+                    specificVolumesContainer.appendChild(div);
+                }
+
+                // Se nenhuma categoria tiver valores > 0, mostrar mensagem
+                if (specificVolumesContainer.children.length === 0) {
+                    const div = document.createElement('div');
+                    div.className = 'text-center text-gray-500 dark:text-gray-400 py-4';
+                    div.textContent = 'Nenhuma categoria de volume identificada';
+                    specificVolumesContainer.appendChild(div);
+                }
+            }
+        }
+        
+        // Função para popular a tabela com todas as combinações
+        function populateAllCombinationsTable() {
+            const tableBody = document.getElementById('all-combinations-table-body');
+            const filterSelect = document.getElementById('filter-by-combinations');
+            const searchInput = document.getElementById('digits-search');
+            
+            // Gerar todas as combinações de 4 dígitos
+            const allDigitCombinations = generateAllDigitCombinations();
+            
+            // Calcular estatísticas para cada combinação
+            const combinationsData = allDigitCombinations.map((digitSet, index) => {
+                // Calcular números válidos
+                const validNumbers = [];
+                for (let i = 1; i <= 31; i++) {
+                    const numStr = i.toString();
+                    if (numStr.split('').every(digit => digitSet.includes(parseInt(digit)))) {
+                        validNumbers.push(i);
+                    }
+                }
+                
+                // Calcular número de combinações possíveis
+                let totalCombinations = 0;
+                if (validNumbers.length >= 7) {
+                    function factorial(n) {
+                        if (n <= 1) return 1;
+                        return n * factorial(n - 1);
+                    }
+                    
+                    function combinations(n, r) {
+                        return factorial(n) / (factorial(r) * factorial(n - r));
+                    }
+                    
+                    totalCombinations = combinations(validNumbers.length, 7);
+                }
+                
+                return {
+                    index: index + 1,
+                    digits: digitSet,
+                    validNumbersCount: validNumbers.length,
+                    totalCombinations: totalCombinations
+                };
+            });
+            
+            // Ordenar pelo maior número de combinações
+            combinationsData.sort((a, b) => b.totalCombinations - a.totalCombinations);
+            
+            // Atualizar estatísticas do resumo
+            updateStatistics(combinationsData);
+            
+            // Função para filtrar e exibir dados
+            function displayFilteredData(data = combinationsData) {
+                const filter = filterSelect.value;
+                const searchQuery = searchInput.value.toLowerCase().replace(/\s/g, '');
+                
+                let filteredData = [...data];
+                
+                // Aplicar filtro de combinações
+                switch (filter) {
+                    case 'valid':
+                        filteredData = filteredData.filter(item => item.totalCombinations > 0);
+                        break;
+                    case 'high':
+                        filteredData = filteredData.filter(item => item.totalCombinations > 1000);
+                        break;
+                    case 'medium':
+                        filteredData = filteredData.filter(item => item.totalCombinations >= 100 && item.totalCombinations <= 1000);
+                        break;
+                    case 'low':
+                        filteredData = filteredData.filter(item => item.totalCombinations > 0 && item.totalCombinations < 100);
+                        break;
+                }
+                
+                // Aplicar filtro de busca
+                if (searchQuery) {
+                    filteredData = filteredData.filter(item => 
+                        item.digits.join('').includes(searchQuery) ||
+                        item.digits.join(',').includes(searchQuery)
+                    );
+                }
+                
+                // Limpar tabela
+                tableBody.innerHTML = '';
+                
+                // Atualizar contagem total
+                const totalElement = document.getElementById('total-digit-combinations');
+                if (totalElement) totalElement.textContent = filteredData.length;
+                
+                // Preencher tabela com dados filtrados
+                filteredData.forEach((data, displayIndex) => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-50 dark:hover:bg-gray-700/50';
+                    
+                    // Coluna de índice
+                    const indexCell = document.createElement('td');
+                    indexCell.className = 'py-2 px-3 border-t dark:border-gray-700 text-sm';
+                    indexCell.textContent = displayIndex + 1;
+                    row.appendChild(indexCell);
+                    
+                    // Coluna de dígitos
+                    const digitsCell = document.createElement('td');
+                    digitsCell.className = 'py-2 px-3 border-t dark:border-gray-700 font-mono';
+                    digitsCell.textContent = data.digits.join(', ');
+                    row.appendChild(digitsCell);
+                    
+                    // Coluna de números válidos
+                    const validNumbersCell = document.createElement('td');
+                    validNumbersCell.className = 'py-2 px-3 border-t dark:border-gray-700 text-center';
+                    validNumbersCell.textContent = data.validNumbersCount;
+                    row.appendChild(validNumbersCell);
+                    
+                    // Coluna de combinações
+                    const combinationsCell = document.createElement('td');
+                    combinationsCell.className = 'py-2 px-3 border-t dark:border-gray-700 font-bold text-center';
+                    if (data.totalCombinations > 0) {
+                        combinationsCell.textContent = data.totalCombinations.toLocaleString('pt-BR');
+                        combinationsCell.classList.add('text-primary', 'dark:text-blue-400');
+                    } else {
+                        combinationsCell.textContent = 'Insuficiente';
+                        combinationsCell.classList.add('text-red-500');
+                    }
+                    row.appendChild(combinationsCell);
+                    
+                    // Coluna de ações
+                    const actionCell = document.createElement('td');
+                    actionCell.className = 'py-2 px-3 border-t dark:border-gray-700 text-center';
+                    
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.className = 'flex gap-1 justify-center';
+                    
+                    // Botão de seleção rápida
+                    const selectBtn = document.createElement('button');
+                    selectBtn.className = 'text-xs bg-primary/10 hover:bg-primary/20 text-primary dark:text-blue-400 py-1 px-2 rounded';
+                    selectBtn.textContent = 'Usar';
+                    selectBtn.title = 'Usar esta combinação de dígitos';
+                    selectBtn.addEventListener('click', () => {
+                        // Desmarcar todos os checkboxes
+                        for (let i = 0; i <= 9; i++) {
+                            const checkbox = document.getElementById(`digit-${i}`);
+                            if (checkbox) {
+                                checkbox.checked = false;
+                                checkbox.disabled = false;
+                                checkbox.parentElement.classList.remove('opacity-50', 'opacity-75');
+                            }
+                        }
+                        
+                        // Marcar os checkboxes correspondentes aos dígitos
+                        for (const digit of data.digits) {
+                            const checkbox = document.getElementById(`digit-${digit}`);
+                            if (checkbox) {
+                                checkbox.checked = true;
+                            }
+                        }
+                        
+                        // Atualizar estatísticas
+                        updatePreviewStats();
+                        
+                        // Rolar para a seção de seleção
+                        const previewStats = document.querySelector('#preview-stats');
+                        if (previewStats) previewStats.scrollIntoView({ behavior: 'smooth' });
+                    });
+                    
+                    actionsDiv.appendChild(selectBtn);
+                    
+                    // Botão de gerar diretamente
+                    if (data.totalCombinations > 0) {
+                        const generateBtn = document.createElement('button');
+                        generateBtn.className = 'text-xs bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-800/50 dark:text-green-400 py-1 px-2 rounded ml-1';
+                        generateBtn.textContent = 'Gerar';
+                        generateBtn.title = 'Gerar combinações diretamente';
+                        generateBtn.addEventListener('click', () => {
+                            // Usar este dígito diretamente
+                            selectedDigitsEl.textContent = data.digits.join(', ');
+                            resultContainer.classList.remove('hidden');
+                            processCombinationsInBatches(data.digits);
+                            
+                            // Rolar para os resultados
+                            resultContainer.scrollIntoView({ behavior: 'smooth' });
+                        });
+                        
+                        actionsDiv.appendChild(generateBtn);
+                    }
+                    
+                    actionCell.appendChild(actionsDiv);
+                    row.appendChild(actionCell);
+                    
+                    tableBody.appendChild(row);
+                });
+                
+                // Se não houver resultados
+                if (filteredData.length === 0) {
+                    const noResultsRow = document.createElement('tr');
+                    const noResultsCell = document.createElement('td');
+                    noResultsCell.colSpan = 5;
+                    noResultsCell.className = 'py-8 text-center text-gray-500';
+                    noResultsCell.textContent = 'Nenhuma combinação encontrada com os filtros aplicados.';
+                    noResultsRow.appendChild(noResultsCell);
+                    tableBody.appendChild(noResultsRow);
+                }
+            }
+            
+            // Event listeners para filtros
+            filterSelect.addEventListener('change', () => displayFilteredData());
+            searchInput.addEventListener('input', () => displayFilteredData());
+            
+            // Exibir dados iniciais
+            displayFilteredData();
+        }
+        
+        // Preencher os checkboxes no HTML e adicionar eventos
+        window.onload = function() {
+            const checkboxesContainer = document.querySelector('#digits-checkboxes');
+            if (!checkboxesContainer) return;
+            
+            checkboxesContainer.innerHTML = '';
+            
+            for (let i = 0; i <= 9; i++) {
+                const checkboxDiv = document.createElement('div');
+                checkboxDiv.className = 'flex items-center justify-center p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg hover:border-primary dark:hover:border-blue-400 transition-colors';
+                
+                const label = document.createElement('label');
+                label.className = 'flex flex-col items-center space-y-2 cursor-pointer';
+                
+                const input = document.createElement('input');
+                input.type = 'checkbox';
+                input.id = `digit-${i}`;
+                input.value = i;
+                input.className = 'digit-checkbox w-6 h-6 accent-primary text-primary focus:ring-primary';
+                
+                // Adicionar evento para atualizar estatísticas quando o checkbox for alterado
+                input.addEventListener('change', updatePreviewStats);
+                
+                const span = document.createElement('span');
+                span.className = 'text-2xl font-bold text-primary dark:text-blue-400';
+                span.textContent = i;
+                
+                label.appendChild(input);
+                label.appendChild(span);
+                checkboxDiv.appendChild(label);
+                
+                checkboxesContainer.appendChild(checkboxDiv);
+            }
+            
+            // Adicionar evento para o botão "Gerar Todas"
+            const generateAllBtn = document.getElementById('generate-all-btn');
+            if (generateAllBtn) {
+                generateAllBtn.addEventListener('click', () => {
+                    // Mostrar loading na tabela
+                    const tableBody = document.getElementById('all-combinations-table-body');
+                    if (tableBody) {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="5" class="py-8 text-center">
+                                    <div class="inline-block animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent"></div>
+                                    <p class="mt-2 text-sm">Gerando todas as combinações de 4 dígitos...</p>
+                                    <p class="mt-1 text-xs text-gray-500">Calculando 210 combinações possíveis...</p>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    
+                    // Processar em background para não travar a UI
+                    setTimeout(() => {
+                        populateAllCombinationsTable();
+                    }, 100);
+                });
+            }
+            
+            // Configurar evento de busca em tempo real
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    if (currentCombinations.length > 0) {
+                        displayCombinations(currentCombinations, e.target.value);
+                    }
+                });
+            }
+            
+            // Gerar automaticamente todas as combinações ao carregar
+            setTimeout(() => {
+                populateAllCombinationsTable();
+            }, 500);
+            
+            // Inicializar a prévia
+            updatePreviewStats();
+        };
+    </script>
+</body>
+</html>
