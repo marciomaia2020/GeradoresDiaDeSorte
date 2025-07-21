@@ -209,6 +209,266 @@
             </div>
         </div>
 		
+		
+
+<!-- Conteúdo principal -->
+        <div class="flex-1 p-4">
+            <h1 class="text-2xl font-bold text-center mb-6">Gerador de Combinações - Dia de Sorte (TODAS as combinações)</h1>
+            
+			<hr />
+				<div class="menu-centro">
+					<!-- Primeira linha: Links especiais -->
+					<div class="menu-analises">
+						<a href="index-pares-impares-df.html/" target="_blank" class="link-analise">Pares Vs Impares</a>
+						<a href="index-combinacoes-melhores.html/" target="_blank" class="link-analise">Combinações (Melhores)</a>
+						<a href="index-combinacoes-todas.html/" target="_blank" class="link-analise1">Combinações (Todas) *</a>
+					    <a href="index-combinacoes-analise.html/" target="_blank" class="link-analise1">Combinações (Análise) *</a>
+					</div>
+					
+					<!-- Segunda linha: Números 1-10 -->
+					
+					<div class="menu-numeros">
+					    <p class="intro">Combinações</p>
+						<a href="index1.html/" target="_blank" class="link-numero">1</a>
+						<a href="index2.html/" target="_blank" class="link-numero">2</a>
+						<a href="index3.html/" target="_blank" class="link-numero">3</a>
+						<a href="index4.html/" target="_blank" class="link-numero">4</a>
+						<a href="index5.html" target="_blank" class="link-numero">5</a>
+						<a href="index6.html" target="_blank" class="link-numero">6</a>
+						<a href="index7.html/" target="_blank" class="link-numero">7</a>
+						<a href="index8.html/" target="_blank" class="link-numero">8</a>
+						<a href="index9.html/" target="_blank" class="link-numero">9</a>
+						<a href="index10.html/" target="_blank" class="link-numero">10</a>
+					</div>
+					<!-- Terceira linha: Números Gerador de Combinações do 03 ao 09 -->
+				
+					<div class="menu-numeros">
+						<p class="intro">Gerador Pro</p>
+						<a href="#/" target="_blank" class="link-numero">?</a>
+						<a href="#/" target="_blank" class="link-numero">?</a>
+						<a href="#/" target="_blank" class="link-numero">?</a>
+						<a href="gc4.html/" target="_blank" class="link-numero">4</a>
+						<a href="gc5.html" target="_blank" class="link-numero">5</a>
+						<a href="gc6.html" target="_blank" class="link-numero">6</a>
+						<a href="gc7.html/" target="_blank" class="link-numero">7</a>
+						<a href="gc8.html/" target="_blank" class="link-numero">8</a>
+						<a href="gc9.html/" target="_blank" class="link-numero">9</a>
+						<a href="gc10.html/" target="_blank" class="link-numero">10</a>
+					</div>
+				</div>
+			<hr />
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Combinações - Dia de Sorte</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS para exportação Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+	
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        'dia-orange': '#FF6B35',
+                        'dia-yellow': '#FFB800',
+                        'dia-light-orange': '#FFA366',
+                        'dia-dark-orange': '#E55A2B',
+                        'dia-cream': '#FFF8E1'
+                    }
+                }
+            },
+            darkMode: 'class'
+        }
+    </script>
+<style>
+ body, html {
+        height: 100%;
+        margin: 0;
+    }
+
+    .menu-centro {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+        gap: 2rem;
+    }
+
+    .menu-analises {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .menu-numeros {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        max-width: 600px;
+    }
+
+    .link-analise {
+        text-decoration: none;
+        color: black;
+        padding: 12px 20px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+        border: 2px solid #e9ecef;
+        font-weight: 600;
+        text-align: center;
+        min-width: 180px;
+        display: block;
+    }
+	   .link-analise1 {
+        text-decoration: none;
+        color: green;
+        padding: 12px 20px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+        border: 2px solid #e9ecef;
+        font-weight: 600;
+        text-align: center;
+        min-width: 180px;
+        display: block;
+    }
+
+    .link-numero {
+        text-decoration: none;
+        color: black;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+        border: 2px solid #e9ecef;
+        font-weight: 600;
+        text-align: center;
+        min-width: 40px;
+        display: block;
+    }
+
+    .link-analise:hover,
+    .link-numero:hover {
+        animation: alternaCores 1s infinite alternate;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+	.link-analise1:hover,
+    .link-numero:hover {
+        animation: alternaCores 1s infinite alternate;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    @keyframes alternaCores {
+        0% {
+            background-color: #fff7e6;
+        }
+        100% {
+            background-color: #ffc34d;
+        }
+    }
+
+    /* Dark mode styles */
+    .dark .link-analise,
+    .dark .link-numero {
+        background-color: #374151;
+        border-color: #4b5563;
+        color: #f9fafb;
+    }
+
+    .dark .link-analise:hover,
+    .dark .link-numero:hover {
+        animation: alternaCoresdark 1s infinite alternate;
+    }
+
+
+    @keyframes alternaCoresdark {
+        0% {
+            background-color: #451a03;
+        }
+        100% {
+            background-color: #ea580c;
+        }
+    }
+</style>
+
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
+    <!-- Detecção de tema escuro -->
+    <script>
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+    </script>
+
+    <!-- Layout com sidebar e conteúdo principal -->
+    <div class="flex flex-col md:flex-row">
+        <!-- Barra lateral com links -->
+        <div class="w-full md:w-64 bg-gray-100 dark:bg-gray-800 p-4 md:min-h-screen">
+            <div class="mb-6">
+                <h3 class="text-lg font-bold mb-3 text-primary dark:text-blue-400">Ferramentas Dia de Sorte</h3>
+                <div class="space-y-1">
+                    <a href="./index.html" class="block py-1 px-2 rounded bg-primary/10 text-primary dark:text-blue-400 font-bold">Gerador de Combinações</a>
+                    
+					<div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">ORDEM DE ANALISE 1</div>
+					<a href="./ResultadosDigitosDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">A - Resultados Digitos </a>
+					<a href="./AnalisePorCombinacao/" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">1- Análise por Combinação</a>
+                    <a href="./AnalisadorCombinacoesJogos/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">2 - Analisador Combinações Jogos</a>
+                    <a href="./CombinacaoUmDiadeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">3 - Combinação Um</a>
+                    <a href="./DiaDeSorteConferidor/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">4 - Dia de Sorte Conferidor</a>
+					<a href="./DiaDeSorteConferidor1/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">5 - Dia de Sorte Conferidor (Especifico)</a>
+
+					<div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">ORDEM DE ANALISE</div>
+                    <a href="./CombinacaoDoisDiadeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Combinacao Digitos II *</a>
+					<a href="https://anacombindoisresuldigitos.netlify.app/" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Análise de Combinações *</a>
+                    <a href="./ConfAutoMaisQue1DiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Conferidor Automático +1 * </a>
+					<a href="./ResumoDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Resumo *</a>
+                    <a href="./DiaDeSorteEstra/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Extratégias I *</a>
+                    <a href="./GeradorFinalDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Gerador Final *</a>
+					
+					<div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">DÍGITOS</div>
+                    <a href="./GeradorBaseadoEmDigitosDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Baseado em Dígitos</a>
+                    
+					<div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">CALCULADORA</div>
+                    <a href="./CalculadoraCusto/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Calculadora de Custos</a>
+
+					<div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">ESTRATÉGIAS</div>
+                    <a href="./QuadraDuplasTrincas/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Quadra Duplas & Trincas</a>
+                    
+                    <div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">CONFERIDOES</div>
+                    <a href="./ConfAuto1DiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Conferidor Automático 1</a>
+                    
+                    <div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">ANÁLISES</div>
+                    <a href="./DiaDeSorteDesdobramento/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Desdobramento</a>
+                    <a href="./ResultadosAlteradosDiaDeSorte/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Resultados Alterados</a>
+                    
+                    <div class="mt-3 mb-1 text-sm font-bold text-gray-600 dark:text-gray-400">OUTROS</div>
+                    <a href="./DiaDeSorteCal/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Calculadora</a>
+                    <a href="./DiaDeSorteCom/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Comissão</a>
+                    <a href="./DiaDeSorteCur/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Curiosidades</a>
+                    <a href="./DiaDeSorteIa/index.html" target="_blank" class="block py-1 px-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700">Inteligência Artificial</a>
+                </div>
+            </div>
+        </div>
+		
 
 <!-- Conteúdo principal -->
         <div class="flex-1 p-4">
@@ -298,16 +558,16 @@
                         <p class="text-xs text-gray-500">Máximo: 27.146 jogos (TODAS as 210 combinações de 4 dígitos)</p>
                         <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mt-3">
                             <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">📊 Distribuição das 210 Combinações de 4 Dígitos:</h4>
-                            <div class="text-center font-bold text-purple-600 mb-2 text-xs">C(10,4) = 210 combinações únicas</div>
-                            <div class="grid grid-cols-2 gap-2 text-xs">
-                                <div class="text-left">• 7 combinações top × 1.716 = 12.012 jogos</div>
-                                <div class="text-left">• 15 combinações alta × 792 = 11.880 jogos</div>
-                                <div class="text-left">• 6 combinações média-alta × 330 = 1.980 jogos</div>
-                                <div class="text-left">• 21 combinações média × 36 = 756 jogos</div>
-                                <div class="text-left">• 61 combinações padrão × 8 = 488 jogos</div>
-                                <div class="text-left">• 30 combinações básica × 1 = 30 jogos</div>
-                                <div class="text-left">• 70 combinações insuficientes × 0 = 0 jogos</div>
-                                <div class="text-left">• Estratégia iniciante: Custo controlado</div>
+                            <div class="grid grid-cols-1 gap-2 text-xs">
+                                <div class="text-center font-bold text-purple-600">C(10,4) = 210 combinações únicas</div>
+                                <div class="text-center">• 7 combinações top × 1.716 = 12.012 jogos</div>
+                                <div class="text-center">• 15 combinações alta × 792 = 11.880 jogos</div>
+                                <div class="text-center">• 6 combinações média-alta × 330 = 1.980 jogos</div>
+                                <div class="text-center">• 21 combinações média × 36 = 756 jogos</div>
+                                <div class="text-center">• 61 combinações padrão × 8 = 488 jogos</div>
+                                <div class="text-center">• 30 combinações básica × 1 = 30 jogos</div>
+                                <div class="text-center">• 70 combinações insuficientes × 0 = 0 jogos</div>
+                                <div class="text-center">• Estratégia iniciante: Custo controlado</div>
                             </div>
                             <div class="text-xs font-bold text-blue-800 dark:text-blue-300 mt-2 border-t pt-2">
                                 Total: 27.146 jogos únicos possíveis (4 dígitos)
@@ -504,7 +764,7 @@
         <!-- Calculadora Dinâmica de Jogos -->
         <div class="mt-6 bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 border-2 border-blue-200 dark:border-blue-700 rounded-xl p-6">
             <h3 class="text-lg font-bold text-center text-blue-800 dark:text-blue-300 mb-4">
-                🎯 Calculadora Inteligente de Jogos - TODAS as 210 Combinações de 4 Dígitos
+                🎯 Calculadora de Jogos - TODAS as 210 Combinações de 4 Dígitos
             </h3>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -515,102 +775,55 @@
                 </div>
                 
                 <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-green-200 dark:border-green-700">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Jogos Estimados</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Jogos Selecionados</div>
                     <div id="estimated-games" class="text-2xl font-bold text-green-600">27.146</div>
-                    <div class="text-xs text-gray-500">baseado nos filtros</div>
+                    <div class="text-xs text-gray-500">valor do campo acima</div>
                 </div>
                 
                 <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-700">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Redução</div>
-                    <div id="reduction-percentage" class="text-2xl font-bold text-orange-600">0%</div>
-                    <div class="text-xs text-gray-500">economia inteligente</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Cobertura</div>
+                    <div id="coverage-percentage" class="text-2xl font-bold text-orange-600">100%</div>
+                    <div class="text-xs text-gray-500">de todas as combinações</div>
                 </div>
-            </div>
-            
-            <!-- Barra de Progresso da Redução -->
-            <div class="mb-4">
-                <div class="flex justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                    <span>Redução de Jogos</span>
-                    <span id="reduction-info">0 jogos eliminados</span>
-                </div>
-                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
-                    <div id="reduction-bar" class="bg-gradient-to-r from-green-500 to-orange-500 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
-                </div>
-            </div>
-            
-            <!-- Critérios Ativos -->
-            <div id="active-criteria" class="mb-4 hidden">
-                <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Critérios Ativos:</div>
-                <div id="active-criteria-list" class="flex flex-wrap gap-2"></div>
             </div>
             
             <!-- Distribuição de Volumes -->
             <div class="mb-4 bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Coluna 1: Distribuição Visual -->
-                    <div>
-                        <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Distribuição Visual por Volume (4 Dígitos):</h4>
-                        <div class="grid grid-cols-2 gap-3 text-xs">
-                            <div class="text-center p-2 bg-purple-50 dark:bg-purple-900/20 rounded">
-                                <div class="font-bold text-purple-600">1.716 jogos</div>
-                                <div class="text-gray-600 dark:text-gray-400">7 combinações top</div>
-                            </div>
-                            <div class="text-center p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded">
-                                <div class="font-bold text-indigo-600">792 jogos</div>
-                                <div class="text-gray-600 dark:text-gray-400">15 combinações alta</div>
-                            </div>
-                            <div class="text-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
-                                <div class="font-bold text-blue-600">330 jogos</div>
-                                <div class="text-gray-600 dark:text-gray-400">6 combinações média-alta</div>
-                            </div>
-                            <div class="text-center p-2 bg-green-50 dark:bg-green-900/20 rounded">
-                                <div class="font-bold text-green-600">36 jogos</div>
-                                <div class="text-gray-600 dark:text-gray-400">21 combinações média</div>
-                            </div>
-                            <div class="text-center p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
-                                <div class="font-bold text-yellow-600">8 jogos</div>
-                                <div class="text-gray-600 dark:text-gray-400">61 combinações padrão</div>
-                            </div>
-                            <div class="text-center p-2 bg-orange-50 dark:bg-orange-900/20 rounded">
-                                <div class="font-bold text-orange-600">1 jogo</div>
-                                <div class="text-gray-600 dark:text-gray-400">30 combinações básica</div>
-                            </div>
-                        </div>
-                        <div class="mt-2 text-center">
-                            <div class="text-xs text-red-600 font-semibold">70 combinações têm volume insuficiente (0 jogos)</div>
-                        </div>
+                <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Distribuição por Volume de Jogos (4 Dígitos):</h4>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                    <div class="text-center p-2 bg-purple-50 dark:bg-purple-900/20 rounded">
+                        <div class="font-bold text-purple-600">1.716 jogos</div>
+                        <div class="text-gray-600 dark:text-gray-400">7 combinações top</div>
                     </div>
-
-                    <!-- Coluna 2: Distribuição Detalhada -->
-                    <div>
-                        <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Distribuição das 210 Combinações de 4 Dígitos:</h4>
-                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-2">
-                            <div class="text-center font-bold text-purple-600 mb-1 text-xs">C(10,4) = 210 combinações únicas</div>
-                            <div class="grid grid-cols-2 gap-2 text-xs leading-tight">
-                                <div class="space-y-0">
-                                    <div>• <span class="font-semibold text-purple-600">7 combinações top</span> × 1.716 = <span class="font-bold text-purple-600">12.012 jogos</span></div>
-                                    <div>• <span class="font-semibold text-indigo-600">15 combinações alta</span> × 792 = <span class="font-bold text-indigo-600">11.880 jogos</span></div>
-                                    <div>• <span class="font-semibold text-blue-600">6 combinações média-alta</span> × 330 = <span class="font-bold text-blue-600">1.980 jogos</span></div>
-                                    <div>• <span class="font-semibold text-green-600">21 combinações média</span> × 36 = <span class="font-bold text-green-600">756 jogos</span></div>
-                                </div>
-                                <div class="space-y-0">
-                                    <div>• <span class="font-semibold text-yellow-600">61 combinações padrão</span> × 8 = <span class="font-bold text-yellow-600">488 jogos</span></div>
-                                    <div>• <span class="font-semibold text-orange-600">30 combinações básica</span> × 1 = <span class="font-bold text-orange-600">30 jogos</span></div>
-                                    <div>• <span class="font-semibold text-red-600">70 combinações insuficientes</span> × 0 = <span class="font-bold text-red-600">0 jogos</span></div>
-                                    <div class="text-gray-600 dark:text-gray-400">• Estratégia iniciante: Custo controlado</div>
-                                </div>
-                            </div>
-                            <div class="text-xs font-bold text-blue-800 dark:text-blue-300 mt-1 pt-1 border-t border-blue-300 dark:border-blue-700 text-center">
-                                Total: <span class="text-sm">27.146</span> jogos únicos possíveis (4 dígitos)
-                            </div>
-                        </div>
+                    <div class="text-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+                        <div class="font-bold text-blue-600">792 jogos</div>
+                        <div class="text-gray-600 dark:text-gray-400">15 combinações alta</div>
                     </div>
+                    <div class="text-center p-2 bg-green-50 dark:bg-green-900/20 rounded">
+                        <div class="font-bold text-green-600">330 jogos</div>
+                        <div class="text-gray-600 dark:text-gray-400">6 combinações média-alta</div>
+                    </div>
+                    <div class="text-center p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
+                        <div class="font-bold text-yellow-600">36 jogos</div>
+                        <div class="text-gray-600 dark:text-gray-400">21 combinações média</div>
+                    </div>
+                    <div class="text-center p-2 bg-orange-50 dark:bg-orange-900/20 rounded">
+                        <div class="font-bold text-orange-600">8 jogos</div>
+                        <div class="text-gray-600 dark:text-gray-400">61 combinações padrão</div>
+                    </div>
+                    <div class="text-center p-2 bg-red-50 dark:bg-red-900/20 rounded">
+                        <div class="font-bold text-red-600">1 jogo</div>
+                        <div class="text-gray-600 dark:text-gray-400">30 combinações básica</div>
+                    </div>
+                </div>
+                <div class="mt-2 text-center">
+                    <div class="text-xs text-gray-500">70 combinações têm volume insuficiente (0 jogos)</div>
                 </div>
             </div>
             
             <!-- Valor Total Estimado -->
             <div class="text-center p-3 bg-gradient-to-r from-dia-orange to-dia-yellow rounded-lg text-white">
-                <div class="text-sm opacity-90">Investimento Estimado</div>
+                <div class="text-sm opacity-90">Investimento Total</div>
                 <div id="estimated-investment" class="text-xl font-bold">R$ 67.865,00</div>
             </div>
         </div>
@@ -975,32 +1188,11 @@
     function updateDynamicCalculator(estimatedGames, reductionPercentage, totalReduction, estimatedInvestment, activeCriteria) {
         // Atualizar números principais
         document.getElementById('estimated-games').textContent = estimatedGames.toLocaleString();
-        document.getElementById('reduction-percentage').textContent = `${reductionPercentage}%`;
+        document.getElementById('coverage-percentage').textContent = `${(100 - parseFloat(reductionPercentage)).toFixed(1)}%`;
         document.getElementById('estimated-investment').textContent = `R$ ${estimatedInvestment.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
         
-        // Atualizar barra de progresso
-        const reductionBar = document.getElementById('reduction-bar');
-        const reductionInfo = document.getElementById('reduction-info');
-        reductionBar.style.width = `${reductionPercentage}%`;
-        reductionInfo.textContent = `${totalReduction.toLocaleString()} jogos eliminados`;
-        
-        // Atualizar critérios ativos
-        const activeCriteriaElement = document.getElementById('active-criteria');
-        const activeCriteriaList = document.getElementById('active-criteria-list');
-        
-        if (activeCriteria.length > 0) {
-            activeCriteriaElement.classList.remove('hidden');
-            activeCriteriaList.innerHTML = activeCriteria.map(criteria => 
-                `<span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs">
-                    ${criteria.name} (${criteria.reduction})
-                </span>`
-            ).join('');
-        } else {
-            activeCriteriaElement.classList.add('hidden');
-        }
-        
         // Animar mudanças
-        const elements = ['estimated-games', 'reduction-percentage', 'estimated-investment'];
+        const elements = ['estimated-games', 'coverage-percentage', 'estimated-investment'];
         elements.forEach(id => {
             const element = document.getElementById(id);
             element.style.transform = 'scale(1.05)';
