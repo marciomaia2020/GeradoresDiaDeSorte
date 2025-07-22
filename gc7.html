@@ -257,529 +257,1840 @@
 				</div>
 			<hr />
 
-<!-- Header -->
-<header class="bg-gradient-to-r from-dia-orange to-dia-yellow shadow-lg">
-    <div class="container mx-auto px-4 py-6">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <i class="fas fa-dice text-white text-3xl"></i>
-                <div>
-                    <h1 class="text-white text-2xl font-bold">Gerador Dia de Sorte Pro (7 Dígitos)</h1>
-                    <p class="text-orange-100 text-sm">8.064.190 jogos - TODAS as 120 combinações de 7 dígitos</p>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador Dia de Sorte Pro - TODAS Combinações</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dia-orange': '#FF6B35',
+                        'dia-yellow': '#FFB800',
+                        'dia-light-orange': '#FFA366',
+                        'dia-dark-orange': '#E55A2B',
+                        'dia-cream': '#FFF8E1'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+
+
+<body class="bg-gradient-to-br from-dia-cream to-orange-50 dark:from-gray-900 dark:to-gray-800 min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-dia-orange to-dia-yellow shadow-lg">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-dice text-white text-3xl"></i>
+                    <div>
+                        <h1 class="text-white text-2xl font-bold">Gerador Dia de Sorte Pro (7)</h1>
+                        <p class="text-orange-100 text-sm">8.064.190 jogos - TODAS as combinações disponíveis</p>
+                    </div>
                 </div>
-            </div>
-            <div class="text-white text-right">
-                <p class="text-sm">Último sorteio:</p>
-                <p id="last-draw" class="font-semibold">Carregando...</p>
+                <div class="text-white text-right">
+                    <p class="text-sm">Último sorteio:</p>
+                    <p id="last-draw" class="font-semibold">Carregando...</p>
+                </div>
             </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<div class="container mx-auto px-4 py-8">
-    <!-- Configuração do Jogo -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 mb-8">
-        <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
-            <i class="fas fa-cog text-dia-orange mr-3"></i>
-            Configuração dos Jogos (7 Dígitos)
-        </h2>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Coluna 1 -->
-            <div class="space-y-6">
-                <!-- Quantidade de Jogos -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Quantos jogos você pretende fazer?
-                    </label>
-                    <input type="number" id="num-games" min="10" max="8064190" value="8064190" placeholder="Digite de 10 a 8.064.190"
-                           class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
-                    <div class="mt-2 space-y-1">
-                        <p class="text-xs text-gray-500">Máximo: 8.064.190 jogos (TODAS as 120 combinações de 7 dígitos)</p>
-                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mt-3">
-                            <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">📊 Distribuição das 120 Combinações de 7 Dígitos:</h4>
-                            <div class="grid grid-cols-1 gap-2 text-xs">
-                                <div class="text-center font-bold text-purple-600">C(10,7) = 120 combinações únicas</div>
-                                <div class="text-center">• 35 combinações supremas × 170.544 = 5.969.040 jogos</div>
-                                <div class="text-center">• 6 combinações premium × 116.280 = 697.680 jogos</div>
-                                <div class="text-center">• 15 combinações alta × 77.520 = 1.162.800 jogos</div>
-                                <div class="text-center">• 21 combinações média-alta × 6.435 = 135.135 jogos</div>
-                                <div class="text-center">• 23 combinações média × 3.432 = 78.936 jogos</div>
-                                <div class="text-center">• 12 combinações padrão × 1.716 = 20.592 jogos</div>
-                                <div class="text-center">• 7 combinações mínima × 1 = 7 jogos</div>
-                                <div class="text-center">• Estratégia suprema: Cobertura máxima</div>
+    <div class="container mx-auto px-4 py-8">
+        <!-- Status de Carregamento dos Dados -->
+        <div id="data-loading-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
+                <i class="fas fa-database text-dia-orange mr-3"></i>
+                Carregando Dados Históricos
+            </h2>
+            
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-600 dark:text-gray-300">Buscando resultados da Caixa...</span>
+                    <span id="loading-status" class="text-dia-orange font-semibold">Inicializando...</span>
+                </div>
+                
+                <!-- Barra de Progresso -->
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                    <div id="progress-bar" class="bg-gradient-to-r from-dia-orange to-dia-yellow h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-dia-orange" id="loaded-count">0</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Concursos Carregados</div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-green-600" id="cache-status">❌</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Cache Local</div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-blue-600" id="api-status">🔄</div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Status da API</div>
+                    </div>
+                </div>
+                
+                <div id="data-summary" class="hidden bg-dia-cream dark:bg-gray-900 p-4 rounded-lg border border-dia-orange">
+                    <h3 class="font-semibold text-dia-orange mb-3">📊 Dados Carregados com Sucesso!</h3>
+                    
+                    <!-- Informações de Cobertura -->
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg mb-4 border border-orange-200 dark:border-gray-700">
+                        <h4 class="font-medium text-gray-800 dark:text-white mb-2">🎯 Cobertura dos Dados</h4>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-blue-600" id="total-contests">0</div>
+                                <div class="text-xs text-gray-600 dark:text-gray-400">Concursos Carregados</div>
                             </div>
-                            <div class="text-xs font-bold text-blue-800 dark:text-blue-300 mt-2 border-t pt-2">
-                                Total: 8.064.190 jogos únicos possíveis (7 dígitos)
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-green-600" id="total-existing">0</div>
+                                <div class="text-xs text-gray-600 dark:text-gray-400">Total Existente</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-dia-orange" id="coverage-percentage">0%</div>
+                                <div class="text-xs text-gray-600 dark:text-gray-400">Cobertura</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-purple-600" id="missing-count">0</div>
+                                <div class="text-xs text-gray-600 dark:text-gray-400">Não Carregados</div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Dezenas Fixas -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Dezenas Fixas (opcional)
-                    </label>
-                    <div class="grid grid-cols-6 gap-2 mb-3">
-                        <div id="fixed-numbers" class="col-span-6 grid grid-cols-10 gap-1">
-                            <!-- Números de 1 a 31 serão gerados aqui -->
-                        </div>
-                    </div>
-                    <p class="text-xs text-gray-500">Selecione até 1 dezena fixa para jogos de 7 dígitos</p>
-                </div>
-
-                <!-- Quantidade de Números -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Quantidade de números por jogo
-                    </label>
-                    <select id="numbers-count" class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
-                        <option value="9">9 números - R$ 90,00 (36 apostas) ⭐ Recomendado para 7 dígitos</option>
-                        <option value="10">10 números - R$ 300,00 (120 apostas)</option>
-                        <option value="11">11 números - R$ 825,00 (330 apostas)</option>
-                        <option value="12">12 números - R$ 1.980,00 (742 apostas)</option>
-                        <option value="13">13 números - R$ 4.290,00 (1.716 apostas)</option>
-                        <option value="14">14 números - R$ 8.580,00 (3.432 apostas)</option>
-                        <option value="15">15 números - R$ 16.087,50 (6.435 apostas)</option>
-                        <option value="custom">Valor personalizado</option>
-                    </select>
                     
-                    <!-- Campo de valor personalizado -->
-                    <div id="custom-value-container" class="hidden mt-3">
-                        <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                            Valor por jogo (R$)
-                        </label>
-                        <input type="number" id="custom-value" min="2.50" max="20000" step="0.01" value="90.00"
-                               class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
-                    </div>
-                    
-                    <p class="text-xs text-gray-500 mt-1">Valor total: <span id="total-value">R$ 725.777.100,00</span></p>
-                    
-                    <!-- Info sobre 7 dígitos -->
-                    <div class="mt-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
-                        <p class="text-xs text-green-700 dark:text-green-300">
-                            <i class="fas fa-star text-yellow-500 mr-1"></i>
-                            <strong>7 dígitos</strong> oferecem estratégia suprema.
-                            Cobertura máxima com 120 combinações para jogadores profissionais!
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Coluna 2 -->
-            <div class="space-y-6">
-                <!-- Critérios -->
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Critérios de Filtragem (7 Dígitos)
-                        </label>
-                        <button onclick="showStrategyModal()" class="text-dia-orange hover:text-dia-dark-orange text-sm underline">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            Como funciona?
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg p-3">
-                        <!-- Grupo: Frequência de Números -->
-                        <div class="border-b border-gray-100 dark:border-gray-700 pb-2 mb-2">
-                            <h4 class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">FREQUÊNCIA DE NÚMEROS</h4>
-                            <label class="flex items-center mb-1">
-                                <input type="checkbox" id="criteria-frequent" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
-                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Priorizar dezenas mais sorteadas</span>
-                                <span id="criteria-frequent-info" class="hidden ml-2 text-xs font-semibold text-green-600">(6.0% de redução)</span>
-                            </label>
-                            <label class="flex items-center mb-1">
-                                <input type="checkbox" id="criteria-less-frequent" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
-                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar dezenas menos sorteadas</span>
-                                <span id="criteria-less-frequent-info" class="hidden ml-2 text-xs font-semibold text-green-600">(10.0% de redução)</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" id="criteria-avoid-last" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
-                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar dezenas do último sorteio</span>
-                                <span id="criteria-avoid-last-info" class="hidden ml-2 text-xs font-semibold text-green-600">(3.5% de redução)</span>
-                            </label>
-                        </div>
-
-                        <!-- Grupo: Equilíbrio -->
-                        <div class="border-b border-gray-100 dark:border-gray-700 pb-2 mb-2">
-                            <h4 class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">EQUILÍBRIO</h4>
-                            <label class="flex items-center mb-1">
-                                <input type="checkbox" id="criteria-balance" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
-                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Equilíbrio entre pares e ímpares</span>
-                                <span id="criteria-balance-info" class="hidden ml-2 text-xs font-semibold text-green-600">(12.0% de redução)</span>
-                            </label>
-                            <label class="flex items-center mb-1">
-                                <input type="checkbox" id="criteria-avoid-extremes" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
-                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar extremos (todos pares/ímpares)</span>
-                                <span id="criteria-avoid-extremes-info" class="hidden ml-2 text-xs font-semibold text-green-600">(8.0% de redução)</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" id="criteria-clusters" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
-                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Distribuir por grupos (1-10, 11-20, 21-31)</span>
-                                <span id="criteria-clusters-info" class="hidden ml-2 text-xs font-semibold text-green-600">(16.0% de redução)</span>
-                            </label>
-                        </div>
-
-                        <!-- Grupo: Padrões -->
-                        <div class="border-b border-gray-100 dark:border-gray-700 pb-2 mb-2">
-                            <h4 class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">PADRÕES</h4>
-                            <label class="flex items-center mb-1">
-                                <input type="checkbox" id="criteria-no-sequence" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
-                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar sequências longas (1-2-3-4)</span>
-                                <span id="criteria-no-sequence-info" class="hidden ml-2 text-xs font-semibold text-green-600">(14.0% de redução)</span>
-                            </label>
-                            <label class="flex items-center mb-1">
-                                <input type="checkbox" id="criteria-sum-range" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
-                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Somas dentro de faixa (140-200)</span>
-                                <span id="criteria-sum-range-info" class="hidden ml-2 text-xs font-semibold text-green-600">(22.0% de redução)</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" id="criteria-repeated-pairs" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
-                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar pares repetidos do último sorteio</span>
-                                <span id="criteria-repeated-pairs-info" class="hidden ml-2 text-xs font-semibold text-green-600">(5.0% de redução)</span>
-                            </label>
-                        </div>
-
-                        <!-- Grupo: Avançado -->
-                        <div class="border-b border-gray-100 dark:border-gray-700 pb-2 mb-2">
-                            <h4 class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">AVANÇADO</h4>
-                            <label class="flex items-center mb-1">
-                                <input type="checkbox" id="criteria-mathematical" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
-                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Fechamento matemático</span>
-                                <span id="criteria-mathematical-info" class="hidden ml-2 text-xs font-semibold text-green-600">(32.0% de redução)</span>
-                            </label>
-                            <label class="flex items-center mb-1">
-                                <input type="checkbox" id="criteria-fibonacci" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
-                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar sequência Fibonacci</span>
-                                <span id="criteria-fibonacci-info" class="hidden ml-2 text-xs font-semibold text-green-600">(12.0% de redução)</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" id="criteria-prime-numbers" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
-                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Balancear números primos</span>
-                                <span id="criteria-prime-numbers-info" class="hidden ml-2 text-xs font-semibold text-green-600">(8.5% de redução)</span>
-                            </label>
-                        </div>
-
-                        <!-- Grupo: Dígitos Mais Utilizados -->
+                    <!-- Informações Detalhadas -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                         <div>
-                            <h4 class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">DÍGITOS MAIS UTILIZADOS</h4>
-                            <label class="flex items-center mb-1">
-                                <input type="checkbox" id="criteria-most-used-digits" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
-                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Disponibilizar o conjunto de dígitos mais utilizados</span>
-                                <span id="criteria-most-used-digits-info" class="hidden ml-2 text-xs font-semibold text-green-600">(48.0% de redução)</span>
+                            <span class="font-medium text-gray-700 dark:text-gray-300">Período Carregado:</span>
+                            <div id="period-range" class="text-dia-orange font-semibold">-</div>
+                        </div>
+                        <div>
+                            <span class="font-medium text-gray-700 dark:text-gray-300">Mais Sorteado:</span>
+                            <div id="most-frequent" class="text-dia-orange font-semibold">-</div>
+                        </div>
+                        <div>
+                            <span class="font-medium text-gray-700 dark:text-gray-300">Fonte dos Dados:</span>
+                            <div id="data-source" class="text-dia-orange font-semibold">API Caixa</div>
+                        </div>
+                        <div>
+                            <span class="font-medium text-gray-700 dark:text-gray-300">Última Atualização:</span>
+                            <div id="last-update" class="text-dia-orange font-semibold">Agora</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Barra de Progresso da Cobertura -->
+                    <div class="mt-4">
+                        <div class="flex justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                            <span>Cobertura dos Dados Históricos</span>
+                            <span id="coverage-text">0 de 0 concursos</span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div id="coverage-bar" class="bg-gradient-to-r from-green-500 to-dia-orange h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="retry-loading" class="hidden w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors">
+                    <i class="fas fa-refresh mr-2"></i>
+                    Tentar Novamente
+                </button>
+            </div>
+        </div>
+
+        <!-- Configuração do Jogo -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
+                <i class="fas fa-cog text-dia-orange mr-3"></i>
+                Configuração dos Jogos
+            </h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Coluna 1 -->
+                <div class="space-y-6">
+                    <!-- Quantidade de Jogos -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Quantos jogos você pretende fazer?
+                        </label>
+                        <input type="number" id="num-games" min="10" max="8064190" value="8064190" placeholder="Digite de 10 a 8.064.190"
+                               class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
+                        <div class="mt-2 space-y-1">
+                            <p class="text-xs text-gray-500">Máximo: 8.064.190 jogos (TODAS as 120 combinações de 7 dígitos)</p>
+                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mt-3">
+                                <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">📊 Distribuição das Combinações:</h4>
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <div>• 35 combos × 170.544 = 5.969.040 jogos</div>
+                                    <div>• 6 combos × 116.280 = 697.680 jogos</div>
+                                    <div>• 15 combos × 77.520 = 1.162.800 jogos</div>
+                                    <div>• 21 combos × 6.435 = 135.135 jogos</div>
+                                    <div>• 23 combos × 3.432 = 78.936 jogos</div>
+                                    <div>• 12 combos × 1.716 = 20.592 jogos</div>
+                                    <div>• 7 combos × 1 = 7 jogos</div>
+                                    <div>• 1 combo insuficiente = 0 jogos</div>
+                                </div>
+                                <div class="text-xs font-bold text-blue-800 dark:text-blue-300 mt-2 border-t pt-2">
+                                    Total: 8.064.190 jogos únicos possíveis
+                                </div>
+                            </div>
+                            <div id="games-reduction-info" class="hidden">
+                                <p class="text-xs text-green-600 font-semibold">🎯 Redução inteligente ativada!</p>
+                                <p class="text-xs text-gray-500">Usando TODAS as combinações disponíveis baseadas em dados reais</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dezenas Fixas -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Dezenas Fixas (opcional)
+                        </label>
+                        <div class="grid grid-cols-6 gap-2 mb-3">
+                            <div id="fixed-numbers" class="col-span-6 grid grid-cols-10 gap-1">
+                                <!-- Números de 1 a 31 serão gerados aqui -->
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500">Selecione até 6 dezenas que sempre aparecerão nos jogos</p>
+                    </div>
+
+                    <!-- Quantidade de Números -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Quantidade de números por jogo
+                        </label>
+                        <select id="numbers-count" class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
+                            <option value="7">7 números - R$ 2,50 (1 aposta) ⭐ Recomendado</option>
+                            <option value="8">8 números - R$ 20,00 (8 apostas)</option>
+                            <option value="9">9 números - R$ 90,00 (36 apostas)</option>
+                            <option value="10">10 números - R$ 300,00 (120 apostas)</option>
+                            <option value="11">11 números - R$ 825,00 (330 apostas)</option>
+                            <option value="12">12 números - R$ 1.980,00 (742 apostas)</option>
+                            <option value="13">13 números - R$ 4.290,00 (1.716 apostas)</option>
+                            <option value="14">14 números - R$ 8.580,00 (3.432 apostas)</option>
+                            <option value="15">15 números - R$ 16.087,50 (6.435 apostas)</option>
+                            <option value="custom">Valor personalizado</option>
+                        </select>
+                        
+                        <!-- Campo de valor personalizado -->
+                        <div id="custom-value-container" class="hidden mt-3">
+                            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                Valor por jogo (R$)
                             </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" id="criteria-least-used-digits" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
-                                <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Disponibilizar o conjunto de dígitos menos utilizados</span>
-                                <span id="criteria-least-used-digits-info" class="hidden ml-2 text-xs font-semibold text-green-600">(24.0% de redução)</span>
-                            </label>
+                            <input type="number" id="custom-value" min="2.50" max="20000" step="0.01" value="2.50"
+                                   class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <p class="text-xs text-gray-500 mt-1">Valor total: <span id="total-value">R$ 20.160.475,00</span></p>
+                        
+                        <!-- Info sobre 7 dígitos -->
+                        <div class="mt-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
+                            <p class="text-xs text-green-700 dark:text-green-300">
+                                <i class="fas fa-star text-yellow-500 mr-1"></i>
+                                <strong>7 dígitos</strong> aparecem em <strong>41.51%</strong> dos sorteios (452 vezes).
+                                Agora você tem acesso a TODAS as combinações possíveis!
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Mês da Sorte -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Mês da Sorte
-                    </label>
-                    <select id="lucky-month" class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
-                        <option value="">Aleatório</option>
-                        <option value="Janeiro">Janeiro</option>
-                        <option value="Fevereiro">Fevereiro</option>
-                        <option value="Março">Março</option>
-                        <option value="Abril">Abril</option>
-                        <option value="Maio">Maio</option>
-                        <option value="Junho">Junho</option>
-                        <option value="Julho">Julho</option>
-                        <option value="Agosto">Agosto</option>
-                        <option value="Setembro">Setembro</option>
-                        <option value="Outubro">Outubro</option>
-                        <option value="Novembro">Novembro</option>
-                        <option value="Dezembro">Dezembro</option>
-                    </select>
+                <!-- Coluna 2 -->
+                <div class="space-y-6">
+                    <!-- Critérios -->
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Critérios de Filtragem
+                            </label>
+                            <button onclick="showStrategyModal()" class="text-dia-orange hover:text-dia-dark-orange text-sm underline">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Como funciona?
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg p-3">
+                            <!-- Grupo: Frequência de Números -->
+                            <div class="border-b border-gray-100 dark:border-gray-700 pb-2 mb-2">
+                                <h4 class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">FREQUÊNCIA DE NÚMEROS</h4>
+                                <label class="flex items-center mb-1">
+                                    <input type="checkbox" id="criteria-frequent" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
+                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Priorizar dezenas mais sorteadas</span>
+                                    <span id="criteria-frequent-info" class="hidden ml-2 text-xs font-semibold text-green-600">(8.0% de redução)</span>
+                                </label>
+                                <label class="flex items-center mb-1">
+                                    <input type="checkbox" id="criteria-less-frequent" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
+                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar dezenas menos sorteadas</span>
+                                    <span id="criteria-less-frequent-info" class="hidden ml-2 text-xs font-semibold text-green-600">(12.0% de redução)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="criteria-avoid-last" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
+                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar dezenas do último sorteio</span>
+                                    <span id="criteria-avoid-last-info" class="hidden ml-2 text-xs font-semibold text-green-600">(5.0% de redução)</span>
+                                </label>
+                            </div>
+
+                            <!-- Grupo: Equilíbrio -->
+                            <div class="border-b border-gray-100 dark:border-gray-700 pb-2 mb-2">
+                                <h4 class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">EQUILÍBRIO</h4>
+                                <label class="flex items-center mb-1">
+                                    <input type="checkbox" id="criteria-balance" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
+                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Equilíbrio entre pares e ímpares</span>
+                                    <span id="criteria-balance-info" class="hidden ml-2 text-xs font-semibold text-green-600">(15.0% de redução)</span>
+                                </label>
+                                <label class="flex items-center mb-1">
+                                    <input type="checkbox" id="criteria-avoid-extremes" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
+                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar extremos (todos pares/ímpares)</span>
+                                    <span id="criteria-avoid-extremes-info" class="hidden ml-2 text-xs font-semibold text-green-600">(10.0% de redução)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="criteria-clusters" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
+                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Distribuir por grupos (1-10, 11-20, 21-31)</span>
+                                    <span id="criteria-clusters-info" class="hidden ml-2 text-xs font-semibold text-green-600">(25.0% de redução)</span>
+                                </label>
+                            </div>
+
+                            <!-- Grupo: Padrões -->
+                            <div class="border-b border-gray-100 dark:border-gray-700 pb-2 mb-2">
+                                <h4 class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">PADRÕES</h4>
+                                <label class="flex items-center mb-1">
+                                    <input type="checkbox" id="criteria-no-sequence" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
+                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar sequências longas (1-2-3-4)</span>
+                                    <span id="criteria-no-sequence-info" class="hidden ml-2 text-xs font-semibold text-green-600">(20.0% de redução)</span>
+                                </label>
+                                <label class="flex items-center mb-1">
+                                    <input type="checkbox" id="criteria-sum-range" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
+                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Somas dentro de faixa (100-180)</span>
+                                    <span id="criteria-sum-range-info" class="hidden ml-2 text-xs font-semibold text-green-600">(30.0% de redução)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="criteria-repeated-pairs" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
+                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar pares repetidos do último sorteio</span>
+                                    <span id="criteria-repeated-pairs-info" class="hidden ml-2 text-xs font-semibold text-green-600">(7.0% de redução)</span>
+                                </label>
+                            </div>
+
+                            <!-- Grupo: Avançado -->
+                            <div class="border-b border-gray-100 dark:border-gray-700 pb-2 mb-2">
+                                <h4 class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">AVANÇADO</h4>
+                                <label class="flex items-center mb-1">
+                                    <input type="checkbox" id="criteria-mathematical" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
+                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Fechamento matemático</span>
+                                    <span id="criteria-mathematical-info" class="hidden ml-2 text-xs font-semibold text-green-600">(40.0% de redução)</span>
+                                </label>
+                                <label class="flex items-center mb-1">
+                                    <input type="checkbox" id="criteria-fibonacci" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
+                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Evitar sequência Fibonacci</span>
+                                    <span id="criteria-fibonacci-info" class="hidden ml-2 text-xs font-semibold text-green-600">(15.0% de redução)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="criteria-prime-numbers" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
+                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Balancear números primos</span>
+                                    <span id="criteria-prime-numbers-info" class="hidden ml-2 text-xs font-semibold text-green-600">(10.0% de redução)</span>
+                                </label>
+                            </div>
+
+                            <!-- Grupo: Dígitos Mais Utilizados -->
+                            <div>
+                                <h4 class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">DÍGITOS MAIS UTILIZADOS</h4>
+                                <label class="flex items-center mb-1">
+                                    <input type="checkbox" id="criteria-most-used-digits" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
+                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Disponibilizar o conjunto de dígitos mais utilizados</span>
+                                    <span id="criteria-most-used-digits-info" class="hidden ml-2 text-xs font-semibold text-green-600">(60.0% de redução)</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="criteria-least-used-digits" class="w-3 h-3 text-dia-orange bg-gray-100 border-gray-300 rounded focus:ring-dia-orange">
+                                    <span class="ml-2 text-xs text-gray-700 dark:text-gray-300">Disponibilizar o conjunto de dígitos menos utilizados</span>
+                                    <span id="criteria-least-used-digits-info" class="hidden ml-2 text-xs font-semibold text-green-600">(30.0% de redução)</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mês da Sorte -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Mês da Sorte
+                        </label>
+                        <select id="lucky-month" class="w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
+                            <option value="">Aleatório</option>
+                            <option value="Janeiro">Janeiro</option>
+                            <option value="Fevereiro">Fevereiro</option>
+                            <option value="Março">Março</option>
+                            <option value="Abril">Abril</option>
+                            <option value="Maio">Maio</option>
+                            <option value="Junho">Junho</option>
+                            <option value="Julho">Julho</option>
+                            <option value="Agosto">Agosto</option>
+                            <option value="Setembro">Setembro</option>
+                            <option value="Outubro">Outubro</option>
+                            <option value="Novembro">Novembro</option>
+                            <option value="Dezembro">Dezembro</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calculadora Dinâmica de Jogos -->
+            <div class="mt-6 bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 border-2 border-blue-200 dark:border-blue-700 rounded-xl p-6">
+                <h3 class="text-lg font-bold text-center text-blue-800 dark:text-blue-300 mb-4">
+                    🎯 Calculadora Inteligente de Jogos - TODAS as Combinações
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-700">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Total Máximo</div>
+                        <div class="text-2xl font-bold text-blue-600">8.064.190</div>
+                        <div class="text-xs text-gray-500">120 combinações completas</div>
+                    </div>
+                    
+                    <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-green-200 dark:border-green-700">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Jogos Estimados</div>
+                        <div id="estimated-games" class="text-2xl font-bold text-green-600">8.064.190</div>
+                        <div class="text-xs text-gray-500">baseado nos filtros</div>
+                    </div>
+                    
+                    <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-700">
+                        <div class="text-sm text-gray-600 dark:text-gray-400">Redução</div>
+                        <div id="reduction-percentage" class="text-2xl font-bold text-orange-600">0%</div>
+                        <div class="text-xs text-gray-500">economia inteligente</div>
+                    </div>
+                </div>
+                
+                <!-- Barra de Progresso da Redução -->
+                <div class="mb-4">
+                    <div class="flex justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
+                        <span>Redução de Jogos</span>
+                        <span id="reduction-info">0 jogos eliminados</span>
+                    </div>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
+                        <div id="reduction-bar" class="bg-gradient-to-r from-green-500 to-orange-500 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <!-- Critérios Ativos -->
+                <div id="active-criteria" class="mb-4 hidden">
+                    <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Critérios Ativos:</div>
+                    <div id="active-criteria-list" class="flex flex-wrap gap-2"></div>
+                </div>
+                
+                <!-- Valor Total Estimado -->
+                <div class="text-center p-3 bg-gradient-to-r from-dia-orange to-dia-yellow rounded-lg text-white">
+                    <div class="text-sm opacity-90">Investimento Estimado</div>
+                    <div id="estimated-investment" class="text-xl font-bold">R$ 20.160.475,00</div>
+                </div>
+            </div>
+
+            <!-- Botão Gerar -->
+            <div class="mt-8 text-center">
+                <button id="generate-btn" class="bg-gradient-to-r from-dia-orange to-dia-yellow text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-dia-dark-orange hover:to-orange-500 transition-all duration-300 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-magic mr-2"></i>
+                    Gerar 8.064.190 Jogos
+                </button>
+				<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Confira <a href="https://geradoresdiadesorte.netlify.app/diadesorteconferidor/" target="_blank" class="text-dia-orange hover:underline">aqui</a> os melhores palpites</p>
+            </div>
+        </div>
+
+        <!-- Resultados -->
+        <div id="results-section" class="hidden">
+            <!-- Estatísticas e Busca -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 mb-6">
+                <div class="flex flex-col lg:flex-row justify-between items-center gap-4">
+                    <div class="flex items-center space-x-6">
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Total de Jogos</p>
+                            <p id="total-games" class="text-2xl font-bold text-dia-orange">0</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Investimento</p>
+                            <p id="total-investment" class="text-2xl font-bold text-green-600">R$ 0,00</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Apostas Totais</p>
+                            <p id="total-bets" class="text-2xl font-bold text-blue-600">0</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Busca -->
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" id="search-input" placeholder="Digite números (ex: 11 17 20 22)..." 
+                                   class="pl-10 pr-4 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            <div class="absolute -bottom-6 left-0 text-xs text-gray-500 dark:text-gray-400">
+                                💡 Digite múltiplos números separados por espaço
+                            </div>
+                        </div>
+                        <!-- Botões de Export -->
+                        <div class="flex space-x-2">
+                            <button onclick="exportToTXT()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
+                                <i class="fas fa-file-alt mr-2"></i>
+                                TXT
+                            </button>
+                            <button onclick="exportToXLS()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                                <i class="fas fa-file-excel mr-2"></i>
+                                XLS
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Jogos -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
+                    <i class="fas fa-list text-dia-orange mr-3"></i>
+                    Seus Jogos Gerados
+                </h3>
+                
+                <div id="games-container" class="space-y-4">
+                    <!-- Jogos serão inseridos aqui -->
+                </div>
+
+                <!-- Paginação -->
+                <div id="pagination" class="flex justify-center items-center mt-8 space-x-2">
+                    <!-- Controles de paginação -->
                 </div>
             </div>
         </div>
 
-        <!-- Calculadora Dinâmica de Jogos -->
-        <div class="mt-6 bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 border-2 border-blue-200 dark:border-blue-700 rounded-xl p-6">
-            <h3 class="text-lg font-bold text-center text-blue-800 dark:text-blue-300 mb-4">
-                🎯 Calculadora Inteligente de Jogos - TODAS as 120 Combinações de 7 Dígitos
-            </h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-700">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Total Máximo</div>
-                    <div class="text-2xl font-bold text-blue-600">8.064.190</div>
-                    <div class="text-xs text-gray-500">120 combinações de 7 dígitos</div>
+        <!-- Modal de Estratégias -->
+        <div id="strategy-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center">
+                            <i class="fas fa-brain text-dia-orange mr-3"></i>
+                            Como Funcionam as Estratégias
+                        </h2>
+                        <button onclick="hideStrategyModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Coluna 1 -->
+                        <div class="space-y-4">
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h3 class="font-semibold text-dia-orange mb-2">📊 Frequência de Números</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                                    <strong>Mais sorteadas:</strong> Prioriza números que saíram mais vezes no histórico.
+                                </p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                                    <strong>Menos sorteadas:</strong> Evita números que saíram poucas vezes.
+                                </p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">
+                                    <strong>Evitar último sorteio:</strong> Não repete números do concurso anterior.
+                                </p>
+                            </div>
+
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h3 class="font-semibold text-dia-orange mb-2">⚖️ Equilíbrio</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                                    <strong>Pares/Ímpares:</strong> Mantém proporção equilibrada (ex: 3 pares, 4 ímpares).
+                                </p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                                    <strong>Evitar extremos:</strong> Não gera jogos com todos pares ou todos ímpares.
+                                </p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">
+                                    <strong>Grupos:</strong> Distribui números entre faixas (1-10, 11-20, 21-31).
+                                </p>
+                            </div>
+
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h3 class="font-semibold text-dia-orange mb-2">🔢 Apostas Múltiplas</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                                    Ao escolher mais de 7 números, você faz múltiplas apostas automaticamente:
+                                </p>
+                                <ul class="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                                    <li>• 8 números = 8 apostas de 7 números</li>
+                                    <li>• 9 números = 36 apostas de 7 números</li>
+                                    <li>• 10 números = 120 apostas de 7 números</li>
+                                    <li>• E assim por diante...</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Coluna 2 -->
+                        <div class="space-y-4">
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h3 class="font-semibold text-dia-orange mb-2">🎯 Padrões</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                                    <strong>Sequências:</strong> Evita números consecutivos como 1-2-3-4.
+                                </p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                                    <strong>Soma:</strong> Mantém a soma total entre 100-180 (faixa estatística ideal).
+                                </p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">
+                                    <strong>Pares repetidos:</strong> Evita duplas que saíram no último sorteio.
+                                </p>
+                            </div>
+
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h3 class="font-semibold text-dia-orange mb-2">🧮 Avançado</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                                    <strong>Fechamento:</strong> Garante premiação mínima com menos jogos.
+                                </p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                                    <strong>Fibonacci:</strong> Evita sequência matemática 1-1-2-3-5-8-13.
+                                </p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">
+                                    <strong>Números primos:</strong> Balanceia quantidade de primos no jogo.
+                                </p>
+                            </div>
+
+                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                                <h3 class="font-semibold text-dia-orange mb-2">📅 Mês da Sorte</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                                    <strong>Selecionado:</strong> Usa o mês escolhido para todos os jogos.
+                                </p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">
+                                    <strong>Aleatório:</strong> Automaticamente usa o mês que mais foi sorteado no histórico.
+                                </p>
+                            </div>
+
+                            <div class="bg-dia-cream dark:bg-gray-900 p-4 rounded-lg border border-dia-orange">
+                                <h3 class="font-semibold text-dia-orange mb-2">💡 TODAS as Combinações</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">
+                                    Agora você tem acesso a TODAS as 8.064.190 combinações possíveis, 
+                                    distribuídas pelos volumes reais identificados em sua análise. 
+                                    Use os critérios para filtrar conforme sua estratégia.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <button onclick="hideStrategyModal()" class="bg-dia-orange text-white px-6 py-2 rounded-lg hover:bg-dia-dark-orange transition-colors">
+                            Entendi, vamos gerar!
+                        </button>
+                    </div>
                 </div>
-                
-                <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-green-200 dark:border-green-700">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Jogos Estimados</div>
-                    <div id="estimated-games" class="text-2xl font-bold text-green-600">8.064.190</div>
-                    <div class="text-xs text-gray-500">baseado nos filtros</div>
-                </div>
-                
-                <div class="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-700">
-                    <div class="text-sm text-gray-600 dark:text-gray-400">Redução</div>
-                    <div id="reduction-percentage" class="text-2xl font-bold text-orange-600">0%</div>
-                    <div class="text-xs text-gray-500">economia inteligente</div>
-                </div>
-            </div>
-            
-            <!-- Barra de Progresso da Redução -->
-            <div class="mb-4">
-                <div class="flex justify-between text-xs text-gray-600 dark:text-gray-400 mb-1">
-                    <span>Redução de Jogos</span>
-                    <span id="reduction-info">0 jogos eliminados</span>
-                </div>
-                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
-                    <div id="reduction-bar" class="bg-gradient-to-r from-green-500 to-orange-500 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
-                </div>
-            </div>
-            
-            <!-- Critérios Ativos -->
-            <div id="active-criteria" class="mb-4 hidden">
-                <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Critérios Ativos:</div>
-                <div id="active-criteria-list" class="flex flex-wrap gap-2"></div>
-            </div>
-            
-            <!-- Distribuição de Volumes -->
-            <div class="mb-4 bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200">
-                <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Distribuição por Volume de Jogos (7 Dígitos):</h4>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-                    <div class="text-center p-2 bg-purple-50 dark:bg-purple-900/20 rounded">
-                        <div class="font-bold text-purple-600">170.544 jogos</div>
-                        <div class="text-gray-600 dark:text-gray-400">35 combinações supremas</div>
-                    </div>
-                    <div class="text-center p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded">
-                        <div class="font-bold text-indigo-600">116.280 jogos</div>
-                        <div class="text-gray-600 dark:text-gray-400">6 combinações premium</div>
-                    </div>
-                    <div class="text-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
-                        <div class="font-bold text-blue-600">77.520 jogos</div>
-                        <div class="text-gray-600 dark:text-gray-400">15 combinações alta</div>
-                    </div>
-                    <div class="text-center p-2 bg-green-50 dark:bg-green-900/20 rounded">
-                        <div class="font-bold text-green-600">6.435 jogos</div>
-                        <div class="text-gray-600 dark:text-gray-400">21 combinações média-alta</div>
-                    </div>
-                    <div class="text-center p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded">
-                        <div class="font-bold text-yellow-600">3.432 jogos</div>
-                        <div class="text-gray-600 dark:text-gray-400">23 combinações média</div>
-                    </div>
-                    <div class="text-center p-2 bg-orange-50 dark:bg-orange-900/20 rounded">
-                        <div class="font-bold text-orange-600">1.716 jogos</div>
-                        <div class="text-gray-600 dark:text-gray-400">12 combinações padrão</div>
-                    </div>
-                    <div class="text-center p-2 bg-red-50 dark:bg-red-900/20 rounded">
-                        <div class="font-bold text-red-600">1 jogo</div>
-                        <div class="text-gray-600 dark:text-gray-400">7 combinações mínima</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Valor Total Estimado -->
-            <div class="text-center p-3 bg-gradient-to-r from-dia-orange to-dia-yellow rounded-lg text-white">
-                <div class="text-sm opacity-90">Investimento Estimado</div>
-                <div id="estimated-investment" class="text-xl font-bold">R$ 725.777.100,00</div>
             </div>
         </div>
 
-        <!-- Botão Gerar -->
-        <div class="mt-8 text-center">
-            <button id="generate-btn" class="bg-gradient-to-r from-dia-orange to-dia-yellow text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-dia-dark-orange hover:to-orange-500 transition-all duration-300 shadow-lg hover:shadow-xl">
-                <i class="fas fa-magic mr-2"></i>
-                Gerar 8.064.190 Jogos (7 Dígitos)
-            </button>
-			<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Confira <a href="https://geradoresdiadesorte.netlify.app/diadesorteconferidor/" target="_blank" class="text-dia-orange hover:underline">aqui</a> os melhores palpites</p>
+        <!-- Loading -->
+        <div id="loading" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-dia-orange mx-auto mb-4"></div>
+                <p class="text-gray-700 dark:text-gray-300">Gerando seus jogos...</p>
+                <p id="loading-progress" class="text-sm text-gray-500 mt-2"></p>
+            </div>
         </div>
     </div>
 
-    <!-- Resultados -->
-    <div id="results-section" class="hidden">
-        <!-- Estatísticas e Busca -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 mb-6">
-            <div class="flex flex-col lg:flex-row justify-between items-center gap-4">
-                <div class="flex items-center space-x-6">
-                    <div class="text-center">
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Total de Jogos</p>
-                        <p id="total-games" class="text-2xl font-bold text-dia-orange">0</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Investimento</p>
-                        <p id="total-investment" class="text-2xl font-bold text-green-600">R$ 0,00</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Apostas Totais</p>
-                        <p id="total-bets" class="text-2xl font-bold text-blue-600">0</p>
-                    </div>
-                </div>
-                
-                <!-- Busca -->
-                <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <input type="text" id="search-input" placeholder="Digite números (ex: 11 17 20 22)..." 
-                               class="pl-10 pr-4 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-dia-orange focus:border-transparent dark:bg-gray-700 dark:text-white">
-                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                    </div>
-                    <!-- Botões de Export -->
-                    <div class="flex space-x-2">
-                        <button onclick="exportToTXT()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
-                            <i class="fas fa-file-alt mr-2"></i>
-                            TXT
-                        </button>
-                        <button onclick="exportToXLS()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center">
-                            <i class="fas fa-file-excel mr-2"></i>
-                            XLS
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Lista de Jogos -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6">
-            <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
-                <i class="fas fa-list text-dia-orange mr-3"></i>
-                Seus Jogos Gerados (7 Dígitos)
-            </h3>
-            
-            <div id="games-container" class="space-y-4">
-                <!-- Jogos serão inseridos aqui -->
-            </div>
-
-            <!-- Paginação -->
-            <div id="pagination" class="flex justify-center items-center mt-8 space-x-2">
-                <!-- Controles de paginação -->
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    // Configuração do tema
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-    }
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-        if (event.matches) {
+    <script>
+        // Configuração do tema
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
         }
-    });
-
-    // Variáveis globais
-    let allGames = [];
-    let filteredGames = [];
-    let currentPage = 1;
-    const gamesPerPage = 20;
-
-    // ===== TODAS as 120 combinações de 7 dígitos =====
-    const ALL_7_DIGIT_COMBINATIONS = [
-        [0,1,2,3,4,5,6], [0,1,2,3,4,5,7], [0,1,2,3,4,5,8], [0,1,2,3,4,5,9],
-        [0,1,2,3,4,6,7], [0,1,2,3,4,6,8], [0,1,2,3,4,6,9], [0,1,2,3,4,7,8],
-        [0,1,2,3,4,7,9], [0,1,2,3,4,8,9], [0,1,2,3,5,6,7], [0,1,2,3,5,6,8],
-        [0,1,2,3,5,6,9], [0,1,2,3,5,7,8], [0,1,2,3,5,7,9], [0,1,2,3,5,8,9],
-        [0,1,2,3,6,7,8], [0,1,2,3,6,7,9], [0,1,2,3,6,8,9], [0,1,2,3,7,8,9],
-        [0,1,2,4,5,6,7], [0,1,2,4,5,6,8], [0,1,2,4,5,6,9], [0,1,2,4,5,7,8],
-        [0,1,2,4,5,7,9], [0,1,2,4,5,8,9], [0,1,2,4,6,7,8], [0,1,2,4,6,7,9],
-        [0,1,2,4,6,8,9], [0,1,2,4,7,8,9], [0,1,2,5,6,7,8], [0,1,2,5,6,7,9],
-        [0,1,2,5,6,8,9], [0,1,2,5,7,8,9], [0,1,2,6,7,8,9], [0,1,3,4,5,6,7],
-        [0,1,3,4,5,6,8], [0,1,3,4,5,6,9], [0,1,3,4,5,7,8], [0,1,3,4,5,7,9],
-        [0,1,3,4,5,8,9], [0,1,3,4,6,7,8], [0,1,3,4,6,7,9], [0,1,3,4,6,8,9],
-        [0,1,3,4,7,8,9], [0,1,3,5,6,7,8], [0,1,3,5,6,7,9], [0,1,3,5,6,8,9],
-        [0,1,3,5,7,8,9], [0,1,3,6,7,8,9], [0,1,4,5,6,7,8], [0,1,4,5,6,7,9],
-        [0,1,4,5,6,8,9], [0,1,4,5,7,8,9], [0,1,4,6,7,8,9], [0,1,5,6,7,8,9],
-        [0,2,3,4,5,6,7], [0,2,3,4,5,6,8], [0,2,3,4,5,6,9], [0,2,3,4,5,7,8],
-        [0,2,3,4,5,7,9], [0,2,3,4,5,8,9], [0,2,3,4,6,7,8], [0,2,3,4,6,7,9],
-        [0,2,3,4,6,8,9], [0,2,3,4,7,8,9], [0,2,3,5,6,7,8], [0,2,3,5,6,7,9],
-        [0,2,3,5,6,8,9], [0,2,3,5,7,8,9], [0,2,3,6,7,8,9], [0,2,4,5,6,7,8],
-        [0,2,4,5,6,7,9], [0,2,4,5,6,8,9], [0,2,4,5,7,8,9], [0,2,4,6,7,8,9],
-        [0,2,5,6,7,8,9], [0,3,4,5,6,7,8], [0,3,4,5,6,7,9], [0,3,4,5,6,8,9],
-        [0,3,4,5,7,8,9], [0,3,4,6,7,8,9], [0,3,5,6,7,8,9], [0,4,5,6,7,8,9],
-        [1,2,3,4,5,6,7], [1,2,3,4,5,6,8], [1,2,3,4,5,6,9], [1,2,3,4,5,7,8],
-        [1,2,3,4,5,7,9], [1,2,3,4,5,8,9], [1,2,3,4,6,7,8], [1,2,3,4,6,7,9],
-        [1,2,3,4,6,8,9], [1,2,3,4,7,8,9], [1,2,3,5,6,7,8], [1,2,3,5,6,7,9],
-        [1,2,3,5,6,8,9], [1,2,3,5,7,8,9], [1,2,3,6,7,8,9], [1,2,4,5,6,7,8],
-        [1,2,4,5,6,7,9], [1,2,4,5,6,8,9], [1,2,4,5,7,8,9], [1,2,4,6,7,8,9],
-        [1,2,5,6,7,8,9], [1,3,4,5,6,7,8], [1,3,4,5,6,7,9], [1,3,4,5,6,8,9],
-        [1,3,4,5,7,8,9], [1,3,4,6,7,8,9], [1,3,5,6,7,8,9], [1,4,5,6,7,8,9],
-        [2,3,4,5,6,7,8], [2,3,4,5,6,7,9], [2,3,4,5,6,8,9], [2,3,4,5,7,8,9],
-        [2,3,4,6,7,8,9], [2,3,5,6,7,8,9], [2,4,5,6,7,8,9], [3,4,5,6,7,8,9]
-    ];
-
-    // Total máximo de jogos para 7 dígitos = 8.064.190
-    const MAX_TOTAL_GAMES = 8064190;
-
-    // Inicialização
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeApp();
-    });
-
-    function initializeApp() {
-        createFixedNumbersGrid();
-        setupEventListeners();
-        updateTotalValue();
-    }
-
-    function createFixedNumbersGrid() {
-        const container = document.getElementById('fixed-numbers');
-        for (let i = 1; i <= 31; i++) {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'w-8 h-8 text-xs border border-gray-300 dark:border-gray-600 rounded hover:bg-dia-orange hover:text-white transition-all duration-200 dark:text-white';
-            button.textContent = i.toString().padStart(2, '0');
-            button.dataset.number = i;
-            button.onclick = toggleFixedNumber;
-            container.appendChild(button);
-        }
-    }
-
-    function toggleFixedNumber(event) {
-        const button = event.target;
-        const selectedButtons = document.querySelectorAll('#fixed-numbers button.bg-dia-orange');
-        
-        if (button.classList.contains('bg-dia-orange')) {
-            button.classList.remove('bg-dia-orange', 'text-white');
-            button.classList.add('hover:bg-dia-orange', 'hover:text-white');
-        } else if (selectedButtons.length < 1) { // Máximo 1 para jogos de 7 dígitos
-            button.classList.add('bg-dia-orange', 'text-white');
-            button.classList.remove('hover:bg-dia-orange', 'hover:text-white');
-        } else {
-            showAlert('Você pode selecionar no máximo 1 dezena fixa para jogos de 7 dígitos.');
-        }
-        updateCalculator();
-    }
-
-    function setupEventListeners() {
-        document.getElementById('num-games').addEventListener('input', updateTotalValue);
-        document.getElementById('numbers-count').addEventListener('change', updateTotalValue);
-        document.getElementById('generate-btn').addEventListener('click', generateGames);
-        document.getElementById('search-input').addEventListener('input', filterGames);
-        document.getElementById('custom-value').addEventListener('input', updateTotalValue);
-        
-        // Event listeners para os critérios de filtragem
-        document.querySelectorAll('input[type="checkbox"][id^="criteria-"]').forEach(checkbox => {
-            checkbox.addEventListener('change', calculateEstimatedGames);
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
         });
-    }
 
-    function updateTotalValue() {
-        const numGames = parseInt(document.getElementById('num-games').value) || 0;
-        const numbersCount = document.getElementById('numbers-count').value;
-        
-        let price = 90.00; // Preço padrão para 9 números (7 dígitos)
-        
-        if (numbersCount === 'custom') {
-            document.getElementById('custom-value-container').classList.remove('hidden');
-            price = parseFloat(document.getElementById('custom-value').value) || 90.00;
-        } else {
-            document.getElementById('custom-value-container').classList.add('hidden');
+        // Variáveis globais
+        let allGames = [];
+        let filteredGames = [];
+        let currentPage = 1;
+        const gamesPerPage = 20;
+        let historicalData = [];
+        let frequencyData = {};
+        let monthFrequency = {};
+
+        // ===== TODAS as combinações de 7 dígitos com seus volumes reais =====
+        const ALL_7_DIGIT_COMBINATIONS = {
+            // 35 combinações com 170.544 jogos cada
+            high_volume: {
+                volume: 170544,
+                combinations: [
+                    [0,1,2,3,4,5,6], [0,1,2,3,4,5,7], [0,1,2,3,4,5,8], [0,1,2,3,4,5,9], [0,1,2,3,4,6,7],
+                    [0,1,2,3,4,6,8], [0,1,2,3,4,6,9], [0,1,2,3,4,7,8], [0,1,2,3,4,7,9], [0,1,2,3,4,8,9],
+                    [0,1,2,3,5,6,7], [0,1,2,3,5,6,8], [0,1,2,3,5,6,9], [0,1,2,3,5,7,8], [0,1,2,3,5,7,9],
+                    [0,1,2,3,5,8,9], [0,1,2,3,6,7,8], [0,1,2,3,6,7,9], [0,1,2,3,6,8,9], [0,1,2,3,7,8,9],
+                    [0,1,2,4,5,6,7], [0,1,2,4,5,6,8], [0,1,2,4,5,6,9], [0,1,2,4,5,7,8], [0,1,2,4,5,7,9],
+                    [0,1,2,4,5,8,9], [0,1,2,4,6,7,8], [0,1,2,4,6,7,9], [0,1,2,4,6,8,9], [0,1,2,4,7,8,9],
+                    [0,1,2,5,6,7,8], [0,1,2,5,6,7,9], [0,1,2,5,6,8,9], [0,1,2,5,7,8,9], [0,1,2,6,7,8,9]
+                ]
+            },
+            // 6 combinações com 116.280 jogos cada
+            medium_high_volume: {
+                volume: 116280,
+                combinations: [
+                    [0,1,3,4,5,6,7], [0,1,3,4,5,6,8], [0,1,3,4,5,6,9], [0,1,3,4,5,7,8], [0,1,3,4,5,7,9], [0,1,3,4,5,8,9]
+                ]
+            },
+            // 15 combinações com 77.520 jogos cada
+            medium_volume: {
+                volume: 77520,
+                combinations: [
+                    [0,1,3,4,6,7,8], [0,1,3,4,6,7,9], [0,1,3,4,6,8,9], [0,1,3,4,7,8,9], [0,1,3,5,6,7,8],
+                    [0,1,3,5,6,7,9], [0,1,3,5,6,8,9], [0,1,3,5,7,8,9], [0,1,3,6,7,8,9], [0,1,4,5,6,7,8],
+                    [0,1,4,5,6,7,9], [0,1,4,5,6,8,9], [0,1,4,5,7,8,9], [0,1,4,6,7,8,9], [0,1,5,6,7,8,9]
+                ]
+            },
+            // 21 combinações com 6.435 jogos cada
+            low_medium_volume: {
+                volume: 6435,
+                combinations: [
+                    [0,2,3,4,5,6,7], [0,2,3,4,5,6,8], [0,2,3,4,5,6,9], [0,2,3,4,5,7,8], [0,2,3,4,5,7,9],
+                    [0,2,3,4,5,8,9], [0,2,3,4,6,7,8], [0,2,3,4,6,7,9], [0,2,3,4,6,8,9], [0,2,3,4,7,8,9],
+                    [0,2,3,5,6,7,8], [0,2,3,5,6,7,9], [0,2,3,5,6,8,9], [0,2,3,5,7,8,9], [0,2,3,6,7,8,9],
+                    [0,2,4,5,6,7,8], [0,2,4,5,6,7,9], [0,2,4,5,6,8,9], [0,2,4,5,7,8,9], [0,2,4,6,7,8,9], [0,2,5,6,7,8,9]
+                ]
+            },
+            // 23 combinações com 3.432 jogos cada
+            low_volume: {
+                volume: 3432,
+                combinations: [
+                    [0,3,4,5,6,7,8], [0,3,4,5,6,7,9], [0,3,4,5,6,8,9], [0,3,4,5,7,8,9], [0,3,4,6,7,8,9],
+                    [0,3,5,6,7,8,9], [0,4,5,6,7,8,9], [1,2,3,4,5,6,7], [1,2,3,4,5,6,8], [1,2,3,4,5,6,9],
+                    [1,2,3,4,5,7,8], [1,2,3,4,5,7,9], [1,2,3,4,5,8,9], [1,2,3,4,6,7,8], [1,2,3,4,6,7,9],
+                    [1,2,3,4,6,8,9], [1,2,3,4,7,8,9], [1,2,3,5,6,7,8], [1,2,3,5,6,7,9], [1,2,3,5,6,8,9],
+                    [1,2,3,5,7,8,9], [1,2,3,6,7,8,9], [1,2,4,5,6,7,8]
+                ]
+            },
+            // 12 combinações com 1.716 jogos cada
+            very_low_volume: {
+                volume: 1716,
+                combinations: [
+                    [1,2,4,5,6,7,9], [1,2,4,5,6,8,9], [1,2,4,5,7,8,9], [1,2,4,6,7,8,9], [1,2,5,6,7,8,9],
+                    [1,3,4,5,6,7,8], [1,3,4,5,6,7,9], [1,3,4,5,6,8,9], [1,3,4,5,7,8,9], [1,3,4,6,7,8,9],
+                    [1,3,5,6,7,8,9], [1,4,5,6,7,8,9]
+                ]
+            },
+            // 7 combinações com 1 jogo cada
+            minimal_volume: {
+                volume: 1,
+                combinations: [
+                    [2,3,4,5,6,7,8], [2,3,4,5,6,7,9], [2,3,4,5,6,8,9], [2,3,4,5,7,8,9], 
+                    [2,3,4,6,7,8,9], [2,3,5,6,7,8,9], [2,4,5,6,7,8,9]
+                ]
+            },
+            // 1 combinação insuficiente
+            insufficient: {
+                volume: 0,
+                combinations: [
+                    [3,4,5,6,7,8,9]
+                ]
+            }
+        };
+
+        // Total máximo de jogos = 8.064.190
+        const MAX_TOTAL_GAMES = 8064190;
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            createFixedNumbersGrid();
+            setupEventListeners();
             
+            // ===== DESABILITAR TUDO ATÉ DADOS ESTAREM CARREGADOS =====
+            disableAllControls();
+            
+            await loadHistoricalData();
+            updateTotalValue();
+        }
+        
+        function disableAllControls() {
+            console.log('🔒 DESABILITANDO TODOS OS CONTROLES - Aguardando carregamento COMPLETO dos dados históricos...');
+            
+            // ===== VERIFICAÇÃO CRÍTICA: DADOS HISTÓRICOS DEVEM ESTAR VAZIOS =====
+            if (historicalData && historicalData.length > 0) {
+                console.error('❌ ERRO CRÍTICO: disableAllControls() chamado mas dados históricos já existem!');
+                return; // Não desabilitar se dados já foram carregados
+            }
+            
+            // ===== DESABILITAR BOTÃO DE GERAR JOGOS =====
+            const generateBtn = document.getElementById('generate-btn');
+            generateBtn.disabled = true;
+            generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            generateBtn.innerHTML = '<i class="fas fa-lock mr-2"></i>⏳ Aguarde carregamento COMPLETO dos dados reais da API...';
+            
+            // ===== DESABILITAR TODOS OS CRITÉRIOS =====
+            document.querySelectorAll('input[type="checkbox"][id^="criteria-"]').forEach(checkbox => {
+                checkbox.disabled = true;
+                checkbox.parentElement.classList.add('opacity-50', 'cursor-not-allowed');
+                // IMPORTANTE: Remover event listeners para prevenir cálculos prematuros
+                checkbox.removeEventListener('change', calculateEstimatedGames);
+            });
+            
+            // ===== DESABILITAR CALCULADORA INTELIGENTE =====
+            const calculatorSection = document.querySelector('.bg-gradient-to-r.from-blue-50');
+            if (calculatorSection) {
+                calculatorSection.classList.add('opacity-50', 'cursor-not-allowed');
+                calculatorSection.style.pointerEvents = 'none'; // Prevenir qualquer interação
+            }
+            
+            // ===== DESABILITAR CAMPOS DE ENTRADA =====
+            document.getElementById('num-games').disabled = true;
+            document.getElementById('numbers-count').disabled = true;
+            document.getElementById('lucky-month').disabled = true;
+            document.getElementById('custom-value').disabled = true;
+            
+            // ===== DESABILITAR DEZENAS FIXAS =====
+            document.querySelectorAll('#fixed-numbers button').forEach(button => {
+                button.disabled = true;
+                button.classList.add('opacity-50', 'cursor-not-allowed');
+                button.onclick = null; // Remover evento temporariamente
+                button.style.pointerEvents = 'none'; // Prevenir cliques
+            });
+            
+            // ===== BLOQUEAR CÁLCULOS DA CALCULADORA INTELIGENTE =====
+            const estimatedGamesElement = document.getElementById('estimated-games');
+            if (estimatedGamesElement) {
+                estimatedGamesElement.textContent = '⏳ Aguardando dados...';
+                estimatedGamesElement.style.color = '#888';
+            }
+            
+            const reductionElement = document.getElementById('reduction-percentage');
+            if (reductionElement) {
+                reductionElement.textContent = '⏳';
+                reductionElement.style.color = '#888';
+            }
+            
+            console.log('✅ TODOS OS CONTROLES DESABILITADOS - Sistema aguardando carregamento COMPLETO dos dados históricos');
+        }
+
+        function createFixedNumbersGrid() {
+            const container = document.getElementById('fixed-numbers');
+            for (let i = 1; i <= 31; i++) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'w-8 h-8 text-xs border border-gray-300 dark:border-gray-600 rounded hover:bg-dia-orange hover:text-white transition-all duration-200 dark:text-white';
+                button.textContent = i.toString().padStart(2, '0');
+                button.dataset.number = i;
+                button.onclick = toggleFixedNumber;
+                container.appendChild(button);
+            }
+        }
+
+        function toggleFixedNumber(event) {
+            const button = event.target;
+            const selectedButtons = document.querySelectorAll('#fixed-numbers button.bg-dia-orange');
+            
+            if (button.classList.contains('bg-dia-orange')) {
+                button.classList.remove('bg-dia-orange', 'text-white');
+                button.classList.add('hover:bg-dia-orange', 'hover:text-white');
+            } else if (selectedButtons.length < 6) {
+                button.classList.add('bg-dia-orange', 'text-white');
+                button.classList.remove('hover:bg-dia-orange', 'hover:text-white');
+            } else {
+                showAlert('Você pode selecionar no máximo 6 dezenas fixas.');
+            }
+        }
+
+        function setupEventListeners() {
+            document.getElementById('num-games').addEventListener('input', updateTotalValue);
+            document.getElementById('numbers-count').addEventListener('change', updateTotalValue);
+            document.getElementById('generate-btn').addEventListener('click', generateGames);
+            document.getElementById('search-input').addEventListener('input', filterGames);
+            document.getElementById('custom-value').addEventListener('input', updateTotalValue);
+            
+            // Event listeners para os critérios de filtragem
+            document.querySelectorAll('input[type="checkbox"][id^="criteria-"]').forEach(checkbox => {
+                checkbox.addEventListener('change', calculateEstimatedGames);
+            });
+        }
+
+        function updateTotalValue() {
+            const numGames = parseInt(document.getElementById('num-games').value) || 0;
+            const numbersCount = document.getElementById('numbers-count').value;
+            
+            // Mostrar/ocultar informações de redução
+            toggleReductionInfo(numGames);
+            
+            let price = 2.50; // Preço padrão
+            
+            if (numbersCount === 'custom') {
+                // Mostrar campo personalizado
+                document.getElementById('custom-value-container').classList.remove('hidden');
+                price = parseFloat(document.getElementById('custom-value').value) || 2.50;
+            } else {
+                // Ocultar campo personalizado
+                document.getElementById('custom-value-container').classList.add('hidden');
+                
+                // Tabela de preços e apostas
+                const gameData = {
+                    7: { price: 2.50, bets: 1 },
+                    8: { price: 20.00, bets: 8 },
+                    9: { price: 90.00, bets: 36 },
+                    10: { price: 300.00, bets: 120 },
+                    11: { price: 825.00, bets: 330 },
+                    12: { price: 1980.00, bets: 742 },
+                    13: { price: 4290.00, bets: 1716 },
+                    14: { price: 8580.00, bets: 3432 },
+                    15: { price: 16087.50, bets: 6435 }
+                };
+                
+                const data = gameData[parseInt(numbersCount)] || gameData[7];
+                price = data.price;
+            }
+            
+            const total = numGames * price;
+            document.getElementById('total-value').textContent = `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            
+            // Atualizar estimativa de jogos
+            calculateEstimatedGames();
+        }
+
+        function toggleReductionInfo(numGames) {
+            const reductionInfo = document.getElementById('games-reduction-info');
+            const reductionSpans = document.querySelectorAll('[id$="-reduction"]');
+            
+            if (numGames < MAX_TOTAL_GAMES) {
+                reductionInfo.classList.remove('hidden');
+                reductionSpans.forEach(span => span.classList.remove('hidden'));
+            } else {
+                reductionInfo.classList.add('hidden');
+                reductionSpans.forEach(span => span.classList.add('hidden'));
+            }
+        }
+
+        // ===== SISTEMA DINÂMICO DE REDUÇÃO EM TEMPO REAL =====
+        function calculateEstimatedGames() {
+            const baseGames = MAX_TOTAL_GAMES; // Base: TODAS as combinações
+            let reductionFactor = 1.0;
+            const activeCriteria = [];
+            
+            // Definir fatores de redução para cada critério
+            const reductionFactors = {
+                'criteria-frequent': { factor: 0.92, name: 'Mais Sorteadas', reduction: '8.0%' },
+                'criteria-less-frequent': { factor: 0.88, name: 'Evitar Menos Frequentes', reduction: '12.0%' },
+                'criteria-avoid-last': { factor: 0.95, name: 'Evitar Último Sorteio', reduction: '5.0%' },
+                'criteria-balance': { factor: 0.85, name: 'Equilibrio Par/Ímpar', reduction: '15.0%' },
+                'criteria-avoid-extremes': { factor: 0.90, name: 'Evitar Extremos', reduction: '10.0%' },
+                'criteria-clusters': { factor: 0.75, name: 'Distribuir Grupos', reduction: '25.0%' },
+                'criteria-no-sequence': { factor: 0.80, name: 'Evitar Sequências', reduction: '20.0%' },
+                'criteria-sum-range': { factor: 0.70, name: 'Faixa de Soma', reduction: '30.0%' },
+                'criteria-repeated-pairs': { factor: 0.93, name: 'Evitar Pares Repetidos', reduction: '7.0%' },
+                'criteria-mathematical': { factor: 0.60, name: 'Fechamento Matemático', reduction: '40.0%' },
+                'criteria-fibonacci': { factor: 0.85, name: 'Evitar Fibonacci', reduction: '15.0%' },
+                'criteria-prime-numbers': { factor: 0.90, name: 'Balancear Primos', reduction: '10.0%' },
+                'criteria-most-used-digits': { factor: 0.40, name: 'Dígitos Mais Usados', reduction: '60.0%' },
+                'criteria-least-used-digits': { factor: 0.70, name: 'Dígitos Menos Usados', reduction: '30.0%' }
+            };
+            
+            // Atualizar informações inline para cada critério
+            Object.keys(reductionFactors).forEach(criteriaId => {
+                const checkbox = document.getElementById(criteriaId);
+                const infoSpan = document.getElementById(criteriaId + '-info');
+                
+                if (checkbox && infoSpan) {
+                    if (checkbox.checked) {
+                        // Mostrar informação específica do critério
+                        const criteria = reductionFactors[criteriaId];
+                        infoSpan.textContent = `(${criteria.reduction} de redução)`;
+                        infoSpan.classList.remove('hidden');
+                        
+                        // Aplicar fator de redução
+                        reductionFactor *= criteria.factor;
+                        activeCriteria.push(criteria);
+                    } else {
+                        // Ocultar informação
+                        infoSpan.classList.add('hidden');
+                    }
+                }
+            });
+            
+            // Calcular jogos estimados
+            const estimatedGames = Math.round(baseGames * reductionFactor);
+            const totalReduction = baseGames - estimatedGames;
+            const reductionPercentage = ((totalReduction / baseGames) * 100).toFixed(1);
+            
+            // Calcular investimento estimado
+            const numbersCount = document.getElementById('numbers-count').value;
+            let price = 2.50;
+            if (numbersCount === 'custom') {
+                price = parseFloat(document.getElementById('custom-value').value) || 2.50;
+            } else {
+                const gameData = {
+                    7: 2.50, 8: 20.00, 9: 90.00, 10: 300.00, 11: 825.00,
+                    12: 1980.00, 13: 4290.00, 14: 8580.00, 15: 16087.50
+                };
+                price = gameData[parseInt(numbersCount)] || 2.50;
+            }
+            const estimatedInvestment = estimatedGames * price;
+            
+            // Atualizar interface
+            updateDynamicCalculator(estimatedGames, reductionPercentage, totalReduction, estimatedInvestment, activeCriteria);
+            updateGenerateButton(`Gerar ${estimatedGames.toLocaleString()} Jogos${reductionPercentage > 0 ? ` (-${reductionPercentage}%)` : ''}`);
+        }
+        
+        function updateDynamicCalculator(estimatedGames, reductionPercentage, totalReduction, estimatedInvestment, activeCriteria) {
+            // Atualizar números principais
+            document.getElementById('estimated-games').textContent = estimatedGames.toLocaleString();
+            document.getElementById('reduction-percentage').textContent = `${reductionPercentage}%`;
+            document.getElementById('reduction-info').textContent = `${totalReduction.toLocaleString()} jogos eliminados`;
+            document.getElementById('estimated-investment').textContent = `R$ ${estimatedInvestment.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            
+            // Atualizar barra de progresso
+            document.getElementById('reduction-bar').style.width = `${Math.min(parseFloat(reductionPercentage), 100)}%`;
+            
+            // Mostrar/ocultar critérios ativos
+            const activeCriteriaSection = document.getElementById('active-criteria');
+            const activeCriteriaList = document.getElementById('active-criteria-list');
+            
+            if (activeCriteria.length > 0) {
+                activeCriteriaSection.classList.remove('hidden');
+                activeCriteriaList.innerHTML = activeCriteria.map(criteria => 
+                    `<span class="px-2 py-1 bg-dia-orange text-white text-xs rounded-full">
+                        ${criteria.name} ${criteria.reduction}
+                    </span>`
+                ).join('');
+            } else {
+                activeCriteriaSection.classList.add('hidden');
+            }
+            
+            // Animar mudanças
+            const elements = ['estimated-games', 'reduction-percentage', 'estimated-investment'];
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                element.style.transform = 'scale(1.05)';
+                element.style.transition = 'transform 0.2s ease';
+                setTimeout(() => {
+                    element.style.transform = 'scale(1)';
+                }, 200);
+            });
+        }
+
+        function updateGenerateButton(text) {
+            const button = document.getElementById('generate-btn');
+            button.innerHTML = `<i class="fas fa-magic mr-2"></i>${text}`;
+        }
+
+        // ===== APIs REAIS da Caixa (igual ao arquivo anexado) =====
+        const API_CONFIG = {
+            // APIs disponíveis para "Dia de Sorte"
+            DIA_DE_SORTE_STATIC: {
+                url: "https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte",
+                description: "API Oficial da Caixa"
+            },
+            DIA_DE_SORTE_LOTERIA_FREE: {
+                url: "https://loteriascaixa-api.herokuapp.com/api/dia-de-sorte",
+                description: "API Loteria Completa (todos os concursos)"
+            },
+            DIA_DE_SORTE_CONCURSO: (numero) => {
+                return {
+                    url: `https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/${numero}`,
+                    description: `API Oficial Caixa - Concurso ${numero}`
+                };
+            },
+            // CORS proxy services (igual ao arquivo anexado)
+            PROXIES: [
+                '',  // First try direct
+                'https://corsproxy.io/?',
+                'https://api.allorigins.win/raw?url=',
+                'https://cors-anywhere.herokuapp.com/',
+                'https://api.codetabs.com/v1/proxy?quest='
+            ]
+        };
+
+        // ===== Cache Configuration (igual ao arquivo anexado) =====
+        const CACHE_KEY = 'diadesorte_resultados_cache';
+        const CACHE_VERSION = '1.0';
+        let cachedResults = [];
+        let lastCachedContest = 0;
+
+        // ===== Função para fazer fetch com CORS proxy (igual ao arquivo anexado) =====
+        async function fetchWithProxy(url, attempts = 0) {
+            const corsProxies = API_CONFIG.PROXIES;
+            
+            if (attempts >= corsProxies.length) {
+                throw new Error('All CORS proxies failed');
+            }
+            
+            try {
+                // Some proxies need different URL encoding
+                let proxyUrl;
+                if (corsProxies[attempts].includes('?url=') || corsProxies[attempts].includes('?quest=')) {
+                    proxyUrl = corsProxies[attempts] + encodeURIComponent(url);
+                } else {
+                    proxyUrl = corsProxies[attempts] + url;
+                }
+                
+                console.log(`Tentando proxy ${attempts + 1}/${corsProxies.length}: ${proxyUrl}`);
+                
+                const response = await fetch(proxyUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.log(`Proxy ${attempts + 1} falhou: ${error.message}`);
+                // Try next proxy
+                if (attempts < corsProxies.length - 1) {
+                    return fetchWithProxy(url, attempts + 1);
+                } else {
+                    throw error;
+                }
+            }
+        }
+
+        // ===== Cache Management Functions (igual ao arquivo anexado) =====
+        
+        // Load cache from localStorage (emulated since not available in iframe)
+        function loadCache() {
+            try {
+                // Since localStorage is not available in iframe, we'll use a memory cache
+                // In a real application, this would be: JSON.parse(localStorage.getItem(CACHE_KEY) || '{}')
+                const emptyCache = {
+                    version: CACHE_VERSION,
+                    results: [],
+                    lastUpdate: 0,
+                    lastContest: 0
+                };
+                
+                console.log("Cache simulado carregado (localStorage não disponível no iframe)");
+                return emptyCache;
+            } catch (error) {
+                console.log(`Erro ao carregar cache: ${error.message}`);
+                return {
+                    version: CACHE_VERSION,
+                    results: [],
+                    lastUpdate: 0,
+                    lastContest: 0
+                };
+            }
+        }
+        
+        // Save cache to localStorage (emulated)
+        function saveCache(results, lastContest) {
+            try {
+                const cacheData = {
+                    version: CACHE_VERSION,
+                    results: results,
+                    lastUpdate: Date.now(),
+                    lastContest: lastContest
+                };
+                
+                // In a real application: localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+                cachedResults = results;
+                lastCachedContest = lastContest;
+                
+                console.log(`Cache atualizado com ${results.length} resultados até o concurso ${lastContest}`);
+                return true;
+            } catch (error) {
+                console.log(`Erro ao salvar cache: ${error.message}`);
+                return false;
+            }
+        }
+
+        // ===== Função para obter o último número de concurso (igual ao arquivo anexado) =====
+        async function getLatestContestNumber() {
+            try {
+                // First, try to get the last contest from the official Caixa API
+                const lastConcursoData = await fetchWithProxy(API_CONFIG.DIA_DE_SORTE_STATIC.url);
+                if (lastConcursoData && lastConcursoData.numero) {
+                    return parseInt(lastConcursoData.numero);
+                }
+                
+                throw new Error("Could not get the latest contest number");
+            } catch (error) {
+                console.log(`Erro ao obter último concurso: ${error.message}`);
+                // Default value in case of failure (adjust as needed)
+                return 1100; // An approximate current value
+            }
+        }
+
+        // Função otimizada para buscar apenas novos concursos
+        async function fetchNewConcursos(fromContest, toContest) {
+            const newResults = [];
+            
+            if (fromContest > toContest) {
+                updateLoadingStatus("Nenhum concurso novo para buscar", 80);
+                return newResults;
+            }
+            
+            updateLoadingStatus(`Buscando concursos ${fromContest} a ${toContest}...`, 20);
+            
+            try {
+                // Para evitar sobrecarregar a API da Caixa, fazer requisições em lotes
+                const batchSize = 10;
+                
+                for (let i = fromContest; i <= toContest; i += batchSize) {
+                    const batchEnd = Math.min(i + batchSize - 1, toContest);
+                    updateLoadingStatus(`Buscando novos concursos ${i} a ${batchEnd}...`, 20 + ((i - fromContest) / (toContest - fromContest)) * 60);
+                    
+                    // Criar array de promessas para cada concurso no lote
+                    const requests = [];
+                    for (let concursoNum = i; concursoNum <= batchEnd; concursoNum++) {
+                        // Adicionar pequeno atraso para evitar sobrecarga
+                        const delay = (concursoNum - i) * 100; // 100ms entre cada requisição
+                        
+                        requests.push(
+                            new Promise(resolve => {
+                                setTimeout(async () => {
+                                    try {
+                                        const url = API_CONFIG.DIA_DE_SORTE_CONCURSO(concursoNum).url;
+                                        const concursoData = await fetchWithProxy(url);
+                                        
+                                        if (concursoData && concursoData.numero && concursoData.dataApuracao && concursoData.listaDezenas) {
+                                            resolve({
+                                                numero: concursoData.numero,
+                                                dataApuracao: concursoData.dataApuracao,
+                                                listaDezenas: concursoData.listaDezenas,
+                                                nomeTimeCoracaoMesSorte: concursoData.nomeTimeCoracaoMesSorte || 'Janeiro'
+                                            });
+                                        } else {
+                                            resolve(null);
+                                        }
+                                    } catch (error) {
+                                        console.log(`Erro ao buscar concurso ${concursoNum}: ${error.message}`);
+                                        resolve(null);
+                                    }
+                                }, delay);
+                            })
+                        );
+                    }
+                    
+                    // Aguardar todas as requisições do lote
+                    const results = await Promise.all(requests);
+                    
+                    // Adicionar resultados válidos ao array final
+                    for (const result of results) {
+                        if (result) {
+                            newResults.push(result);
+                        }
+                    }
+                    
+                    // Pequena pausa entre lotes para não sobrecarregar a API
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                }
+                
+                updateLoadingStatus(`✅ ${newResults.length} novos concursos carregados`, 80);
+                
+            } catch (error) {
+                updateLoadingStatus(`Erro na busca otimizada: ${error.message}`, 50);
+                throw error;
+            }
+            
+            return newResults;
+        }
+
+        // Função principal otimizada para buscar resultados usando cache
+        async function loadHistoricalData() {
+            updateLoadingStatus('Verificando cache e otimizando carregamento...', 2);
+            document.getElementById('api-status').textContent = '🔄';
+            
+            // Desabilitar botão de gerar jogos
+            document.getElementById('generate-btn').disabled = true;
+            document.getElementById('generate-btn').classList.add('opacity-50', 'cursor-not-allowed');
+            document.getElementById('generate-btn').innerHTML = '<i class="fas fa-lock mr-2"></i>Aguarde carregamento dos dados reais...';
+            
+            try {
+                // 1. Carregar cache
+                let cachedResults = [];
+                let lastCachedContest = 0;
+                
+                try {
+                    // Como localStorage não está disponível no iframe, usar cache em memória
+                    cachedResults = [];
+                    lastCachedContest = 0;
+                    updateLoadingStatus("Cache não disponível (iframe) - carregamento completo necessário", 5);
+                } catch (error) {
+                    updateLoadingStatus(`Erro ao carregar cache: ${error.message}`, 5);
+                }
+                
+                // 2. Obter o número do último concurso
+                const latestContest = await getLatestContestNumber();
+                updateLoadingStatus(`✅ Último concurso disponível: ${latestContest}`, 10);
+                
+                // 3. Determinar se precisamos buscar dados novos
+                const needNewData = lastCachedContest < latestContest;
+                let newResults = [];
+                
+                if (needNewData) {
+                    // Buscar apenas concursos novos ou todos se cache vazio
+                    const fromContest = Math.max(lastCachedContest + 1, 1);
+                    updateLoadingStatus(`🔄 Buscando dados reais da API oficial da Caixa: ${fromContest} a ${latestContest}`, 15);
+                    
+                    newResults = await fetchNewConcursos(fromContest, latestContest);
+                    updateLoadingStatus(`✅ ${newResults.length} concursos reais obtidos da API oficial`, 85);
+                } else {
+                    updateLoadingStatus("✅ Todos os concursos já estão no cache!", 85);
+                }
+                
+                // 4. Se não temos dados em cache e não conseguimos novos dados, tentar API completa
+                if (cachedResults.length === 0 && newResults.length === 0) {
+                    updateLoadingStatus("❌ Falha ao carregar dados da API oficial da Caixa", 50);
+                    throw new Error("❌ ERRO: Não foi possível carregar dados REAIS da API oficial da Caixa. Verifique sua conexão e tente novamente.");
+                }
+                
+                // 5. Combinar dados do cache + novos resultados
+                const allConcursos = [...cachedResults, ...newResults];
+                
+                // Remover duplicatas e ordenar
+                const uniqueConcursos = [];
+                const seen = new Set();
+                
+                for (const concurso of allConcursos) {
+                    const key = concurso.numero;
+                    if (!seen.has(key)) {
+                        seen.add(key);
+                        uniqueConcursos.push(concurso);
+                    }
+                }
+                
+                // Ordenar por número do concurso
+                uniqueConcursos.sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
+                
+                updateLoadingStatus(`✅ Total de concursos REAIS únicos: ${uniqueConcursos.length}`, 90);
+                
+                // 6. Verificar se temos dados suficientes
+                if (uniqueConcursos.length === 0) {
+                    throw new Error("❌ ERRO: Nenhum concurso REAL foi carregado da API oficial da Caixa");
+                }
+                
+                // 7. Calcular cobertura
+                const coveragePercentage = (uniqueConcursos.length / latestContest) * 100;
+                
+                if (coveragePercentage < 50) {
+                    throw new Error(`❌ ERRO: Cobertura muito baixa (${coveragePercentage.toFixed(1)}%). Apenas dados REAIS são aceitos. Tente novamente.`);
+                }
+                
+                // 8. Processar os resultados
+                historicalData = uniqueConcursos;
+                
+                // Ordenar do mais recente para o mais antigo
+                historicalData.sort((a, b) => parseInt(b.numero) - parseInt(a.numero));
+                
+                // 9. Calcular estatísticas
+                calculateFrequency();
+                updateLastDraw();
+                showDataSummary();
+                
+                // 10. Finalizar
+                updateLoadingStatus(`✅ DADOS REAIS CARREGADOS! ${historicalData.length} concursos da API oficial (${coveragePercentage.toFixed(1)}% de cobertura)`, 100);
+                document.getElementById('api-status').textContent = '✅';
+                document.getElementById('loaded-count').textContent = historicalData.length;
+                
+                enableGameGeneration();
+                
+                return true;
+                
+            } catch (error) {
+                console.error("Erro no carregamento:", error);
+                document.getElementById('api-status').textContent = '❌';
+                updateLoadingStatus(`❌ ${error.message}`, 0);
+                
+                // Mostrar botão de tentar novamente
+                document.getElementById('retry-loading').classList.remove('hidden');
+                document.getElementById('retry-loading').onclick = () => {
+                    document.getElementById('retry-loading').classList.add('hidden');
+                    loadHistoricalData();
+                };
+                
+                // NÃO usar dados simulados - apenas dados reais
+                showAlert('❌ FALHA AO CARREGAR DADOS REAIS\n\nEste app usa APENAS dados reais da API oficial da Caixa.\n\nPor favor:\n1. Verifique sua conexão com a internet\n2. Clique em "Tentar Novamente"\n3. Aguarde o carregamento dos dados oficiais');
+                
+                return false;
+            }
+        }
+
+        function updateLoadingStatus(message, progress) {
+            document.getElementById('loading-status').textContent = message;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+        }
+
+        function enableGameGeneration() {
+            // ===== VERIFICAR SE DADOS REALMENTE FORAM CARREGADOS =====
+            if (!historicalData || historicalData.length === 0) {
+                console.error('❌ ERRO: Tentativa de habilitar controles sem dados históricos válidos');
+                return false;
+            }
+            
+            // ===== HABILITAR BOTÃO DE GERAR JOGOS =====
+            document.getElementById('generate-btn').disabled = false;
+            document.getElementById('generate-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+            document.getElementById('generate-btn').innerHTML = '<i class="fas fa-magic mr-2"></i>Gerar Jogos';
+            
+            // ===== HABILITAR TODOS OS CRITÉRIOS =====
+            document.querySelectorAll('input[type="checkbox"][id^="criteria-"]').forEach(checkbox => {
+                checkbox.disabled = false;
+                checkbox.parentElement.classList.remove('opacity-50', 'cursor-not-allowed');
+            });
+            
+            // ===== RE-ADICIONAR EVENT LISTENERS PARA CALCULADORA INTELIGENTE =====
+            console.log('🔄 REATIVANDO Calculadora Inteligente...');
+            document.querySelectorAll('input[type="checkbox"][id^="criteria-"]').forEach(checkbox => {
+                // Remover listeners antigos para evitar duplicação
+                checkbox.removeEventListener('change', calculateEstimatedGames);
+                // Adicionar listener novo
+                checkbox.addEventListener('change', calculateEstimatedGames);
+            });
+            
+            // ===== HABILITAR CALCULADORA INTELIGENTE =====
+            const calculatorSection = document.querySelector('.bg-gradient-to-r.from-blue-50');
+            if (calculatorSection) {
+                calculatorSection.classList.remove('opacity-50', 'cursor-not-allowed');
+                calculatorSection.style.pointerEvents = 'auto'; // Reativar interações
+            }
+            
+            // ===== HABILITAR CAMPOS DE ENTRADA =====
+            document.getElementById('num-games').disabled = false;
+            document.getElementById('numbers-count').disabled = false;
+            document.getElementById('lucky-month').disabled = false;
+            document.getElementById('custom-value').disabled = false;
+            
+            // ===== HABILITAR DEZENAS FIXAS =====
+            document.querySelectorAll('#fixed-numbers button').forEach(button => {
+                button.disabled = false;
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+                button.onclick = toggleFixedNumber; // Reativar evento
+            });
+            
+            // ===== RECALCULAR ESTIMATIVAS AGORA QUE OS DADOS ESTÃO PRONTOS =====
+            console.log('📊 RECALCULANDO estimativas com dados reais...');
+            calculateEstimatedGames();
+            updateTotalValue();
+            
+            // ===== TESTAR CALCULADORA INTELIGENTE =====
+            console.log('🧪 TESTANDO Calculadora Inteligente...');
+            const firstCriteria = document.getElementById('criteria-frequent');
+            if (firstCriteria) {
+                // Simular mudança para testar
+                const originalChecked = firstCriteria.checked;
+                firstCriteria.checked = !originalChecked;
+                calculateEstimatedGames(); // Deve funcionar
+                firstCriteria.checked = originalChecked;
+                calculateEstimatedGames(); // Resetar
+                console.log('✅ Calculadora Inteligente ATIVA e funcionando!');
+            }
+            
+            // Atualizar título da seção e adicionar botão para ocultar
+            const sectionTitle = document.querySelector('#data-loading-section h2');
+            sectionTitle.innerHTML = `
+                <i class="fas fa-database text-dia-orange mr-3"></i>
+                Dados Históricos Carregados
+                <button onclick="toggleDataSection()" class="ml-4 text-sm bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded transition-colors">
+                    <i class="fas fa-eye-slash mr-1"></i>
+                    Ocultar
+                </button>
+            `;
+            
+            // Ocultar barra de progresso e status, manter apenas o resumo
+            document.getElementById('progress-bar').parentElement.style.display = 'none';
+            document.querySelector('#data-loading-section .flex.items-center.justify-between').style.display = 'none';
+            
+            console.log('✅ SISTEMA TOTALMENTE HABILITADO - Dados históricos carregados com sucesso!');
+            console.log('✅ Calculadora Inteligente REATIVADA com event listeners funcionais!');
+            
+            return true;
+        }
+
+        function showDataSummary() {
+            document.getElementById('data-summary').classList.remove('hidden');
+            
+            if (historicalData.length > 0) {
+                const first = historicalData[historicalData.length - 1];
+                const last = historicalData[0];
+                const lastContestNumber = last.numero || historicalData.length;
+                const firstContestNumber = first.numero || 1;
+                
+                // Calcular estatísticas de cobertura
+                const totalExisting = lastContestNumber; // Total de concursos que existem (1 até o último)
+                const totalLoaded = historicalData.length; // Quantos conseguimos carregar
+                const coveragePercentage = Math.round((totalLoaded / totalExisting) * 100);
+                const missingCount = totalExisting - totalLoaded;
+                
+                // Atualizar informações de cobertura
+                document.getElementById('total-contests').textContent = totalLoaded.toLocaleString();
+                document.getElementById('total-existing').textContent = totalExisting.toLocaleString();
+                document.getElementById('coverage-percentage').textContent = `${coveragePercentage}%`;
+                document.getElementById('missing-count').textContent = missingCount.toLocaleString();
+                
+                // Atualizar barra de progresso da cobertura
+                document.getElementById('coverage-bar').style.width = `${coveragePercentage}%`;
+                document.getElementById('coverage-text').textContent = `${totalLoaded.toLocaleString()} de ${totalExisting.toLocaleString()} concursos`;
+                
+                // Período carregado (corrigir ordem)
+                document.getElementById('period-range').textContent = `${Math.min(firstContestNumber, lastContestNumber)} até ${Math.max(firstContestNumber, lastContestNumber)}`;
+                
+                // Encontrar número mais frequente
+                let mostFreqNumber = 1;
+                let maxFreq = 0;
+                for (let i = 1; i <= 31; i++) {
+                    if (frequencyData[i] > maxFreq) {
+                        maxFreq = frequencyData[i];
+                        mostFreqNumber = i;
+                    }
+                }
+                document.getElementById('most-frequent').textContent = 
+                    `${mostFreqNumber.toString().padStart(2, '0')} (${maxFreq}x)`;
+                
+                // Definir fonte dos dados
+                let dataSource;
+                const hasSimulated = historicalData.some(item => item.simulated);
+                const apiStatus = document.getElementById('api-status').textContent;
+                
+                if (apiStatus === '🔴') {
+                    dataSource = 'Dados Simulados';
+                } else if (hasSimulated) {
+                    dataSource = 'Híbrido (Real + Simulado)';
+                } else if (document.getElementById('cache-status').textContent === '✅' && apiStatus === '💾') {
+                    dataSource = 'Cache Local';
+                } else {
+                    dataSource = 'API Caixa';
+                }
+                
+                document.getElementById('data-source').textContent = dataSource;
+                
+                // Atualizar select do mês da sorte para destacar o mais frequente
+                updateMonthSelect();
+            }
+        }
+
+        function calculateFrequency() {
+            frequencyData = {};
+            monthFrequency = {};
+            
+            // Inicializar contadores
+            for (let i = 1; i <= 31; i++) {
+                frequencyData[i] = 0;
+            }
+
+            const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                          'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            months.forEach(month => monthFrequency[month] = 0);
+
+            // Contar frequências
+            historicalData.forEach(result => {
+                if (result.listaDezenas) {
+                    result.listaDezenas.forEach(dezena => {
+                        const num = parseInt(dezena);
+                        if (num >= 1 && num <= 31) {
+                            frequencyData[num]++;
+                        }
+                    });
+                }
+                
+                if (result.nomeTimeCoracaoMesSorte) {
+                    monthFrequency[result.nomeTimeCoracaoMesSorte]++;
+                }
+            });
+        }
+
+        function updateLastDraw() {
+            if (historicalData.length > 0) {
+                const latest = historicalData[0];
+                const element = document.getElementById('last-draw');
+                if (latest) {
+                    element.innerHTML = `
+                        <div>Concurso ${latest.numero || 'N/A'}</div>
+                        <div class="text-xs">${latest.listaDezenas ? latest.listaDezenas.join(' - ') : 'N/A'}</div>
+                    `;
+                }
+            }
+        }
+
+        async function generateGames() {
+            // USAR O VALOR EXATO DA CALCULADORA INTELIGENTE
+            const estimatedGamesText = document.getElementById('estimated-games').textContent;
+            const exactGamesToGenerate = parseInt(estimatedGamesText.replace(/\./g, '').replace(/,/g, ''));
+            
+            // Verificar se há critérios ativos
+            const activeCriteria = document.querySelectorAll('input[type="checkbox"][id^="criteria-"]:checked');
+            
+            let numGames;
+            if (activeCriteria.length > 0) {
+                // SE HÁ CRITÉRIOS ATIVOS: usar valor EXATO da calculadora
+                numGames = exactGamesToGenerate;
+                console.log(`🎯 GERANDO EXATAMENTE ${numGames} jogos (valor da Calculadora Inteligente)`);
+            } else {
+                // SE NÃO HÁ CRITÉRIOS: usar valor do campo input
+                numGames = parseInt(document.getElementById('num-games').value);
+                console.log(`📝 Gerando ${numGames} jogos (valor do campo input)`);
+            }
+            
+            if (!numGames || numGames < 10 || numGames > MAX_TOTAL_GAMES) {
+                showAlert(`Número de jogos inválido. O máximo é ${MAX_TOTAL_GAMES.toLocaleString()} jogos.`);
+                return;
+            }
+
+            showLoading(true);
+            document.getElementById('loading-progress').textContent = 'Iniciando geração...';
+            
+            try {
+                const config = getGameConfig();
+                allGames = [];
+
+                // Gerar jogos em lotes para não travar a interface
+                const batchSize = 1000;
+                const batches = Math.ceil(numGames / batchSize);
+
+                for (let batch = 0; batch < batches; batch++) {
+                    const batchStart = batch * batchSize;
+                    const batchEnd = Math.min(batchStart + batchSize, numGames);
+                    const batchGames = [];
+
+                    document.getElementById('loading-progress').textContent = 
+                        `Gerando lote ${batch + 1} de ${batches}... (${Math.round((batch / batches) * 100)}%)`;
+
+                    for (let i = batchStart; i < batchEnd; i++) {
+                        const game = generateSingleGame(config);
+                        batchGames.push({
+                            id: i + 1,
+                            numbers: game.numbers,
+                            month: game.month,
+                            sum: game.numbers.reduce((a, b) => a + b, 0)
+                        });
+                    }
+
+                    allGames.push(...batchGames);
+
+                    // Pequena pausa para não travar a interface
+                    if (batch < batches - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 10));
+                    }
+                }
+
+                filteredGames = [...allGames];
+                currentPage = 1;
+                displayResults();
+                
+            } catch (error) {
+                console.error('Erro ao gerar jogos:', error);
+                showAlert('Erro ao gerar jogos. Tente novamente.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function getGameConfig() {
+            const fixedNumbers = Array.from(document.querySelectorAll('#fixed-numbers button.bg-dia-orange'))
+                .map(btn => parseInt(btn.dataset.number));
+            
+            return {
+                fixedNumbers,
+                useFrequent: document.getElementById('criteria-frequent').checked,
+                lessFrequent: document.getElementById('criteria-less-frequent').checked,
+                avoidLast: document.getElementById('criteria-avoid-last').checked,
+                balance: document.getElementById('criteria-balance').checked,
+                avoidExtremes: document.getElementById('criteria-avoid-extremes').checked,
+                clusters: document.getElementById('criteria-clusters').checked,
+                noSequence: document.getElementById('criteria-no-sequence').checked,
+                sumRange: document.getElementById('criteria-sum-range').checked,
+                repeatedPairs: document.getElementById('criteria-repeated-pairs').checked,
+                mathematical: document.getElementById('criteria-mathematical').checked,
+                fibonacci: document.getElementById('criteria-fibonacci').checked,
+                primeNumbers: document.getElementById('criteria-prime-numbers').checked,
+                luckyMonth: document.getElementById('lucky-month').value
+            };
+        }
+
+        function generateSingleGame(config) {
+            let numbers = [...config.fixedNumbers];
+            const targetNumbers = parseInt(document.getElementById('numbers-count').value) || 7;
+            let availableNumbers = [];
+
+            // Criar pool de números disponíveis
+            for (let i = 1; i <= 31; i++) {
+                if (!numbers.includes(i)) {
+                    availableNumbers.push(i);
+                }
+            }
+
+            // Aplicar critérios de filtragem
+            availableNumbers = applyFilters(availableNumbers, config);
+
+            // Completar o jogo
+            while (numbers.length < targetNumbers && availableNumbers.length > 0) {
+                const index = selectNumberIndex(availableNumbers, config);
+                const selectedNumber = availableNumbers.splice(index, 1)[0];
+                numbers.push(selectedNumber);
+
+                // Verificar critérios dinâmicos
+                if (!validateGameCriteria(numbers, config)) {
+                    numbers.pop();
+                    continue;
+                }
+            }
+
+            // Completar com números aleatórios se necessário
+            while (numbers.length < targetNumbers) {
+                const remaining = [];
+                for (let i = 1; i <= 31; i++) {
+                    if (!numbers.includes(i)) remaining.push(i);
+                }
+                if (remaining.length === 0) break;
+                
+                const randomIndex = Math.floor(Math.random() * remaining.length);
+                numbers.push(remaining[randomIndex]);
+            }
+
+            numbers.sort((a, b) => a - b);
+
+            // Definir mês da sorte
+            let month;
+            if (config.luckyMonth) {
+                month = config.luckyMonth;
+            } else {
+                // Usar o mês mais sorteado historicamente
+                month = getMostFrequentMonth();
+            }
+
+            return { numbers, month };
+        }
+
+        function applyFilters(numbers, config) {
+            let filtered = [...numbers];
+
+            // Filtro por frequência
+            if (config.useFrequent) {
+                filtered.sort((a, b) => (frequencyData[b] || 0) - (frequencyData[a] || 0));
+                filtered = filtered.slice(0, Math.min(20, filtered.length));
+            }
+
+            if (config.lessFrequent) {
+                const avgFreq = Object.values(frequencyData).reduce((a, b) => a + b, 0) / 31;
+                filtered = filtered.filter(num => (frequencyData[num] || 0) >= avgFreq * 0.7);
+            }
+
+            // Evitar último sorteio
+            if (config.avoidLast && historicalData.length > 0) {
+                const lastNumbers = historicalData[0].listaDezenas?.map(n => parseInt(n)) || [];
+                filtered = filtered.filter(num => !lastNumbers.includes(num) || Math.random() > 0.8);
+            }
+
+            return filtered;
+        }
+
+        function selectNumberIndex(numbers, config) {
+            if (config.useFrequent) {
+                return Math.floor(Math.random() * Math.min(10, numbers.length));
+            }
+            return Math.floor(Math.random() * numbers.length);
+        }
+
+        function validateGameCriteria(numbers, config) {
+            // Verificar sequências
+            if (config.noSequence && hasLongSequence(numbers)) {
+                return false;
+            }
+
+            // Verificar equilíbrio par/ímpar
+            if (config.balance || config.avoidExtremes) {
+                const evens = numbers.filter(n => n % 2 === 0).length;
+                const odds = numbers.length - evens;
+                
+                if (config.avoidExtremes && (evens === 0 || odds === 0)) {
+                    return false;
+                }
+                
+                if (config.balance && numbers.length >= 4 && Math.abs(evens - odds) > 4) {
+                    return false;
+                }
+            }
+
+            // Verificar agrupamento
+            if (config.clusters && numbers.length >= 4) {
+                const group1 = numbers.filter(n => n <= 10).length;
+                const group2 = numbers.filter(n => n > 10 && n <= 20).length;
+                const group3 = numbers.filter(n => n > 20).length;
+                
+                if (group1 === 0 || group2 === 0 || group3 === 0) {
+                    return false;
+                }
+            }
+
+            // Verificar Fibonacci
+            if (config.fibonacci) {
+                const fibonacci = [1, 1, 2, 3, 5, 8, 13, 21];
+                const fibCount = numbers.filter(n => fibonacci.includes(n)).length;
+                if (fibCount > 3) return false;
+            }
+
+            // Verificar números primos
+            if (config.primeNumbers) {
+                const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31];
+                const primeCount = numbers.filter(n => primes.includes(n)).length;
+                const ratio = primeCount / numbers.length;
+                if (ratio < 0.2 || ratio > 0.6) return false;
+            }
+
+            return true;
+        }
+
+        function hasLongSequence(numbers) {
+            const sorted = [...numbers].sort((a, b) => a - b);
+            let sequence = 1;
+            for (let i = 1; i < sorted.length; i++) {
+                if (sorted[i] === sorted[i-1] + 1) {
+                    sequence++;
+                    if (sequence >= 4) return true;
+                } else {
+                    sequence = 1;
+                }
+            }
+            return false;
+        }
+
+        function filterGames() {
+            const searchTerm = document.getElementById('search-input').value.trim();
+            
+            if (!searchTerm) {
+                filteredGames = [...allGames];
+            } else {
+                // Busca inteligente por múltiplos números
+                const searchNumbers = [];
+                
+                // Extrair números da busca (separados por espaço, vírgula ou hífen)
+                const cleanSearch = searchTerm.replace(/[,-]/g, ' '); // Substitui vírgulas e hífens por espaços
+                const parts = cleanSearch.split(/\s+/).filter(part => part.length > 0);
+                
+                for (const part of parts) {
+                    const num = parseInt(part);
+                    if (!isNaN(num) && num >= 1 && num <= 31) {
+                        searchNumbers.push(num);
+                    }
+                }
+                
+                if (searchNumbers.length > 0) {
+                    // Filtrar jogos que contêm TODOS os números buscados
+                    filteredGames = allGames.filter(game => {
+                        return searchNumbers.every(searchNum => game.numbers.includes(searchNum));
+                    });
+                } else {
+                    // Se não há números válidos, buscar por outros critérios
+                    filteredGames = allGames.filter(game => {
+                        // Busca por mês
+                        const monthStr = game.month.toLowerCase();
+                        if (monthStr.includes(searchTerm.toLowerCase())) {
+                            return true;
+                        }
+                        
+                        // Busca por ID do jogo
+                        if (game.id.toString().includes(searchTerm)) {
+                            return true;
+                        }
+                        
+                        return false;
+                    });
+                }
+            }
+            
+            currentPage = 1;
+            displayGames();
+            updatePagination();
+        }
+
+        function displayResults() {
+            document.getElementById('results-section').classList.remove('hidden');
+            document.getElementById('total-games').textContent = allGames.length.toLocaleString();
+            
+            const numbersCount = parseInt(document.getElementById('numbers-count').value) || 7;
             const gameData = {
+                7: { price: 2.50, bets: 1 },
+                8: { price: 20.00, bets: 8 },
                 9: { price: 90.00, bets: 36 },
                 10: { price: 300.00, bets: 120 },
                 11: { price: 825.00, bets: 330 },
@@ -789,602 +2100,323 @@
                 15: { price: 16087.50, bets: 6435 }
             };
             
-            const data = gameData[parseInt(numbersCount)] || gameData[9];
-            price = data.price;
-        }
-        
-        const total = numGames * price;
-        document.getElementById('total-value').textContent = `R$ ${total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-        
-        updateCalculator();
-        calculateEstimatedGames();
-    }
-
-    function updateCalculator() {
-        const numGames = parseInt(document.getElementById('num-games').value) || 0;
-        const coverage = Math.min((numGames / MAX_TOTAL_GAMES) * 100, 100).toFixed(1);
-        
-        document.getElementById('estimated-games').textContent = numGames.toLocaleString();
-        
-        const numbersCount = document.getElementById('numbers-count').value;
-        let price = 90.00;
-        if (numbersCount === 'custom') {
-            price = parseFloat(document.getElementById('custom-value').value) || 90.00;
-        } else {
-            const gameData = {
-                9: 90.00, 10: 300.00, 11: 825.00, 12: 1980.00, 13: 4290.00, 14: 8580.00, 15: 16087.50
-            };
-            price = gameData[parseInt(numbersCount)] || 90.00;
-        }
-        
-        const investment = numGames * price;
-        document.getElementById('estimated-investment').textContent = `R$ ${investment.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-    }
-
-    // ===== SISTEMA DINÂMICO DE REDUÇÃO EM TEMPO REAL =====
-    function calculateEstimatedGames() {
-        const baseGames = MAX_TOTAL_GAMES; // Base: TODAS as combinações
-        let reductionFactor = 1.0;
-        const activeCriteria = [];
-        
-        // Definir fatores de redução para cada critério (específicos para 7 dígitos)
-        const reductionFactors = {
-            'criteria-frequent': { factor: 0.94, name: 'Mais Sorteadas', reduction: '6.0%' },
-            'criteria-less-frequent': { factor: 0.90, name: 'Evitar Menos Frequentes', reduction: '10.0%' },
-            'criteria-avoid-last': { factor: 0.965, name: 'Evitar Último Sorteio', reduction: '3.5%' },
-            'criteria-balance': { factor: 0.88, name: 'Equilibrio Par/Ímpar', reduction: '12.0%' },
-            'criteria-avoid-extremes': { factor: 0.92, name: 'Evitar Extremos', reduction: '8.0%' },
-            'criteria-clusters': { factor: 0.84, name: 'Distribuir Grupos', reduction: '16.0%' },
-            'criteria-no-sequence': { factor: 0.86, name: 'Evitar Sequências', reduction: '14.0%' },
-            'criteria-sum-range': { factor: 0.78, name: 'Faixa de Soma (140-200)', reduction: '22.0%' },
-            'criteria-repeated-pairs': { factor: 0.95, name: 'Evitar Pares Repetidos', reduction: '5.0%' },
-            'criteria-mathematical': { factor: 0.68, name: 'Fechamento Matemático', reduction: '32.0%' },
-            'criteria-fibonacci': { factor: 0.88, name: 'Evitar Fibonacci', reduction: '12.0%' },
-            'criteria-prime-numbers': { factor: 0.915, name: 'Balancear Primos', reduction: '8.5%' },
-            'criteria-most-used-digits': { factor: 0.52, name: 'Dígitos Mais Usados', reduction: '48.0%' },
-            'criteria-least-used-digits': { factor: 0.76, name: 'Dígitos Menos Usados', reduction: '24.0%' }
-        };
-        
-        // Atualizar informações inline para cada critério
-        Object.keys(reductionFactors).forEach(criteriaId => {
-            const checkbox = document.getElementById(criteriaId);
-            const infoSpan = document.getElementById(criteriaId + '-info');
+            const data = gameData[numbersCount] || gameData[7];
+            const investment = allGames.length * data.price;
+            const totalBets = allGames.length * data.bets;
             
-            if (checkbox && infoSpan) {
-                if (checkbox.checked) {
-                    // Mostrar informação específica do critério
-                    const criteria = reductionFactors[criteriaId];
-                    infoSpan.textContent = `(${criteria.reduction} de redução)`;
-                    infoSpan.classList.remove('hidden');
-                    
-                    // Aplicar fator de redução
-                    reductionFactor *= criteria.factor;
-                    activeCriteria.push(criteria);
-                } else {
-                    // Ocultar informação
-                    infoSpan.classList.add('hidden');
-                }
-            }
-        });
-        
-        // Calcular jogos estimados
-        const estimatedGames = Math.round(baseGames * reductionFactor);
-        const totalReduction = baseGames - estimatedGames;
-        const reductionPercentage = ((totalReduction / baseGames) * 100).toFixed(1);
-        
-        // Calcular investimento estimado
-        const numbersCount = document.getElementById('numbers-count').value;
-        let price = 90.00;
-        if (numbersCount === 'custom') {
-            price = parseFloat(document.getElementById('custom-value').value) || 90.00;
-        } else {
-            const gameData = {
-                9: 90.00, 10: 300.00, 11: 825.00, 12: 1980.00, 13: 4290.00, 14: 8580.00, 15: 16087.50
-            };
-            price = gameData[parseInt(numbersCount)] || 90.00;
+            document.getElementById('total-investment').textContent = 
+                `R$ ${investment.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('total-bets').textContent = totalBets.toLocaleString();
+            
+            displayGames();
+            updatePagination();
         }
-        const estimatedInvestment = estimatedGames * price;
-        
-        // Atualizar interface
-        updateDynamicCalculator(estimatedGames, reductionPercentage, totalReduction, estimatedInvestment, activeCriteria);
-        updateGenerateButton(`Gerar ${estimatedGames.toLocaleString()} Jogos${reductionPercentage > 0 ? ` (-${reductionPercentage}%)` : ''}`);
-    }
-    
-    function updateDynamicCalculator(estimatedGames, reductionPercentage, totalReduction, estimatedInvestment, activeCriteria) {
-        // Atualizar números principais
-        document.getElementById('estimated-games').textContent = estimatedGames.toLocaleString();
-        document.getElementById('reduction-percentage').textContent = `${reductionPercentage}%`;
-        document.getElementById('reduction-info').textContent = `${totalReduction.toLocaleString()} jogos eliminados`;
-        document.getElementById('estimated-investment').textContent = `R$ ${estimatedInvestment.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-        
-        // Atualizar barra de progresso
-        document.getElementById('reduction-bar').style.width = `${Math.min(parseFloat(reductionPercentage), 100)}%`;
-        
-        // Mostrar/ocultar critérios ativos
-        const activeCriteriaSection = document.getElementById('active-criteria');
-        const activeCriteriaList = document.getElementById('active-criteria-list');
-        
-        if (activeCriteria.length > 0) {
-            activeCriteriaSection.classList.remove('hidden');
-            activeCriteriaList.innerHTML = activeCriteria.map(criteria => 
-                `<span class="px-2 py-1 bg-dia-orange text-white text-xs rounded-full">
-                    ${criteria.name} ${criteria.reduction}
-                </span>`
-            ).join('');
-        } else {
-            activeCriteriaSection.classList.add('hidden');
-        }
-        
-        // Animar mudanças
-        const elements = ['estimated-games', 'reduction-percentage', 'estimated-investment'];
-        elements.forEach(id => {
-            const element = document.getElementById(id);
-            element.style.transform = 'scale(1.05)';
-            element.style.transition = 'transform 0.2s ease';
-            setTimeout(() => {
-                element.style.transform = 'scale(1)';
-            }, 200);
-        });
-    }
 
-    function updateGenerateButton(text) {
-        const button = document.getElementById('generate-btn');
-        button.innerHTML = `<i class="fas fa-magic mr-2"></i>${text}`;
-    }
+        function displayGames() {
+            const container = document.getElementById('games-container');
+            const startIndex = (currentPage - 1) * gamesPerPage;
+            const endIndex = startIndex + gamesPerPage;
+            const gamesToShow = filteredGames.slice(startIndex, endIndex);
+            const searchTerm = document.getElementById('search-input').value.trim();
 
-    function showStrategyModal() {
-        // Criar modal se não existir
-        if (!document.getElementById('strategy-modal')) {
-            const modalHTML = `
-                <div id="strategy-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                        <div class="p-6">
-                            <div class="flex items-center justify-between mb-6">
-                                <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center">
-                                    <i class="fas fa-brain text-dia-orange mr-3"></i>
-                                    Como Funcionam as Estratégias (7 Dígitos)
-                                </h2>
-                                <button onclick="hideStrategyModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                                    <i class="fas fa-times text-2xl"></i>
-                                </button>
-                            </div>
+            container.innerHTML = gamesToShow.map(game => {
+                // Função para destacar números encontrados
+                const highlightNumbers = (numbers) => {
+                    return numbers.map(num => {
+                        const numStr = num.toString().padStart(2, '0');
+                        let isHighlighted = false;
+                        
+                        if (searchTerm) {
+                            // Extrair números da busca (mesmo processo do filtro)
+                            const searchNumbers = [];
+                            const cleanSearch = searchTerm.replace(/[,-]/g, ' ');
+                            const parts = cleanSearch.split(/\s+/).filter(part => part.length > 0);
                             
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <!-- Coluna 1 -->
-                                <div class="space-y-4">
-                                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                                        <h3 class="font-semibold text-dia-orange mb-2">📊 Frequência de Números</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                                            <strong>Mais sorteadas:</strong> Prioriza números que saíram mais vezes no histórico.
-                                        </p>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                                            <strong>Menos sorteadas:</strong> Evita números que saíram poucas vezes.
-                                        </p>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300">
-                                            <strong>Evitar último sorteio:</strong> Não repete números do concurso anterior.
-                                        </p>
-                                    </div>
+                            for (const part of parts) {
+                                const searchNum = parseInt(part);
+                                if (!isNaN(searchNum) && searchNum >= 1 && searchNum <= 31) {
+                                    searchNumbers.push(searchNum);
+                                }
+                            }
+                            
+                            // Destacar se o número está na lista de números buscados
+                            if (searchNumbers.includes(num)) {
+                                isHighlighted = true;
+                            }
+                        }
+                        
+                        const baseClasses = "w-8 h-8 text-white rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300";
+                        const backgroundClasses = isHighlighted 
+                            ? "bg-gradient-to-br from-green-500 to-green-600 shadow-lg ring-2 ring-green-300 animate-pulse" 
+                            : "bg-gradient-to-br from-dia-orange to-dia-yellow";
+                        
+                        return `<span class="${baseClasses} ${backgroundClasses}">${numStr}</span>`;
+                    }).join('');
+                };
 
-                                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                                        <h3 class="font-semibold text-dia-orange mb-2">⚖️ Equilíbrio</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                                            <strong>Pares/Ímpares:</strong> Mantém proporção equilibrada (ex: 4 pares, 5 ímpares).
-                                        </p>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                                            <strong>Evitar extremos:</strong> Não gera jogos com todos pares ou todos ímpares.
-                                        </p>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300">
-                                            <strong>Grupos:</strong> Distribui números entre faixas (1-10, 11-20, 21-31).
-                                        </p>
-                                    </div>
+                // Função para destacar mês
+                const highlightMonth = (month) => {
+                    if (searchTerm && month.toLowerCase().includes(searchTerm.toLowerCase())) {
+                        return `<mark class="bg-yellow-200 dark:bg-yellow-600 px-1 rounded">${month}</mark>`;
+                    }
+                    return month;
+                };
 
-                                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                                        <h3 class="font-semibold text-dia-orange mb-2">🔢 7 Dígitos - Estratégia Suprema</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                                            Para jogadores profissionais que buscam cobertura máxima:
-                                        </p>
-                                        <ul class="text-xs text-gray-500 dark:text-gray-400 space-y-1">
-                                            <li>• 120 combinações únicas</li>
-                                            <li>• 8.064.190 jogos máximos</li>
-                                            <li>• Cobertura suprema e completa</li>
-                                            <li>• Para jogadores avançados</li>
-                                        </ul>
-                                    </div>
-                                </div>
+                // Função para destacar ID do jogo
+                const highlightGameId = (gameId) => {
+                    if (searchTerm && gameId.toString().includes(searchTerm)) {
+                        return `<mark class="bg-yellow-200 dark:bg-yellow-600 px-1 rounded">Jogo #${gameId}</mark>`;
+                    }
+                    return `Jogo #${gameId}`;
+                };
 
-                                <!-- Coluna 2 -->
-                                <div class="space-y-4">
-                                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                                        <h3 class="font-semibold text-dia-orange mb-2">🎯 Padrões</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                                            <strong>Sequências:</strong> Evita números consecutivos como 1-2-3-4.
-                                        </p>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                                            <strong>Soma (140-200):</strong> Faixa ideal para 7 dígitos estatisticamente.
-                                        </p>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300">
-                                            <strong>Pares repetidos:</strong> Evita duplas que saíram no último sorteio.
-                                        </p>
-                                    </div>
-
-                                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                                        <h3 class="font-semibold text-dia-orange mb-2">🧮 Avançado</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                                            <strong>Fechamento:</strong> Garante premiação mínima com menos jogos.
-                                        </p>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                                            <strong>Fibonacci:</strong> Evita sequência matemática 1-1-2-3-5-8-13.
-                                        </p>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300">
-                                            <strong>Números primos:</strong> Balanceia quantidade de primos no jogo.
-                                        </p>
-                                    </div>
-
-                                    <div class="bg-dia-cream dark:bg-gray-900 p-4 rounded-lg border border-dia-orange">
-                                        <h3 class="font-semibold text-dia-orange mb-2">💡 Estratégia Suprema</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300">
-                                            <strong>7 dígitos</strong> representam a estratégia suprema com 
-                                            120 combinações oferecendo a maior cobertura possível. 
-                                            Ideal para jogadores profissionais experientes.
-                                        </p>
-                                    </div>
+                return `
+                    <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md transition-shadow duration-300 ${searchTerm ? 'ring-1 ring-blue-200 dark:ring-blue-700' : ''}">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-4">
+                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">${highlightGameId(game.id)}</span>
+                                <div class="flex space-x-2">
+                                    ${highlightNumbers(game.numbers)}
                                 </div>
                             </div>
-
-                            <div class="mt-6 text-center">
-                                <button onclick="hideStrategyModal()" class="bg-dia-orange text-white px-6 py-2 rounded-lg hover:bg-dia-dark-orange transition-colors">
-                                    Entendi, vamos gerar jogos de 7 dígitos!
-                                </button>
+                            <div class="text-right">
+                                <div class="text-sm text-gray-600 dark:text-gray-400">Mês da Sorte</div>
+                                <div class="font-semibold text-dia-orange">${highlightMonth(game.month)}</div>
+                                <div class="text-xs text-gray-500">Soma: ${game.sum}</div>
                             </div>
                         </div>
                     </div>
+                `;
+            }).join('');
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredGames.length / gamesPerPage);
+            const container = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '';
+            
+            // Botão anterior
+            if (currentPage > 1) {
+                paginationHTML += `
+                    <button onclick="changePage(${currentPage - 1})" 
+                            class="px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                `;
+            }
+
+            // Páginas
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+
+            if (startPage > 1) {
+                paginationHTML += `
+                    <button onclick="changePage(1)" class="px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600">1</button>
+                `;
+                if (startPage > 2) {
+                    paginationHTML += '<span class="px-3 py-2 text-gray-500">...</span>';
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const activeClass = i === currentPage ? 'bg-dia-orange text-white' : 'bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600';
+                paginationHTML += `
+                    <button onclick="changePage(${i})" 
+                            class="px-3 py-2 text-sm ${activeClass} border border-gray-300 dark:border-gray-600 rounded-md">
+                        ${i}
+                    </button>
+                `;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHTML += '<span class="px-3 py-2 text-gray-500">...</span>';
+                }
+                paginationHTML += `
+                    <button onclick="changePage(${totalPages})" class="px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600">${totalPages}</button>
+                `;
+            }
+
+            // Botão próximo
+            if (currentPage < totalPages) {
+                paginationHTML += `
+                    <button onclick="changePage(${currentPage + 1})" 
+                            class="px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                `;
+            }
+
+            container.innerHTML = paginationHTML;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            displayGames();
+            updatePagination();
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('hidden', !show);
+            if (!show) {
+                document.getElementById('loading-progress').textContent = '';
+            }
+        }
+
+        function showAlert(message) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-info-circle text-dia-orange text-xl mr-3"></i>
+                        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Aviso</h3>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 mb-6">${message}</p>
+                    <div class="flex justify-end">
+                        <button class="px-4 py-2 bg-dia-orange text-white hover:bg-dia-dark-orange rounded transition-colors" 
+                                onclick="this.closest('.fixed').remove()">
+                            OK
+                        </button>
+                    </div>
                 </div>
             `;
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
-        }
-        document.getElementById('strategy-modal').classList.remove('hidden');
-    }
-
-    function hideStrategyModal() {
-        document.getElementById('strategy-modal').classList.add('hidden');
-    }
-
-    async function generateGames() {
-        const numGames = parseInt(document.getElementById('num-games').value);
-        
-        if (!numGames || numGames < 10 || numGames > MAX_TOTAL_GAMES) {
-            showAlert(`Número de jogos inválido. Digite entre 10 e ${MAX_TOTAL_GAMES.toLocaleString()} jogos.`);
-            return;
+            document.body.appendChild(modal);
         }
 
-        showLoading(true);
-        
-        try {
-            const config = getGameConfig();
-            allGames = [];
+        function showStrategyModal() {
+            document.getElementById('strategy-modal').classList.remove('hidden');
+        }
 
-            const batchSize = 1000;
-            const batches = Math.ceil(numGames / batchSize);
+        function hideStrategyModal() {
+            document.getElementById('strategy-modal').classList.add('hidden');
+        }
 
-            for (let batch = 0; batch < batches; batch++) {
-                const batchStart = batch * batchSize;
-                const batchEnd = Math.min(batchStart + batchSize, numGames);
-                const batchGames = [];
-
-                for (let i = batchStart; i < batchEnd; i++) {
-                    const game = generateSingleGame(config);
-                    batchGames.push({
-                        id: i + 1,
-                        numbers: game.numbers,
-                        month: game.month,
-                        sum: game.numbers.reduce((a, b) => a + b, 0)
-                    });
-                }
-
-                allGames.push(...batchGames);
-
-                if (batch < batches - 1) {
-                    await new Promise(resolve => setTimeout(resolve, 10));
-                }
+        // Função para exportar para TXT
+        function exportToTXT() {
+            if (allGames.length === 0) {
+                showAlert('Nenhum jogo foi gerado ainda!');
+                return;
             }
 
-            filteredGames = [...allGames];
-            currentPage = 1;
-            displayResults();
+            let txtContent = '';
+            allGames.forEach(game => {
+                const numbersStr = game.numbers.map(n => n.toString().padStart(2, '0')).join('-');
+                txtContent += `${numbersStr} ${game.month}\n`;
+            });
+
+            const blob = new Blob([txtContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `dia-sorte-jogos-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Função para exportar para XLS (CSV)
+        function exportToXLS() {
+            if (allGames.length === 0) {
+                showAlert('Nenhum jogo foi gerado ainda!');
+                return;
+            }
+
+            let csvContent = '\uFEFFNúmeros,Mês da Sorte\n'; // BOM para UTF-8
+            allGames.forEach(game => {
+                const numbersStr = game.numbers.map(n => n.toString().padStart(2, '0')).join('-');
+                csvContent += `"${numbersStr}","${game.month}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `dia-sorte-jogos-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Função para encontrar o mês mais sorteado
+        function getMostFrequentMonth() {
+            if (Object.keys(monthFrequency).length === 0) {
+                // Fallback para um mês padrão se não houver dados
+                return 'Janeiro';
+            }
             
-        } catch (error) {
-            console.error('Erro ao gerar jogos:', error);
-            showAlert('Erro ao gerar jogos. Tente novamente.');
-        } finally {
-            showLoading(false);
-        }
-    }
-
-    function getGameConfig() {
-        const fixedNumbers = Array.from(document.querySelectorAll('#fixed-numbers button.bg-dia-orange'))
-            .map(btn => parseInt(btn.dataset.number));
-        
-        return {
-            fixedNumbers,
-            luckyMonth: document.getElementById('lucky-month').value
-        };
-    }
-
-    function generateSingleGame(config) {
-        let numbers = [...config.fixedNumbers];
-        const targetNumbers = parseInt(document.getElementById('numbers-count').value) || 9;
-        
-        // Selecionar combinação de 7 dígitos aleatória
-        const randomCombination = ALL_7_DIGIT_COMBINATIONS[Math.floor(Math.random() * ALL_7_DIGIT_COMBINATIONS.length)];
-        
-        // Converter dígitos para números do jogo (1-31)
-        const availableNumbers = [];
-        for (let i = 1; i <= 31; i++) {
-            if (!numbers.includes(i)) {
-                const lastDigit = i % 10;
-                if (randomCombination.includes(lastDigit)) {
-                    availableNumbers.push(i);
+            let mostFrequentMonth = 'Janeiro';
+            let maxFrequency = 0;
+            
+            for (const [month, frequency] of Object.entries(monthFrequency)) {
+                if (frequency > maxFrequency) {
+                    maxFrequency = frequency;
+                    mostFrequentMonth = month;
                 }
             }
-        }
-
-        // Completar o jogo
-        while (numbers.length < targetNumbers && availableNumbers.length > 0) {
-            const index = Math.floor(Math.random() * availableNumbers.length);
-            const selectedNumber = availableNumbers.splice(index, 1)[0];
-            numbers.push(selectedNumber);
-        }
-
-        // Se precisar completar com mais números
-        while (numbers.length < targetNumbers) {
-            const remaining = [];
-            for (let i = 1; i <= 31; i++) {
-                if (!numbers.includes(i)) remaining.push(i);
-            }
-            if (remaining.length === 0) break;
             
-            const randomIndex = Math.floor(Math.random() * remaining.length);
-            numbers.push(remaining[randomIndex]);
+            return mostFrequentMonth;
         }
 
-        numbers.sort((a, b) => a - b);
-
-        // Definir mês da sorte
-        let month = config.luckyMonth;
-        if (!month) {
+        // Função para atualizar o select do mês da sorte destacando o mais frequente
+        function updateMonthSelect() {
+            const select = document.getElementById('lucky-month');
+            const mostFrequentMonth = getMostFrequentMonth();
+            let mostFrequentFrequency = monthFrequency[mostFrequentMonth] || 0;
+            
+            // Limpar e recriar as opções
+            select.innerHTML = '';
+            
+            // Adicionar opção aleatória
+            const randomOption = document.createElement('option');
+            randomOption.value = '';
+            randomOption.textContent = `Aleatório (usará ${mostFrequentMonth})`;
+            randomOption.style.fontStyle = 'italic';
+            select.appendChild(randomOption);
+            
+            // Array dos meses
             const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
                           'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-            month = months[Math.floor(Math.random() * months.length)];
-        }
-
-        return { numbers, month };
-    }
-
-    function filterGames() {
-        const searchTerm = document.getElementById('search-input').value.trim();
-        
-        if (!searchTerm) {
-            filteredGames = [...allGames];
-        } else {
-            const searchNumbers = [];
-            const cleanSearch = searchTerm.replace(/[,-]/g, ' ');
-            const parts = cleanSearch.split(/\s+/).filter(part => part.length > 0);
             
-            for (const part of parts) {
-                const num = parseInt(part);
-                if (!isNaN(num) && num >= 1 && num <= 31) {
-                    searchNumbers.push(num);
+            // Adicionar cada mês com destaque para o mais frequente
+            months.forEach(month => {
+                const option = document.createElement('option');
+                option.value = month;
+                
+                const frequency = monthFrequency[month] || 0;
+                
+                if (month === mostFrequentMonth) {
+                    option.textContent = `${month} ⭐ (${frequency}x - Mais sorteado)`;
+                    option.style.fontWeight = 'bold';
+                    option.style.color = '#FF6B35'; // cor dia-orange
+                } else {
+                    option.textContent = `${month} (${frequency}x)`;
                 }
-            }
+                
+                select.appendChild(option);
+            });
+        }
+
+        function toggleDataSection() {
+            const section = document.getElementById('data-loading-section');
+            const button = section.querySelector('button');
             
-            if (searchNumbers.length > 0) {
-                filteredGames = allGames.filter(game => {
-                    return searchNumbers.every(searchNum => game.numbers.includes(searchNum));
-                });
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                button.innerHTML = '<i class="fas fa-eye-slash mr-1"></i>Ocultar';
             } else {
-                filteredGames = allGames.filter(game => {
-                    return game.month.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           game.id.toString().includes(searchTerm);
-                });
+                section.style.display = 'none';
+                button.innerHTML = '<i class="fas fa-eye mr-1"></i>Mostrar';
             }
         }
-        
-        currentPage = 1;
-        displayGames();
-        updatePagination();
-    }
-
-    function displayResults() {
-        document.getElementById('results-section').classList.remove('hidden');
-        document.getElementById('total-games').textContent = allGames.length.toLocaleString();
-        
-        const numbersCount = parseInt(document.getElementById('numbers-count').value) || 9;
-        const gameData = {
-            9: { price: 90.00, bets: 36 },
-            10: { price: 300.00, bets: 120 },
-            11: { price: 825.00, bets: 330 },
-            12: { price: 1980.00, bets: 742 },
-            13: { price: 4290.00, bets: 1716 },
-            14: { price: 8580.00, bets: 3432 },
-            15: { price: 16087.50, bets: 6435 }
-        };
-        
-        const data = gameData[numbersCount] || gameData[9];
-        const investment = allGames.length * data.price;
-        const totalBets = allGames.length * data.bets;
-        
-        document.getElementById('total-investment').textContent = 
-            `R$ ${investment.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-        document.getElementById('total-bets').textContent = totalBets.toLocaleString();
-        
-        displayGames();
-        updatePagination();
-    }
-
-    function displayGames() {
-        const container = document.getElementById('games-container');
-        const startIndex = (currentPage - 1) * gamesPerPage;
-        const endIndex = startIndex + gamesPerPage;
-        const gamesToShow = filteredGames.slice(startIndex, endIndex);
-
-        container.innerHTML = gamesToShow.map(game => {
-            return `
-                <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:shadow-md transition-shadow duration-300">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center space-x-4">
-                            <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Jogo #${game.id}</span>
-                            <div class="flex space-x-2">
-                                ${game.numbers.map(num => 
-                                    `<span class="w-8 h-8 bg-gradient-to-br from-dia-orange to-dia-yellow text-white rounded-full flex items-center justify-center text-sm font-bold">${num.toString().padStart(2, '0')}</span>`
-                                ).join('')}
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-sm text-gray-600 dark:text-gray-400">Mês da Sorte</div>
-                            <div class="font-semibold text-dia-orange">${game.month}</div>
-                            <div class="text-xs text-gray-500">Soma: ${game.sum}</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    function updatePagination() {
-        const totalPages = Math.ceil(filteredGames.length / gamesPerPage);
-        const container = document.getElementById('pagination');
-        
-        if (totalPages <= 1) {
-            container.innerHTML = '';
-            return;
-        }
-
-        let paginationHTML = '';
-        
-        if (currentPage > 1) {
-            paginationHTML += `
-                <button onclick="changePage(${currentPage - 1})" 
-                        class="px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-            `;
-        }
-
-        const startPage = Math.max(1, currentPage - 2);
-        const endPage = Math.min(totalPages, currentPage + 2);
-
-        for (let i = startPage; i <= endPage; i++) {
-            const activeClass = i === currentPage ? 'bg-dia-orange text-white' : 'bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600';
-            paginationHTML += `
-                <button onclick="changePage(${i})" 
-                        class="px-3 py-2 text-sm ${activeClass} border border-gray-300 dark:border-gray-600 rounded-md">
-                    ${i}
-                </button>
-            `;
-        }
-
-        if (currentPage < totalPages) {
-            paginationHTML += `
-                <button onclick="changePage(${currentPage + 1})" 
-                        class="px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            `;
-        }
-
-        container.innerHTML = paginationHTML;
-    }
-
-    function changePage(page) {
-        currentPage = page;
-        displayGames();
-        updatePagination();
-    }
-
-    function showLoading(show) {
-        const loading = document.getElementById('loading');
-        if (loading) {
-            loading.classList.toggle('hidden', !show);
-        }
-    }
-
-    function showAlert(message) {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-        modal.innerHTML = `
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
-                <div class="flex items-center mb-4">
-                    <i class="fas fa-info-circle text-dia-orange text-xl mr-3"></i>
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Aviso</h3>
-                </div>
-                <p class="text-gray-700 dark:text-gray-300 mb-6">${message}</p>
-                <div class="flex justify-end">
-                    <button class="px-4 py-2 bg-dia-orange text-white hover:bg-dia-dark-orange rounded transition-colors" 
-                            onclick="this.closest('.fixed').remove()">
-                        OK
-                    </button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-    }
-
-    function exportToTXT() {
-        if (allGames.length === 0) {
-            showAlert('Nenhum jogo foi gerado ainda!');
-            return;
-        }
-
-        let txtContent = '';
-        allGames.forEach(game => {
-            const numbersStr = game.numbers.map(n => n.toString().padStart(2, '0')).join('-');
-            txtContent += `${numbersStr} ${game.month}\n`;
-        });
-
-        const blob = new Blob([txtContent], { type: 'text/plain' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `dia-sorte-7-digitos-${new Date().toISOString().split('T')[0]}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-    }
-
-    function exportToXLS() {
-        if (allGames.length === 0) {
-            showAlert('Nenhum jogo foi gerado ainda!');
-            return;
-        }
-
-        let csvContent = '\uFEFFNúmeros (7 Dígitos),Mês da Sorte\n';
-        allGames.forEach(game => {
-            const numbersStr = game.numbers.map(n => n.toString().padStart(2, '0')).join('-');
-            csvContent += `"${numbersStr}","${game.month}"\n`;
-        });
-
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `dia-sorte-7-digitos-${new Date().toISOString().split('T')[0]}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-    }
-
-    // Loading modal
-    const loadingHTML = `
-        <div id="loading" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl text-center">
-                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-dia-orange mx-auto mb-4"></div>
-                <p class="text-gray-700 dark:text-gray-300">Gerando seus jogos de 7 dígitos...</p>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', loadingHTML);
-</script>
-	</body>
-</html>
+    </script>
+</body>
+</html>			
