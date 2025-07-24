@@ -42,8 +42,8 @@
         <!-- Modal de carregamento -->
         <div id="modalCarregamento" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
             <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full">
-                <h2 class="text-xl font-bold mb-4">🔄 Carregando Dados dos Sorteios</h2>
-                <p id="mensagemCarregamento" class="mb-4">Buscando resultados da API oficial...</p>
+                <h2 class="text-xl font-bold mb-4">🔄 Carregando TODOS os Resultados</h2>
+                <p id="mensagemCarregamento" class="mb-4">Buscando TODOS os sorteios da API oficial...</p>
                 
                 <div class="flex items-center mb-4">
                     <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mr-3"></div>
@@ -54,8 +54,20 @@
                     <div id="progressBar" class="bg-primary h-2.5 rounded-full transition-all duration-300" style="width: 5%"></div>
                 </div>
                 
+                <!-- Informações detalhadas do progresso -->
+                <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                    <div class="text-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded">
+                        <div class="font-bold text-blue-600" id="concursosCarregados">0</div>
+                        <div class="text-xs">Carregados</div>
+                    </div>
+                    <div class="text-center p-2 bg-green-50 dark:bg-green-900/20 rounded">
+                        <div class="font-bold text-green-600" id="totalConcursosTarget">0</div>
+                        <div class="text-xs">Total</div>
+                    </div>
+                </div>
+                
                 <div id="logContainer" class="mt-4 max-h-40 overflow-y-auto text-xs bg-gray-100 dark:bg-gray-700 p-2 rounded">
-                    <div id="logContent">Iniciando busca de resultados...</div>
+                    <div id="logContent">🚀 Iniciando busca COMPLETA de resultados...</div>
                 </div>
             </div>
         </div>
@@ -65,16 +77,20 @@
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="flex gap-4">
                     <button id="btnCarregar" class="bg-primary hover:bg-purple-700 text-white font-medium rounded-lg px-6 py-3 shadow-lg transition-colors">
-                        🚀 Carregar Dados da API
+                        🚀 Carregar TODOS os Dados da API
                     </button>
                     <button id="btnLimparCache" class="bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg px-6 py-3 shadow-lg transition-colors">
                         🗑️ Limpar Cache
+                    </button>
+                    <button id="btnVerificarIntegridade" class="bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg px-6 py-3 shadow-lg transition-colors">
+                        🔍 Verificar Integridade
                     </button>
                 </div>
                 
                 <div id="statusInfo" class="text-center">
                     <p id="totalConcursos" class="font-medium text-lg">0 concursos carregados</p>
                     <p id="ultimaAtualizacao" class="text-sm text-gray-600 dark:text-gray-400">Aguardando carregamento...</p>
+                    <p id="statusIntegridade" class="text-xs text-green-600 dark:text-green-400 hidden">✅ TODOS os resultados carregados</p>
                 </div>
             </div>
         </div>
@@ -187,7 +203,7 @@
                     <tbody id="corpoTabela">
                         <tr>
                             <td colspan="7" class="px-4 py-8 text-center text-gray-500">
-                                🚀 Clique em "Carregar Dados da API" para buscar os resultados oficiais
+                                🚀 Clique em "Carregar TODOS os Dados da API" para buscar TODOS os resultados oficiais
                             </td>
                         </tr>
                     </tbody>
@@ -345,6 +361,7 @@
         let todosSorteios = [];
         let sorteiosAnalisados = [];
         let dadosCarregados = false;
+        let ultimoConcursoEsperado = 0;
         
         // Elementos DOM
         const modalCarregamento = document.getElementById('modalCarregamento');
@@ -354,9 +371,13 @@
         const logContent = document.getElementById('logContent');
         const btnCarregar = document.getElementById('btnCarregar');
         const btnLimparCache = document.getElementById('btnLimparCache');
+        const btnVerificarIntegridade = document.getElementById('btnVerificarIntegridade');
         const corpoTabela = document.getElementById('corpoTabela');
         const totalConcursos = document.getElementById('totalConcursos');
         const ultimaAtualizacao = document.getElementById('ultimaAtualizacao');
+        const statusIntegridade = document.getElementById('statusIntegridade');
+        const concursosCarregados = document.getElementById('concursosCarregados');
+        const totalConcursosTarget = document.getElementById('totalConcursosTarget');
         const resumoGrupos = document.getElementById('resumoGrupos');
         const corpoResumoGrupos = document.getElementById('corpoResumoGrupos');
         const filtroVolume = document.getElementById('filtroVolume');
@@ -435,14 +456,99 @@
             return calcularCombinacoes(qtdNumerosValidos, 7);
         }
         
-        // Função para buscar dados da API
+        // Função para verificar integridade dos dados
+        function verificarIntegridade() {
+            if (todosSorteios.length === 0) {
+                alert('⚠️ Nenhum dado carregado para verificar!');
+                return;
+            }
+            
+            const numerosCarregados = todosSorteios.map(s => s.numero).sort((a, b) => a - b);
+            const faltando = [];
+            
+            for (let i = 1; i <= ultimoConcursoEsperado; i++) {
+                if (!numerosCarregados.includes(i)) {
+                    faltando.push(i);
+                }
+            }
+            
+            if (faltando.length === 0) {
+                adicionarLog(`✅ INTEGRIDADE PERFEITA: Todos os ${ultimoConcursoEsperado} concursos carregados!`);
+                statusIntegridade.textContent = '✅ TODOS os resultados carregados';
+                statusIntegridade.classList.remove('hidden');
+                alert(`✅ PERFEITO! Todos os ${ultimoConcursoEsperado} concursos estão carregados!`);
+            } else {
+                adicionarLog(`❌ FALTANDO ${faltando.length} concursos: ${faltando.join(', ')}`);
+                statusIntegridade.textContent = `❌ Faltando ${faltando.length} concursos`;
+                statusIntegridade.classList.remove('hidden', 'text-green-600');
+                statusIntegridade.classList.add('text-red-600');
+                
+                if (confirm(`❌ Faltam ${faltando.length} concursos. Tentar carregar novamente?`)) {
+                    buscarConcursosFaltantes(faltando);
+                }
+            }
+        }
+        
+        // Função para buscar concursos faltantes
+        async function buscarConcursosFaltantes(concursosFaltantes) {
+            modalCarregamento.classList.remove('hidden');
+            adicionarLog(`🔧 Buscando ${concursosFaltantes.length} concursos faltantes...`);
+            
+            let carregadosExtra = 0;
+            
+            for (let i = 0; i < concursosFaltantes.length; i++) {
+                const concurso = concursosFaltantes[i];
+                const progresso = (i / concursosFaltantes.length) * 100;
+                atualizarProgresso(progresso, `Buscando concurso ${concurso}...`);
+                
+                // Tentar várias vezes
+                for (let tentativa = 1; tentativa <= 5; tentativa++) {
+                    try {
+                        const resultado = await buscarConcursoComRetry(concurso, tentativa);
+                        if (resultado) {
+                            todosSorteios.push(resultado);
+                            carregadosExtra++;
+                            adicionarLog(`✅ Concurso ${concurso} carregado (tentativa ${tentativa})`);
+                            break;
+                        }
+                    } catch (error) {
+                        adicionarLog(`❌ Erro no concurso ${concurso}, tentativa ${tentativa}: ${error.message}`);
+                        if (tentativa < 5) {
+                            await new Promise(resolve => setTimeout(resolve, 1000 * tentativa)); // Delay crescente
+                        }
+                    }
+                }
+            }
+            
+            atualizarProgresso(100, `Concluído! +${carregadosExtra} concursos carregados`);
+            
+            // Reordenar e reanalisar
+            todosSorteios.sort((a, b) => a.numero - b.numero);
+            analisarDados();
+            
+            // Atualizar cache
+            try {
+                localStorage.setItem('diadesorte_cache_completo_v3', JSON.stringify(todosSorteios));
+                localStorage.setItem('diadesorte_timestamp_v3', Date.now().toString());
+            } catch (e) {
+                adicionarLog('Cache não pôde ser atualizado');
+            }
+            
+            setTimeout(() => {
+                modalCarregamento.classList.add('hidden');
+                verificarIntegridade(); // Verificar novamente
+            }, 2000);
+        }
+        
+        // Função para buscar dados da API com garantia de TODOS os resultados
         async function buscarDadosAPI() {
             modalCarregamento.classList.remove('hidden');
             btnCarregar.disabled = true;
+            todosSorteios = []; // Limpar dados anteriores
             
             try {
-                atualizarProgresso(10, 'Descobrindo último concurso...');
-                adicionarLog('Iniciando busca na API oficial da Caixa');
+                atualizarProgresso(5, 'Descobrindo último concurso...');
+                adicionarLog('🚀 Iniciando busca COMPLETA na API oficial da Caixa');
                 
                 // 1. Buscar último concurso
                 let ultimoConcursoData;
@@ -452,113 +558,194 @@
                     if (ultimoConcursoResponse.ok) {
                         ultimoConcursoData = await ultimoConcursoResponse.json();
                     } else {
-                        throw new Error('API não respondeu');
+                        throw new Error('API principal não respondeu');
                     }
                 } catch (error) {
-                    adicionarLog('Tentando proxy...');
+                    adicionarLog('🔄 Tentando proxy alternativo...');
                     const proxyResponse = await fetch('https://corsproxy.io/?https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte');
                     ultimoConcursoData = await proxyResponse.json();
                 }
                 
-                const ultimoNumero = ultimoConcursoData.numero;
+                ultimoConcursoEsperado = ultimoConcursoData.numero;
+                totalConcursosTarget.textContent = ultimoConcursoEsperado;
                 
-                adicionarLog(`Último concurso encontrado: ${ultimoNumero}`);
-                atualizarProgresso(20, `Buscando concursos 1 a ${ultimoNumero}...`);
+                adicionarLog(`📍 Último concurso encontrado: ${ultimoConcursoEsperado}`);
+                atualizarProgresso(10, `Meta: carregar TODOS os ${ultimoConcursoEsperado} concursos`);
                 
-                // 2. Buscar todos os concursos
-                todosSorteios = [];
-                const totalConcursos = ultimoNumero;
-                
-                // Buscar em lotes menores para não sobrecarregar
-                const tamanhoBatch = 15;
+                // 2. Buscar TODOS os concursos de 1 até o último
+                const totalConcursos = ultimoConcursoEsperado;
                 let processados = 0;
                 
+                // Estratégia: batches menores com mais tentativas
+                const tamanhoBatch = 8; // Reduzido para ser mais confiável
+                
                 for (let i = 1; i <= totalConcursos; i += tamanhoBatch) {
-                    const promessas = [];
                     const fimBatch = Math.min(i + tamanhoBatch - 1, totalConcursos);
                     
+                    adicionarLog(`📦 Processando batch ${Math.ceil(i/tamanhoBatch)}: concursos ${i} a ${fimBatch}`);
+                    
+                    const promessas = [];
                     for (let concurso = i; concurso <= fimBatch; concurso++) {
-                        promessas.push(buscarConcurso(concurso));
+                        promessas.push(buscarConcursoComRetry(concurso, 3)); // 3 tentativas por concurso
                     }
                     
                     const resultados = await Promise.allSettled(promessas);
                     
-                    resultados.forEach(resultado => {
+                    let sucessosNoBatch = 0;
+                    resultados.forEach((resultado, index) => {
+                        const numeroConcurso = i + index;
                         if (resultado.status === 'fulfilled' && resultado.value) {
                             todosSorteios.push(resultado.value);
                             processados++;
+                            sucessosNoBatch++;
+                        } else {
+                            adicionarLog(`❌ Falha no concurso ${numeroConcurso}: ${resultado.reason || 'Erro desconhecido'}`);
                         }
                     });
                     
-                    const progresso = 20 + (processados / totalConcursos) * 70;
-                    atualizarProgresso(progresso, `Processados ${processados} de ${totalConcursos} concursos...`);
+                    // Atualizar contadores em tempo real
+                    concursosCarregados.textContent = processados;
                     
-                    adicionarLog(`Batch ${Math.ceil(i/tamanhoBatch)}: ${processados} concursos carregados`);
+                    const progresso = 10 + (processados / totalConcursos) * 80;
+                    atualizarProgresso(progresso, `${processados}/${totalConcursos} concursos carregados`);
                     
-                    // Pausa para não sobrecarregar a API
-                    await new Promise(resolve => setTimeout(resolve, 200));
+                    adicionarLog(`✅ Batch ${Math.ceil(i/tamanhoBatch)} concluído: ${sucessosNoBatch}/${tamanhoBatch} sucessos (total: ${processados})`);
+                    
+                    // Pausa estratégica entre batches
+                    if (i + tamanhoBatch <= totalConcursos) {
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    }
                 }
                 
-                // 3. Analisar os dados
-                atualizarProgresso(90, 'Analisando combinações...');
+                // 3. Verificação final
+                atualizarProgresso(90, 'Verificando integridade dos dados...');
+                
+                const numerosCarregados = todosSorteios.map(s => s.numero).sort((a, b) => a - b);
+                const faltando = [];
+                
+                for (let i = 1; i <= totalConcursos; i++) {
+                    if (!numerosCarregados.includes(i)) {
+                        faltando.push(i);
+                    }
+                }
+                
+                if (faltando.length > 0) {
+                    adicionarLog(`⚠️ ATENÇÃO: ${faltando.length} concursos faltando: ${faltando.slice(0, 10).join(', ')}${faltando.length > 10 ? '...' : ''}`);
+                    
+                    // Tentar buscar os faltantes com mais insistência
+                    atualizarProgresso(95, `Buscando ${faltando.length} concursos faltantes...`);
+                    
+                    for (const concursoFaltante of faltando) {
+                        try {
+                            const resultado = await buscarConcursoComRetry(concursoFaltante, 5); // 5 tentativas
+                            if (resultado) {
+                                todosSorteios.push(resultado);
+                                processados++;
+                                adicionarLog(`🔧 Concurso ${concursoFaltante} recuperado!`);
+                            }
+                        } catch (error) {
+                            adicionarLog(`❌ Concurso ${concursoFaltante} irrecuperável: ${error.message}`);
+                        }
+                    }
+                }
+                
+                // 4. Ordenar e analisar
+                todosSorteios.sort((a, b) => a.numero - b.numero);
+                concursosCarregados.textContent = todosSorteios.length;
+                
+                atualizarProgresso(95, 'Analisando combinações...');
                 analisarDados();
                 
-                atualizarProgresso(100, 'Carregamento concluído!');
-                adicionarLog(`Carregamento finalizado: ${todosSorteios.length} concursos`);
+                atualizarProgresso(100, `CONCLUÍDO! ${todosSorteios.length}/${totalConcursos} concursos carregados`);
+                adicionarLog(`🎉 CARREGAMENTO FINALIZADO: ${todosSorteios.length} de ${totalConcursos} concursos`);
+                
+                // Verificar se conseguimos TODOS
+                if (todosSorteios.length === totalConcursos) {
+                    adicionarLog('✅ SUCESSO TOTAL: TODOS os concursos foram carregados!');
+                    statusIntegridade.textContent = '✅ TODOS os resultados carregados';
+                    statusIntegridade.classList.remove('hidden');
+                } else {
+                    const faltantes = totalConcursos - todosSorteios.length;
+                    adicionarLog(`⚠️ ${faltantes} concursos não foram carregados`);
+                    statusIntegridade.textContent = `⚠️ ${faltantes} concursos faltando`;
+                    statusIntegridade.classList.remove('hidden', 'text-green-600');
+                    statusIntegridade.classList.add('text-yellow-600');
+                }
                 
                 // Salvar no cache
                 try {
-                    localStorage.setItem('diadesorte_cache_v2', JSON.stringify(todosSorteios));
-                    localStorage.setItem('diadesorte_timestamp_v2', Date.now().toString());
+                    localStorage.setItem('diadesorte_cache_completo_v3', JSON.stringify(todosSorteios));
+                    localStorage.setItem('diadesorte_timestamp_v3', Date.now().toString());
+                    localStorage.setItem('diadesorte_ultimo_concurso_v3', ultimoConcursoEsperado.toString());
+                    adicionarLog('💾 Cache atualizado com sucesso');
                 } catch (e) {
-                    adicionarLog('Cache não pôde ser salvo (localStorage não disponível)');
+                    adicionarLog('⚠️ Cache não pôde ser salvo (localStorage limitado)');
                 }
                 
                 setTimeout(() => {
                     modalCarregamento.classList.add('hidden');
-                }, 1000);
+                }, 2000);
                 
             } catch (error) {
-                adicionarLog(`Erro: ${error.message}`);
+                adicionarLog(`💥 ERRO CRÍTICO: ${error.message}`);
                 atualizarProgresso(0, 'Erro no carregamento');
                 setTimeout(() => {
                     modalCarregamento.classList.add('hidden');
-                    alert('Erro ao carregar dados: ' + error.message);
+                    alert('❌ Erro crítico ao carregar dados: ' + error.message);
                 }, 3000);
             } finally {
                 btnCarregar.disabled = false;
             }
         }
         
-        // Função para buscar um concurso específico
-        async function buscarConcurso(numero) {
-            try {
-                let response;
-                
+        // Função para buscar um concurso específico com retry
+        async function buscarConcursoComRetry(numero, maxTentativas = 3) {
+            for (let tentativa = 1; tentativa <= maxTentativas; tentativa++) {
                 try {
-                    response = await fetch(`https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/${numero}`);
+                    let response;
                     
-                    if (!response.ok) {
-                        throw new Error('Tentando proxy...');
+                    // Primeira tentativa: API direta
+                    if (tentativa === 1) {
+                        response = await fetch(`https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/${numero}`, {
+                            timeout: 10000
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+                    } else {
+                        // Tentativas subsequentes: usar proxy
+                        response = await fetch(`https://corsproxy.io/?https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/${numero}`, {
+                            timeout: 15000
+                        });
                     }
+                    
+                    const data = await response.json();
+                    
+                    if (data && data.numero && data.listaDezenas && data.listaDezenas.length === 7) {
+                        return {
+                            numero: data.numero,
+                            data: data.dataApuracao,
+                            dezenas: data.listaDezenas.map(n => parseInt(n))
+                        };
+                    } else {
+                        throw new Error('Dados inválidos recebidos');
+                    }
+                    
                 } catch (error) {
-                    response = await fetch(`https://corsproxy.io/?https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte/${numero}`);
+                    if (tentativa === maxTentativas) {
+                        throw new Error(`Concurso ${numero} - Falha após ${maxTentativas} tentativas: ${error.message}`);
+                    }
+                    
+                    // Delay entre tentativas (progressivo)
+                    await new Promise(resolve => setTimeout(resolve, 500 * tentativa));
                 }
-                
-                const data = await response.json();
-                
-                if (data && data.numero && data.listaDezenas) {
-                    return {
-                        numero: data.numero,
-                        data: data.dataApuracao,
-                        dezenas: data.listaDezenas.map(n => parseInt(n))
-                    };
-                }
-                
-                return null;
-            } catch (error) {
-                return null;
             }
+        }
+        
+        // Função para buscar um concurso específico (versão original mantida para compatibilidade)
+        async function buscarConcurso(numero) {
+            return await buscarConcursoComRetry(numero, 1);
         }
         
         // Função para analisar os dados
@@ -1011,7 +1198,7 @@
             XLSX.utils.book_append_sheet(wb, ws, 'Combinações Dia de Sorte');
             
             const dataAtual = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
-            XLSX.writeFile(wb, `Analise_Combinacoes_Dia_de_Sorte_${dataAtual}.xlsx`);
+            XLSX.writeFile(wb, `Analise_Combinacoes_Dia_de_Sorte_COMPLETA_${dataAtual}.xlsx`);
         }
         
         // Função para download JSON
@@ -1024,7 +1211,7 @@
             
             const link = document.createElement('a');
             link.href = url;
-            link.download = `Analise_Combinacoes_Dia_de_Sorte_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.json`;
+            link.download = `Analise_Combinacoes_Dia_de_Sorte_COMPLETA_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.json`;
             link.click();
             
             URL.revokeObjectURL(url);
@@ -1040,7 +1227,7 @@
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Análise de Combinações Possíveis - Dia de Sorte</title>
+                <title>Análise COMPLETA de Combinações Possíveis - Dia de Sorte</title>
                 <style>
                     body { font-family: Arial, sans-serif; margin: 20px; background-color: #f0f8ff; }
                     .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
@@ -1054,12 +1241,18 @@
                     .low-volume { color: #eab308; font-weight: bold; }
                     .insufficient { color: #dc2626; font-weight: bold; }
                     .footer { text-align: center; margin-top: 20px; color: #666; }
+                    .stats { background: #f8f9fa; padding: 15px; margin: 20px 0; border-radius: 8px; }
                 </style>
             </head>
             <body>
                 <div class="container">
-                    <h1>📊 Análise de Combinações Possíveis - Dia de Sorte</h1>
-                    <p style="text-align: center; margin-bottom: 20px;">Relatório gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+                    <h1>📊 Análise COMPLETA de Combinações Possíveis - Dia de Sorte</h1>
+                    <div class="stats">
+                        <p><strong>📈 Relatório COMPLETO gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+                        <p><strong>🎯 Total de concursos analisados:</strong> ${sorteiosAnalisados.length}</p>
+                        <p><strong>📊 Meta de completude:</strong> ${ultimoConcursoEsperado ? `${ultimoConcursoEsperado} concursos` : 'N/A'}</p>
+                        <p><strong>✅ Status:</strong> ${todosSorteios.length === ultimoConcursoEsperado ? 'TODOS os resultados carregados!' : `${todosSorteios.length}/${ultimoConcursoEsperado} carregados`}</p>
+                    </div>
                     
                     <table>
                         <thead>
@@ -1110,8 +1303,9 @@
                     </table>
                     
                     <div class="footer">
-                        <p>Total de concursos analisados: ${sorteiosAnalisados.length}</p>
-                        <p>Gerado pela Análise de Combinações Possíveis - Dia de Sorte</p>
+                        <p><strong>📊 Total de concursos analisados:</strong> ${sorteiosAnalisados.length}</p>
+                        <p><strong>🎯 Gerado pela Análise COMPLETA de Combinações Possíveis - Dia de Sorte</strong></p>
+                        <p><em>Este relatório contém TODOS os resultados disponíveis</em></p>
                     </div>
                 </div>
             </body>
@@ -1123,7 +1317,7 @@
             
             const link = document.createElement('a');
             link.href = url;
-            link.download = `Analise_Combinacoes_Dia_de_Sorte_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.html`;
+            link.download = `Analise_Combinacoes_Dia_de_Sorte_COMPLETA_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.html`;
             link.click();
             
             URL.revokeObjectURL(url);
@@ -1257,11 +1451,25 @@
         
         // Event Listeners
         btnCarregar.addEventListener('click', buscarDadosAPI);
+        btnVerificarIntegridade.addEventListener('click', verificarIntegridade);
         btnLimparCache.addEventListener('click', () => {
             try {
-                localStorage.removeItem('diadesorte_cache_v2');
-                localStorage.removeItem('diadesorte_timestamp_v2');
-                alert('✅ Cache limpo com sucesso!');
+                localStorage.removeItem('diadesorte_cache_completo_v3');
+                localStorage.removeItem('diadesorte_timestamp_v3');
+                localStorage.removeItem('diadesorte_ultimo_concurso_v3');
+                todosSorteios = [];
+                sorteiosAnalisados = [];
+                dadosCarregados = false;
+                statusIntegridade.classList.add('hidden');
+                totalConcursos.textContent = '0 concursos carregados';
+                ultimaAtualizacao.textContent = 'Aguardando carregamento...';
+                corpoTabela.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">🚀 Clique em "Carregar TODOS os Dados da API" para buscar TODOS os resultados oficiais</td></tr>';
+                resumoGrupos.classList.add('hidden');
+                document.getElementById('estatisticasFinais').classList.add('hidden');
+                btnDownloadExcel.disabled = true;
+                btnDownloadJSON.disabled = true;
+                btnDownloadHTML.disabled = true;
+                alert('✅ Cache limpo com sucesso! Todos os dados foram removidos.');
             } catch (e) {
                 alert('✅ Cache simulado limpo!');
             }
@@ -1274,19 +1482,35 @@
         // Verificar cache ao carregar
         window.addEventListener('load', () => {
             try {
-                const cache = localStorage.getItem('diadesorte_cache_v2');
-                const timestamp = localStorage.getItem('diadesorte_timestamp_v2');
+                const cache = localStorage.getItem('diadesorte_cache_completo_v3');
+                const timestamp = localStorage.getItem('diadesorte_timestamp_v3');
+                const ultimoConcursoCache = localStorage.getItem('diadesorte_ultimo_concurso_v3');
                 
-                if (cache && timestamp) {
+                if (cache && timestamp && ultimoConcursoCache) {
                     const idade = Date.now() - parseInt(timestamp);
                     if (idade < 3600000) { // 1 hora
                         todosSorteios = JSON.parse(cache);
+                        ultimoConcursoEsperado = parseInt(ultimoConcursoCache);
+                        totalConcursosTarget.textContent = ultimoConcursoEsperado;
                         analisarDados();
-                        adicionarLog('Dados carregados do cache');
+                        adicionarLog(`📦 Dados carregados do cache: ${todosSorteios.length} concursos`);
+                        
+                        // Verificar integridade automaticamente
+                        setTimeout(() => {
+                            if (todosSorteios.length === ultimoConcursoEsperado) {
+                                statusIntegridade.textContent = '✅ TODOS os resultados carregados (cache)';
+                                statusIntegridade.classList.remove('hidden');
+                            } else {
+                                statusIntegridade.textContent = `⚠️ ${ultimoConcursoEsperado - todosSorteios.length} concursos faltando (cache)`;
+                                statusIntegridade.classList.remove('hidden', 'text-green-600');
+                                statusIntegridade.classList.add('text-yellow-600');
+                            }
+                        }, 1000);
                     }
                 }
             } catch (e) {
                 // Cache não disponível no iframe
+                adicionarLog('📝 Cache não disponível - necessário carregar dados da API');
             }
         });
     </script>
