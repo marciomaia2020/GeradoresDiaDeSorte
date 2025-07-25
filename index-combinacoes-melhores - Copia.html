@@ -49,48 +49,6 @@
             background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
             border-left-color: #3b82f6;
         }
-        
-        /* 🟢 ESTILOS PARA DESTAQUE VERDE VIBRANTE DAS DEZENAS ACERTADAS */
-        .dezena-acertada {
-            background: linear-gradient(135deg, #10b981, #059669) !important;
-            color: white !important;
-            font-weight: bold !important;
-            border: 2px solid #047857 !important;
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.6) !important;
-            animation: pulseGreen 1.5s infinite !important;
-            transform: scale(1.08) !important;
-            border-radius: 6px !important;
-            padding: 4px 8px !important;
-            margin: 0 2px !important;
-            display: inline-block !important;
-        }
-        
-        .dezena-normal {
-            background: #dbeafe;
-            color: #1e40af;
-            transition: all 0.3s ease;
-            border-radius: 6px;
-            padding: 4px 8px;
-            margin: 0 2px;
-            display: inline-block;
-            font-weight: 500;
-        }
-        
-        .dark .dezena-normal {
-            background: #1e3a8a;
-            color: #93c5fd;
-        }
-        
-        @keyframes pulseGreen {
-            0%, 100% { 
-                box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
-                transform: scale(1.08);
-            }
-            50% { 
-                box-shadow: 0 0 20px rgba(16, 185, 129, 1);
-                transform: scale(1.12);
-            }
-        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
@@ -355,9 +313,9 @@
                 </div>
             </div>
             
-            <!-- 🟢 SEÇÃO DE VERIFICAÇÃO COM DESTAQUE VERDE VIBRANTE -->
+            <!-- Verificação de Acertos -->
             <div class="mb-8">
-                <h4 class="font-semibold mb-4">🔍 Verificação de Acertos - Destaque VERDE das Dezenas</h4>
+                <h4 class="font-semibold mb-4">🔍 Verificação de Acertos - Último Concurso</h4>
                 <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 border">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div>
@@ -1368,7 +1326,7 @@
             // Verificação de acertos
             document.getElementById('verificar-acertos').addEventListener('click', verificarAcertos);
             
-            // 🟢 BUSCA INTELIGENTE EM TEMPO REAL COM DESTAQUE VERDE
+            // Busca inteligente em tempo real
             document.getElementById('dezenas-sorteadas').addEventListener('input', buscarJogosTempoReal);
             document.getElementById('mes-sorteado').addEventListener('change', buscarJogosTempoReal);
             
@@ -1392,8 +1350,7 @@
             const resultadoDiv = document.getElementById('resultado-verificacao');
             
             if (!dezenasInput || !mesSorteado) {
-                // Criar modal personalizado em vez de alert()
-                mostrarModal('Atenção', 'Por favor, preencha as dezenas sorteadas e o mês de sorte.');
+                alert('Por favor, preencha as dezenas sorteadas e o mês de sorte.');
                 return;
             }
             
@@ -1404,7 +1361,7 @@
                 .sort();
             
             if (dezenasSorteadas.length !== 7) {
-                mostrarModal('Erro de Validação', 'Por favor, insira exatamente 7 dezenas válidas (01-31).');
+                alert('Por favor, insira exatamente 7 dezenas válidas (01-31).');
                 return;
             }
             
@@ -1436,22 +1393,6 @@
             
             // Atualizar visualização dos jogos para destacar acertos
             atualizarVisualizacaoJogos();
-        }
-
-        // Função para criar modal customizado (substitui alert)
-        function mostrarModal(titulo, mensagem) {
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4';
-            modal.innerHTML = `
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
-                    <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">${titulo}</h3>
-                    <p class="text-gray-700 dark:text-gray-300 mb-4">${mensagem}</p>
-                    <div class="flex justify-end">
-                        <button class="px-4 py-2 bg-primary text-white hover:bg-primary/90 rounded font-semibold" onclick="this.closest('.fixed').remove()">OK</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
         }
 
         // Função para contar acertos entre duas listas de dezenas
@@ -1608,7 +1549,7 @@
             atualizarVisualizacaoJogos();
         }
 
-        // 🟢 FUNÇÃO PRINCIPAL PARA ATUALIZAR VISUALIZAÇÃO COM DESTAQUE VERDE VIBRANTE
+        // Função para atualizar visualização dos jogos
         function atualizarVisualizacaoJogos() {
             const container = document.getElementById('lista-jogos');
             const paginacaoContainer = document.getElementById('paginacao');
@@ -1623,7 +1564,7 @@
             // Limpar container
             container.innerHTML = '';
             
-            // Exibir jogos com DESTAQUE VERDE VIBRANTE
+            // Exibir jogos
             jogosParaExibir.forEach(jogo => {
                 const jogoDiv = document.createElement('div');
                 
@@ -1647,19 +1588,12 @@
                     }
                 }
                 
-                // 🟢 GERAR HTML DAS DEZENAS COM DESTAQUE VERDE VIBRANTE
-                const dezenasHTML = jogo.dezenas.map(dezena => {
-                    const isAcerto = ultimaVerificacao && ultimaVerificacao.dezenasSorteadas.includes(dezena);
-                    const classes = isAcerto ? 'dezena-acertada' : 'dezena-normal';
-                    return `<span class="${classes}">${dezena}</span>`;
-                }).join(' ');
-                
                 if (viewCompacta) {
                     jogoDiv.className = `${bgClass} p-2 rounded border ${borderClass} text-sm`;
                     jogoDiv.innerHTML = `
                         <div class="flex justify-between items-center">
                             <span class="text-xs text-gray-500">#${jogo.numeroJogo}</span>
-                            <div class="flex flex-wrap">${dezenasHTML}</div>
+                            <span class="font-mono font-bold text-primary">${jogo.dezenas.join(' ')}</span>
                             <span class="text-xs font-bold text-blue-600">${jogo.mes}</span>
                             ${resultadoVerificacao ? `<span class="text-xs bg-primary text-white px-1 rounded">${resultadoVerificacao.acertos}</span>` : ''}
                         </div>
@@ -1676,7 +1610,7 @@
                                 </div>
                             ` : ''}
                         </div>
-                        <div class="text-lg font-bold mb-2">${dezenasHTML}</div>
+                        <div class="font-mono font-bold text-lg text-primary mb-2">${jogo.dezenas.join(' ')}</div>
                         <div class="text-sm font-bold text-blue-600">Mês: ${jogo.mes}</div>
                         ${resultadoVerificacao ? `
                             <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
@@ -1820,7 +1754,7 @@
                 
             } catch (error) {
                 console.error('Erro ao gerar HTML:', error);
-                mostrarModal('Erro', 'Erro ao gerar arquivo HTML.');
+                alert('Erro ao gerar arquivo HTML.');
             }
         }
         
@@ -1841,7 +1775,7 @@
                 
             } catch (error) {
                 console.error('Erro ao gerar TXT:', error);
-                mostrarModal('Erro', 'Erro ao gerar arquivo TXT.');
+                alert('Erro ao gerar arquivo TXT.');
             }
         }
         
@@ -1881,11 +1815,11 @@
                 
             } catch (error) {
                 console.error('Erro ao gerar XLSX:', error);
-                mostrarModal('Erro', 'Erro ao gerar arquivo XLSX.');
+                alert('Erro ao gerar arquivo XLSX.');
             }
         }
 
-        // 🟢 FUNÇÃO PRINCIPAL DE BUSCA INTELIGENTE EM TEMPO REAL COM DESTAQUE VERDE
+        // Função para busca inteligente em tempo real
         function buscarJogosTempoReal() {
             const dezenasInput = document.getElementById('dezenas-sorteadas').value.trim();
             const mesSorteado = document.getElementById('mes-sorteado').value;
@@ -1901,12 +1835,11 @@
             // Se não há números digitados, limpar destaque
             if (numerosDigitados.length === 0 && !mesSorteado) {
                 document.getElementById('contador-jogos-destacados').textContent = '0 jogos destacados';
-                ultimaVerificacao = null; // Limpar verificação
                 atualizarVisualizacaoJogos();
                 return;
             }
             
-            // Criar verificação temporária para destaque EM TEMPO REAL
+            // Criar verificação temporária para destaque
             let verificacaoTemporaria = null;
             
             if (numerosDigitados.length > 0 || mesSorteado) {
@@ -1935,9 +1868,11 @@
                 };
             }
             
-            // Usar verificação temporária para DESTAQUE VERDE VIBRANTE EM TEMPO REAL
+            // Usar verificação temporária para destacar
+            const verificacaoOriginal = ultimaVerificacao;
             ultimaVerificacao = verificacaoTemporaria;
             atualizarVisualizacaoJogos();
+            ultimaVerificacao = verificacaoOriginal; // Restaurar verificação oficial
         }
 
         // Função para mostrar/ocultar ranking completo
