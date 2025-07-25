@@ -95,7 +95,7 @@
             </div>
         </div>
 
-        <!-- Resumo dos Grupos (sempre visível) -->
+        <!-- Resumo dos Grupos -->
         <div id="resumoGrupos" class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 mb-8 hidden">
             <h2 class="text-2xl font-semibold mb-6 text-center">📈 Estatística dos Volumes de Combinações (Mais Usados → Menos Usados)</h2>
             
@@ -120,31 +120,22 @@
                 </div>
             </div>
             
-            <!-- Controle de visibilidade da tabela de ranking -->
-            <div class="mb-4 text-center">
-                <button id="btnToggleRanking" class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-4 py-2 shadow-lg transition-colors">
-                    👁️ Mostrar Tabela de Ranking
-                </button>
-            </div>
-            
-            <div id="tabelaRanking" class="hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-700 dark:text-gray-300 border">
-                        <thead class="text-xs uppercase bg-primary text-white">
-                            <tr>
-                                <th class="px-6 py-3 border">Ranking</th>
-                                <th class="px-6 py-3 border">Volume de Combinações</th>
-                                <th class="px-6 py-3 border">Quantidade de Sorteios</th>
-                                <th class="px-6 py-3 border">Percentual do Total</th>
-                                <th class="px-6 py-3 border">Última Ocorrência</th>
-                                <th class="px-6 py-3 border">Frequência</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpoResumoGrupos">
-                            <!-- Será preenchido via JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-700 dark:text-gray-300 border">
+                    <thead class="text-xs uppercase bg-primary text-white">
+                        <tr>
+                            <th class="px-6 py-3 border">Ranking</th>
+                            <th class="px-6 py-3 border">Volume de Combinações</th>
+                            <th class="px-6 py-3 border">Quantidade de Sorteios</th>
+                            <th class="px-6 py-3 border">Percentual do Total</th>
+                            <th class="px-6 py-3 border">Última Ocorrência</th>
+                            <th class="px-6 py-3 border">Frequência</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoResumoGrupos">
+                        <!-- Será preenchido via JavaScript -->
+                    </tbody>
+                </table>
             </div>
             
             <!-- Gráfico de barras simples -->
@@ -158,77 +149,70 @@
 
         <!-- Tabela Principal -->
         <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-semibold">🎯 Análise Detalhada por Concurso</h2>
-                <button id="btnToggleDetalhes" class="bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg px-4 py-2 shadow-lg transition-colors">
-                    👁️ Mostrar Detalhes
-                </button>
-            </div>
+            <h2 class="text-2xl font-semibold mb-6">🎯 Análise Detalhada por Concurso</h2>
             
-            <div id="analiseDetalhada" class="hidden">
-                <!-- Filtros -->
-                <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-2">🎲 Volume de Combinações:</label>
-                            <select id="filtroVolume" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
-                                <option value="">Todos os Volumes</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-2">🔢 Números Válidos:</label>
-                            <select id="filtroNumerosValidos" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
-                                <option value="">Todas as Quantidades</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-2">📊 Qtd. Dígitos:</label>
-                            <select id="filtroQtdDigitos" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
-                                <option value="">Todas as Quantidades</option>
-                            </select>
-                        </div>
-                        <div class="flex items-end">
-                            <button id="btnFiltrar" class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-6 py-2 w-full shadow-lg transition-colors">
-                                🔍 Aplicar Filtros
-                            </button>
-                        </div>
+            <!-- Filtros -->
+            <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">🎲 Volume de Combinações:</label>
+                        <select id="filtroVolume" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
+                            <option value="">Todos os Volumes</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">🔢 Números Válidos:</label>
+                        <select id="filtroNumerosValidos" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
+                            <option value="">Todas as Quantidades</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">📊 Qtd. Dígitos:</label>
+                        <select id="filtroQtdDigitos" class="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
+                            <option value="">Todas as Quantidades</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button id="btnFiltrar" class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-6 py-2 w-full shadow-lg transition-colors">
+                            🔍 Aplicar Filtros
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Informações sobre filtros aplicados -->
-                <div id="infoFiltros" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hidden">
-                    <p class="text-sm text-blue-800 dark:text-blue-200">
-                        <span id="textoFiltros"></span>
-                    </p>
-                </div>
+            <!-- Informações sobre filtros aplicados -->
+            <div id="infoFiltros" class="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hidden">
+                <p class="text-sm text-blue-800 dark:text-blue-200">
+                    <span id="textoFiltros"></span>
+                </p>
+            </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-700 dark:text-gray-300 border">
-                        <thead class="text-xs uppercase bg-primary text-white">
-                            <tr>
-                                <th class="px-4 py-3 border">Concurso</th>
-                                <th class="px-4 py-3 border">Data</th>
-                                <th class="px-4 py-3 border">Dezenas Sorteadas</th>
-                                <th class="px-4 py-3 border">Dígitos Únicos</th>
-                                <th class="px-4 py-3 border">Qtd. Dígitos</th>
-                                <th class="px-4 py-3 border">Números Válidos</th>
-                                <th class="px-4 py-3 border">Volume de Combinações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpoTabela">
-                            <tr>
-                                <td colspan="7" class="px-4 py-8 text-center text-gray-500">
-                                    🚀 Clique em "Carregar TODOS os Dados da API" para buscar TODOS os resultados oficiais
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-700 dark:text-gray-300 border">
+                    <thead class="text-xs uppercase bg-primary text-white">
+                        <tr>
+                            <th class="px-4 py-3 border">Concurso</th>
+                            <th class="px-4 py-3 border">Data</th>
+                            <th class="px-4 py-3 border">Dezenas Sorteadas</th>
+                            <th class="px-4 py-3 border">Dígitos Únicos</th>
+                            <th class="px-4 py-3 border">Qtd. Dígitos</th>
+                            <th class="px-4 py-3 border">Números Válidos</th>
+                            <th class="px-4 py-3 border">Volume de Combinações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabela">
+                        <tr>
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                                🚀 Clique em "Carregar TODOS os Dados da API" para buscar TODOS os resultados oficiais
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-                <!-- Informações da tabela -->
-                <div id="infoTabela" class="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-                    <!-- Será preenchido dinamicamente -->
-                </div>
+            <!-- Informações da tabela -->
+            <div id="infoTabela" class="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+                <!-- Será preenchido dinamicamente -->
             </div>
         </div>
 
@@ -236,7 +220,7 @@
         <div id="estatisticasFinais" class="mt-8 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 hidden">
             <h2 class="text-2xl font-semibold mb-6 text-center">📊 Estatísticas Gerais dos Sorteios</h2>
             
-            <!-- Cards de estatísticas com destaque sutil -->
+            <!-- Cards de estatísticas resumidas -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <!-- Qtd. Dígitos -->
                 <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 p-6 rounded-lg border border-blue-200 dark:border-blue-700">
@@ -254,10 +238,9 @@
                             <span class="text-sm">Máximo:</span>
                             <span class="font-bold" id="maxDigitos">-</span>
                         </div>
-                        <!-- DESTAQUE ESPECIAL - Mais Comum -->
-                        <div class="flex justify-between items-center p-3 bg-gradient-to-r from-yellow-100 to-yellow-200 dark:from-yellow-900/40 dark:to-yellow-800/30 rounded-lg border-2 border-yellow-300 dark:border-yellow-600">
-                            <span class="text-sm font-bold text-yellow-800 dark:text-yellow-300">🏆 Mais Comum:</span>
-                            <span class="text-xl font-black text-yellow-700 dark:text-yellow-400" id="modaDigitos">-</span>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mais Comum:</span>
+                            <span class="font-bold text-blue-600 dark:text-blue-400" id="modaDigitos">-</span>
                         </div>
                     </div>
                 </div>
@@ -278,10 +261,9 @@
                             <span class="text-sm">Máximo:</span>
                             <span class="font-bold" id="maxNumerosValidos">-</span>
                         </div>
-                        <!-- DESTAQUE ESPECIAL - Mais Comum -->
-                        <div class="flex justify-between items-center p-3 bg-gradient-to-r from-yellow-100 to-yellow-200 dark:from-yellow-900/40 dark:to-yellow-800/30 rounded-lg border-2 border-yellow-300 dark:border-yellow-600">
-                            <span class="text-sm font-bold text-yellow-800 dark:text-yellow-300">🏆 Mais Comum:</span>
-                            <span class="text-xl font-black text-yellow-700 dark:text-yellow-400" id="modaNumerosValidos">-</span>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mais Comum:</span>
+                            <span class="font-bold text-green-600 dark:text-green-400" id="modaNumerosValidos">-</span>
                         </div>
                     </div>
                 </div>
@@ -302,10 +284,9 @@
                             <span class="text-sm">Máximo:</span>
                             <span class="font-bold" id="maxVolume">-</span>
                         </div>
-                        <!-- DESTAQUE ESPECIAL - Mais Comum -->
-                        <div class="flex justify-between items-center p-3 bg-gradient-to-r from-yellow-100 to-yellow-200 dark:from-yellow-900/40 dark:to-yellow-800/30 rounded-lg border-2 border-yellow-300 dark:border-yellow-600">
-                            <span class="text-sm font-bold text-yellow-800 dark:text-yellow-300">🏆 Mais Comum:</span>
-                            <span class="text-xl font-black text-yellow-700 dark:text-yellow-400" id="modaVolume">-</span>
+                        <div class="flex justify-between">
+                            <span class="text-sm">Mais Comum:</span>
+                            <span class="font-bold text-red-600 dark:text-red-400" id="modaVolume">-</span>
                         </div>
                     </div>
                 </div>
@@ -409,10 +390,6 @@
         const infoFiltros = document.getElementById('infoFiltros');
         const textoFiltros = document.getElementById('textoFiltros');
         const infoTabela = document.getElementById('infoTabela');
-        const btnToggleRanking = document.getElementById('btnToggleRanking');
-        const tabelaRanking = document.getElementById('tabelaRanking');
-        const btnToggleDetalhes = document.getElementById('btnToggleDetalhes');
-        const analiseDetalhada = document.getElementById('analiseDetalhada');
         
         // Função para adicionar log
         function adicionarLog(mensagem) {
@@ -450,7 +427,7 @@
         
         // Função para verificar se um número pode ser formado com os dígitos disponíveis
         function podeFormarNumero(numero, digitosDisponiveis) {
-            const digitosNumero = numero.toString().padStart(2, '0').split('').map(d => parseInt(d));
+            const digitosNumero = numero.toString().split('').map(d => parseInt(d));
             const digitosSet = new Set(digitosDisponiveis);
             
             return digitosNumero.every(digito => digitosSet.has(digito));
@@ -482,7 +459,7 @@
         // Função para verificar integridade dos dados
         function verificarIntegridade() {
             if (todosSorteios.length === 0) {
-                showCustomAlert('⚠️ Nenhum dado carregado para verificar!');
+                alert('⚠️ Nenhum dado carregado para verificar!');
                 return;
             }
             
@@ -499,48 +476,17 @@
                 adicionarLog(`✅ INTEGRIDADE PERFEITA: Todos os ${ultimoConcursoEsperado} concursos carregados!`);
                 statusIntegridade.textContent = '✅ TODOS os resultados carregados';
                 statusIntegridade.classList.remove('hidden');
-                showCustomAlert(`✅ PERFEITO! Todos os ${ultimoConcursoEsperado} concursos estão carregados!`);
+                alert(`✅ PERFEITO! Todos os ${ultimoConcursoEsperado} concursos estão carregados!`);
             } else {
                 adicionarLog(`❌ FALTANDO ${faltando.length} concursos: ${faltando.join(', ')}`);
                 statusIntegridade.textContent = `❌ Faltando ${faltando.length} concursos`;
                 statusIntegridade.classList.remove('hidden', 'text-green-600');
                 statusIntegridade.classList.add('text-red-600');
                 
-                showCustomConfirm(`❌ Faltam ${faltando.length} concursos. Tentar carregar novamente?`, () => {
+                if (confirm(`❌ Faltam ${faltando.length} concursos. Tentar carregar novamente?`)) {
                     buscarConcursosFaltantes(faltando);
-                });
+                }
             }
-        }
-        
-        // Função para criar modal customizado de alerta
-        function showCustomAlert(message) {
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-            modal.innerHTML = `
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
-                    <p class="text-gray-700 dark:text-gray-300 mb-4">${message}</p>
-                    <div class="flex justify-end">
-                        <button class="px-4 py-2 bg-primary text-white hover:bg-purple-700 rounded" onclick="this.closest('.fixed').remove()">OK</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
-        
-        // Função para criar modal customizado de confirmação
-        function showCustomConfirm(message, onConfirm) {
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-            modal.innerHTML = `
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
-                    <p class="text-gray-700 dark:text-gray-300 mb-4">${message}</p>
-                    <div class="flex justify-end space-x-3">
-                        <button class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded" onclick="this.closest('.fixed').remove()">Cancelar</button>
-                        <button class="px-4 py-2 bg-primary text-white hover:bg-purple-700 rounded" onclick="this.closest('.fixed').remove(); (${onConfirm})()">Confirmar</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
         }
         
         // Função para buscar concursos faltantes
@@ -745,7 +691,7 @@
                 atualizarProgresso(0, 'Erro no carregamento');
                 setTimeout(() => {
                     modalCarregamento.classList.add('hidden');
-                    showCustomAlert('❌ Erro crítico ao carregar dados: ' + error.message);
+                    alert('❌ Erro crítico ao carregar dados: ' + error.message);
                 }, 3000);
             } finally {
                 btnCarregar.disabled = false;
@@ -797,17 +743,20 @@
             }
         }
         
-        // Função para analisar os dados (CORRIGIDA para contar dígitos corretamente)
+        // Função para buscar um concurso específico (versão original mantida para compatibilidade)
+        async function buscarConcurso(numero) {
+            return await buscarConcursoComRetry(numero, 1);
+        }
+        
+        // Função para analisar os dados
         function analisarDados() {
             sorteiosAnalisados = [];
             
             todosSorteios.forEach(sorteio => {
-                // Extrair dígitos únicos das dezenas (considerando formato com zero à esquerda)
+                // Extrair dígitos únicos das dezenas
                 const digitosUnicos = new Set();
                 sorteio.dezenas.forEach(dezena => {
-                    // Formatar com zero à esquerda se necessário
-                    const dezenaFormatada = dezena.toString().padStart(2, '0');
-                    dezenaFormatada.split('').forEach(digito => {
+                    dezena.toString().split('').forEach(digito => {
                         digitosUnicos.add(parseInt(digito));
                     });
                 });
@@ -816,14 +765,10 @@
                 const numerosValidos = calcularNumerosValidos(digitos);
                 const volumeCombinacoes = calcularVolumeCombinacoes(numerosValidos.length);
                 
-                // Formatar dezenas com zero à esquerda para exibição
-                const dezenasFormatadas = sorteio.dezenas.map(d => d.toString().padStart(2, '0'));
-                
                 sorteiosAnalisados.push({
                     numero: sorteio.numero,
                     data: sorteio.data,
                     dezenas: sorteio.dezenas,
-                    dezenasFormatadas: dezenasFormatadas,
                     digitos: digitos,
                     qtdDigitos: digitos.length,
                     numerosValidos: numerosValidos,
@@ -859,7 +804,7 @@
             dadosCarregados = true;
         }
         
-        // Função para preencher a tabela (CORRIGIDA para usar formato correto)
+        // Função para preencher a tabela
         function preencherTabela(dados) {
             corpoTabela.innerHTML = '';
             
@@ -887,10 +832,10 @@
                 cellData.className = 'px-4 py-3 border';
                 cellData.textContent = sorteio.data;
                 
-                // Dezenas (formato com zero à esquerda)
+                // Dezenas
                 const cellDezenas = row.insertCell();
-                cellDezenas.className = 'px-4 py-3 border font-mono';
-                cellDezenas.textContent = sorteio.dezenasFormatadas.join(' - ');
+                cellDezenas.className = 'px-4 py-3 border';
+                cellDezenas.textContent = sorteio.dezenas.join(' - ');
                 
                 // Dígitos
                 const cellDigitos = row.insertCell();
@@ -899,7 +844,7 @@
                 
                 // Qtd. Dígitos
                 const cellQtdDigitos = row.insertCell();
-                cellQtdDigitos.className = 'px-4 py-3 border text-center font-bold';
+                cellQtdDigitos.className = 'px-4 py-3 border text-center';
                 cellQtdDigitos.textContent = sorteio.qtdDigitos;
                 
                 // Números Válidos
@@ -1228,7 +1173,7 @@
             preencherTabela(dadosFiltrados);
         }
         
-        // Função para download Excel (CORRIGIDA para usar formato correto)
+        // Função para download Excel
         function downloadExcel() {
             if (!dadosCarregados) return;
             
@@ -1240,7 +1185,7 @@
                 dados.push([
                     sorteio.numero,
                     sorteio.data,
-                    sorteio.dezenasFormatadas.join(' - '),
+                    sorteio.dezenas.join(' - '),
                     sorteio.digitos.join(', '),
                     sorteio.qtdDigitos,
                     sorteio.qtdNumerosValidos,
@@ -1272,7 +1217,7 @@
             URL.revokeObjectURL(url);
         }
         
-        // Função para download HTML (CORRIGIDA para usar formato correto)
+        // Função para download HTML
         function downloadHTML() {
             if (!dadosCarregados) return;
             
@@ -1344,7 +1289,7 @@
                     <tr>
                         <td>${sorteio.numero}</td>
                         <td>${sorteio.data}</td>
-                        <td>${sorteio.dezenasFormatadas.join(' - ')}</td>
+                        <td>${sorteio.dezenas.join(' - ')}</td>
                         <td>${sorteio.digitos.join(', ')}</td>
                         <td>${sorteio.qtdDigitos}</td>
                         <td>${sorteio.qtdNumerosValidos}</td>
@@ -1426,47 +1371,23 @@
                 
                 sorted.slice(0, 10).forEach(([valor, count], index) => {
                     const div = document.createElement('div');
+                    div.className = 'flex justify-between items-center';
+                    
                     const percent = ((count / sorteiosAnalisados.length) * 100).toFixed(1);
                     
-                    // DESTAQUE ESPECIAL apenas para os PRIMEIROS COLOCADOS (Mais Comuns)
-                    if (index === 0) {
-                        // Cores e estilos específicos para cada distribuição
-                        let corFundo, corBorda, corTexto, emoji;
-                        
-                        if (elementId === 'distribuicaoDigitos') {
-                            corFundo = 'bg-gradient-to-r from-blue-100 via-blue-200 to-blue-300 dark:from-blue-900/50 dark:via-blue-800/40 dark:to-blue-700/50';
-                            corBorda = 'border-blue-400 dark:border-blue-500';
-                            corTexto = 'text-blue-800 dark:text-blue-300';
-                            emoji = '🔢';
-                        } else if (elementId === 'distribuicaoNumerosValidos') {
-                            corFundo = 'bg-gradient-to-r from-green-100 via-green-200 to-green-300 dark:from-green-900/50 dark:via-green-800/40 dark:to-green-700/50';
-                            corBorda = 'border-green-400 dark:border-green-500';
-                            corTexto = 'text-green-800 dark:text-green-300';
-                            emoji = '✅';
-                        } else { // distribuicaoVolume
-                            corFundo = 'bg-gradient-to-r from-purple-100 via-purple-200 to-purple-300 dark:from-purple-900/50 dark:via-purple-800/40 dark:to-purple-700/50';
-                            corBorda = 'border-purple-400 dark:border-purple-500';
-                            corTexto = 'text-purple-800 dark:text-purple-300';
-                            emoji = '🎯';
-                        }
-                        
-                        div.className = `flex justify-between items-center p-4 ${corFundo} rounded-xl border-3 ${corBorda} mb-4 shadow-lg transform hover:scale-105 transition-all duration-300`;
-                        div.innerHTML = `
-                            <span class="font-black ${corTexto} text-lg">${emoji} 🏆 MAIS COMUM - ${valor}:</span>
-                            <span class="text-lg font-black ${corTexto}">
-                                <span class="text-2xl animate-pulse">${count}</span> 
-                                <span class="text-sm font-bold">(${percent}%)</span>
-                            </span>
-                        `;
-                    } 
-                    // Demais valores - estilo bem discreto
-                    else {
-                        div.className = 'flex justify-between items-center p-1 text-xs text-gray-500 dark:text-gray-600 border-b border-gray-200 dark:border-gray-700';
-                        div.innerHTML = `
-                            <span>${valor}:</span>
-                            <span>${count} <span class="text-gray-400">(${percent}%)</span></span>
-                        `;
-                    }
+                    let emoji = '';
+                    if (index === 0) emoji = '🥇';
+                    else if (index === 1) emoji = '🥈';
+                    else if (index === 2) emoji = '🥉';
+                    else emoji = '📊';
+                    
+                    div.innerHTML = `
+                        <span class="font-medium">${emoji} ${valor}:</span>
+                        <span class="text-xs">
+                            <span class="font-bold">${count}</span> 
+                            <span class="text-gray-500">(${percent}%)</span>
+                        </span>
+                    `;
                     
                     container.appendChild(div);
                 });
@@ -1548,36 +1469,15 @@
                 btnDownloadExcel.disabled = true;
                 btnDownloadJSON.disabled = true;
                 btnDownloadHTML.disabled = true;
-                showCustomAlert('✅ Cache limpo com sucesso! Todos os dados foram removidos.');
+                alert('✅ Cache limpo com sucesso! Todos os dados foram removidos.');
             } catch (e) {
-                showCustomAlert('✅ Cache simulado limpo!');
+                alert('✅ Cache simulado limpo!');
             }
         });
         btnFiltrar.addEventListener('click', aplicarFiltros);
         btnDownloadExcel.addEventListener('click', downloadExcel);
         btnDownloadJSON.addEventListener('click', downloadJSON);
         btnDownloadHTML.addEventListener('click', downloadHTML);
-        
-        // Event listeners para botões de toggle
-        btnToggleRanking.addEventListener('click', () => {
-            if (tabelaRanking.classList.contains('hidden')) {
-                tabelaRanking.classList.remove('hidden');
-                btnToggleRanking.innerHTML = '👁️ Ocultar Tabela de Ranking';
-            } else {
-                tabelaRanking.classList.add('hidden');
-                btnToggleRanking.innerHTML = '👁️ Mostrar Tabela de Ranking';
-            }
-        });
-        
-        btnToggleDetalhes.addEventListener('click', () => {
-            if (analiseDetalhada.classList.contains('hidden')) {
-                analiseDetalhada.classList.remove('hidden');
-                btnToggleDetalhes.innerHTML = '👁️ Ocultar Detalhes';
-            } else {
-                analiseDetalhada.classList.add('hidden');
-                btnToggleDetalhes.innerHTML = '👁️ Mostrar Detalhes';
-            }
-        });
         
         // Verificar cache ao carregar
         window.addEventListener('load', () => {
