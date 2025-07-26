@@ -1885,7 +1885,7 @@
             }
         }
 
-        // 🟢 FUNÇÃO PRINCIPAL DE BUSCA INTELIGENTE EM TEMPO REAL COM DESTAQUE VERDE
+        // 🏆 FUNÇÃO PRINCIPAL DE BUSCA INTELIGENTE EM TEMPO REAL COM FILTRO DE JOGOS PREMIADOS
         function buscarJogosTempoReal() {
             const dezenasInput = document.getElementById('dezenas-sorteadas').value.trim();
             const mesSorteado = document.getElementById('mes-sorteado').value;
@@ -1898,10 +1898,12 @@
             // Atualizar contadores
             document.getElementById('contador-numeros').textContent = `${numerosDigitados.length}/7 números`;
             
-            // Se não há números digitados, limpar destaque
+            // Se não há números digitados, mostrar todos os jogos
             if (numerosDigitados.length === 0 && !mesSorteado) {
-                document.getElementById('contador-jogos-destacados').textContent = '0 jogos destacados';
+                document.getElementById('contador-jogos-destacados').textContent = '0 jogos premiados';
                 ultimaVerificacao = null; // Limpar verificação
+                jogosFiltrados = [...jogosGerados]; // Mostrar todos os jogos
+                paginaAtual = 1; // Resetar para primeira página
                 atualizarVisualizacaoJogos();
                 return;
             }
@@ -1920,13 +1922,23 @@
                         mes: jogo.mes,
                         acertos: acertos,
                         acertouMes: acertouMes,
-                        pontuacao: acertos + (acertouMes ? 0.5 : 0) // Meio ponto para mês para não interferir muito
+                        pontuacao: acertos + (acertouMes ? 0.5 : 0),
+                        jogo: jogo // Referência do jogo original
                     };
                 });
                 
-                // Contar jogos com pelo menos 1 acerto ou mês correto
-                const jogosDestacados = resultados.filter(r => r.acertos > 0 || r.acertouMes).length;
-                document.getElementById('contador-jogos-destacados').textContent = `${jogosDestacados} jogos destacados`;
+                // 🏆 FILTRAR APENAS JOGOS PREMIADOS (com pelo menos 1 acerto ou mês correto)
+                const jogosPremiados = resultados.filter(r => r.acertos > 0 || r.acertouMes);
+                
+                // Ordenar jogos premiados por pontuação (maiores acertos primeiro)
+                jogosPremiados.sort((a, b) => b.pontuacao - a.pontuacao);
+                
+                // Atualizar contador
+                document.getElementById('contador-jogos-destacados').textContent = `${jogosPremiados.length} jogos premiados`;
+                
+                // 🎯 MOSTRAR APENAS OS JOGOS PREMIADOS
+                jogosFiltrados = jogosPremiados.map(r => r.jogo);
+                paginaAtual = 1; // Resetar para primeira página
                 
                 verificacaoTemporaria = {
                     dezenasSorteadas: numerosDigitados,
