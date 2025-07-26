@@ -50,19 +50,67 @@
             border-left-color: #3b82f6;
         }
         
-        /* 🟢 ESTILOS PARA DESTAQUE VERDE VIBRANTE DAS DEZENAS ACERTADAS */
+        /* 🎨 SISTEMA DE CORES GRADUADO POR NÚMERO DE ACERTOS */
         .dezena-acertada {
-            background: linear-gradient(135deg, #10b981, #059669) !important;
             color: white !important;
             font-weight: bold !important;
-            border: 2px solid #047857 !important;
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.6) !important;
-            animation: pulseGreen 1.5s infinite !important;
+            border: 2px solid !important;
+            box-shadow: 0 0 12px !important;
+            animation: pulseAcerto 1.5s infinite !important;
             transform: scale(1.08) !important;
             border-radius: 6px !important;
             padding: 4px 8px !important;
             margin: 0 2px !important;
             display: inline-block !important;
+        }
+        
+        /* 🏆 7 ACERTOS - DOURADO (JACKPOT) */
+        .acertos-7 .dezena-acertada {
+            background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+            border-color: #FF8C00 !important;
+            box-shadow: 0 0 16px rgba(255, 215, 0, 0.8) !important;
+        }
+        
+        /* 🥇 6 ACERTOS - VERDE ESMERALDA (EXCELENTE) */
+        .acertos-6 .dezena-acertada {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            border-color: #047857 !important;
+            box-shadow: 0 0 14px rgba(16, 185, 129, 0.7) !important;
+        }
+        
+        /* 🥈 5 ACERTOS - AZUL ROYAL (MUITO BOM) */
+        .acertos-5 .dezena-acertada {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+            border-color: #1e40af !important;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.6) !important;
+        }
+        
+        /* 🥉 4 ACERTOS - ROXO VIBRANTE (BOM) */
+        .acertos-4 .dezena-acertada {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important;
+            border-color: #6d28d9 !important;
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.6) !important;
+        }
+        
+        /* 🔥 3 ACERTOS - LARANJA (REGULAR) */
+        .acertos-3 .dezena-acertada {
+            background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+            border-color: #b45309 !important;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5) !important;
+        }
+        
+        /* ⚡ 2 ACERTOS - ROSA/MAGENTA (FRACO) */
+        .acertos-2 .dezena-acertada {
+            background: linear-gradient(135deg, #ec4899, #db2777) !important;
+            border-color: #be185d !important;
+            box-shadow: 0 0 10px rgba(236, 72, 153, 0.5) !important;
+        }
+        
+        /* 💫 1 ACERTO - VERMELHO (MÍNIMO) */
+        .acertos-1 .dezena-acertada {
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+            border-color: #b91c1c !important;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4) !important;
         }
         
         .dezena-normal {
@@ -81,16 +129,23 @@
             color: #93c5fd;
         }
         
-        @keyframes pulseGreen {
+        @keyframes pulseAcerto {
             0%, 100% { 
-                box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
                 transform: scale(1.08);
             }
             50% { 
-                box-shadow: 0 0 20px rgba(16, 185, 129, 1);
                 transform: scale(1.12);
             }
         }
+        
+        /* 🏅 BADGES DE ACERTOS COM CORES CORRESPONDENTES */
+        .badge-acertos-7 { background: linear-gradient(135deg, #FFD700, #FFA500); }
+        .badge-acertos-6 { background: linear-gradient(135deg, #10b981, #059669); }
+        .badge-acertos-5 { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .badge-acertos-4 { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .badge-acertos-3 { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .badge-acertos-2 { background: linear-gradient(135deg, #ec4899, #db2777); }
+        .badge-acertos-1 { background: linear-gradient(135deg, #ef4444, #dc2626); }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen">
@@ -1647,31 +1702,40 @@
                     }
                 }
                 
-                // 🟢 GERAR HTML DAS DEZENAS COM DESTAQUE VERDE VIBRANTE
+                // 🎨 DETERMINAR CLASSE DE COR BASEADA NO NÚMERO DE ACERTOS
+                const acertosClass = resultadoVerificacao ? `acertos-${resultadoVerificacao.acertos}` : '';
+                
+                // 🟢 GERAR HTML DAS DEZENAS COM CORES GRADUADAS POR ACERTOS
                 const dezenasHTML = jogo.dezenas.map(dezena => {
                     const isAcerto = ultimaVerificacao && ultimaVerificacao.dezenasSorteadas.includes(dezena);
                     const classes = isAcerto ? 'dezena-acertada' : 'dezena-normal';
                     return `<span class="${classes}">${dezena}</span>`;
                 }).join(' ');
                 
+                // 🏅 BADGE DE ACERTOS COM COR CORRESPONDENTE
+                const badgeAcertos = resultadoVerificacao ? 
+                    `<span class="badge-acertos-${resultadoVerificacao.acertos} text-white px-2 py-1 rounded text-xs font-bold">
+                        ${resultadoVerificacao.acertos} ${getEmojiPorAcertos(resultadoVerificacao.acertos)}
+                    </span>` : '';
+                
                 if (viewCompacta) {
-                    jogoDiv.className = `${bgClass} p-2 rounded border ${borderClass} text-sm`;
+                    jogoDiv.className = `${acertosClass} ${bgClass} p-2 rounded border ${borderClass} text-sm`;
                     jogoDiv.innerHTML = `
                         <div class="flex justify-between items-center">
                             <span class="text-xs text-gray-500">#${jogo.numeroJogo}</span>
                             <div class="flex flex-wrap">${dezenasHTML}</div>
                             <span class="text-xs font-bold text-blue-600">${jogo.mes}</span>
-                            ${resultadoVerificacao ? `<span class="text-xs bg-primary text-white px-1 rounded">${resultadoVerificacao.acertos}</span>` : ''}
+                            ${badgeAcertos}
                         </div>
                     `;
                 } else {
-                    jogoDiv.className = `${bgClass} p-4 rounded-lg border ${borderClass}`;
+                    jogoDiv.className = `${acertosClass} ${bgClass} p-4 rounded-lg border ${borderClass}`;
                     jogoDiv.innerHTML = `
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-sm text-gray-500">Jogo ${jogo.numeroJogo}</span>
                             ${resultadoVerificacao ? `
                                 <div class="flex gap-2">
-                                    <span class="bg-primary text-white px-2 py-1 rounded text-xs">${resultadoVerificacao.acertos} acertos</span>
+                                    ${badgeAcertos}
                                     ${resultadoVerificacao.acertouMes ? '<span class="bg-blue-500 text-white px-2 py-1 rounded text-xs">✓ Mês</span>' : ''}
                                 </div>
                             ` : ''}
@@ -1680,9 +1744,10 @@
                         <div class="text-sm font-bold text-blue-600">Mês: ${jogo.mes}</div>
                         ${resultadoVerificacao ? `
                             <div class="mt-2 text-xs text-gray-600 dark:text-gray-400">
-                                Dezenas acertadas: ${resultadoVerificacao.acertos > 0 ? 
+                                <strong>${getNomePorAcertos(resultadoVerificacao.acertos)}:</strong> 
+                                ${resultadoVerificacao.acertos > 0 ? 
                                     jogo.dezenas.filter(d => ultimaVerificacao.dezenasSorteadas.includes(d)).join(', ') : 
-                                    'Nenhuma'
+                                    'Nenhuma dezena acertada'
                                 }
                             </div>
                         ` : ''}
@@ -1967,6 +2032,35 @@
                 toggleIcon.textContent = '🔍';
                 toggleText.textContent = 'Mostrar';
             }
+        }
+
+        // 🎨 FUNÇÕES AUXILIARES PARA SISTEMA DE CORES E EMOJIS
+        function getEmojiPorAcertos(acertos) {
+            const emojis = {
+                7: '🏆', // JACKPOT - Dourado
+                6: '🥇', // EXCELENTE - Verde Esmeralda
+                5: '🥈', // MUITO BOM - Azul Royal
+                4: '🥉', // BOM - Roxo Vibrante
+                3: '🔥', // REGULAR - Laranja
+                2: '⚡', // FRACO - Rosa/Magenta
+                1: '💫', // MÍNIMO - Vermelho
+                0: '◯'  // SEM ACERTOS
+            };
+            return emojis[acertos] || '◯';
+        }
+        
+        function getNomePorAcertos(acertos) {
+            const nomes = {
+                7: 'JACKPOT',
+                6: 'EXCELENTE',
+                5: 'MUITO BOM',
+                4: 'BOM',
+                3: 'REGULAR',
+                2: 'FRACO',
+                1: 'MÍNIMO',
+                0: 'SEM ACERTOS'
+            };
+            return nomes[acertos] || 'SEM ACERTOS';
         }
 
         // Inicializar aplicação
