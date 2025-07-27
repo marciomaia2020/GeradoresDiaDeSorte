@@ -3207,17 +3207,70 @@
             async function mostrarResultadosOtimizados(data) {
                 adicionarLogCritico("📊 Gerando interface de resultados...", "info");
                 
+                // SEMPRE mostrar a seção de resultados, mesmo se vazia
+                document.getElementById('resultados').style.display = 'block';
+                
                 // Verificar se há resultados
-                if (!data || !data.acertos || data.acertos.length === 0) {
-                    adicionarLogCritico("⚠️ Nenhum resultado encontrado para exibir", "warning");
-                    showAlert("Nenhum resultado encontrado! Verifique se:\n• Há jogos carregados\n• O período de concursos está correto\n• Se selecionou 'Somente premiados', pode não haver prêmios no período");
+                const temResultados = data && data.acertos && data.acertos.length > 0;
+                
+                if (!temResultados) {
+                    adicionarLogCritico("⚠️ Conferência concluída - 0 resultados encontrados", "warning");
+                    
+                    // Ainda assim mostrar interface com zeros
+                    document.getElementById('quatro-acertos').textContent = "0";
+                    document.getElementById('cinco-acertos').textContent = "0";
+                    document.getElementById('seis-acertos').textContent = "0";
+                    document.getElementById('sete-acertos').textContent = "0";
+                    document.getElementById('mes-acertos').textContent = "0";
+                    
+                    document.getElementById('quatro-valor').textContent = formatarValor(0);
+                    document.getElementById('cinco-valor').textContent = formatarValor(0);
+                    document.getElementById('seis-valor').textContent = formatarValor(0);
+                    document.getElementById('sete-valor').textContent = formatarValor(0);
+                    document.getElementById('mes-valor').textContent = formatarValor(0);
+                    
+                    // Mostrar mensagem explicativa na tabela
+                    const tabelaBody = document.getElementById('tabela-resultados');
+                    tabelaBody.innerHTML = `
+                        <tr>
+                            <td colspan="10" style="text-align: center; padding: 30px; background-color: #f8f9fa;">
+                                <div style="color: #6c757d; font-size: 16px;">
+                                    <i class="fas fa-info-circle" style="font-size: 24px; margin-bottom: 10px; color: var(--dia-sorte-dourado);"></i>
+                                    <h4 style="margin: 10px 0; color: var(--dia-sorte-verde);">Conferência Concluída - Nenhum Resultado Encontrado</h4>
+                                    <p style="margin: 5px 0;"><strong>Jogos processados:</strong> ${jogosIncluidos.length.toLocaleString()}</p>
+                                    <p style="margin: 5px 0;"><strong>Período verificado:</strong> Concursos ${document.getElementById('inicio').value} a ${document.getElementById('fim').value}</p>
+                                    <p style="margin: 5px 0;"><strong>Filtro aplicado:</strong> ${document.getElementById('somente-premiados').checked ? 'Somente premiados' : 'Todos os resultados'}</p>
+                                    <hr style="margin: 15px 0; border-color: #dee2e6;">
+                                    <p style="margin: 10px 0; font-weight: bold; color: #007bff;">Isso significa que:</p>
+                                    <ul style="text-align: left; display: inline-block; margin: 10px 0;">
+                                        ${document.getElementById('somente-premiados').checked ? 
+                                            '<li>Nenhum dos seus jogos teve 4+ acertos ou acertou o mês da sorte no período</li>' : 
+                                            '<li>Pode haver problema na busca dos resultados dos concursos</li><li>Verifique se o período de concursos está correto</li>'
+                                        }
+                                        <li>Todos os ${jogosIncluidos.length.toLocaleString()} jogos foram verificados com sucesso</li>
+                                        <li>O processamento foi concluído sem erros</li>
+                                    </ul>
+                                    <p style="margin: 10px 0; font-style: italic;">💡 Dica: Se esperava resultados, tente desmarcar "Somente premiados" para ver todos os jogos processados.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    
+                    // Limpar paginação
+                    document.getElementById('pagination-top').innerHTML = '';
+                    document.getElementById('pagination-bottom').innerHTML = '';
+                    
+                    // Ocultar estatísticas de jogos
+                    document.getElementById('jogos-mais-sorteados').style.display = 'none';
+                    
+                    // Scroll para resultados
+                    document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
+                    
+                    adicionarLogCritico("✅ Interface de resultados exibida (0 resultados)", "success");
                     return;
                 }
                 
                 adicionarLogCritico(`📋 Exibindo ${data.acertos.length} resultados encontrados`, "success");
-                
-                // Mostrar seção de resultados
-                document.getElementById('resultados').style.display = 'block';
                 
                 // Atualizar contadores com validação
                 document.getElementById('quatro-acertos').textContent = (data.resumo?.quatro || 0).toLocaleString();
@@ -3262,7 +3315,9 @@
                         
                         // Mostrar botões de exportação
                         document.getElementById('export-resumo').classList.remove('hidden');
-                        document.getElementById('export-jogos').classList.remove('hidden');
+                        if (data.acertos.length > 0) {
+                            document.getElementById('export-jogos').classList.remove('hidden');
+                        }
                         if (data.jogos_stats && data.jogos_stats.length > 0) {
                             document.getElementById('export-estatisticas').classList.remove('hidden');
                         }
