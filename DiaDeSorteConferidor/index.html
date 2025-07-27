@@ -2727,11 +2727,9 @@
                 const dezenas = resultado.dezenas.map(d => parseInt(d));
                 const mesSorteado = resultado.mesDaSorte || '';
                 
-                adicionarLogCritico(`🔍 Processando concurso ${resultado.concurso}: números ${dezenas.join(', ')}, mês: ${mesSorteado}`, "info");
-                
                 // DEBUG: Mostrar configuração de filtro
-                if (resultado.concurso % 10 === 0) { // Log a cada 10 concursos para não sobrecarregar
-                    adicionarLogCritico(`🐛 DEBUG Concurso ${resultado.concurso}: somente_premiados=${somentePremiados}, processando ${jogos.length} jogos`, "info");
+                if (resultado.concurso % 20 === 0) { // Log a cada 20 concursos
+                    adicionarLogCritico(`🐛 DEBUG Concurso ${resultado.concurso}: somente_premiados=${somentePremiados}, números: ${dezenas.join(',')}, mês: ${mesSorteado}`, "info");
                 }
                 
                 // Usar Set para busca mais rápida
@@ -2739,7 +2737,7 @@
                 
                 let resultadosEncontrados = 0;
                 
-                // Processar cada jogo
+                // Processar cada jogo - USANDO A LÓGICA CORRETA DA VERSÃO QUE FUNCIONA
                 for (let i = 0; i < jogos.length; i++) {
                     const jogo = jogos[i];
                     
@@ -2754,20 +2752,22 @@
                     const acertouMes = jogo.mes && mesSorteado && 
                                       jogo.mes.toUpperCase() === mesSorteado.toUpperCase();
                     
-                    // Se "Somente premiados" está marcado, incluir apenas jogos com 4+ acertos OU que acertaram o mês
-                    // Se "Somente premiados" NÃO está marcado, incluir TODOS os jogos
-                    const ehPremiado = acertosNumeros >= 4 || acertouMes;
-                    const deveIncluir = !somentePremiados || ehPremiado;
+                    // LÓGICA CORRETA: Se "somente premiados" está marcado E não tem 4+ acertos E não acertou mês = PULAR
+                    if (somentePremiados && acertosNumeros < 4 && !acertouMes) {
+                        continue; // Pular este jogo
+                    }
                     
-                    if (deveIncluir) {
-                        // Calcular prêmio
-                        let premio = 0;
-                        try {
-                            premio = calcularPremio(resultado, acertosNumeros, acertouMes);
-                        } catch (err) {
-                            // Ignorar erro de prêmio mas continuar processando
-                        }
-                        
+                    // Se chegou aqui, deve incluir o resultado
+                    // Calcular prêmio
+                    let premio = 0;
+                    try {
+                        premio = calcularPremio(resultado, acertosNumeros, acertouMes);
+                    } catch (err) {
+                        // Ignorar erro de prêmio mas continuar processando
+                    }
+                    
+                    // SEMPRE incluir se passou na verificação acima
+                    if (acertosNumeros >= 4 || acertouMes || !somentePremiados) {
                         resultados.push({
                             concurso: resultado.concurso,
                             data: resultado.data,
@@ -2784,10 +2784,9 @@
                     }
                 }
                 
-                if (resultadosEncontrados > 0) {
-                    adicionarLogCritico(`✅ Concurso ${resultado.concurso}: ${resultadosEncontrados} resultados incluídos`, "success");
-                } else if (!somentePremiados) {
-                    adicionarLogCritico(`ℹ️ Concurso ${resultado.concurso}: nenhum resultado (normal se não há acertos)`, "info");
+                // DEBUG melhorado
+                if (resultado.concurso % 20 === 0) {
+                    adicionarLogCritico(`📊 Concurso ${resultado.concurso}: ${resultadosEncontrados} resultados de ${jogos.length} jogos`, "info");
                 }
             }
             
