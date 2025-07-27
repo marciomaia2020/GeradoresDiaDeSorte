@@ -437,49 +437,28 @@
         </div>
     </div>
 
-    <!-- Ranking de Pares vs Ímpares -->
-    <div id="ranking-pares-impares-section" class="container mx-auto px-4 py-8 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
-            <h3 class="text-2xl font-bold mb-6 text-center">📊 RANKING: Distribuição Pares vs Ímpares por Jogo</h3>
-            <div id="ranking-pares-impares-container" class="space-y-4">
-                <!-- Será preenchido dinamicamente -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Ranking de Dezenas Repetidas -->
-    <div id="ranking-dezenas-repetidas-section" class="container mx-auto px-4 py-8 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
-            <h3 class="text-2xl font-bold mb-6 text-center">🎯 RANKING: Dezenas Finais Repetidas por Jogo</h3>
-            <div id="ranking-dezenas-repetidas-container" class="space-y-4">
-                <!-- Será preenchido dinamicamente -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Controle dos Resultados Completos -->
+    <!-- Controle dos Últimos Resultados -->
     <div id="ultimos-resultados-container" class="container mx-auto px-4 py-8 hidden">
-        
-        <!-- Botão Toggle Individual - Pares vs Ímpares -->
-        <div class="text-center mb-6">
-            <button id="toggle-pares-impares" class="toggle-button inline-flex items-center gap-3 px-8 py-4 text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
-                <span id="toggle-icon-pares" class="text-2xl">👁️</span>
-                <span id="toggle-text-pares" class="text-lg">Mostrar TODOS os Resultados - Pares vs Ímpares</span>
-                <span id="toggle-arrow-pares" class="text-xl transition-transform duration-300">⬇️</span>
+        <!-- Botão Toggle -->
+        <div class="text-center mb-8">
+            <button id="toggle-ultimos-resultados" class="toggle-button inline-flex items-center gap-3 px-8 py-4 text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300">
+                <span id="toggle-icon" class="text-2xl">👁️</span>
+                <span id="toggle-text" class="text-lg">Mostrar Últimos Resultados Detalhados</span>
+                <span id="toggle-arrow" class="text-xl transition-transform duration-300">⬇️</span>
             </button>
-            <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                <p class="text-xs">🔵 Análise completa de pares vs ímpares em todos os concursos históricos</p>
+            <div class="mt-3 text-sm text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                <p class="mb-1">🔍 <strong>Últimos 10 concursos</strong> com análises detalhadas</p>
+                <p class="text-xs">• Análise de pares vs ímpares • Repetições de dígitos finais</p>
             </div>
         </div>
 
-        <!-- Seção Pares vs Ímpares -->
-        <div id="secao-pares-impares" class="secao-oculta mb-8">
+        <!-- Seção dos Últimos Resultados -->
+        <div id="ultimos-resultados-section" class="secao-oculta">
             <!-- Últimos Resultados - Pares vs Ímpares -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
                 <h3 class="text-2xl font-bold mb-6 text-center flex items-center justify-center gap-2">
                     <span>📅</span>
-                    <span>TODOS os Resultados - Pares vs Ímpares</span>
-                    <span class="text-lg text-primary ml-2" id="total-resultados-pares">(<span id="count-resultados-pares">0</span> concursos)</span>
+                    <span>Últimos 10 Resultados - Pares vs Ímpares</span>
                 </h3>
                 <div id="ultimos-resultados" class="space-y-4">
                     <!-- Será preenchido dinamicamente -->
@@ -490,90 +469,9 @@
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
                 <h3 class="text-2xl font-bold mb-6 text-center flex items-center justify-center gap-2">
                     <span>🎯</span>
-                    <span>TODOS os Resultados - Dezenas Finais Repetidas</span>
-                    <span class="text-lg text-primary ml-2" id="total-resultados-dezenas">(<span id="count-resultados-dezenas">0</span> concursos)</span>
+                    <span>Últimos 10 Resultados - Dezenas Finais Repetidas</span>
                 </h3>
                 <div id="ultimos-resultados-dezenas" class="space-y-4">
-                    <!-- Será preenchido dinamicamente -->
-                </div>
-                
-                <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md">
-                    <h4 class="font-semibold mb-2 text-blue-800 dark:text-blue-200 flex items-center gap-2">
-                        <span>📋</span>
-                        <span>Legenda das Cores</span>
-                    </h4>
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full border border-gray-300" style="background: hsl(0, 70%, 60%)"></div>
-                            <span>Dígito 0</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full border border-gray-300" style="background: hsl(36, 70%, 60%)"></div>
-                            <span>Dígito 1</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full border border-gray-300" style="background: hsl(72, 70%, 60%)"></div>
-                            <span>Dígito 2</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full border border-gray-300" style="background: hsl(108, 70%, 60%)"></div>
-                            <span>Dígito 3</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full border border-gray-300" style="background: hsl(144, 70%, 60%)"></div>
-                            <span>Dígito 4</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full border border-gray-300" style="background: hsl(180, 70%, 60%)"></div>
-                            <span>Dígito 5</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full border border-gray-300" style="background: hsl(216, 70%, 60%)"></div>
-                            <span>Dígito 6</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full border border-gray-300" style="background: hsl(252, 70%, 60%)"></div>
-                            <span>Dígito 7</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full border border-gray-300" style="background: hsl(288, 70%, 60%)"></div>
-                            <span>Dígito 8</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full border border-gray-300" style="background: hsl(324, 70%, 60%)"></div>
-                            <span>Dígito 9</span>
-                        </div>
-                    </div>
-                    <p class="text-xs text-blue-700 dark:text-blue-300 mt-2">
-                        <strong>Números com a mesma cor terminam com o mesmo dígito.</strong> 
-                        Quando há repetições, elas são destacadas com bordas douradas e efeito de brilho.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Botão Toggle Individual - Dezenas Finais -->
-        <div class="text-center mb-6">
-            <button id="toggle-dezenas-finais" class="toggle-button inline-flex items-center gap-3 px-8 py-4 text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-300">
-                <span id="toggle-icon-dezenas" class="text-2xl">👁️</span>
-                <span id="toggle-text-dezenas" class="text-lg">Mostrar TODOS os Resultados - Dezenas Finais Repetidas</span>
-                <span id="toggle-arrow-dezenas" class="text-xl transition-transform duration-300">⬇️</span>
-            </button>
-            <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                <p class="text-xs">🎯 Análise completa de repetições de dígitos finais em todos os concursos históricos</p>
-            </div>
-        </div>
-
-        <!-- Seção Dezenas Finais -->
-        <div id="secao-dezenas-finais" class="secao-oculta">
-            <!-- Dezenas Finais Repetidas -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-                <h3 class="text-2xl font-bold mb-6 text-center flex items-center justify-center gap-2">
-                    <span>🎯</span>
-                    <span>TODOS os Resultados - Dezenas Finais Repetidas</span>
-                    <span class="text-lg text-primary ml-2" id="total-resultados-dezenas-2">(<span id="count-resultados-dezenas-2">0</span> concursos)</span>
-                </h3>
-                <div id="ultimos-resultados-dezenas-2" class="space-y-4">
                     <!-- Será preenchido dinamicamente -->
                 </div>
                 
@@ -1161,15 +1059,12 @@
             exibirAnaliseParesImpares();
             exibirAnaliseDigitosFinais();
             exibirEstatisticasExtras();
-            exibirRankingParesImpares();
-            exibirRankingDezenasRepetidas();
             exibirUltimosResultados();
             exibirUltimosResultadosDezenas();
-            exibirUltimosResultadosDezenasIndividual();
             
-            // Configurar os toggles individuais DEPOIS de criar todas as seções
+            // Configurar o toggle DEPOIS de criar todas as seções
             setTimeout(() => {
-                configurarTogglesIndividuais();
+                configurarToggleUltimosResultados();
             }, 500);
         }
 
@@ -1371,50 +1266,18 @@
         }
 
         function exibirUltimosResultados() {
-            // MOSTRAR TODOS OS RESULTADOS - não apenas os últimos 10
-            const todosOsConcursos = [...estatisticas.concursos].reverse(); // Do último para o primeiro
+            const ultimos10 = estatisticas.concursos.slice(-10).reverse();
             const container = document.getElementById('ultimos-resultados');
             container.innerHTML = '';
 
-            adicionarLog(`📊 Exibindo TODOS os ${todosOsConcursos.length} concursos - Pares vs Ímpares`, 'info');
-
-            // Atualizar contador no título
-            document.getElementById('count-resultados-pares').textContent = todosOsConcursos.length.toLocaleString('pt-BR');
-
-            // Criar mensagem informativa no início
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg text-center';
-            infoDiv.innerHTML = `
-                <h4 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">📈 Análise Completa Histórica</h4>
-                <p class="text-sm text-blue-700 dark:text-blue-300">
-                    Visualizando <strong>${todosOsConcursos.length.toLocaleString('pt-BR')} concursos</strong> 
-                    do #${estatisticas.concursos[0]?.numero || 1} ao #${estatisticas.concursos[estatisticas.concursos.length - 1]?.numero || todosOsConcursos.length}
-                </p>
-                <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                    🔵 Azul = Números Pares | 🔴 Vermelho = Números Ímpares
-                </p>
-            `;
-            container.appendChild(infoDiv);
-
-            // Processar todos os concursos
-            todosOsConcursos.forEach((concurso, index) => {
+            ultimos10.forEach(concurso => {
                 const div = document.createElement('div');
-                div.className = 'flex flex-col md:flex-row items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-600';
+                div.className = 'flex flex-col md:flex-row items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg';
                 
                 const numerosHTML = concurso.numeros.map(num => {
                     const isPar = num % 2 === 0;
                     return `<div class="number-ball ${isPar ? 'par' : 'impar'}">${num.toString().padStart(2, '0')}</div>`;
                 }).join('');
-
-                // Adicionar análise visual para concursos com padrões interessantes
-                let destaque = '';
-                if (concurso.pares === 7) {
-                    destaque = '<span class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded ml-2">🎯 TODOS PARES!</span>';
-                } else if (concurso.impares === 7) {
-                    destaque = '<span class="text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded ml-2">🎯 TODOS ÍMPARES!</span>';
-                } else if (concurso.pares === concurso.impares) {
-                    destaque = '<span class="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded ml-2">⚖️ EQUILIBRADO</span>';
-                }
 
                 div.innerHTML = `
                     <div class="text-center md:text-left mb-2 md:mb-0">
@@ -1425,60 +1288,23 @@
                         ${numerosHTML}
                     </div>
                     <div class="text-center text-sm">
-                        <div class="flex items-center justify-center">
-                            <span>Pares: <strong class="text-blue-600">${concurso.pares}</strong> | Ímpares: <strong class="text-red-600">${concurso.impares}</strong></span>
-                            ${destaque}
-                        </div>
-                        <div class="text-xs text-gray-500 mt-1">${concurso.mes || ''}</div>
+                        <div>Pares: ${concurso.pares} | Ímpares: ${concurso.impares}</div>
+                        <div class="text-xs text-gray-500">${concurso.mes || ''}</div>
                     </div>
                 `;
                 container.appendChild(div);
-
-                // Log de progresso a cada 100 concursos processados
-                if ((index + 1) % 100 === 0) {
-                    adicionarLog(`✅ Exibidos ${index + 1}/${todosOsConcursos.length} concursos (Pares vs Ímpares)`, 'info');
-                }
             });
 
             // Mostrar o container
             document.getElementById('ultimos-resultados-container').classList.remove('hidden');
-
-            adicionarLog(`✅ Exibição completa finalizada: ${todosOsConcursos.length} concursos (Pares vs Ímpares)`, 'success');
         }
 
         function exibirUltimosResultadosDezenas() {
-            // MOSTRAR TODOS OS RESULTADOS - não apenas os últimos 10
-            const todosOsConcursos = [...estatisticas.concursos].reverse(); // Do último para o primeiro
+            const ultimos10 = estatisticas.concursos.slice(-10).reverse();
             const container = document.getElementById('ultimos-resultados-dezenas');
             container.innerHTML = '';
 
-            adicionarLog(`🎯 Exibindo TODOS os ${todosOsConcursos.length} concursos - Dezenas Finais`, 'info');
-
-            // Atualizar contador no título
-            document.getElementById('count-resultados-dezenas').textContent = todosOsConcursos.length.toLocaleString('pt-BR');
-
-            // Criar mensagem informativa no início
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'mb-6 p-4 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 rounded-lg text-center';
-            infoDiv.innerHTML = `
-                <h4 class="font-semibold text-purple-800 dark:text-purple-200 mb-2">🎯 Análise Completa de Dígitos Finais</h4>
-                <p class="text-sm text-purple-700 dark:text-purple-300">
-                    Analisando <strong>${todosOsConcursos.length.toLocaleString('pt-BR')} concursos</strong> 
-                    para identificar padrões de repetição nos dígitos finais (0-9)
-                </p>
-                <p class="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                    ✨ Bordas douradas = Repetições de dígitos finais | 🌈 Cores = Agrupamento por dígito final
-                </p>
-            `;
-            container.appendChild(infoDiv);
-
-            // Contadores para estatísticas
-            let totalConcursosComRepeticao = 0;
-            let maxRepeticoesConcurso = 0;
-            let concursoMaisRepeticoes = { numero: 0, repeticoes: 0 };
-
-            // Processar todos os concursos
-            todosOsConcursos.forEach((concurso, index) => {
+            ultimos10.forEach(concurso => {
                 const digitosFinais = {};
                 const repeticoes = {};
                 
@@ -1496,18 +1322,8 @@
                     }
                 });
 
-                // Estatísticas
-                const totalRepeticoes = Object.keys(repeticoes).length;
-                if (totalRepeticoes > 0) {
-                    totalConcursosComRepeticao++;
-                }
-                if (totalRepeticoes > maxRepeticoesConcurso) {
-                    maxRepeticoesConcurso = totalRepeticoes;
-                    concursoMaisRepeticoes = { numero: concurso.numero, repeticoes: totalRepeticoes };
-                }
-
                 const div = document.createElement('div');
-                div.className = 'p-4 bg-gray-50 dark:bg-gray-700 rounded-lg transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-600';
+                div.className = 'p-4 bg-gray-50 dark:bg-gray-700 rounded-lg';
                 
                 const numerosHTML = concurso.numeros.map(num => {
                     const digitoFinal = num % 10;
@@ -1519,20 +1335,11 @@
                 }).join('');
 
                 let resumoRepeticoes = '';
-                let destacueEspecial = '';
-                
                 if (Object.keys(repeticoes).length > 0) {
                     const repeticoesTexto = Object.entries(repeticoes).map(([digito, numeros]) => {
                         return `Dígito ${digito}: ${numeros.map(n => n.toString().padStart(2, '0')).join(', ')}`;
                     }).join(' | ');
                     resumoRepeticoes = `<div class="text-xs text-amber-600 dark:text-amber-400 font-semibold mt-2">✨ ${repeticoesTexto}</div>`;
-                    
-                    // Destacar concursos com muitas repetições
-                    if (Object.keys(repeticoes).length >= 3) {
-                        destacueEspecial = '<span class="text-xs bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 px-2 py-1 rounded ml-2">🔥 ALTA REPETIÇÃO!</span>';
-                    } else if (Object.keys(repeticoes).length === 2) {
-                        destacueEspecial = '<span class="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded ml-2">⚡ DUPLA REPETIÇÃO</span>';
-                    }
                 } else {
                     resumoRepeticoes = `<div class="text-xs text-gray-500 mt-2">Nenhuma repetição de dígito final</div>`;
                 }
@@ -1547,52 +1354,14 @@
                             ${numerosHTML}
                         </div>
                         <div class="text-center text-sm">
-                            <div class="flex items-center justify-center">
-                                <span>Repetições: <strong class="text-purple-600">${Object.keys(repeticoes).length}</strong></span>
-                                ${destacueEspecial}
-                            </div>
-                            <div class="text-xs text-gray-500 mt-1">${concurso.mes || ''}</div>
+                            <div>Repetições: ${Object.keys(repeticoes).length}</div>
+                            <div class="text-xs text-gray-500">${concurso.mes || ''}</div>
                         </div>
                     </div>
                     ${resumoRepeticoes}
                 `;
                 container.appendChild(div);
-
-                // Log de progresso a cada 100 concursos processados
-                if ((index + 1) % 100 === 0) {
-                    adicionarLog(`✅ Exibidos ${index + 1}/${todosOsConcursos.length} concursos (Dezenas Finais)`, 'info');
-                }
             });
-
-            // Adicionar estatísticas resumo no final
-            const resumoDiv = document.createElement('div');
-            resumoDiv.className = 'mt-6 p-4 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 rounded-lg';
-            
-            const percentualComRepeticao = ((totalConcursosComRepeticao / todosOsConcursos.length) * 100).toFixed(1);
-            
-            resumoDiv.innerHTML = `
-                <h4 class="font-semibold text-purple-800 dark:text-purple-200 mb-2 text-center">📊 Estatísticas Gerais de Repetições</h4>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-sm">
-                    <div>
-                        <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">${totalConcursosComRepeticao.toLocaleString('pt-BR')}</div>
-                        <div class="text-purple-700 dark:text-purple-300">Concursos com repetição</div>
-                        <div class="text-xs text-purple-600">({percentualComRepeticao}% do total)</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-amber-600 dark:text-amber-400">${maxRepeticoesConcurso}</div>
-                        <div class="text-amber-700 dark:text-amber-300">Máximo de repetições</div>
-                        <div class="text-xs text-amber-600">em um único concurso</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-green-600 dark:text-green-400">#${concursoMaisRepeticoes.numero}</div>
-                        <div class="text-green-700 dark:text-green-300">Concurso com mais repetições</div>
-                        <div class="text-xs text-green-600">(${concursoMaisRepeticoes.repeticoes} dígitos repetidos)</div>
-                    </div>
-                </div>
-            `;
-            container.appendChild(resumoDiv);
-
-            adicionarLog(`✅ Exibição completa finalizada: ${todosOsConcursos.length} concursos (Dezenas Finais)`, 'success');
         }
 
         function criarGraficoParesImpares() {
@@ -1680,477 +1449,6 @@
                     }
                 }
             });
-        }
-
-        // ===== RANKING DE PARES VS ÍMPARES =====
-        function exibirRankingParesImpares() {
-            const container = document.getElementById('ranking-pares-impares-container');
-            container.innerHTML = '';
-
-            // Calcular estatísticas de distribuição pares vs ímpares
-            const distribuicaoParesImpares = {};
-            
-            estatisticas.concursos.forEach(concurso => {
-                const chave = `${concurso.pares}P-${concurso.impares}I`;
-                if (!distribuicaoParesImpares[chave]) {
-                    distribuicaoParesImpares[chave] = {
-                        pares: concurso.pares,
-                        impares: concurso.impares,
-                        frequencia: 0,
-                        exemplos: []
-                    };
-                }
-                distribuicaoParesImpares[chave].frequencia++;
-                if (distribuicaoParesImpares[chave].exemplos.length < 3) {
-                    distribuicaoParesImpares[chave].exemplos.push({
-                        numero: concurso.numero,
-                        data: concurso.data,
-                        numeros: concurso.numeros
-                    });
-                }
-            });
-
-            // Ordenar por frequência
-            const rankingOrdenado = Object.values(distribuicaoParesImpares)
-                .sort((a, b) => b.frequencia - a.frequencia);
-
-            // Criar cabeçalho
-            const headerDiv = document.createElement('div');
-            headerDiv.className = 'mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg text-center';
-            headerDiv.innerHTML = `
-                <h4 class="font-semibold text-blue-800 dark:text-blue-200 mb-2">📊 Distribuição por Quantidade de Pares e Ímpares</h4>
-                <p class="text-sm text-blue-700 dark:text-blue-300">
-                    Ranking de frequência das combinações de pares vs ímpares em <strong>${estatisticas.totalConcursos.toLocaleString('pt-BR')} concursos</strong>
-                </p>
-            `;
-            container.appendChild(headerDiv);
-
-            // Criar ranking
-            rankingOrdenado.forEach((item, index) => {
-                const posicao = index + 1;
-                const percent = ((item.frequencia / estatisticas.totalConcursos) * 100).toFixed(1);
-                
-                let medalha = '';
-                let corClass = '';
-                if (posicao === 1) {
-                    medalha = '🥇';
-                    corClass = 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-400';
-                } else if (posicao === 2) {
-                    medalha = '🥈';
-                    corClass = 'bg-gray-100 dark:bg-gray-700 border-gray-400';
-                } else if (posicao === 3) {
-                    medalha = '🥉';
-                    corClass = 'bg-orange-100 dark:bg-orange-900/30 border-orange-400';
-                } else {
-                    corClass = 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600';
-                }
-
-                const rankingCard = document.createElement('div');
-                rankingCard.className = `p-4 border-2 rounded-lg ${corClass} transition-all hover:shadow-lg`;
-                rankingCard.innerHTML = `
-                    <div class="flex flex-col md:flex-row items-center justify-between">
-                        <div class="text-center md:text-left mb-3 md:mb-0">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-lg">${medalha}</span>
-                                <span class="text-lg font-bold">#{posicao}</span>
-                                <span class="text-xl font-bold text-primary">${item.pares} Pares - ${item.impares} Ímpares</span>
-                            </div>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">
-                                <strong>${item.frequencia.toLocaleString('pt-BR')} jogos</strong> (${percent}% do total)
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <div class="text-xs text-gray-500 mb-1">Exemplos de concursos:</div>
-                            ${item.exemplos.map(exemplo => `
-                                <div class="text-xs bg-gray-50 dark:bg-gray-700 p-2 rounded flex items-center gap-2">
-                                    <span class="font-semibold">#${exemplo.numero}</span>
-                                    <span class="text-gray-400">${exemplo.data}</span>
-                                    <div class="flex gap-1">
-                                        ${exemplo.numeros.map(num => {
-                                            const isPar = num % 2 === 0;
-                                            return `<span class="w-6 h-6 rounded-full text-xs flex items-center justify-center text-white font-bold ${isPar ? 'bg-blue-500' : 'bg-red-500'}">${num.toString().padStart(2, '0')}</span>`;
-                                        }).join('')}
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-                container.appendChild(rankingCard);
-            });
-
-            document.getElementById('ranking-pares-impares-section').classList.remove('hidden');
-            adicionarLog('✅ Ranking Pares vs Ímpares criado com sucesso', 'success');
-        }
-
-        // ===== RANKING DE DEZENAS REPETIDAS =====
-        function exibirRankingDezenasRepetidas() {
-            const container = document.getElementById('ranking-dezenas-repetidas-container');
-            container.innerHTML = '';
-
-            // Calcular estatísticas de repetições de dígitos finais
-            const distribuicaoRepeticoes = {};
-            
-            estatisticas.concursos.forEach(concurso => {
-                const digitosFinais = {};
-                const repeticoes = {};
-                
-                concurso.numeros.forEach(num => {
-                    const digitoFinal = num % 10;
-                    if (!digitosFinais[digitoFinal]) {
-                        digitosFinais[digitoFinal] = [];
-                    }
-                    digitosFinais[digitoFinal].push(num);
-                });
-
-                Object.entries(digitosFinais).forEach(([digito, numeros]) => {
-                    if (numeros.length > 1) {
-                        repeticoes[digito] = numeros;
-                    }
-                });
-
-                const totalRepeticoes = Object.keys(repeticoes).length;
-                const chave = `${totalRepeticoes}R`;
-                
-                if (!distribuicaoRepeticoes[chave]) {
-                    distribuicaoRepeticoes[chave] = {
-                        repeticoes: totalRepeticoes,
-                        frequencia: 0,
-                        exemplos: []
-                    };
-                }
-                distribuicaoRepeticoes[chave].frequencia++;
-                if (distribuicaoRepeticoes[chave].exemplos.length < 3) {
-                    distribuicaoRepeticoes[chave].exemplos.push({
-                        numero: concurso.numero,
-                        data: concurso.data,
-                        numeros: concurso.numeros,
-                        repeticoesDetalhes: repeticoes
-                    });
-                }
-            });
-
-            // Ordenar por frequência
-            const rankingOrdenado = Object.values(distribuicaoRepeticoes)
-                .sort((a, b) => b.frequencia - a.frequencia);
-
-            // Criar cabeçalho
-            const headerDiv = document.createElement('div');
-            headerDiv.className = 'mb-6 p-4 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 rounded-lg text-center';
-            headerDiv.innerHTML = `
-                <h4 class="font-semibold text-purple-800 dark:text-purple-200 mb-2">🎯 Distribuição por Quantidade de Repetições de Dígitos Finais</h4>
-                <p class="text-sm text-purple-700 dark:text-purple-300">
-                    Ranking de frequência das repetições de dígitos finais em <strong>${estatisticas.totalConcursos.toLocaleString('pt-BR')} concursos</strong>
-                </p>
-            `;
-            container.appendChild(headerDiv);
-
-            // Criar ranking
-            rankingOrdenado.forEach((item, index) => {
-                const posicao = index + 1;
-                const percent = ((item.frequencia / estatisticas.totalConcursos) * 100).toFixed(1);
-                
-                let medalha = '';
-                let corClass = '';
-                let descricao = '';
-                
-                if (item.repeticoes === 0) {
-                    descricao = 'Sem Repetições';
-                    corClass = 'bg-green-100 dark:bg-green-900/30 border-green-400';
-                } else if (item.repeticoes === 1) {
-                    descricao = '1 Dígito Repetido';
-                    corClass = 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-400';
-                } else if (item.repeticoes === 2) {
-                    descricao = '2 Dígitos Repetidos';
-                    corClass = 'bg-orange-100 dark:bg-orange-900/30 border-orange-400';
-                } else {
-                    descricao = `${item.repeticoes} Dígitos Repetidos`;
-                    corClass = 'bg-red-100 dark:bg-red-900/30 border-red-400';
-                }
-                
-                if (posicao === 1) medalha = '🥇';
-                else if (posicao === 2) medalha = '🥈';
-                else if (posicao === 3) medalha = '🥉';
-
-                const rankingCard = document.createElement('div');
-                rankingCard.className = `p-4 border-2 rounded-lg ${corClass} transition-all hover:shadow-lg`;
-                rankingCard.innerHTML = `
-                    <div class="flex flex-col md:flex-row items-center justify-between">
-                        <div class="text-center md:text-left mb-3 md:mb-0">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-lg">${medalha}</span>
-                                <span class="text-lg font-bold">#{posicao}</span>
-                                <span class="text-xl font-bold text-primary">${descricao}</span>
-                            </div>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">
-                                <strong>${item.frequencia.toLocaleString('pt-BR')} jogos</strong> (${percent}% do total)
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <div class="text-xs text-gray-500 mb-1">Exemplos de concursos:</div>
-                            ${item.exemplos.map(exemplo => {
-                                const repeticoesTexto = Object.entries(exemplo.repeticoesDetalhes).map(([digito, numeros]) => {
-                                    return `Dígito ${digito}: ${numeros.map(n => n.toString().padStart(2, '0')).join(', ')}`;
-                                }).join(' | ');
-                                
-                                return `
-                                <div class="text-xs bg-gray-50 dark:bg-gray-700 p-2 rounded">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <span class="font-semibold">#${exemplo.numero}</span>
-                                        <span class="text-gray-400">${exemplo.data}</span>
-                                    </div>
-                                    <div class="flex gap-1 mb-1">
-                                        ${exemplo.numeros.map(num => {
-                                            const digitoFinal = num % 10;
-                                            const cor = `hsl(${digitoFinal * 36}, 70%, 60%)`;
-                                            const isRepetida = exemplo.repeticoesDetalhes[digitoFinal] !== undefined;
-                                            return `<span class="w-6 h-6 rounded-full text-xs flex items-center justify-center text-white font-bold${isRepetida ? ' ring-2 ring-yellow-400' : ''}" style="background: ${cor}">${num.toString().padStart(2, '0')}</span>`;
-                                        }).join('')}
-                                    </div>
-                                    ${repeticoesTexto ? `<div class="text-xs text-amber-600 dark:text-amber-400">✨ ${repeticoesTexto}</div>` : ''}
-                                </div>
-                            `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-                container.appendChild(rankingCard);
-            });
-
-            document.getElementById('ranking-dezenas-repetidas-section').classList.remove('hidden');
-            adicionarLog('✅ Ranking Dezenas Repetidas criado com sucesso', 'success');
-        }
-
-        // ===== SEGUNDA FUNÇÃO PARA DEZENAS FINAIS INDIVIDUAL =====
-        function exibirUltimosResultadosDezenasIndividual() {
-            // MOSTRAR TODOS OS RESULTADOS - para a seção individual
-            const todosOsConcursos = [...estatisticas.concursos].reverse(); // Do último para o primeiro
-            const container = document.getElementById('ultimos-resultados-dezenas-2');
-            container.innerHTML = '';
-
-            adicionarLog(`🎯 Exibindo TODOS os ${todosOsConcursos.length} concursos - Dezenas Finais Individual`, 'info');
-
-            // Atualizar contador no título
-            document.getElementById('count-resultados-dezenas-2').textContent = todosOsConcursos.length.toLocaleString('pt-BR');
-
-            // Criar mensagem informativa no início
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'mb-6 p-4 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 rounded-lg text-center';
-            infoDiv.innerHTML = `
-                <h4 class="font-semibold text-purple-800 dark:text-purple-200 mb-2">🎯 Análise Completa Individual de Dígitos Finais</h4>
-                <p class="text-sm text-purple-700 dark:text-purple-300">
-                    Seção individual para análise de <strong>${todosOsConcursos.length.toLocaleString('pt-BR')} concursos</strong>
-                </p>
-                <p class="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                    ✨ Controle individual para esta seção específica
-                </p>
-            `;
-            container.appendChild(infoDiv);
-
-            // Contadores para estatísticas
-            let totalConcursosComRepeticao = 0;
-            let maxRepeticoesConcurso = 0;
-            let concursoMaisRepeticoes = { numero: 0, repeticoes: 0 };
-
-            // Processar todos os concursos
-            todosOsConcursos.forEach((concurso, index) => {
-                const digitosFinais = {};
-                const repeticoes = {};
-                
-                concurso.numeros.forEach(num => {
-                    const digitoFinal = num % 10;
-                    if (!digitosFinais[digitoFinal]) {
-                        digitosFinais[digitoFinal] = [];
-                    }
-                    digitosFinais[digitoFinal].push(num);
-                });
-
-                Object.entries(digitosFinais).forEach(([digito, numeros]) => {
-                    if (numeros.length > 1) {
-                        repeticoes[digito] = numeros;
-                    }
-                });
-
-                // Estatísticas
-                const totalRepeticoes = Object.keys(repeticoes).length;
-                if (totalRepeticoes > 0) {
-                    totalConcursosComRepeticao++;
-                }
-                if (totalRepeticoes > maxRepeticoesConcurso) {
-                    maxRepeticoesConcurso = totalRepeticoes;
-                    concursoMaisRepeticoes = { numero: concurso.numero, repeticoes: totalRepeticoes };
-                }
-
-                const div = document.createElement('div');
-                div.className = 'p-4 bg-gray-50 dark:bg-gray-700 rounded-lg transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-600';
-                
-                const numerosHTML = concurso.numeros.map(num => {
-                    const digitoFinal = num % 10;
-                    const cor = `hsl(${digitoFinal * 36}, 70%, 60%)`;
-                    const isRepetida = repeticoes[digitoFinal] !== undefined;
-                    const repetidaClass = isRepetida ? 'repetida' : '';
-                    
-                    return `<div class="dezena-ball ${repetidaClass}" style="background: ${cor}">${num.toString().padStart(2, '0')}</div>`;
-                }).join('');
-
-                let resumoRepeticoes = '';
-                let destacueEspecial = '';
-                
-                if (Object.keys(repeticoes).length > 0) {
-                    const repeticoesTexto = Object.entries(repeticoes).map(([digito, numeros]) => {
-                        return `Dígito ${digito}: ${numeros.map(n => n.toString().padStart(2, '0')).join(', ')}`;
-                    }).join(' | ');
-                    resumoRepeticoes = `<div class="text-xs text-amber-600 dark:text-amber-400 font-semibold mt-2">✨ ${repeticoesTexto}</div>`;
-                    
-                    // Destacar concursos com muitas repetições
-                    if (Object.keys(repeticoes).length >= 3) {
-                        destacueEspecial = '<span class="text-xs bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 px-2 py-1 rounded ml-2">🔥 ALTA REPETIÇÃO!</span>';
-                    } else if (Object.keys(repeticoes).length === 2) {
-                        destacueEspecial = '<span class="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded ml-2">⚡ DUPLA REPETIÇÃO</span>';
-                    }
-                } else {
-                    resumoRepeticoes = `<div class="text-xs text-gray-500 mt-2">Nenhuma repetição de dígito final</div>`;
-                }
-
-                div.innerHTML = `
-                    <div class="flex flex-col md:flex-row items-center justify-between">
-                        <div class="text-center md:text-left mb-2 md:mb-0">
-                            <div class="font-bold">Concurso #${concurso.numero}</div>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">${concurso.data}</div>
-                        </div>
-                        <div class="flex gap-2 mb-2 md:mb-0">
-                            ${numerosHTML}
-                        </div>
-                        <div class="text-center text-sm">
-                            <div class="flex items-center justify-center">
-                                <span>Repetições: <strong class="text-purple-600">${Object.keys(repeticoes).length}</strong></span>
-                                ${destacueEspecial}
-                            </div>
-                            <div class="text-xs text-gray-500 mt-1">${concurso.mes || ''}</div>
-                        </div>
-                    </div>
-                    ${resumoRepeticoes}
-                `;
-                container.appendChild(div);
-
-                // Log de progresso a cada 100 concursos processados
-                if ((index + 1) % 100 === 0) {
-                    adicionarLog(`✅ Exibidos ${index + 1}/${todosOsConcursos.length} concursos (Dezenas Finais Individual)`, 'info');
-                }
-            });
-
-            // Adicionar estatísticas resumo no final
-            const resumoDiv = document.createElement('div');
-            resumoDiv.className = 'mt-6 p-4 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 rounded-lg';
-            
-            const percentualComRepeticao = ((totalConcursosComRepeticao / todosOsConcursos.length) * 100).toFixed(1);
-            
-            resumoDiv.innerHTML = `
-                <h4 class="font-semibold text-purple-800 dark:text-purple-200 mb-2 text-center">📊 Estatísticas Gerais de Repetições (Seção Individual)</h4>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-sm">
-                    <div>
-                        <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">${totalConcursosComRepeticao.toLocaleString('pt-BR')}</div>
-                        <div class="text-purple-700 dark:text-purple-300">Concursos com repetição</div>
-                        <div class="text-xs text-purple-600">({percentualComRepeticao}% do total)</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-amber-600 dark:text-amber-400">${maxRepeticoesConcurso}</div>
-                        <div class="text-amber-700 dark:text-amber-300">Máximo de repetições</div>
-                        <div class="text-xs text-amber-600">em um único concurso</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-green-600 dark:text-green-400">#${concursoMaisRepeticoes.numero}</div>
-                        <div class="text-green-700 dark:text-green-300">Concurso com mais repetições</div>
-                        <div class="text-xs text-green-600">(${concursoMaisRepeticoes.repeticoes} dígitos repetidos)</div>
-                    </div>
-                </div>
-            `;
-            container.appendChild(resumoDiv);
-
-            adicionarLog(`✅ Exibição completa finalizada: ${todosOsConcursos.length} concursos (Dezenas Finais Individual)`, 'success');
-        }
-
-        // ===== TOGGLES INDIVIDUAIS =====
-        function configurarTogglesIndividuais() {
-            // Toggle para Pares vs Ímpares
-            const toggleParesBtn = document.getElementById('toggle-pares-impares');
-            if (toggleParesBtn) {
-                toggleParesBtn.addEventListener('click', () => {
-                    toggleSecaoIndividual('secao-pares-impares', 'pares');
-                });
-                adicionarLog('Toggle Pares vs Ímpares configurado', 'success');
-            }
-
-            // Toggle para Dezenas Finais
-            const toggleDezenasBtn = document.getElementById('toggle-dezenas-finais');
-            if (toggleDezenasBtn) {
-                toggleDezenasBtn.addEventListener('click', () => {
-                    toggleSecaoIndividual('secao-dezenas-finais', 'dezenas');
-                });
-                adicionarLog('Toggle Dezenas Finais configurado', 'success');
-            }
-        }
-
-        function toggleSecaoIndividual(secaoId, tipo) {
-            const section = document.getElementById(secaoId);
-            const toggleIcon = document.getElementById(`toggle-icon-${tipo}`);
-            const toggleText = document.getElementById(`toggle-text-${tipo}`);
-            const toggleArrow = document.getElementById(`toggle-arrow-${tipo}`);
-            
-            if (!section || !toggleIcon || !toggleText || !toggleArrow) {
-                console.error(`Elementos do toggle ${tipo} não encontrados`);
-                return;
-            }
-            
-            const isHidden = section.classList.contains('secao-oculta');
-            
-            if (isHidden) {
-                // Mostrar seção
-                section.classList.remove('secao-oculta');
-                section.classList.add('secao-visivel');
-                
-                // Atualizar botão
-                toggleIcon.textContent = '🙈';
-                if (tipo === 'pares') {
-                    toggleText.textContent = 'Ocultar TODOS os Resultados - Pares vs Ímpares';
-                } else {
-                    toggleText.textContent = 'Ocultar TODOS os Resultados - Dezenas Finais Repetidas';
-                }
-                toggleArrow.textContent = '⬆️';
-                toggleArrow.style.transform = 'rotate(180deg)';
-                
-                // Salvar preferência
-                try {
-                    localStorage.setItem(`mostrar${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`, 'true');
-                } catch (e) {
-                    console.warn('Não foi possível salvar preferência');
-                }
-                
-                adicionarLog(`Seção ${tipo} exibida`, 'info');
-            } else {
-                // Ocultar seção
-                section.classList.remove('secao-visivel');
-                section.classList.add('secao-oculta');
-                
-                // Atualizar botão
-                toggleIcon.textContent = '👁️';
-                if (tipo === 'pares') {
-                    toggleText.textContent = 'Mostrar TODOS os Resultados - Pares vs Ímpares';
-                } else {
-                    toggleText.textContent = 'Mostrar TODOS os Resultados - Dezenas Finais Repetidas';
-                }
-                toggleArrow.textContent = '⬇️';
-                toggleArrow.style.transform = 'rotate(0deg)';
-                
-                // Salvar preferência
-                try {
-                    localStorage.setItem(`mostrar${tipo.charAt(0).toUpperCase() + tipo.slice(1)}`, 'false');
-                } catch (e) {
-                    console.warn('Não foi possível salvar preferência');
-                }
-                
-                adicionarLog(`Seção ${tipo} ocultada`, 'info');
-            }
         }
 
         function usarDadosExemplo() {
