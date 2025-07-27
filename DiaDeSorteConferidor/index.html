@@ -2630,13 +2630,18 @@
                 const resultados = [];
                 const somentePremiados = document.getElementById('somente-premiados').checked;
                 
+                adicionarLogCritico(`🔍 Processando lote: concursos ${inicio}-${fim}, ${jogos.length} jogos, premiados: ${somentePremiados}`, "info");
+                
                 // Processar concursos em paralelo com controle de concorrência
-                const concorrenciaMaxima = Math.min(5, fim - inicio + 1);
+                const concorrenciaMaxima = Math.min(3, fim - inicio + 1); // Reduzido para melhor confiabilidade
                 const concursos = [];
                 
                 for (let i = inicio; i <= fim; i++) {
                     concursos.push(i);
                 }
+                
+                let concursosSucesso = 0;
+                let concursosErro = 0;
                 
                 // Dividir em chunks para processamento paralelo controlado
                 for (let i = 0; i < concursos.length; i += concorrenciaMaxima) {
@@ -2653,10 +2658,22 @@
                     // Processar resultados
                     for (let j = 0; j < resultadosPromessas.length; j++) {
                         const resultado = resultadosPromessas[j];
+                        const concurso = chunk[j];
                         
                         if (resultado.status === 'fulfilled' && resultado.value) {
                             const dadosConcurso = resultado.value;
+                            const resultadosAntes = resultados.length;
                             processarResultadoConcursoOtimizado(dadosConcurso, jogos, somentePremiados, resultados);
+                            const novosResultados = resultados.length - resultadosAntes;
+                            
+                            concursosSucesso++;
+                            
+                            if (novosResultados > 0) {
+                                adicionarLogCritico(`✅ Concurso ${concurso}: ${novosResultados} resultados encontrados`, "success");
+                            }
+                        } else {
+                            concursosErro++;
+                            adicionarLogCritico(`❌ Erro no concurso ${concurso}: ${resultado.reason || 'Falha na busca'}`, "warning");
                         }
                     }
                     
@@ -2668,21 +2685,39 @@
                     // Atualizar estatísticas de processamento
                     document.getElementById('games-processed').textContent = processamentoStats.processedGames.toLocaleString();
                     
+                    // Log intermediário
+                    if (i % 15 === 0) {
+                        adicionarLogCritico(`📊 Progresso: ${resultados.length} resultados até agora`, "info");
+                    }
+                    
                     // Pequena pausa para não sobrecarregar
-                    await new Promise(resolve => setTimeout(resolve, 20));
+                    await new Promise(resolve => setTimeout(resolve, 50));
                 }
                 
+                adicionarLogCritico(`📋 Lote finalizado: ${resultados.length} resultados, ${concursosSucesso} sucessos, ${concursosErro} erros`, "info");
                 return resultados;
             }
             
             function processarResultadoConcursoOtimizado(resultado, jogos, somentePremiados, resultados) {
-                if (!resultado) return;
+                if (!resultado) {
+                    adicionarLogCritico(`⚠️ Resultado vazio recebido`, "warning");
+                    return;
+                }
+                
+                if (!resultado.dezenas || resultado.dezenas.length === 0) {
+                    adicionarLogCritico(`⚠️ Concurso ${resultado.concurso}: números não encontrados`, "warning");
+                    return;
+                }
                 
                 const dezenas = resultado.dezenas.map(d => parseInt(d));
                 const mesSorteado = resultado.mesDaSorte || '';
                 
+                adicionarLogCritico(`🔍 Processando concurso ${resultado.concurso}: números ${dezenas.join(', ')}, mês: ${mesSorteado}`, "info");
+                
                 // Usar Set para busca mais rápida
                 const dezenasSet = new Set(dezenas);
+                
+                let resultadosEncontrados = 0;
                 
                 // Processar cada jogo
                 for (let i = 0; i < jogos.length; i++) {
@@ -2699,20 +2734,19 @@
                     const acertouMes = jogo.mes && mesSorteado && 
                                       jogo.mes.toUpperCase() === mesSorteado.toUpperCase();
                     
-                    // Verificar se deve incluir
-                    if (somentePremiados && acertosNumeros < 4 && !acertouMes) {
-                        continue;
-                    }
+                    // SEMPRE incluir resultados se não estiver filtrando apenas premiados
+                    // OU se for premiado (4+ acertos ou acertou mês)
+                    const deveIncluir = !somentePremiados || acertosNumeros >= 4 || acertouMes;
                     
-                    // Calcular prêmio
-                    let premio = 0;
-                    try {
-                        premio = calcularPremio(resultado, acertosNumeros, acertouMes);
-                    } catch (err) {
-                        // Ignorar erro de prêmio
-                    }
-                    
-                    if (acertosNumeros >= 4 || acertouMes || !somentePremiados) {
+                    if (deveIncluir) {
+                        // Calcular prêmio
+                        let premio = 0;
+                        try {
+                            premio = calcularPremio(resultado, acertosNumeros, acertouMes);
+                        } catch (err) {
+                            // Ignorar erro de prêmio mas continuar processando
+                        }
+                        
                         resultados.push({
                             concurso: resultado.concurso,
                             data: resultado.data,
@@ -2724,7 +2758,15 @@
                             acertou_mes: acertouMes,
                             premio: premio
                         });
+                        
+                        resultadosEncontrados++;
                     }
+                }
+                
+                if (resultadosEncontrados > 0) {
+                    adicionarLogCritico(`✅ Concurso ${resultado.concurso}: ${resultadosEncontrados} resultados incluídos`, "success");
+                } else if (!somentePremiados) {
+                    adicionarLogCritico(`ℹ️ Concurso ${resultado.concurso}: nenhum resultado (normal se não há acertos)`, "info");
                 }
             }
             
@@ -3165,21 +3207,30 @@
             async function mostrarResultadosOtimizados(data) {
                 adicionarLogCritico("📊 Gerando interface de resultados...", "info");
                 
+                // Verificar se há resultados
+                if (!data || !data.acertos || data.acertos.length === 0) {
+                    adicionarLogCritico("⚠️ Nenhum resultado encontrado para exibir", "warning");
+                    showAlert("Nenhum resultado encontrado! Verifique se:\n• Há jogos carregados\n• O período de concursos está correto\n• Se selecionou 'Somente premiados', pode não haver prêmios no período");
+                    return;
+                }
+                
+                adicionarLogCritico(`📋 Exibindo ${data.acertos.length} resultados encontrados`, "success");
+                
                 // Mostrar seção de resultados
                 document.getElementById('resultados').style.display = 'block';
                 
-                // Atualizar contadores
-                document.getElementById('quatro-acertos').textContent = data.resumo.quatro.toLocaleString();
-                document.getElementById('cinco-acertos').textContent = data.resumo.cinco.toLocaleString();
-                document.getElementById('seis-acertos').textContent = data.resumo.seis.toLocaleString();
-                document.getElementById('sete-acertos').textContent = data.resumo.sete.toLocaleString();
-                document.getElementById('mes-acertos').textContent = data.resumo.mes.toLocaleString();
+                // Atualizar contadores com validação
+                document.getElementById('quatro-acertos').textContent = (data.resumo?.quatro || 0).toLocaleString();
+                document.getElementById('cinco-acertos').textContent = (data.resumo?.cinco || 0).toLocaleString();
+                document.getElementById('seis-acertos').textContent = (data.resumo?.seis || 0).toLocaleString();
+                document.getElementById('sete-acertos').textContent = (data.resumo?.sete || 0).toLocaleString();
+                document.getElementById('mes-acertos').textContent = (data.resumo?.mes || 0).toLocaleString();
                 
                 // Calcular e mostrar valores de prêmios
                 const calcularTotalPremios = (acertos) => {
                     return data.acertos
                         .filter(r => r.acertos === acertos)
-                        .reduce((sum, r) => sum + r.premio, 0);
+                        .reduce((sum, r) => sum + (r.premio || 0), 0);
                 };
                 
                 document.getElementById('quatro-valor').textContent = formatarValor(calcularTotalPremios(4));
@@ -3189,35 +3240,43 @@
                 document.getElementById('mes-valor').textContent = formatarValor(
                     data.acertos
                         .filter(r => r.acertou_mes)
-                        .reduce((sum, r) => sum + r.premio, 0)
+                        .reduce((sum, r) => sum + (r.premio || 0), 0)
                 );
                 
                 // Salvar dados para exportação
                 dadosUltimaConsulta = data;
                 allResults = data.acertos;
                 
+                adicionarLogCritico(`💾 Dados salvos: ${allResults.length} resultados disponíveis`, "info");
+                
                 // Configurar paginação e tabela de forma assíncrona
                 setTimeout(() => {
-                    configurarTabelaPaginada();
-                    
-                    if (data.jogos_stats && data.jogos_stats.length > 0) {
-                        atualizarTabelaJogosSorteados(data.jogos_stats);
-                        document.getElementById('jogos-mais-sorteados').style.display = 'block';
+                    try {
+                        configurarTabelaPaginada();
+                        
+                        if (data.jogos_stats && data.jogos_stats.length > 0) {
+                            atualizarTabelaJogosSorteados(data.jogos_stats);
+                            document.getElementById('jogos-mais-sorteados').style.display = 'block';
+                            adicionarLogCritico(`📈 Estatísticas de ${data.jogos_stats.length} jogos carregadas`, "success");
+                        }
+                        
+                        // Mostrar botões de exportação
+                        document.getElementById('export-resumo').classList.remove('hidden');
+                        document.getElementById('export-jogos').classList.remove('hidden');
+                        if (data.jogos_stats && data.jogos_stats.length > 0) {
+                            document.getElementById('export-estatisticas').classList.remove('hidden');
+                        }
+                        
+                        // Scroll para resultados
+                        document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
+                        
+                        adicionarLogCritico("✅ Interface de resultados carregada completamente", "success");
+                        
+                    } catch (err) {
+                        adicionarLogCritico(`❌ Erro ao configurar interface: ${err.message}`, "critical");
+                        console.error("Erro na configuração da interface:", err);
                     }
-                    
-                    // Mostrar botões de exportação
-                    document.getElementById('export-resumo').classList.remove('hidden');
-                    document.getElementById('export-jogos').classList.remove('hidden');
-                    if (data.jogos_stats && data.jogos_stats.length > 0) {
-                        document.getElementById('export-estatisticas').classList.remove('hidden');
-                    }
-                    
-                    // Scroll para resultados
-                    document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
-                    
                 }, 100);
-                
-                adicionarLogCritico("✅ Interface de resultados carregada", "success");
             }
             
             function configurarTabelaPaginada() {
