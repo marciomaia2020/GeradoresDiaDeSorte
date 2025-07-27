@@ -2165,9 +2165,24 @@
             }
             
             function adicionarJogoNaListaOtimizado(jogo) {
-                // Para grandes volumes, usar virtual scrolling simples
+                // Para grandes volumes, mostrar apenas estatísticas
                 if (jogosIncluidos.length > 1000) {
-                    return; // Não mostrar na lista para economizar memória
+                    // Mostrar resumo estatístico em vez de lista completa
+                    const listaJogos = document.getElementById('lista-jogos');
+                    listaJogos.innerHTML = `
+                        <div class="jogo-item" style="text-align: center; padding: 20px; background-color: #e8f5e8; border: 2px solid var(--dia-sorte-verde);">
+                            <div style="color: var(--dia-sorte-verde); font-weight: bold; font-size: 18px;">
+                                <i class="fas fa-check-circle" style="margin-right: 10px;"></i>
+                                ${jogosIncluidos.length.toLocaleString()} jogos carregados com sucesso!
+                            </div>
+                            <div style="margin-top: 10px; color: #666; font-size: 14px;">
+                                Interface otimizada para grandes volumes. 
+                                <br>Lista individual oculta para melhor performance.
+                                <br><strong>Todos os jogos serão processados na conferência.</strong>
+                            </div>
+                        </div>
+                    `;
+                    return;
                 }
                 
                 const listaJogos = document.getElementById('lista-jogos');
@@ -2714,6 +2729,11 @@
                 
                 adicionarLogCritico(`🔍 Processando concurso ${resultado.concurso}: números ${dezenas.join(', ')}, mês: ${mesSorteado}`, "info");
                 
+                // DEBUG: Mostrar configuração de filtro
+                if (resultado.concurso % 10 === 0) { // Log a cada 10 concursos para não sobrecarregar
+                    adicionarLogCritico(`🐛 DEBUG Concurso ${resultado.concurso}: somente_premiados=${somentePremiados}, processando ${jogos.length} jogos`, "info");
+                }
+                
                 // Usar Set para busca mais rápida
                 const dezenasSet = new Set(dezenas);
                 
@@ -2734,9 +2754,10 @@
                     const acertouMes = jogo.mes && mesSorteado && 
                                       jogo.mes.toUpperCase() === mesSorteado.toUpperCase();
                     
-                    // SEMPRE incluir resultados se não estiver filtrando apenas premiados
-                    // OU se for premiado (4+ acertos ou acertou mês)
-                    const deveIncluir = !somentePremiados || acertosNumeros >= 4 || acertouMes;
+                    // Se "Somente premiados" está marcado, incluir apenas jogos com 4+ acertos OU que acertaram o mês
+                    // Se "Somente premiados" NÃO está marcado, incluir TODOS os jogos
+                    const ehPremiado = acertosNumeros >= 4 || acertouMes;
+                    const deveIncluir = !somentePremiados || ehPremiado;
                     
                     if (deveIncluir) {
                         // Calcular prêmio
