@@ -24,6 +24,25 @@
             },
             darkMode: 'class'
         }
+			// Função para abreviar nomes dos meses
+		function abbreviateMonth(fullMonth) {
+		const monthAbbreviations = {
+        'Janeiro': 'Jan',
+        'Fevereiro': 'Fev', 
+        'Março': 'Mar',
+        'Abril': 'Abr',
+        'Maio': 'Mai',
+        'Junho': 'Jun',
+        'Julho': 'Jul',
+        'Agosto': 'Ago',
+        'Setembro': 'Set',
+        'Outubro': 'Out',
+        'Novembro': 'Nov',
+        'Dezembro': 'Dez'
+    };
+    return monthAbbreviations[fullMonth] || fullMonth;
+}
+
     </script>
 <style>
  body, html {
@@ -1412,52 +1431,64 @@
         document.body.appendChild(modal);
     }
 
-    function exportToTXT() {
-        if (allGames.length === 0) {
-            showAlert('Nenhum jogo foi gerado ainda!');
-            return;
-        }
-
-        let txtContent = '';
-        allGames.forEach(game => {
-            const numbersStr = game.numbers.map(n => n.toString().padStart(2, '0')).join('-');
-            txtContent += `${numbersStr} ${game.month}\n`;
-        });
-
-        const blob = new Blob([txtContent], { type: 'text/plain' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `dia-sorte-4-digitos-${new Date().toISOString().split('T')[0]}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+	// Função para exportar para TXT - FORMATO MODIFICADO
+   function exportToTXT() {
+    if (allGames.length === 0) {
+        showAlert('Nenhum jogo foi gerado ainda!');
+        return;
     }
 
-    function exportToXLS() {
-        if (allGames.length === 0) {
-            showAlert('Nenhum jogo foi gerado ainda!');
-            return;
-        }
+    let txtContent = '';
+    allGames.forEach(game => {
+        // MUDANÇA: join(' ') em vez de join('-')
+        const numbersStr = game.numbers.map(n => n.toString().padStart(2, '0')).join(' ');
+        // MUDANÇA: abbreviateMonth() para abreviar o mês
+        txtContent += `${numbersStr} ${abbreviateMonth(game.month)}\n`;
+    });
 
-        let csvContent = '\uFEFFNúmeros (4 Dígitos),Mês da Sorte\n';
-        allGames.forEach(game => {
-            const numbersStr = game.numbers.map(n => n.toString().padStart(2, '0')).join('-');
-            csvContent += `"${numbersStr}","${game.month}"\n`;
-        });
+    const blob = new Blob([txtContent], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dia-sorte-jogos-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+	
+	
+	
+	
+	
+	
+	
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `dia-sorte-4-digitos-${new Date().toISOString().split('T')[0]}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+// Função para exportar para XLS (CSV) - FORMATO MODIFICADO
+function exportToXLS() {
+    if (allGames.length === 0) {
+        showAlert('Nenhum jogo foi gerado ainda!');
+        return;
     }
 
+    let csvContent = '\uFEFFNúmeros,Mês da Sorte\n';
+    allGames.forEach(game => {
+        // MUDANÇA: join(' ') em vez de join('-')
+        const numbersStr = game.numbers.map(n => n.toString().padStart(2, '0')).join(' ');
+        // MUDANÇA: abbreviateMonth() para abreviar o mês
+        csvContent += `"${numbersStr}","${abbreviateMonth(game.month)}"\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dia-sorte-jogos-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
     // Loading modal
     const loadingHTML = `
         <div id="loading" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

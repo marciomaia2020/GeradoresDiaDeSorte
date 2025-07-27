@@ -157,6 +157,24 @@
                 document.documentElement.classList.remove('dark');
             }
         });
+		// Função para abreviar nomes dos meses
+		function abbreviateMonth(fullMonth) {
+		const monthAbbreviations = {
+        'Janeiro': 'Jan',
+        'Fevereiro': 'Fev', 
+        'Março': 'Mar',
+        'Abril': 'Abr',
+        'Maio': 'Mai',
+        'Junho': 'Jun',
+        'Julho': 'Jul',
+        'Agosto': 'Ago',
+        'Setembro': 'Set',
+        'Outubro': 'Out',
+        'Novembro': 'Nov',
+        'Dezembro': 'Dez'
+    };
+    return monthAbbreviations[fullMonth] || fullMonth;
+}
     </script>
 
     <!-- Layout com sidebar e conteúdo principal -->

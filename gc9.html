@@ -2240,54 +2240,56 @@
         document.getElementById('strategy-modal').classList.add('hidden');
     }
 
-    // Função para exportar para TXT
-    function exportToTXT() {
-        if (allGames.length === 0) {
-            showAlert('Nenhum jogo foi gerado ainda!');
-            return;
-        }
-
-        let txtContent = '';
-        allGames.forEach(game => {
-            const numbersStr = game.numbers.map(n => n.toString().padStart(2, '0')).join('-');
-            txtContent += `${numbersStr} ${game.month}\n`;
-        });
-
-        const blob = new Blob([txtContent], { type: 'text/plain' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `dia-sorte-8-digitos-${new Date().toISOString().split('T')[0]}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+// Função para exportar para TXT - FORMATO MODIFICADO
+function exportToTXT() {
+    if (allGames.length === 0) {
+        showAlert('Nenhum jogo foi gerado ainda!');
+        return;
     }
 
-    // Função para exportar para XLS (CSV)
-    function exportToXLS() {
-        if (allGames.length === 0) {
-            showAlert('Nenhum jogo foi gerado ainda!');
-            return;
-        }
+    let txtContent = '';
+    allGames.forEach(game => {
+        // MUDANÇA: join(' ') em vez de join('-')
+        const numbersStr = game.numbers.map(n => n.toString().padStart(2, '0')).join(' ');
+        // MUDANÇA: abbreviateMonth() para abreviar o mês
+        txtContent += `${numbersStr} ${abbreviateMonth(game.month)}\n`;
+    });
 
-        let csvContent = '\uFEFFNúmeros (8 Dígitos),Mês da Sorte\n'; // BOM para UTF-8
-        allGames.forEach(game => {
-            const numbersStr = game.numbers.map(n => n.toString().padStart(2, '0')).join('-');
-            csvContent += `"${numbersStr}","${game.month}"\n`;
-        });
-
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `dia-sorte-8-digitos-${new Date().toISOString().split('T')[0]}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+    const blob = new Blob([txtContent], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dia-sorte-jogos-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
+// Função para exportar para XLS (CSV) - FORMATO MODIFICADO
+function exportToXLS() {
+    if (allGames.length === 0) {
+        showAlert('Nenhum jogo foi gerado ainda!');
+        return;
     }
 
+    let csvContent = '\uFEFFNúmeros,Mês da Sorte\n';
+    allGames.forEach(game => {
+        // MUDANÇA: join(' ') em vez de join('-')
+        const numbersStr = game.numbers.map(n => n.toString().padStart(2, '0')).join(' ');
+        // MUDANÇA: abbreviateMonth() para abreviar o mês
+        csvContent += `"${numbersStr}","${abbreviateMonth(game.month)}"\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dia-sorte-jogos-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+}
     // Função para encontrar o mês mais sorteado
     function getMostFrequentMonth() {
         if (Object.keys(monthFrequency).length === 0) {
@@ -2359,6 +2361,24 @@
             button.innerHTML = '<i class="fas fa-eye mr-1"></i>Mostrar';
         }
     }
+	// Função para abreviar nomes dos meses
+	function abbreviateMonth(fullMonth) {
+    const monthAbbreviations = {
+        'Janeiro': 'Jan',
+        'Fevereiro': 'Fev', 
+        'Março': 'Mar',
+        'Abril': 'Abr',
+        'Maio': 'Mai',
+        'Junho': 'Jun',
+        'Julho': 'Jul',
+        'Agosto': 'Ago',
+        'Setembro': 'Set',
+        'Outubro': 'Out',
+        'Novembro': 'Nov',
+        'Dezembro': 'Dez'
+    };
+    return monthAbbreviations[fullMonth] || fullMonth;
+}
 </script>
 	</body>
 </html>
