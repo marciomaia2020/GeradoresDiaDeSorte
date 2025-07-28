@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Jogos - Modalidade Milionária</title>
+    <title>Gerador de Jogos - Modalidade Milion&aacute;ria</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <style>
@@ -40,39 +40,40 @@
     <div class="container mx-auto p-4">
         <header class="text-center mb-6">
             <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-                Gerador de Jogos - Modalidade Milionária
+                Gerador de Jogos - Modalidade Milion&aacute;ria
             </h1>
             <p class="text-gray-600 dark:text-gray-400">
-                Sistema profissional para geração de 12 jogos
+                Sistema profissional para gera&ccedil;&atilde;o de 12 jogos
             </p>
         </header>
 
         <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6">
-            <h2 class="text-lg font-semibold mb-3">Instruções</h2>
+            <h2 class="text-lg font-semibold mb-3">Instru&ccedil;&otilde;es</h2>
             <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                <li>• Insira 4 números de 1 a 50 no GRUPO I - (46)</li>
-                <li>• Insira 4 números de 1 a 50 no GRUPO II - (46)</li>
-                <li>• Cada jogo terá 6 números principais + 2 números do trevo</li>
+                <li>&bull; Insira 4 n&uacute;meros de 1 a 50 no GRUPO I</li>
+                <li>&bull; Insira 4 n&uacute;meros de 1 a 50 no GRUPO II</li>
+                <li>&bull; O sistema gerar&aacute; automaticamente 12 jogos</li>
+                <li>&bull; Cada jogo ter&aacute; 6 n&uacute;meros principais + 2 n&uacute;meros do trevo</li>
             </ul>
         </div>
 
         <div class="grid md:grid-cols-2 gap-6 mb-6">
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                <h3 class="text-lg  text-center font-semibold mb-3 text-red-600">GRUPO I</h3>
+                <h3 class="text-lg font-semibold mb-3 text-red-600">GRUPO I</h3>
                 <div class="grid grid-cols-4 gap-2">
-                    <input type="number" id="grupo1-0" min="1" max="50" placeholder="1°" class="input-cell h-12 text-center rounded text-base">
-                    <input type="number" id="grupo1-1" min="1" max="50" placeholder="2°" class="input-cell h-12 text-center rounded text-base">
-                    <input type="number" id="grupo1-2" min="1" max="50" placeholder="3°" class="input-cell h-12 text-center rounded text-base">
-                    <input type="number" id="grupo1-3" min="1" max="50" placeholder="4°" class="input-cell h-12 text-center rounded text-base">
+                    <input type="number" id="grupo1-0" min="1" max="50" placeholder="1&ordm;" class="input-cell h-12 text-center rounded text-base">
+                    <input type="number" id="grupo1-1" min="1" max="50" placeholder="2&ordm;" class="input-cell h-12 text-center rounded text-base">
+                    <input type="number" id="grupo1-2" min="1" max="50" placeholder="3&ordm;" class="input-cell h-12 text-center rounded text-base">
+                    <input type="number" id="grupo1-3" min="1" max="50" placeholder="4&ordm;" class="input-cell h-12 text-center rounded text-base">
                 </div>
             </div>
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                <h3 class="text-lg text-center font-semibold mb-3 text-blue-600">GRUPO II</h3>
+                <h3 class="text-lg font-semibold mb-3 text-blue-600">GRUPO II</h3>
                 <div class="grid grid-cols-4 gap-2">
-                    <input type="number" id="grupo2-0" min="1" max="50" placeholder="1°" class="input-cell h-12 text-center rounded text-base">
-                    <input type="number" id="grupo2-1" min="1" max="50" placeholder="2°" class="input-cell h-12 text-center rounded text-base">
-                    <input type="number" id="grupo2-2" min="1" max="50" placeholder="3°" class="input-cell h-12 text-center rounded text-base">
-                    <input type="number" id="grupo2-3" min="1" max="50" placeholder="4°" class="input-cell h-12 text-center rounded text-base">
+                    <input type="number" id="grupo2-0" min="1" max="50" placeholder="1&ordm;" class="input-cell h-12 text-center rounded text-base">
+                    <input type="number" id="grupo2-1" min="1" max="50" placeholder="2&ordm;" class="input-cell h-12 text-center rounded text-base">
+                    <input type="number" id="grupo2-2" min="1" max="50" placeholder="3&ordm;" class="input-cell h-12 text-center rounded text-base">
+                    <input type="number" id="grupo2-3" min="1" max="50" placeholder="4&ordm;" class="input-cell h-12 text-center rounded text-base">
                 </div>
             </div>
         </div>
@@ -83,12 +84,12 @@
                     <thead>
                         <tr class="bg-gray-100 dark:bg-gray-700">
                             <th class="border border-gray-300 dark:border-gray-600 p-2 text-center">Jogo</th>
-                            <th colspan="6" class="border border-gray-300 dark:border-gray-600 p-2 text-center">Números Principais</th>
+                            <th colspan="6" class="border border-gray-300 dark:border-gray-600 p-2 text-center">N&uacute;meros Principais</th>
                             <th colspan="2" class="border border-gray-300 dark:border-gray-600 p-2 text-center bg-green-100 dark:bg-green-900">TREVO</th>
                         </tr>
                     </thead>
                     <tbody id="gameTable">
-                        <!-- Jogos serão gerados aqui -->
+                        <!-- Jogos ser&atilde;o gerados aqui -->
                     </tbody>
                 </table>
             </div>
@@ -151,14 +152,14 @@
             const tableBody = document.getElementById('gameTable');
             tableBody.innerHTML = '';
 
-            // Combinações baseadas na figura - mantendo grupos corretos
+            // Combina&ccedil;&otilde;es baseadas na figura - mantendo grupos corretos
             const combinations = [
-                { g1: [0,1,2,3], g2: [0,1], trevo: [1,2] },    // Jogo 1: Todo grupo1 + 1°,2° do grupo2
-                { g1: [0,1,2,3], g2: [0,2], trevo: [1,3] },    // Jogo 2: Todo grupo1 + 1°,3° do grupo2  
-                { g1: [0,1,2,3], g2: [0,3], trevo: [1,4] },    // Jogo 3: Todo grupo1 + 1°,4° do grupo2
-                { g1: [0,1,2,3], g2: [1,2], trevo: [2,5] },    // Jogo 4: Todo grupo1 + 2°,3° do grupo2
-                { g1: [0,1,2,3], g2: [1,3], trevo: [1,6] },    // Jogo 5: Todo grupo1 + 2°,4° do grupo2
-                { g1: [0,1,2,3], g2: [2,3], trevo: [2,3] },    // Jogo 6: Todo grupo1 + 3°,4° do grupo2
+                { g1: [0,1,2,3], g2: [0,1], trevo: [1,2] },    // Jogo 1: Todo grupo1 + 1&ordm;,2&ordm; do grupo2
+                { g1: [0,1,2,3], g2: [0,2], trevo: [1,3] },    // Jogo 2: Todo grupo1 + 1&ordm;,3&ordm; do grupo2  
+                { g1: [0,1,2,3], g2: [0,3], trevo: [1,4] },    // Jogo 3: Todo grupo1 + 1&ordm;,4&ordm; do grupo2
+                { g1: [0,1,2,3], g2: [1,2], trevo: [2,5] },    // Jogo 4: Todo grupo1 + 2&ordm;,3&ordm; do grupo2
+                { g1: [0,1,2,3], g2: [1,3], trevo: [1,6] },    // Jogo 5: Todo grupo1 + 2&ordm;,4&ordm; do grupo2
+                { g1: [0,1,2,3], g2: [2,3], trevo: [2,3] },    // Jogo 6: Todo grupo1 + 3&ordm;,4&ordm; do grupo2
                 { g1: [], g2: [0,1,2,3], trevo: [3,4] },       // Jogo 7: 20,34,38,40 (todos do grupo2)
                 { g1: [0], g2: [0,1,2], trevo: [3,5] },        // Jogo 8: 3 + 20,34,38
                 { g1: [], g2: [0,1,2,3], trevo: [4,5] },       // Jogo 9: repete 20,34,38,40
@@ -174,14 +175,14 @@
                 const combo = combinations[i];
                 const gameNumbers = [];
                 
-                if (i >= 6) { // Jogos 7-12 (índices 6-11)
-                    // Para jogos 7-12: APENAS usar números do GRUPO II, NUNCA do GRUPO I
+                if (i >= 6) { // Jogos 7-12 (&iacute;ndices 6-11)
+                    // Para jogos 7-12: APENAS usar n&uacute;meros do GRUPO II, NUNCA do GRUPO I
                     combo.g2.forEach(idx => {
                         if (grupo2[idx] > 0) gameNumbers.push(grupo2[idx]);
                     });
                     
-                    // Se houver números do GRUPO I especificados na combinação, 
-                    // só usar se GRUPO II estiver completo
+                    // Se houver n&uacute;meros do GRUPO I especificados na combina&ccedil;&atilde;o, 
+                    // s&oacute; usar se GRUPO II estiver completo
                     if (combo.g1.length > 0) {
                         let grupo2Completo = combo.g2.every(idx => grupo2[idx] > 0);
                         if (grupo2Completo) {
@@ -191,18 +192,18 @@
                         }
                     }
                 } else { // Jogos 1-6
-                    // Adicionar números do grupo 1
+                    // Adicionar n&uacute;meros do grupo 1
                     combo.g1.forEach(idx => {
                         if (grupo1[idx] > 0) gameNumbers.push(grupo1[idx]);
                     });
                     
-                    // Adicionar números do grupo 2
+                    // Adicionar n&uacute;meros do grupo 2
                     combo.g2.forEach(idx => {
                         if (grupo2[idx] > 0) gameNumbers.push(grupo2[idx]);
                     });
                 }
                 
-                // Ordenar os números
+                // Ordenar os n&uacute;meros
                 gameNumbers.sort((a, b) => a - b);
                 
                 const game = {
@@ -211,13 +212,13 @@
                     trevo: combo.trevo
                 };
 
-                // Número do jogo
+                // N&uacute;mero do jogo
                 const gameCell = document.createElement('td');
                 gameCell.className = 'border border-gray-300 dark:border-gray-600 p-2 text-center font-bold';
                 gameCell.textContent = i + 1;
                 row.appendChild(gameCell);
 
-                // 6 números principais
+                // 6 n&uacute;meros principais
                 for (let j = 0; j < 6; j++) {
                     const cell = document.createElement('td');
                     cell.className = 'border border-gray-300 dark:border-gray-600 p-2 text-center table-cell';
@@ -225,7 +226,7 @@
                     row.appendChild(cell);
                 }
 
-                // 2 números do trevo
+                // 2 n&uacute;meros do trevo
                 for (let j = 0; j < 2; j++) {
                     const cell = document.createElement('td');
                     cell.className = 'border border-gray-300 dark:border-gray-600 p-2 text-center trevo-cell table-cell';
@@ -266,7 +267,7 @@
         }
 
         function downloadXLS() {
-            const ws_data = [['Jogo', '1°', '2°', '3°', '4°', '5°', '6°', 'Trevo 1', 'Trevo 2']];
+            const ws_data = [['Jogo', '1&ordm;', '2&ordm;', '3&ordm;', '4&ordm;', '5&ordm;', '6&ordm;', 'Trevo 1', 'Trevo 2']];
             
             gameData.forEach(game => {
                 const row = [
@@ -286,11 +287,11 @@
         function generateHTMLContent() {
             let html = `
                 <html>
-                <head><title>Jogos Milionária</title></head>
+                <head><title>Jogos Milion&aacute;ria</title></head>
                 <body>
-                <h1>Jogos - Modalidade Milionária</h1>
+                <h1>Jogos - Modalidade Milion&aacute;ria</h1>
                 <table border="1">
-                <tr><th>Jogo</th><th>1°</th><th>2°</th><th>3°</th><th>4°</th><th>5°</th><th>6°</th><th>Trevo 1</th><th>Trevo 2</th></tr>
+                <tr><th>Jogo</th><th>1&ordm;</th><th>2&ordm;</th><th>3&ordm;</th><th>4&ordm;</th><th>5&ordm;</th><th>6&ordm;</th><th>Trevo 1</th><th>Trevo 2</th></tr>
             `;
             
             gameData.forEach(game => {
@@ -307,17 +308,17 @@
         }
 
         function generateTXTContent() {
-            let content = 'JOGOS - MODALIDADE MILIONÁRIA\n\n';
+            let content = 'JOGOS - MODALIDADE MILION\u00C1RIA\n\n';
             gameData.forEach(game => {
                 content += `Jogo ${game.numero}:\n`;
-                content += `Números: ${game.numeros.join(', ')}\n`;
+                content += `N\u00FAmeros: ${game.numeros.join(', ')}\n`;
                 content += `Trevo: ${game.trevo.join(', ')}\n\n`;
             });
             return content;
         }
 
         function downloadFile(filename, content, mimeType) {
-            const blob = new Blob([content], { type: mimeType });
+            const blob = new Blob([content], { type: mimeType + ';charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -343,30 +344,9 @@
             document.body.appendChild(modal);
         }
 
-        // Inicializar a aplicação
+        // Inicializar a aplica&ccedil;&atilde;o
         addInputListeners();
         generateGames();
-		
-		// Lógica para evitar repetições entre os grupo I e grupo II
-		  const grupo1Inputs = Array.from({ length: 4 }, (_, i) => document.getElementById(`grupo1-${i}`));
-		  const grupo2Inputs = Array.from({ length: 4 }, (_, i) => document.getElementById(`grupo2-${i}`));
-
-		  function getGrupo1Valores() {
-			return grupo1Inputs.map(input => parseInt(input.value)).filter(num => !isNaN(num));
-		  }
-
-		  grupo2Inputs.forEach(input => {
-			input.addEventListener("input", () => {
-			  const grupo1Valores = getGrupo1Valores();
-			  const valor = parseInt(input.value);
-
-			  if (grupo1Valores.includes(valor)) {
-				alert(`O número ${valor} já foi selecionado no GRUPO I. Escolha outro número.`);
-				input.value = "";
-				input.focus();
-			  }
-			});
-		  });
     </script>
-  </body>
+</body>
 </html>
