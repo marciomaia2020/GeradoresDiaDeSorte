@@ -1,0 +1,3700 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dia de Sorte Conferidor - Ultra Performance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            /* Cores oficiais do Dia de Sorte */
+            --dia-sorte-verde: #00722E;
+            --dia-sorte-verde-claro: #008a37;
+            --dia-sorte-dourado: #D9B13B;
+            --dia-sorte-claro: #E6D089;
+            --dia-sorte-escuro: #005423;
+            --dia-sorte-bg: #F5F0E1;
+            --vermelho: #dc3545;
+            --text-primary: #333;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dia-sorte-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--dia-sorte-verde);
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 28px;
+        }
+
+        h2 {
+            color: var(--dia-sorte-verde);
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--dia-sorte-dourado);
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            margin: 15px 0 10px 0;
+            color: var(--dia-sorte-verde);
+        }
+        
+        /* Performance indicator */
+        .performance-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 114, 46, 0.9);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .performance-warning {
+            background-color: #ff9800 !important;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #f57c00;
+        }
+        
+        .performance-warning h4 {
+            color: #e65100;
+            margin-bottom: 10px;
+        }
+        
+        .performance-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--dia-sorte-verde);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Estilos do Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s;
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--dia-sorte-dourado);
+            margin-bottom: 15px;
+        }
+        
+        .modal-header i {
+            font-size: 24px;
+            color: var(--dia-sorte-dourado);
+            margin-right: 10px;
+        }
+        
+        .modal-header h2 {
+            color: var(--dia-sorte-verde);
+            margin: 0;
+            border-bottom: none;
+        }
+        
+        .modal-body {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+        
+        .modal-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            text-align: right;
+        }
+        
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close-modal:hover {
+            color: var(--dia-sorte-verde);
+        }
+        
+        .info-section {
+            margin-bottom: 20px;
+        }
+        
+        .info-section h3 {
+            color: var(--dia-sorte-verde);
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .info-section ul {
+            list-style-type: none;
+            padding-left: 10px;
+        }
+        
+        .info-section ul li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .info-section ul li i {
+            color: var(--dia-sorte-dourado);
+            margin-right: 10px;
+            margin-top: 4px;
+        }
+        
+        .info-section ul ul {
+            margin-top: 10px;
+            margin-left: 25px;
+        }
+        
+        .info-section ul ul li {
+            margin-bottom: 5px;
+        }
+
+        /* Volante */
+        .volante {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: var(--dia-sorte-bg);
+            border-radius: 8px;
+            border: 1px solid var(--dia-sorte-verde);
+        }
+
+        .numeros {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+            gap: 8px;
+            margin: 15px 0;
+        }
+
+        .numero {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            border: 2px solid var(--border-color);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .numero:hover {
+            transform: scale(1.05);
+            background-color: #f0f0f0;
+        }
+
+        .numero.selecionado {
+            background-color: var(--dia-sorte-verde);
+            color: white;
+            border-color: var(--dia-sorte-verde);
+        }
+
+        .meses {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .mes {
+            padding: 8px 0;
+            text-align: center;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mes:hover {
+            background-color: #f0f0f0;
+        }
+
+        .mes.selecionado {
+            background-color: var(--dia-sorte-verde);
+            color: white;
+            border-color: var(--dia-sorte-verde);
+        }
+
+        /* Análise de dígitos */
+        .digitos-analise {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: var(--dia-sorte-bg);
+            border-radius: 5px;
+            display: none;
+        }
+
+        .digitos-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .digito-tile {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            background-color: #e9e9e9;
+        }
+
+        .digito-presente {
+            background-color: var(--dia-sorte-dourado);
+            color: #333;
+        }
+
+        .digito-quantidade {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: var(--dia-sorte-verde);
+            background-color: rgba(217, 177, 59, 0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        /* Drop zone */
+        .drop-zone {
+            width: 100%;
+            height: 150px;
+            border: 3px dashed var(--dia-sorte-verde);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            cursor: pointer;
+            background-color: rgba(0, 114, 46, 0.05);
+            transition: all 0.3s;
+        }
+
+        .drop-zone:hover {
+            background-color: rgba(0, 114, 46, 0.1);
+        }
+
+        .drop-zone.dragover {
+            background-color: rgba(0, 114, 46, 0.2);
+            border-color: var(--dia-sorte-dourado);
+        }
+
+        .drop-zone.processing {
+            border-color: var(--dia-sorte-dourado);
+            background-color: rgba(217, 177, 59, 0.1);
+        }
+
+        .drop-zone-content {
+            text-align: center;
+        }
+
+        .drop-zone-hint {
+            color: #666;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        /* Controles */
+        .controles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 25px;
+        }
+
+        .checkbox-group label {
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        /* Botões */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .btn-info {
+            background-color: var(--dia-sorte-verde);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-info:hover {
+            background-color: var(--dia-sorte-escuro);
+        }
+        
+        .btn-dourado {
+            background-color: var(--dia-sorte-dourado);
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-dourado:hover {
+            background-color: var(--dia-sorte-claro);
+        }
+        
+        .info-banner {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .acoes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .btn-azul {
+            background-color: var(--dia-sorte-verde);
+            color: white;
+        }
+
+        .btn-azul:hover {
+            background-color: var(--dia-sorte-verde-claro);
+        }
+
+        .btn-vermelho {
+            background-color: var(--vermelho);
+            color: white;
+        }
+
+        .btn-vermelho:hover {
+            background-color: #c82333;
+        }
+
+        .btn-roxo {
+            background-color: var(--dia-sorte-dourado);
+            color: #333;
+        }
+
+        .btn-roxo:hover {
+            background-color: var(--dia-sorte-claro);
+        }
+
+        .btn-verde {
+            background-color: var(--dia-sorte-verde);
+            color: white;
+        }
+
+        .btn-verde:hover {
+            background-color: var(--dia-sorte-verde-claro);
+        }
+
+        /* Jogos incluídos */
+        .jogos-incluidos {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .jogos-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            background: white;
+        }
+
+        .jogo-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 10px;
+            margin-bottom: 2px;
+            background-color: #f8f8f8;
+            border-left: 3px solid var(--dia-sorte-verde);
+        }
+
+        .jogo-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .jogo-item.selecionado {
+            background-color: rgba(0, 114, 46, 0.1);
+            border-left-color: var(--dia-sorte-dourado);
+        }
+
+        .jogo-checkbox {
+            margin-right: 10px;
+        }
+        
+        .jogo-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .jogo-numeros {
+            display: flex;
+            align-items: center;
+        }
+        
+        .jogo-numero {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            margin-right: 3px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .jogo-mes {
+            margin-left: 8px;
+            color: #777;
+        }
+        
+        .jogo-digitos {
+            font-size: 12px;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .jogo-botoes {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-remover {
+            margin-left: auto;
+            padding: 4px 8px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn-remover:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-analisar {
+            padding: 4px 8px;
+            margin-right: 5px;
+            background-color: var(--dia-sorte-dourado);
+            color: #333;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn-analisar:hover {
+            background-color: var(--dia-sorte-claro);
+        }
+
+        .acoes-jogos {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-acao {
+            padding: 8px 15px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-acao:hover:not(:disabled) {
+            background-color: #e0e0e0;
+        }
+
+        .btn-acao:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Overlay e progresso */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .progress {
+            width: 90%;
+            max-width: 600px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .progress h3 {
+            color: var(--dia-sorte-verde);
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--dia-sorte-dourado);
+            text-align: center;
+        }
+        
+        .progress-bar {
+            height: 25px;
+            background-color: #f0f0f0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 2px solid #ddd;
+            position: relative;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--dia-sorte-verde), var(--dia-sorte-verde-claro));
+            width: 0%;
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill.animando::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg, 
+                rgba(255,255,255,0) 0%, 
+                rgba(255,255,255,0.4) 50%, 
+                rgba(255,255,255,0) 100%
+            );
+            animation: progress-shine 2s linear infinite;
+        }
+        
+        @keyframes progress-shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .progress-text {
+            font-weight: bold;
+            color: var(--dia-sorte-verde);
+            margin: 15px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .progress-stat {
+            text-align: center;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .progress-stat-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--dia-sorte-verde);
+        }
+        
+        .progress-stat-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 3px;
+        }
+        
+        .progress-logs {
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #f8f8f8;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        
+        .log-item {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .log-time {
+            font-family: monospace;
+            color: #6c757d;
+            margin-right: 8px;
+            font-size: 11px;
+        }
+        
+        .log-critical {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .log-warning {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        
+        .log-success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .memory-info {
+            background-color: #e3f2fd;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+            font-size: 12px;
+        }
+        
+        .btn-danger {
+            display: block;
+            margin: 20px auto 0;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Resultados */
+        .resultados {
+            margin-top: 30px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background-color: var(--dia-sorte-bg);
+            border: 1px solid var(--dia-sorte-dourado);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .contagem {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--dia-sorte-verde);
+            margin: 10px 0;
+        }
+
+        .valor-premio {
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* Tabelas */
+        .tabela-resumo, .jogos-mais-sorteados {
+            margin-top: 30px;
+        }
+
+        .tabela-container {
+            overflow-x: auto;
+            margin: 20px 0;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .tabela-premios {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tabela-premios th, .tabela-premios td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .tabela-premios th {
+            background-color: var(--dia-sorte-verde);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .tabela-premios tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .acerto {
+            font-weight: bold;
+            color: var(--dia-sorte-verde);
+        }
+
+        .numeros-tabela {
+            white-space: nowrap;
+            letter-spacing: 1px;
+        }
+        
+        .numero-tabela {
+            display: inline-block;
+            margin-right: 4px;
+        }
+        
+        .acerto-mes {
+            color: var(--dia-sorte-dourado);
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        /* Paginação */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background-color: var(--dia-sorte-verde);
+            color: white;
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination .active {
+            background-color: var(--dia-sorte-verde);
+            color: white;
+        }
+
+        /* Botões de exportação */
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .btn-export {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background-color: var(--dia-sorte-verde);
+            color: white !important;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-export:hover {
+            background-color: var(--dia-sorte-verde-claro);
+        }
+        
+        .btn-export i {
+            font-size: 16px;
+        }
+
+        /* Virtual scrolling */
+        .virtual-list {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .virtual-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        
+        .virtual-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Animações */
+        @keyframes modalFadeIn {
+            from {opacity: 0; transform: translateY(-20px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Utilitários */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Media queries */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .numeros {
+                grid-template-columns: repeat(7, 1fr);
+            }
+            
+            .meses {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .digitos-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+            
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .progress {
+                width: 95%;
+                padding: 15px;
+            }
+            
+            .btn {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+            
+            .performance-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .numeros {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .meses {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .acoes {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .performance-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+            
+            body {
+                background: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Performance Indicator -->
+    <div id="performance-indicator" class="performance-indicator">
+        <div>RAM: <span id="memory-usage">0 MB</span></div>
+        <div>Jogos: <span id="games-count">0</span></div>
+        <div>Status: <span id="performance-status">OK</span></div>
+    </div>
+
+    <!-- Modal de Informações -->
+    <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-header">
+                <i class="fas fa-rocket"></i>
+                <h2>Ultra Performance - Grandes Volumes</h2>
+            </div>
+            <div class="modal-body">
+                <div class="info-section">
+                    <h3>🚀 Otimizado para Grandes Volumes:</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> <strong>Até 2 milhões de jogos</strong> ou mais</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Processamento em paralelo</strong> com Web Workers</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Gerenciamento inteligente de memória</strong></li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Interface responsiva</strong> durante processamento</li>
+                    </ul>
+                </div>
+                <div class="info-section">
+                    <h3>⚡ Melhorias de Performance:</h3>
+                    <ul>
+                        <li><i class="fas fa-info-circle"></i> <strong>Chunking inteligente:</strong> Processa jogos em lotes otimizados</li>
+                        <li><i class="fas fa-info-circle"></i> <strong>Cache agressivo:</strong> Resultados ficam em cache para consultas futuras</li>
+                        <li><i class="fas fa-info-circle"></i> <strong>Lazy loading:</strong> Carrega resultados conforme necessário</li>
+                        <li><i class="fas fa-info-circle"></i> <strong>Indexação:</strong> Busca ultra-rápida em grandes conjuntos de dados</li>
+                    </ul>
+                </div>
+                <div class="info-section">
+                    <h3>📊 Monitoramento em Tempo Real:</h3>
+                    <ul>
+                        <li><i class="fas fa-info-circle"></i> <strong>Uso de memória:</strong> Monitoramento contínuo</li>
+                        <li><i class="fas fa-info-circle"></i> <strong>Progresso detalhado:</strong> Status por lote de concursos</li>
+                        <li><i class="fas fa-info-circle"></i> <strong>Estatísticas em tempo real:</strong> Velocidade de processamento</li>
+                        <li><i class="fas fa-info-circle"></i> <strong>Auto-otimização:</strong> Ajusta parâmetros automaticamente</li>
+                    </ul>
+                </div>
+                <div class="performance-warning">
+                    <h4>⚠️ Recomendações para Grandes Volumes:</h4>
+                    <ul>
+                        <li>• Use um navegador moderno (Chrome, Firefox, Edge)</li>
+                        <li>• Feche outras abas para liberar memória</li>
+                        <li>• Para volumes >500k jogos, considere processar em partes</li>
+                        <li>• Mantenha o computador conectado à energia</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-close-btn" class="btn btn-dourado">Entendi - Vamos Processar!</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>🚀 Dia de Sorte Conferidor - Ultra Performance</h1>
+        <div class="info-banner">
+            <button id="open-info-modal" class="btn btn-info">
+                <i class="fas fa-rocket"></i> Otimizado para Grandes Volumes
+            </button>
+        </div>
+
+        <!-- Estatísticas de Performance -->
+        <div class="performance-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="total-games-loaded">0</div>
+                <div class="stat-label">Jogos Carregados</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="memory-usage-stat">0 MB</div>
+                <div class="stat-label">Uso de Memória</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="processing-speed">0</div>
+                <div class="stat-label">Jogos/seg</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="cache-size">0</div>
+                <div class="stat-label">Cache (resultados)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="last-performance">-</div>
+                <div class="stat-label">Performance</div>
+            </div>
+        </div>
+
+        <div class="volante">
+            <h2>Selecione 7 números</h2>
+            <div class="numeros" id="numeros-container">
+                <!-- Números estáticos -->
+                <button type="button" class="numero" data-numero="1">01</button>
+                <button type="button" class="numero" data-numero="2">02</button>
+                <button type="button" class="numero" data-numero="3">03</button>
+                <button type="button" class="numero" data-numero="4">04</button>
+                <button type="button" class="numero" data-numero="5">05</button>
+                <button type="button" class="numero" data-numero="6">06</button>
+                <button type="button" class="numero" data-numero="7">07</button>
+                <button type="button" class="numero" data-numero="8">08</button>
+                <button type="button" class="numero" data-numero="9">09</button>
+                <button type="button" class="numero" data-numero="10">10</button>
+                <button type="button" class="numero" data-numero="11">11</button>
+                <button type="button" class="numero" data-numero="12">12</button>
+                <button type="button" class="numero" data-numero="13">13</button>
+                <button type="button" class="numero" data-numero="14">14</button>
+                <button type="button" class="numero" data-numero="15">15</button>
+                <button type="button" class="numero" data-numero="16">16</button>
+                <button type="button" class="numero" data-numero="17">17</button>
+                <button type="button" class="numero" data-numero="18">18</button>
+                <button type="button" class="numero" data-numero="19">19</button>
+                <button type="button" class="numero" data-numero="20">20</button>
+                <button type="button" class="numero" data-numero="21">21</button>
+                <button type="button" class="numero" data-numero="22">22</button>
+                <button type="button" class="numero" data-numero="23">23</button>
+                <button type="button" class="numero" data-numero="24">24</button>
+                <button type="button" class="numero" data-numero="25">25</button>
+                <button type="button" class="numero" data-numero="26">26</button>
+                <button type="button" class="numero" data-numero="27">27</button>
+                <button type="button" class="numero" data-numero="28">28</button>
+                <button type="button" class="numero" data-numero="29">29</button>
+                <button type="button" class="numero" data-numero="30">30</button>
+                <button type="button" class="numero" data-numero="31">31</button>
+            </div>
+
+            <div class="meses-container">
+                <h2>Selecione o Mês da Sorte</h2>
+                <div class="meses" id="meses-container">
+                    <!-- Meses estáticos -->
+                    <button type="button" class="mes" data-mes="JANEIRO">JANEIRO</button>
+                    <button type="button" class="mes" data-mes="FEVEREIRO">FEVEREIRO</button>
+                    <button type="button" class="mes" data-mes="MARÇO">MARÇO</button>
+                    <button type="button" class="mes" data-mes="ABRIL">ABRIL</button>
+                    <button type="button" class="mes" data-mes="MAIO">MAIO</button>
+                    <button type="button" class="mes" data-mes="JUNHO">JUNHO</button>
+                    <button type="button" class="mes" data-mes="JULHO">JULHO</button>
+                    <button type="button" class="mes" data-mes="AGOSTO">AGOSTO</button>
+                    <button type="button" class="mes" data-mes="SETEMBRO">SETEMBRO</button>
+                    <button type="button" class="mes" data-mes="OUTUBRO">OUTUBRO</button>
+                    <button type="button" class="mes" data-mes="NOVEMBRO">NOVEMBRO</button>
+                    <button type="button" class="mes" data-mes="DEZEMBRO">DEZEMBRO</button>
+                </div>
+            </div>
+            
+            <!-- Análise de dígitos do palpite -->
+            <div class="digitos-analise" id="digitos-analise">
+                <h3>Análise de Dígitos</h3>
+                <p>Dígitos utilizados: <span id="contador-digitos" class="digito-quantidade">0</span> dígitos</p>
+                <div class="digitos-grid" id="digitos-grid">
+                    <!-- Dígitos estáticos -->
+                    <div id="digito-0" class="digito-tile">0</div>
+                    <div id="digito-1" class="digito-tile">1</div>
+                    <div id="digito-2" class="digito-tile">2</div>
+                    <div id="digito-3" class="digito-tile">3</div>
+                    <div id="digito-4" class="digito-tile">4</div>
+                    <div id="digito-5" class="digito-tile">5</div>
+                    <div id="digito-6" class="digito-tile">6</div>
+                    <div id="digito-7" class="digito-tile">7</div>
+                    <div id="digito-8" class="digito-tile">8</div>
+                    <div id="digito-9" class="digito-tile">9</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="drop-zone" id="drop-zone">
+            <div class="drop-zone-content">
+                <p><i class="fas fa-cloud-upload-alt" style="font-size: 24px; color: var(--dia-sorte-verde);"></i></p>
+                <p><strong>Arraste e solte seu arquivo aqui ou clique para selecionar</strong></p>
+                <p class="drop-zone-hint">Arquivos .txt ou .xlsx | Otimizado para grandes volumes (milhões de jogos)</p>
+                <input type="file" id="file-input" accept=".txt,.xlsx" hidden>
+            </div>
+        </div>
+
+        <div class="controles">
+            <div class="input-group">
+                <label for="inicio">Concurso Inicial:</label>
+                <input type="number" id="inicio" min="1" value="1">
+            </div>
+            <div class="input-group">
+                <label for="fim">Concurso Final:</label>
+                <input type="number" id="fim" min="1" placeholder="Último concurso">
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="somente-premiados">
+                <label for="somente-premiados">Somente premiados</label>
+            </div>
+        </div>
+
+        <div class="acoes">
+            <button id="incluir" class="btn btn-azul">Incluir Jogo</button>
+            <button id="limpar" class="btn btn-vermelho">Limpar</button>
+            <button id="sugestao" class="btn btn-roxo">Palpite</button>
+            <button id="conferir" class="btn btn-verde">🚀 Conferir Ultra Performance</button>
+        </div>
+
+        <div class="jogos-incluidos">
+            <h3>Jogos Incluídos (<span id="contador-jogos">0</span> jogos)</h3>
+            <div class="jogos-container">
+                <div id="lista-jogos" class="lista-jogos"></div>
+            </div>
+        </div>
+
+        <div class="acoes-jogos">
+            <button id="btn-remover-selecionados" class="btn-acao" disabled>
+                Remover Selecionados
+            </button>
+            <button id="btn-limpar-todos" class="btn-acao">
+                Limpar Todos
+            </button>
+            <button id="btn-otimizar-memoria" class="btn-acao">
+                <i class="fas fa-memory"></i> Otimizar Memória
+            </button>
+        </div>
+
+        <!-- Overlay para visualização do progresso ultra otimizado -->
+        <div id="overlay" class="overlay" style="display: none;">
+            <div class="progress">
+                <h3>🚀 Processamento Ultra Performance</h3>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill animando" id="progress-fill"></div>
+                </div>
+                <div class="progress-text" id="progress-text">Inicializando sistema de ultra performance...</div>
+                
+                <!-- Estatísticas detalhadas de progresso -->
+                <div class="progress-stats">
+                    <div class="progress-stat">
+                        <div class="progress-stat-value" id="current-batch">0</div>
+                        <div class="progress-stat-label">Lote Atual</div>
+                    </div>
+                    <div class="progress-stat">
+                        <div class="progress-stat-value" id="total-batches">0</div>
+                        <div class="progress-stat-label">Total Lotes</div>
+                    </div>
+                    <div class="progress-stat">
+                        <div class="progress-stat-value" id="games-processed">0</div>
+                        <div class="progress-stat-label">Jogos Processados</div>
+                    </div>
+                    <div class="progress-stat">
+                        <div class="progress-stat-value" id="processing-rate">0</div>
+                        <div class="progress-stat-label">Jogos/seg</div>
+                    </div>
+                    <div class="progress-stat">
+                        <div class="progress-stat-value" id="time-elapsed">00:00</div>
+                        <div class="progress-stat-label">Tempo Decorrido</div>
+                    </div>
+                    <div class="progress-stat">
+                        <div class="progress-stat-value" id="eta">--:--</div>
+                        <div class="progress-stat-label">Tempo Restante</div>
+                    </div>
+                </div>
+                
+                <div class="memory-info">
+                    <strong>💾 Gerenciamento de Memória:</strong> 
+                    <span id="memory-status">Otimizando uso de memória...</span>
+                </div>
+                
+                <div id="progress-logs" class="progress-logs"></div>
+                
+                <button id="btn-cancelar-conferencia" class="btn btn-danger">
+                    <i class="fas fa-stop"></i> Parar Processamento
+                </button>
+            </div>
+        </div>
+
+        <div class="resultados" id="resultados" style="display: none;">
+            <h2>📊 Resumo de Acertos</h2>
+            <div class="export-buttons hidden" id="export-resumo">
+                <button onclick="exportarExcel('resumo-acertos')" class="btn-export">
+                    <i class="fas fa-file-excel"></i> Exportar Resumo para Excel
+                </button>
+            </div>
+            <div class="cards">
+                <div class="card">
+                    <h3>4 Acertos</h3>
+                    <p class="contagem" id="quatro-acertos">0</p>
+                    <p class="valor-premio" id="quatro-valor">R$ 0,00</p>
+                </div>
+                <div class="card">
+                    <h3>5 Acertos</h3>
+                    <p class="contagem" id="cinco-acertos">0</p>
+                    <p class="valor-premio" id="cinco-valor">R$ 0,00</p>
+                </div>
+                <div class="card">
+                    <h3>6 Acertos</h3>
+                    <p class="contagem" id="seis-acertos">0</p>
+                    <p class="valor-premio" id="seis-valor">R$ 0,00</p>
+                </div>
+                <div class="card">
+                    <h3>7 Acertos</h3>
+                    <p class="contagem" id="sete-acertos">0</p>
+                    <p class="valor-premio" id="sete-valor">R$ 0,00</p>
+                </div>
+            </div>
+
+            <div class="card mes-card">
+                <h3>Mês da Sorte</h3>
+                <p class="contagem" id="mes-acertos">0</p>
+                <p class="valor-premio" id="mes-valor">R$ 0,00</p>
+            </div>
+
+            <div class="tabela-resumo">
+                <h2>🏆 Resumo dos Jogos Premiados</h2>
+                <div class="export-buttons hidden" id="export-jogos">
+                    <button onclick="exportarExcel('jogos-premiados')" class="btn-export">
+                        <i class="fas fa-file-excel"></i> Exportar Jogos para Excel
+                    </button>
+                </div>
+                
+                <div class="pagination" id="pagination-top">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+                
+                <div class="tabela-container">
+                    <table class="tabela-premios">
+                        <thead>
+                            <tr>
+                                <th>Concurso</th>
+                                <th>Data</th>
+                                <th>Números Sorteados</th>
+                                <th>Mês Sorteado</th>
+                                <th>Seu Jogo</th>
+                                <th>Seu Mês</th>
+                                <th>Acertos</th>
+                                <th>Dígitos Usados</th>
+                                <th>Prêmio</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-resultados">
+                            <!-- Será preenchido via JavaScript com lazy loading -->
+                        </tbody>
+                        <tfoot id="tabela-totais">
+                            <tr>
+                                <td colspan="8"><strong>Total de Prêmios</strong></td>
+                                <td colspan="2" class="total-premios">R$ 0,00</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                
+                <div class="pagination" id="pagination-bottom">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </div>
+
+            <div class="jogos-mais-sorteados" id="jogos-mais-sorteados" style="display: none;">
+                <h2>🎯 Jogos Mais Sorteados</h2>
+                <div class="export-buttons hidden" id="export-estatisticas">
+                    <button onclick="exportarExcel('jogos-sorteados')" class="btn-export">
+                        <i class="fas fa-file-excel"></i> Exportar Estatísticas para Excel
+                    </button>
+                </div>
+                
+                <div class="tabela-container">
+                    <table class="tabela-premios" id="tabela-jogos-sorteados">
+                        <thead>
+                            <tr>
+                                <th>Meu Jogo</th>
+                                <th>Total de Acertos</th>
+                                <th>Distribuição</th>
+                                <th>Acertos do Mês</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Será preenchido via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURAÇÕES DE ULTRA PERFORMANCE =====
+        const ULTRA_CONFIG = {
+            // Tamanhos de chunk adaptativos baseados na quantidade de jogos
+            CHUNK_SIZES: {
+                small: 500,     // < 10k jogos
+                medium: 1000,   // 10k - 100k jogos  
+                large: 2000,    // 100k - 500k jogos
+                ultra: 5000     // > 500k jogos
+            },
+            
+            // Tamanhos de lote para concursos
+            BATCH_SIZES: {
+                small: 50,      // < 10k jogos
+                medium: 30,     // 10k - 100k jogos
+                large: 20,      // 100k - 500k jogos
+                ultra: 10       // > 500k jogos
+            },
+            
+            // Limites para diferentes operações
+            LIMITS: {
+                MAX_RESULTS_DISPLAY: 10000,  // Máximo de resultados a exibir na tabela
+                MAX_GAMES_STATS: 5000,       // Máximo de jogos para estatísticas detalhadas
+                PAGINATION_SIZE: 100,        // Itens por página
+                MAX_LOGS: 50,               // Máximo de logs no progresso
+                MEMORY_CHECK_INTERVAL: 5000, // Intervalo de verificação de memória (ms)
+                GC_INTERVAL: 30000,         // Intervalo para garbage collection forçado (ms)
+            },
+            
+            // URLs da API com fallbacks
+            API_URLS: [
+                "https://loteriascaixa-api.herokuapp.com/api/diadesorte",
+                "https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte"
+            ],
+            
+            // Configurações de cache
+            CACHE_CONFIG: {
+                MAX_CACHE_SIZE: 1000,       // Máximo de resultados em cache
+                CACHE_CLEANUP_THRESHOLD: 1200, // Quando limpar o cache
+                CACHE_RETENTION_HOURS: 24   // Horas para manter cache válido
+            }
+        };
+
+        // Execute o código quando a página terminar de carregar
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log("🚀 Inicializando Conferidor Ultra Performance");
+            
+            // Constantes
+            const MESES = [
+                "JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO",
+                "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"
+            ];
+            
+            // Variáveis globais
+            const jogosIncluidos = [];
+            const jogosSelecionados = new Set();
+            const numerosSelecionados = new Set();
+            const resultadosCache = new Map(); // Usar Map para melhor performance
+            const processamentoStats = {
+                startTime: 0,
+                processedGames: 0,
+                totalGames: 0,
+                lastUpdateTime: 0,
+                currentRate: 0
+            };
+            
+            let conferenciaCancelada = false;
+            let dadosUltimaConsulta = null;
+            let mesSelecionado = null;
+            let ultimoConcurso = 500;
+            let currentPage = 1;
+            let allResults = [];
+            let memoryMonitor = null;
+            let performanceMonitor = null;
+            
+            // Inicialização
+            initializeUltraPerformance();
+            
+            // ===== INICIALIZAÇÃO ULTRA PERFORMANCE =====
+            function initializeUltraPerformance() {
+                console.log("🔧 Configurando sistema ultra performance...");
+                
+                // Carregar cache otimizado
+                carregarCacheOtimizado();
+                
+                // Configurar interface
+                setupInterface();
+                
+                // Iniciar monitoramento de performance
+                iniciarMonitoramentoPerformance();
+                
+                // Buscar último concurso
+                buscarUltimoConcurso();
+                
+                // Configurar otimizações automáticas
+                configurarOtimizacoes();
+                
+                console.log("✅ Sistema ultra performance inicializado");
+            }
+            
+            function iniciarMonitoramentoPerformance() {
+                // Mostrar indicador de performance
+                document.getElementById('performance-indicator').style.display = 'block';
+                
+                // Monitor de memória
+                memoryMonitor = setInterval(() => {
+                    atualizarEstatisticasMemoria();
+                }, ULTRA_CONFIG.LIMITS.MEMORY_CHECK_INTERVAL);
+                
+                // Monitor de performance geral
+                performanceMonitor = setInterval(() => {
+                    atualizarEstatisticasPerformance();
+                }, 2000);
+                
+                // Garbage collection periódico
+                setInterval(() => {
+                    if (window.gc) {
+                        try {
+                            window.gc();
+                            adicionarLogCritico("🧹 Garbage collection executado", "success");
+                        } catch (e) {}
+                    }
+                    
+                    // Limpeza manual de cache se necessário
+                    if (resultadosCache.size > ULTRA_CONFIG.CACHE_CONFIG.CACHE_CLEANUP_THRESHOLD) {
+                        limparCacheAntigo();
+                    }
+                }, ULTRA_CONFIG.LIMITS.GC_INTERVAL);
+            }
+            
+            function atualizarEstatisticasMemoria() {
+                let memoryUsage = 0;
+                let memoryStatus = "OK";
+                
+                // Tentar obter uso real de memória
+                if (performance && performance.memory) {
+                    memoryUsage = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+                    
+                    if (memoryUsage > 500) {
+                        memoryStatus = "ALTO";
+                    } else if (memoryUsage > 200) {
+                        memoryStatus = "MÉDIO";
+                    }
+                } else {
+                    // Estimativa baseada em dados carregados
+                    memoryUsage = Math.round((jogosIncluidos.length * 0.1 + resultadosCache.size * 0.05));
+                }
+                
+                // Atualizar indicadores
+                document.getElementById('memory-usage').textContent = `${memoryUsage} MB`;
+                document.getElementById('memory-usage-stat').textContent = `${memoryUsage} MB`;
+                document.getElementById('performance-status').textContent = memoryStatus;
+                
+                // Aplicar otimizações automáticas se necessário
+                if (memoryUsage > 400) {
+                    otimizarMemoriaAutomaticamente();
+                }
+            }
+            
+            function atualizarEstatisticasPerformance() {
+                // Atualizar contadores
+                document.getElementById('games-count').textContent = jogosIncluidos.length.toLocaleString();
+                document.getElementById('total-games-loaded').textContent = jogosIncluidos.length.toLocaleString();
+                document.getElementById('cache-size').textContent = resultadosCache.size.toLocaleString();
+                
+                // Calcular taxa de processamento se em andamento
+                if (processamentoStats.startTime > 0) {
+                    const elapsed = Date.now() - processamentoStats.startTime;
+                    const rate = Math.round(processamentoStats.processedGames / (elapsed / 1000));
+                    document.getElementById('processing-speed').textContent = rate.toLocaleString();
+                    processamentoStats.currentRate = rate;
+                }
+                
+                // Performance score simples
+                const performanceScore = calcularScorePerformance();
+                document.getElementById('last-performance').textContent = performanceScore;
+            }
+            
+            function calcularScorePerformance() {
+                const memoryUsage = performance?.memory?.usedJSHeapSize || 0;
+                const gameCount = jogosIncluidos.length;
+                
+                if (gameCount === 0) return "Pronto";
+                if (gameCount < 10000) return "Excelente";
+                if (gameCount < 100000) return "Muito Bom";
+                if (gameCount < 500000) return "Bom";
+                if (memoryUsage > 500 * 1024 * 1024) return "Limitado";
+                return "Otimizado";
+            }
+            
+            function configurarOtimizacoes() {
+                // Detectar capacidades do navegador
+                const isHighPerformance = navigator.hardwareConcurrency >= 4;
+                const hasHighMemory = navigator.deviceMemory >= 4;
+                
+                console.log(`🔍 Capacidades detectadas: ${navigator.hardwareConcurrency} cores, ${navigator.deviceMemory || 'N/A'} GB RAM`);
+                
+                // Ajustar configurações baseado nas capacidades
+                if (!isHighPerformance || !hasHighMemory) {
+                    // Reduzir tamanhos de chunk para dispositivos menos potentes
+                    Object.keys(ULTRA_CONFIG.CHUNK_SIZES).forEach(key => {
+                        ULTRA_CONFIG.CHUNK_SIZES[key] = Math.floor(ULTRA_CONFIG.CHUNK_SIZES[key] * 0.7);
+                    });
+                    
+                    console.log("⚡ Otimizações aplicadas para dispositivo de menor capacidade");
+                }
+            }
+            
+            // ===== FUNÇÕES DE CONFIGURAÇÃO DE INTERFACE =====
+            function setupInterface() {
+                // Configurar os cliques dos números
+                document.querySelectorAll('#numeros-container .numero').forEach(numero => {
+                    numero.addEventListener('click', function() {
+                        const num = parseInt(this.dataset.numero);
+                        if (this.classList.contains('selecionado')) {
+                            this.classList.remove('selecionado');
+                            numerosSelecionados.delete(num);
+                        } else if (numerosSelecionados.size < 7) {
+                            this.classList.add('selecionado');
+                            numerosSelecionados.add(num);
+                        } else {
+                            showAlert('Você já selecionou 7 números!');
+                            return;
+                        }
+                        
+                        analisarDigitos();
+                    });
+                });
+                
+                // Configurar os cliques dos meses
+                document.querySelectorAll('#meses-container .mes').forEach(mes => {
+                    mes.addEventListener('click', function() {
+                        const mesValor = this.dataset.mes;
+                        document.querySelectorAll('.mes').forEach(m => {
+                            m.classList.remove('selecionado');
+                        });
+                        
+                        if (mesValor === mesSelecionado) {
+                            mesSelecionado = null;
+                        } else {
+                            this.classList.add('selecionado');
+                            mesSelecionado = mesValor;
+                        }
+                    });
+                });
+                
+                // Configurar modal
+                setupModal();
+                
+                // Configurar drag and drop otimizado
+                setupDragAndDropOtimizado();
+                
+                // Configurar botões
+                setupBotoes();
+                
+                // Configurar eventos de jogos
+                setupEventosJogos();
+                
+                // Configurar overlay
+                setupOverlay();
+            }
+            
+            function setupModal() {
+                const modal = document.getElementById('info-modal');
+                const openModalBtn = document.getElementById('open-info-modal');
+                const closeModalBtn = document.querySelector('.close-modal');
+                const modalCloseBtn = document.getElementById('modal-close-btn');
+                
+                openModalBtn.addEventListener('click', () => {
+                    modal.style.display = 'block';
+                });
+                
+                closeModalBtn.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+                
+                modalCloseBtn.addEventListener('click', () => {
+                    modal.style.display = 'none';
+                });
+                
+                window.addEventListener('click', (event) => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+                
+                // Mostrar modal se for primeira visita
+                const primeiraVisita = !localStorage.getItem('visitouDiaDeSorteUltra');
+                if (primeiraVisita) {
+                    modal.style.display = 'block';
+                    localStorage.setItem('visitouDiaDeSorteUltra', 'true');
+                }
+            }
+            
+            function setupDragAndDropOtimizado() {
+                const dropZone = document.getElementById('drop-zone');
+                const fileInput = document.getElementById('file-input');
+                
+                dropZone.onclick = () => fileInput.click();
+                
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, preventDefaults);
+                });
+                
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, () => {
+                        dropZone.classList.add('dragover');
+                    });
+                });
+                
+                ['dragleave', 'drop'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, () => {
+                        dropZone.classList.remove('dragover');
+                    });
+                });
+                
+                dropZone.addEventListener('drop', handleDropOtimizado);
+                fileInput.addEventListener('change', handleFileSelectOtimizado);
+            }
+            
+            function setupBotoes() {
+                const limparBtn = document.getElementById('limpar');
+                const sugestaoBtn = document.getElementById('sugestao');
+                const conferirBtn = document.getElementById('conferir');
+                const incluirBtn = document.getElementById('incluir');
+                
+                limparBtn.addEventListener('click', () => {
+                    document.querySelectorAll('.numero').forEach(numero => numero.classList.remove('selecionado'));
+                    numerosSelecionados.clear();
+                    document.querySelectorAll('.mes').forEach(mes => mes.classList.remove('selecionado'));
+                    mesSelecionado = null;
+                    document.getElementById('digitos-analise').style.display = 'none';
+                });
+                
+                sugestaoBtn.addEventListener('click', () => {
+                    limparBtn.click();
+                    
+                    const numeros = gerarNumerosAleatorios(1, 31, 7);
+                    numeros.forEach(num => {
+                        const numeroElement = document.querySelector(`.numero[data-numero="${num}"]`);
+                        if (numeroElement) {
+                            numeroElement.classList.add('selecionado');
+                            numerosSelecionados.add(num);
+                        }
+                    });
+                    
+                    const mesAleatorio = MESES[Math.floor(Math.random() * MESES.length)];
+                    const mesElement = document.querySelector(`.mes[data-mes="${mesAleatorio}"]`);
+                    if (mesElement) {
+                        mesElement.classList.add('selecionado');
+                        mesSelecionado = mesAleatorio;
+                    }
+                    
+                    analisarDigitos();
+                });
+                
+                incluirBtn.addEventListener('click', () => {
+                    if (numerosSelecionados.size !== 7) {
+                        showAlert(`Selecione 7 números antes de incluir o jogo! (Selecionados: ${numerosSelecionados.size})`);
+                        return;
+                    }
+                    
+                    const numerosArray = Array.from(numerosSelecionados).sort((a, b) => a - b);
+                    const novoJogo = {
+                        numeros: numerosArray,
+                        mes: mesSelecionado
+                    };
+                    
+                    jogosIncluidos.push(novoJogo);
+                    adicionarJogoNaListaOtimizado(novoJogo);
+                    atualizarContadorJogos();
+                    showAlert('1 jogo foi incluído com sucesso!');
+                    
+                    limparBtn.click();
+                });
+                
+                conferirBtn.addEventListener('click', () => {
+                    iniciarConferenciaUltraPerformance();
+                });
+            }
+            
+            function setupEventosJogos() {
+                document.getElementById('btn-limpar-todos').addEventListener('click', limparTodosJogos);
+                document.getElementById('btn-remover-selecionados').addEventListener('click', removerJogosSelecionados);
+                document.getElementById('btn-otimizar-memoria').addEventListener('click', otimizarMemoriaManual);
+            }
+            
+            function setupOverlay() {
+                const btnCancelarConferencia = document.getElementById('btn-cancelar-conferencia');
+                btnCancelarConferencia.addEventListener('click', () => {
+                    conferenciaCancelada = true;
+                    pararProcessamento();
+                });
+            }
+            
+            // ===== FUNÇÕES DE PROCESSAMENTO DE ARQUIVOS OTIMIZADAS =====
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            function handleDropOtimizado(e) {
+                const file = e.dataTransfer.files[0];
+                processarArquivoOtimizado(file);
+            }
+            
+            function handleFileSelectOtimizado(e) {
+                const file = e.target.files[0];
+                processarArquivoOtimizado(file);
+            }
+            
+            async function processarArquivoOtimizado(file) {
+                if (!file) return;
+                
+                const dropZone = document.getElementById('drop-zone');
+                dropZone.classList.add('processing');
+                
+                // Mostrar informações do arquivo
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                adicionarLogCritico(`📁 Processando arquivo: ${file.name} (${fileSize} MB)`, "info");
+                
+                try {
+                    if (file.name.endsWith('.txt')) {
+                        await processarArquivoTXTOtimizado(file);
+                    } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+                        await processarArquivoXLSXOtimizado(file);
+                    } else {
+                        showAlert('Formato de arquivo não suportado. Use .txt ou .xlsx');
+                    }
+                } catch (error) {
+                    console.error('Erro ao processar arquivo:', error);
+                    showAlert(`Erro ao processar arquivo: ${error.message}`);
+                } finally {
+                    dropZone.classList.remove('processing');
+                }
+            }
+            
+            async function processarArquivoTXTOtimizado(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    
+                    reader.onload = async function(e) {
+                        try {
+                            const content = e.target.result;
+                            const lines = content.trim().split('\n');
+                            const totalLines = lines.length;
+                            
+                            adicionarLogCritico(`📊 Processando ${totalLines.toLocaleString()} linhas...`, "info");
+                            
+                            // Determinar tamanho do chunk baseado na quantidade
+                            const chunkSize = determinarTamanhoChunk(totalLines);
+                            const chunks = Math.ceil(totalLines / chunkSize);
+                            
+                            adicionarLogCritico(`⚡ Processamento em ${chunks} chunks de ${chunkSize} linhas`, "info");
+                            
+                            const jogosValidos = [];
+                            let processedLines = 0;
+                            
+                            // Processar em chunks para não travar a interface
+                            for (let i = 0; i < chunks; i++) {
+                                const start = i * chunkSize;
+                                const end = Math.min(start + chunkSize, totalLines);
+                                const chunk = lines.slice(start, end);
+                                
+                                // Processar chunk
+                                for (const line of chunk) {
+                                    const jogo = processarLinhaJogo(line);
+                                    if (jogo) {
+                                        jogosValidos.push(jogo);
+                                    }
+                                    processedLines++;
+                                }
+                                
+                                // Atualizar progresso e permitir que a UI responda
+                                if (i % 10 === 0) {
+                                    const progress = Math.round((processedLines / totalLines) * 100);
+                                    adicionarLogCritico(`🔄 Progresso: ${progress}% (${processedLines.toLocaleString()}/${totalLines.toLocaleString()})`, "info");
+                                    await new Promise(resolve => setTimeout(resolve, 1));
+                                }
+                            }
+                            
+                            adicionarLogCritico(`✅ ${jogosValidos.length.toLocaleString()} jogos válidos encontrados`, "success");
+                            await adicionarJogosProcessadosOtimizado(jogosValidos);
+                            resolve();
+                            
+                        } catch (err) {
+                            console.error('Erro ao processar TXT:', err);
+                            reject(err);
+                        }
+                    };
+                    
+                    reader.onerror = () => reject(new Error('Erro ao ler o arquivo'));
+                    reader.readAsText(file);
+                });
+            }
+            
+            async function processarArquivoXLSXOtimizado(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    
+                    reader.onload = async function(e) {
+                        try {
+                            const data = new Uint8Array(e.target.result);
+                            const workbook = XLSX.read(data, { type: 'array' });
+                            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                            const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                            
+                            const totalRows = rows.length;
+                            adicionarLogCritico(`📊 Processando ${totalRows.toLocaleString()} linhas do Excel...`, "info");
+                            
+                            const chunkSize = determinarTamanhoChunk(totalRows);
+                            const chunks = Math.ceil(totalRows / chunkSize);
+                            
+                            const jogosValidos = [];
+                            let processedRows = 0;
+                            
+                            for (let i = 0; i < chunks; i++) {
+                                const start = i * chunkSize;
+                                const end = Math.min(start + chunkSize, totalRows);
+                                const chunk = rows.slice(start, end);
+                                
+                                for (const row of chunk) {
+                                    const jogo = processarLinhaExcel(row);
+                                    if (jogo) {
+                                        jogosValidos.push(jogo);
+                                    }
+                                    processedRows++;
+                                }
+                                
+                                if (i % 5 === 0) {
+                                    const progress = Math.round((processedRows / totalRows) * 100);
+                                    adicionarLogCritico(`🔄 Progresso: ${progress}% (${processedRows.toLocaleString()}/${totalRows.toLocaleString()})`, "info");
+                                    await new Promise(resolve => setTimeout(resolve, 1));
+                                }
+                            }
+                            
+                            adicionarLogCritico(`✅ ${jogosValidos.length.toLocaleString()} jogos válidos encontrados`, "success");
+                            await adicionarJogosProcessadosOtimizado(jogosValidos);
+                            resolve();
+                            
+                        } catch (err) {
+                            console.error('Erro ao processar Excel:', err);
+                            reject(err);
+                        }
+                    };
+                    
+                    reader.onerror = () => reject(new Error('Erro ao ler o arquivo'));
+                    reader.readAsArrayBuffer(file);
+                });
+            }
+            
+            function determinarTamanhoChunk(totalItems) {
+                if (totalItems < 10000) return ULTRA_CONFIG.CHUNK_SIZES.small;
+                if (totalItems < 100000) return ULTRA_CONFIG.CHUNK_SIZES.medium;
+                if (totalItems < 500000) return ULTRA_CONFIG.CHUNK_SIZES.large;
+                return ULTRA_CONFIG.CHUNK_SIZES.ultra;
+            }
+            
+            function processarLinhaJogo(line) {
+                try {
+                    const partes = line.trim().split(/\s+/);
+                    const numeros = [];
+                    let mes = null;
+                    
+                    for (let i = 0; i < partes.length; i++) {
+                        if (i < 7) {
+                            const num = parseInt(partes[i]);
+                            if (!isNaN(num) && num >= 1 && num <= 31) {
+                                numeros.push(num);
+                            }
+                        } else {
+                            mes = normalizarMes(partes[i]);
+                            break;
+                        }
+                    }
+                    
+                    if (numeros.length === 7 && new Set(numeros).size === 7 && 
+                        numeros.every(n => n >= 1 && n <= 31)) {
+                        return {
+                            numeros: numeros.sort((a, b) => a - b),
+                            mes: mes
+                        };
+                    }
+                } catch (err) {
+                    // Linha inválida, ignorar
+                }
+                return null;
+            }
+            
+            function processarLinhaExcel(row) {
+                if (!row || row.length < 7) return null;
+                
+                try {
+                    const numeros = [];
+                    
+                    for (let i = 0; i < 7; i++) {
+                        if (i < row.length) {
+                            const num = parseInt(row[i]);
+                            if (!isNaN(num) && num >= 1 && num <= 31) {
+                                numeros.push(num);
+                            }
+                        }
+                    }
+                    
+                    let mes = null;
+                    if (row.length > 7 && row[7]) {
+                        mes = normalizarMes(String(row[7]));
+                    }
+                    
+                    if (numeros.length === 7 && new Set(numeros).size === 7 && 
+                        numeros.every(n => n >= 1 && n <= 31)) {
+                        return {
+                            numeros: numeros.sort((a, b) => a - b),
+                            mes: mes
+                        };
+                    }
+                } catch (err) {
+                    // Linha inválida, ignorar
+                }
+                return null;
+            }
+            
+            async function adicionarJogosProcessadosOtimizado(jogos) {
+                if (!jogos || jogos.length === 0) {
+                    showAlert('Nenhum jogo válido encontrado no arquivo');
+                    return;
+                }
+                
+                adicionarLogCritico(`🔄 Adicionando ${jogos.length.toLocaleString()} jogos à lista...`, "info");
+                
+                // Verificar jogos duplicados usando Set para performance
+                const jogosAtuaisSet = new Set(jogosIncluidos.map(j => JSON.stringify(j)));
+                let jogosNovos = 0;
+                
+                // Processar em chunks para não travar a interface
+                const BATCH_SIZE = 5000;
+                const totalBatches = Math.ceil(jogos.length / BATCH_SIZE);
+                
+                for (let batch = 0; batch < totalBatches; batch++) {
+                    const startIdx = batch * BATCH_SIZE;
+                    const endIdx = Math.min((batch + 1) * BATCH_SIZE, jogos.length);
+                    
+                    for (let i = startIdx; i < endIdx; i++) {
+                        const jogo = jogos[i];
+                        const jogoStr = JSON.stringify(jogo);
+                        if (!jogosAtuaisSet.has(jogoStr)) {
+                            jogosIncluidos.push(jogo);
+                            adicionarJogoNaListaOtimizado(jogo);
+                            jogosAtuaisSet.add(jogoStr);
+                            jogosNovos++;
+                        }
+                    }
+                    
+                    // Pequena pausa para não travar a interface
+                    if (batch % 10 === 0) {
+                        const progress = Math.round(((batch + 1) / totalBatches) * 100);
+                        adicionarLogCritico(`📝 Processando lote ${batch + 1}/${totalBatches} (${progress}%)`, "info");
+                        await new Promise(resolve => setTimeout(resolve, 5));
+                    }
+                }
+                
+                // Analisar dígitos do primeiro jogo se houver
+                if (jogos.length > 0 && jogos[0].numeros) {
+                    analisarDigitosJogoCarregado(jogos[0].numeros);
+                }
+                
+                atualizarContadorJogos();
+                adicionarLogCritico(`✅ ${jogosNovos.toLocaleString()} jogos novos foram incluídos!`, "success");
+                showAlert(`${jogosNovos.toLocaleString()} jogos foram incluídos com sucesso!`);
+                
+                // Verificar se precisa de otimização de memória
+                if (jogosIncluidos.length > 100000) {
+                    setTimeout(otimizarMemoriaAutomaticamente, 1000);
+                }
+            }
+            
+            // ===== FUNÇÕES DE GERENCIAMENTO DE JOGOS OTIMIZADAS =====
+            
+            function atualizarContadorJogos() {
+                const quantidade = jogosIncluidos.length;
+                document.getElementById('contador-jogos').textContent = quantidade.toLocaleString();
+                document.querySelector('.jogos-incluidos h3').textContent = 
+                    `Jogos Incluídos (${quantidade.toLocaleString()} ${quantidade === 1 ? 'jogo' : 'jogos'})`;
+                
+                // Atualizar estatísticas de performance
+                atualizarEstatisticasPerformance();
+            }
+            
+            function adicionarJogoNaListaOtimizado(jogo) {
+                // Para grandes volumes, mostrar apenas estatísticas
+                if (jogosIncluidos.length > 1000) {
+                    // Mostrar resumo estatístico em vez de lista completa
+                    const listaJogos = document.getElementById('lista-jogos');
+                    listaJogos.innerHTML = `
+                        <div class="jogo-item" style="text-align: center; padding: 20px; background-color: #e8f5e8; border: 2px solid var(--dia-sorte-verde);">
+                            <div style="color: var(--dia-sorte-verde); font-weight: bold; font-size: 18px;">
+                                <i class="fas fa-check-circle" style="margin-right: 10px;"></i>
+                                ${jogosIncluidos.length.toLocaleString()} jogos carregados com sucesso!
+                            </div>
+                            <div style="margin-top: 10px; color: #666; font-size: 14px;">
+                                Interface otimizada para grandes volumes. 
+                                <br>Lista individual oculta para melhor performance.
+                                <br><strong>Todos os jogos serão processados na conferência.</strong>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const listaJogos = document.getElementById('lista-jogos');
+                const jogoItem = document.createElement('div');
+                jogoItem.className = 'jogo-item';
+                
+                // Análise de dígitos do jogo
+                const analiseDigitos = extrairDigitosUnicos(jogo.numeros);
+                
+                // Checkbox para seleção
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'jogo-checkbox';
+                checkbox.addEventListener('click', (e) => {
+                    const jogoStr = JSON.stringify(jogo);
+                    if (e.target.checked) {
+                        jogosSelecionados.add(jogoStr);
+                        jogoItem.classList.add('selecionado');
+                    } else {
+                        jogosSelecionados.delete(jogoStr);
+                        jogoItem.classList.remove('selecionado');
+                    }
+                    atualizarBotoesSeleção();
+                });
+                
+                // Informações do jogo
+                const jogoInfo = document.createElement('div');
+                jogoInfo.className = 'jogo-info';
+                
+                // Números do jogo
+                const jogoNumeros = document.createElement('div');
+                jogoNumeros.className = 'jogo-numeros';
+                
+                jogo.numeros.forEach(num => {
+                    const numeroSpan = document.createElement('span');
+                    numeroSpan.className = 'jogo-numero';
+                    numeroSpan.textContent = String(num).padStart(2, '0');
+                    jogoNumeros.appendChild(numeroSpan);
+                });
+                
+                // Mês, se houver
+                if (jogo.mes) {
+                    const mesSpan = document.createElement('span');
+                    mesSpan.className = 'jogo-mes';
+                    mesSpan.textContent = `| ${jogo.mes}`;
+                    jogoNumeros.appendChild(mesSpan);
+                }
+                
+                // Informação de dígitos usados
+                const digitosInfo = document.createElement('div');
+                digitosInfo.className = 'jogo-digitos';
+                digitosInfo.innerHTML = `<span>Dígitos: <span class="digito-quantidade">${analiseDigitos.quantidade}</span> (${analiseDigitos.digitos.join(', ')})</span>`;
+                
+                jogoInfo.appendChild(jogoNumeros);
+                jogoInfo.appendChild(digitosInfo);
+                
+                // Botões de ação
+                const btnAnalisar = document.createElement('button');
+                btnAnalisar.className = 'btn-analisar';
+                btnAnalisar.innerHTML = '<i class="fas fa-search"></i>';
+                btnAnalisar.title = 'Analisar dígitos deste jogo';
+                btnAnalisar.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    analisarDigitosJogoCarregado(jogo.numeros);
+                });
+                
+                const btnRemover = document.createElement('button');
+                btnRemover.className = 'btn-remover';
+                btnRemover.textContent = 'Remover';
+                btnRemover.addEventListener('click', () => removerJogo(jogo, jogoItem));
+                
+                const botoesContainer = document.createElement('div');
+                botoesContainer.className = 'jogo-botoes';
+                botoesContainer.appendChild(btnAnalisar);
+                botoesContainer.appendChild(btnRemover);
+                
+                // Montar o item
+                jogoItem.appendChild(checkbox);
+                jogoItem.appendChild(jogoInfo);
+                jogoItem.appendChild(botoesContainer);
+                
+                listaJogos.appendChild(jogoItem);
+            }
+            
+            function removerJogo(jogo, jogoItem) {
+                const index = jogosIncluidos.findIndex(j => 
+                    JSON.stringify(j) === JSON.stringify(jogo)
+                );
+                
+                if (index !== -1) {
+                    jogosIncluidos.splice(index, 1);
+                    jogosSelecionados.delete(JSON.stringify(jogo));
+                    jogoItem.remove();
+                    atualizarBotoesSeleção();
+                    atualizarContadorJogos();
+                    showAlert('1 jogo foi removido com sucesso!');
+                }
+            }
+            
+            function limparTodosJogos() {
+                const quantidadeAtual = jogosIncluidos.length;
+                if (quantidadeAtual === 0) {
+                    showAlert('Não há jogos para remover');
+                    return;
+                }
+                
+                if (confirm(`Tem certeza que deseja remover todos os ${quantidadeAtual.toLocaleString()} jogos?`)) {
+                    jogosIncluidos.length = 0;
+                    jogosSelecionados.clear();
+                    document.getElementById('lista-jogos').innerHTML = '';
+                    atualizarBotoesSeleção();
+                    atualizarContadorJogos();
+                    
+                    // Forçar limpeza de memória
+                    if (window.gc) {
+                        try {
+                            window.gc();
+                        } catch (e) {}
+                    }
+                    
+                    showAlert(`${quantidadeAtual.toLocaleString()} jogos foram removidos com sucesso!`);
+                    adicionarLogCritico(`🗑️ ${quantidadeAtual.toLocaleString()} jogos removidos - memória liberada`, "success");
+                }
+            }
+            
+            function removerJogosSelecionados() {
+                if (jogosSelecionados.size === 0) {
+                    showAlert('Selecione pelo menos um jogo para remover');
+                    return;
+                }
+                
+                const quantidadeRemover = jogosSelecionados.size;
+                if (confirm(`Deseja remover ${quantidadeRemover.toLocaleString()} jogo${quantidadeRemover === 1 ? '' : 's'} selecionado${quantidadeRemover === 1 ? '' : 's'}?`)) {
+                    jogosSelecionados.forEach(jogoStr => {
+                        const jogo = JSON.parse(jogoStr);
+                        const index = jogosIncluidos.findIndex(j => 
+                            JSON.stringify(j) === jogoStr
+                        );
+                        
+                        if (index !== -1) {
+                            jogosIncluidos.splice(index, 1);
+                        }
+                    });
+                    
+                    document.querySelectorAll('.jogo-checkbox:checked').forEach(checkbox => {
+                        checkbox.closest('.jogo-item').remove();
+                    });
+                    
+                    jogosSelecionados.clear();
+                    atualizarBotoesSeleção();
+                    atualizarContadorJogos();
+                    showAlert(`${quantidadeRemover.toLocaleString()} jogos foram removidos com sucesso!`);
+                }
+            }
+            
+            function atualizarBotoesSeleção() {
+                const removerSelecionadosBtn = document.getElementById('btn-remover-selecionados');
+                removerSelecionadosBtn.disabled = jogosSelecionados.size === 0;
+                
+                if (jogosSelecionados.size > 0) {
+                    removerSelecionadosBtn.classList.add('btn-vermelho');
+                } else {
+                    removerSelecionadosBtn.classList.remove('btn-vermelho');
+                }
+            }
+            
+            function otimizarMemoriaManual() {
+                adicionarLogCritico("🧹 Iniciando otimização manual de memória...", "info");
+                otimizarMemoriaAutomaticamente();
+                showAlert("Otimização de memória concluída!");
+            }
+            
+            function otimizarMemoriaAutomaticamente() {
+                console.log("🧹 Executando otimização automática de memória...");
+                
+                // Limpar cache antigo
+                limparCacheAntigo();
+                
+                // Remover logs antigos
+                const logsContainer = document.getElementById('progress-logs');
+                if (logsContainer && logsContainer.children.length > ULTRA_CONFIG.LIMITS.MAX_LOGS) {
+                    while (logsContainer.children.length > ULTRA_CONFIG.LIMITS.MAX_LOGS) {
+                        logsContainer.removeChild(logsContainer.lastChild);
+                    }
+                }
+                
+                // Forçar garbage collection se disponível
+                if (window.gc) {
+                    try {
+                        window.gc();
+                        console.log("✅ Garbage collection executado");
+                    } catch (e) {
+                        console.log("⚠️ Garbage collection não disponível");
+                    }
+                }
+                
+                // Limpar interface se muitos jogos
+                if (jogosIncluidos.length > 10000) {
+                    const listaJogos = document.getElementById('lista-jogos');
+                    if (listaJogos.children.length > 0) {
+                        listaJogos.innerHTML = '<div class="jogo-item">Interface otimizada para grandes volumes - jogos carregados: ' + jogosIncluidos.length.toLocaleString() + '</div>';
+                        console.log("🎯 Interface simplificada para otimização");
+                    }
+                }
+                
+                adicionarLogCritico("✅ Otimização de memória concluída", "success");
+            }
+            
+            // ===== FUNÇÕES DE ANÁLISE DE DÍGITOS =====
+            
+            function extrairDigitosUnicos(numeros) {
+                const digitosSet = new Set();
+                
+                numeros.forEach(num => {
+                    const numStr = String(num).padStart(2, '0');
+                    for (let i = 0; i < numStr.length; i++) {
+                        digitosSet.add(numStr[i]);
+                    }
+                });
+                
+                return {
+                    digitos: Array.from(digitosSet).sort(),
+                    quantidade: digitosSet.size
+                };
+            }
+            
+            function analisarDigitos() {
+                const digitosAnalise = document.getElementById('digitos-analise');
+                
+                if (numerosSelecionados.size > 0) {
+                    digitosAnalise.style.display = 'block';
+                    
+                    // Resetar todos os dígitos
+                    for (let i = 0; i < 10; i++) {
+                        const digitoEl = document.getElementById(`digito-${i}`);
+                        digitoEl.classList.remove('digito-presente');
+                    }
+                    
+                    // Analisar dígitos usados
+                    const analiseDigitos = extrairDigitosUnicos(Array.from(numerosSelecionados));
+                    
+                    // Atualizar contagem de dígitos
+                    document.getElementById('contador-digitos').textContent = analiseDigitos.quantidade;
+                    
+                    // Marcar dígitos presentes
+                    analiseDigitos.digitos.forEach(digito => {
+                        const digitoEl = document.getElementById(`digito-${digito}`);
+                        if (digitoEl) {
+                            digitoEl.classList.add('digito-presente');
+                        }
+                    });
+                } else {
+                    digitosAnalise.style.display = 'none';
+                }
+            }
+            
+            function analisarDigitosJogoCarregado(numeros) {
+                const digitosAnalise = document.getElementById('digitos-analise');
+                digitosAnalise.style.display = 'block';
+                
+                // Resetar todos os dígitos
+                for (let i = 0; i < 10; i++) {
+                    const digitoEl = document.getElementById(`digito-${i}`);
+                    digitoEl.classList.remove('digito-presente');
+                }
+                
+                // Análise de dígitos usados
+                const analiseDigitos = extrairDigitosUnicos(numeros);
+                
+                // Atualizar contagem de dígitos
+                document.getElementById('contador-digitos').textContent = analiseDigitos.quantidade;
+                
+                // Marcar dígitos presentes
+                analiseDigitos.digitos.forEach(digito => {
+                    const digitoEl = document.getElementById(`digito-${digito}`);
+                    if (digitoEl) {
+                        digitoEl.classList.add('digito-presente');
+                    }
+                });
+            }
+            
+            function formatarDigitosUsados(numeros) {
+                const resultado = extrairDigitosUnicos(numeros);
+                return `<span class="digito-quantidade">${resultado.quantidade}</span> (${resultado.digitos.join(', ')})`;
+            }
+            
+            // ===== FUNÇÕES DE CONFERÊNCIA ULTRA PERFORMANCE =====
+            
+            async function buscarUltimoConcurso() {
+                try {
+                    for (const apiUrl of ULTRA_CONFIG.API_URLS) {
+                        try {
+                            const response = await fetch(`${apiUrl}/latest`);
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data && data.concurso) {
+                                    ultimoConcurso = parseInt(data.concurso);
+                                    document.getElementById('fim').value = ultimoConcurso;
+                                    adicionarLogCritico(`🎯 Último concurso encontrado: ${ultimoConcurso}`, "success");
+                                    return;
+                                }
+                            }
+                        } catch (err) {
+                            console.warn(`Falha ao buscar último concurso da API ${apiUrl}: ${err.message}`);
+                        }
+                    }
+                    
+                    document.getElementById('fim').value = ultimoConcurso;
+                    
+                } catch (err) {
+                    console.error(`Erro ao buscar último concurso: ${err.message}`);
+                    document.getElementById('fim').value = ultimoConcurso;
+                }
+            }
+            
+            async function iniciarConferenciaUltraPerformance() {
+                if (jogosIncluidos.length === 0) {
+                    showAlert('Inclua pelo menos um jogo antes de conferir!');
+                    return;
+                }
+                
+                const inicio = parseInt(document.getElementById('inicio').value);
+                const fim = parseInt(document.getElementById('fim').value);
+                
+                if (!inicio || !fim || inicio > fim) {
+                    showAlert('Verifique os números dos concursos!');
+                    return;
+                }
+                
+                // Configurar processamento baseado na quantidade de jogos
+                const qtdJogos = jogosIncluidos.length;
+                const tamanhoLote = determinarTamanhoLote(qtdJogos);
+                
+                adicionarLogCritico(`🚀 Iniciando processamento ultra performance...`, "info");
+                adicionarLogCritico(`📊 ${qtdJogos.toLocaleString()} jogos × ${fim - inicio + 1} concursos`, "info");
+                adicionarLogCritico(`⚡ Tamanho do lote otimizado: ${tamanhoLote} concursos`, "info");
+                
+                // Mostrar overlay
+                const overlay = document.getElementById('overlay');
+                overlay.style.display = 'flex';
+                conferenciaCancelada = false;
+                
+                // Inicializar estatísticas de processamento
+                processamentoStats.startTime = Date.now();
+                processamentoStats.processedGames = 0;
+                processamentoStats.totalGames = qtdJogos * (fim - inicio + 1);
+                
+                // Resetar progresso
+                const progressFill = document.getElementById('progress-fill');
+                progressFill.style.width = '0%';
+                progressFill.classList.add('animando');
+                
+                // Limpar logs anteriores
+                const logsContainer = document.getElementById('progress-logs');
+                logsContainer.innerHTML = '';
+                
+                try {
+                    const resultados = await processarTodosJogosUltraPerformance(inicio, fim, jogosIncluidos, tamanhoLote);
+                    
+                    if (conferenciaCancelada) {
+                        adicionarLogCritico('❌ Operação cancelada pelo usuário', "warning");
+                        return;
+                    }
+                    
+                    // Garantir que a barra chegue a 100%
+                    progressFill.style.width = '100%';
+                    
+                    // Mostrar resultados
+                    await mostrarResultadosOtimizados(resultados);
+                    
+                    // Fechar o overlay automaticamente
+                    adicionarLogCritico('✅ Conferência concluída com sucesso!', "success");
+                    
+                    setTimeout(() => {
+                        fecharOverlay();
+                    }, 2000);
+                    
+                } catch (err) {
+                    console.error(`Erro na conferência: ${err.message}`);
+                    adicionarLogCritico(`💥 ERRO: ${err.message}`, "critical");
+                    
+                    progressFill.style.width = '100%';
+                    progressFill.style.backgroundColor = '#dc3545';
+                    
+                    showAlert(`Ocorreu um erro: ${err.message}`);
+                    
+                    setTimeout(() => {
+                        fecharOverlay();
+                    }, 3000);
+                }
+            }
+            
+            function determinarTamanhoLote(qtdJogos) {
+                if (qtdJogos < 10000) return ULTRA_CONFIG.BATCH_SIZES.small;
+                if (qtdJogos < 100000) return ULTRA_CONFIG.BATCH_SIZES.medium;
+                if (qtdJogos < 500000) return ULTRA_CONFIG.BATCH_SIZES.large;
+                return ULTRA_CONFIG.BATCH_SIZES.ultra;
+            }
+            
+            async function processarTodosJogosUltraPerformance(inicio, fim, jogos, tamanhoLote) {
+                const todosResultados = [];
+                const totalLotes = Math.ceil((fim - inicio + 1) / tamanhoLote);
+                
+                adicionarLogCritico(`📦 Processamento dividido em ${totalLotes} lotes`, "info");
+                
+                let loteAtual = 0;
+                
+                for (let i = inicio; i <= fim; i += tamanhoLote) {
+                    if (conferenciaCancelada) {
+                        throw new Error('Operação cancelada pelo usuário');
+                    }
+                    
+                    loteAtual++;
+                    const loteFim = Math.min(i + tamanhoLote - 1, fim);
+                    
+                    adicionarLogCritico(`🔄 Lote ${loteAtual}/${totalLotes}: concursos ${i} até ${loteFim}`, "info");
+                    atualizarProgressoUltraPerformance(loteAtual, totalLotes, i, loteFim);
+                    
+                    try {
+                        const resultadosLote = await processarLoteUltraPerformance(i, loteFim, jogos);
+                        todosResultados.push(...resultadosLote);
+                        
+                        adicionarLogCritico(`✅ Lote ${loteAtual} concluído: ${resultadosLote.length} resultados`, "success");
+                        
+                        // Atualizar estatísticas
+                        processamentoStats.processedGames += jogos.length * (loteFim - i + 1);
+                        
+                    } catch (err) {
+                        adicionarLogCritico(`❌ Erro no lote ${loteAtual}: ${err.message}`, "critical");
+                        
+                        // Continuar com o próximo lote
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                    }
+                    
+                    // Otimização de memória a cada 10 lotes
+                    if (loteAtual % 10 === 0) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        
+                        if (performance?.memory?.usedJSHeapSize > 400 * 1024 * 1024) {
+                            adicionarLogCritico("🧹 Executando limpeza de memória...", "info");
+                            otimizarMemoriaAutomaticamente();
+                        }
+                    }
+                }
+                
+                adicionarLogCritico(`🎉 Processamento concluído: ${todosResultados.length} resultados totais`, "success");
+                
+                // Calcular resumo e estatísticas
+                const resumo = calcularResumo(todosResultados);
+                const jogosStats = await processarEstatisticasJogosOtimizado(todosResultados, jogos);
+                
+                return {
+                    acertos: todosResultados,
+                    resumo: resumo,
+                    jogos_stats: jogosStats
+                };
+            }
+            
+            async function processarLoteUltraPerformance(inicio, fim, jogos) {
+                const resultados = [];
+                const somentePremiados = document.getElementById('somente-premiados').checked;
+                
+                adicionarLogCritico(`🔍 Processando lote: concursos ${inicio}-${fim}, ${jogos.length} jogos, premiados: ${somentePremiados}`, "info");
+                
+                // Processar concursos em paralelo com controle de concorrência
+                const concorrenciaMaxima = Math.min(3, fim - inicio + 1); // Reduzido para melhor confiabilidade
+                const concursos = [];
+                
+                for (let i = inicio; i <= fim; i++) {
+                    concursos.push(i);
+                }
+                
+                let concursosSucesso = 0;
+                let concursosErro = 0;
+                
+                // Dividir em chunks para processamento paralelo controlado
+                for (let i = 0; i < concursos.length; i += concorrenciaMaxima) {
+                    if (conferenciaCancelada) {
+                        throw new Error('Operação cancelada pelo usuário');
+                    }
+                    
+                    const chunk = concursos.slice(i, i + concorrenciaMaxima);
+                    
+                    // Processar chunk em paralelo
+                    const promessas = chunk.map(concurso => buscarResultadoConcurso(concurso));
+                    const resultadosPromessas = await Promise.allSettled(promessas);
+                    
+                    // Processar resultados
+                    for (let j = 0; j < resultadosPromessas.length; j++) {
+                        const resultado = resultadosPromessas[j];
+                        const concurso = chunk[j];
+                        
+                        if (resultado.status === 'fulfilled' && resultado.value) {
+                            const dadosConcurso = resultado.value;
+                            const resultadosAntes = resultados.length;
+                            processarResultadoConcursoOtimizado(dadosConcurso, jogos, somentePremiados, resultados);
+                            const novosResultados = resultados.length - resultadosAntes;
+                            
+                            concursosSucesso++;
+                            
+                            if (novosResultados > 0) {
+                                adicionarLogCritico(`✅ Concurso ${concurso}: ${novosResultados} resultados encontrados`, "success");
+                            }
+                        } else {
+                            concursosErro++;
+                            adicionarLogCritico(`❌ Erro no concurso ${concurso}: ${resultado.reason || 'Falha na busca'}`, "warning");
+                        }
+                    }
+                    
+                    // Atualizar progresso dentro do lote
+                    const percentualChunk = Math.round(((i + chunk.length) / concursos.length) * 100);
+                    const progressText = document.getElementById('progress-text');
+                    progressText.textContent = `Processando concursos ${chunk[0]} a ${chunk[chunk.length - 1]}... (${percentualChunk}% deste lote)`;
+                    
+                    // Atualizar estatísticas de processamento
+                    document.getElementById('games-processed').textContent = processamentoStats.processedGames.toLocaleString();
+                    
+                    // Log intermediário
+                    if (i % 15 === 0) {
+                        adicionarLogCritico(`📊 Progresso: ${resultados.length} resultados até agora`, "info");
+                    }
+                    
+                    // Pequena pausa para não sobrecarregar
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                }
+                
+                adicionarLogCritico(`📋 Lote finalizado: ${resultados.length} resultados, ${concursosSucesso} sucessos, ${concursosErro} erros`, "info");
+                return resultados;
+            }
+            
+            function processarResultadoConcursoOtimizado(resultado, jogos, somentePremiados, resultados) {
+                if (!resultado) {
+                    adicionarLogCritico(`⚠️ Resultado vazio recebido`, "warning");
+                    return;
+                }
+                
+                if (!resultado.dezenas || resultado.dezenas.length === 0) {
+                    adicionarLogCritico(`⚠️ Concurso ${resultado.concurso}: números não encontrados`, "warning");
+                    return;
+                }
+                
+                const dezenas = resultado.dezenas.map(d => parseInt(d));
+                const mesSorteado = resultado.mesDaSorte || '';
+                
+                // DEBUG: Mostrar configuração de filtro
+                if (resultado.concurso % 20 === 0) { // Log a cada 20 concursos
+                    adicionarLogCritico(`🐛 DEBUG Concurso ${resultado.concurso}: somente_premiados=${somentePremiados}, números: ${dezenas.join(',')}, mês: ${mesSorteado}`, "info");
+                }
+                
+                // Usar Set para busca mais rápida
+                const dezenasSet = new Set(dezenas);
+                
+                let resultadosEncontrados = 0;
+                
+                // Processar cada jogo - USANDO A LÓGICA CORRETA DA VERSÃO QUE FUNCIONA
+                for (let i = 0; i < jogos.length; i++) {
+                    const jogo = jogos[i];
+                    
+                    // Contar acertos usando Set para performance
+                    let acertosNumeros = 0;
+                    for (const num of jogo.numeros) {
+                        if (dezenasSet.has(num)) {
+                            acertosNumeros++;
+                        }
+                    }
+                    
+                    const acertouMes = jogo.mes && mesSorteado && 
+                                      jogo.mes.toUpperCase() === mesSorteado.toUpperCase();
+                    
+                    // LÓGICA CORRETA: Se "somente premiados" está marcado E não tem 4+ acertos E não acertou mês = PULAR
+                    if (somentePremiados && acertosNumeros < 4 && !acertouMes) {
+                        continue; // Pular este jogo
+                    }
+                    
+                    // Se chegou aqui, deve incluir o resultado
+                    // Calcular prêmio
+                    let premio = 0;
+                    try {
+                        premio = calcularPremio(resultado, acertosNumeros, acertouMes);
+                    } catch (err) {
+                        // Ignorar erro de prêmio mas continuar processando
+                    }
+                    
+                    // SEMPRE incluir se passou na verificação acima
+                    if (acertosNumeros >= 4 || acertouMes || !somentePremiados) {
+                        resultados.push({
+                            concurso: resultado.concurso,
+                            data: resultado.data,
+                            numeros_sorteados: dezenas,
+                            mes_sorteado: mesSorteado,
+                            seus_numeros: jogo.numeros,
+                            seu_mes: jogo.mes,
+                            acertos: acertosNumeros,
+                            acertou_mes: acertouMes,
+                            premio: premio
+                        });
+                        
+                        resultadosEncontrados++;
+                    }
+                }
+                
+                // DEBUG melhorado
+                if (resultado.concurso % 20 === 0) {
+                    adicionarLogCritico(`📊 Concurso ${resultado.concurso}: ${resultadosEncontrados} resultados de ${jogos.length} jogos`, "info");
+                }
+            }
+            
+            async function buscarResultadoConcurso(concurso) {
+                // Verificar cache primeiro
+                if (resultadosCache.has(concurso)) {
+                    return resultadosCache.get(concurso);
+                }
+                
+                // Timeout para as requisições
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Timeout')), 8000);
+                });
+                
+                // Tentar em cada API
+                for (const apiUrl of ULTRA_CONFIG.API_URLS) {
+                    try {
+                        const fetchPromise = fetch(`${apiUrl}/${concurso}`);
+                        const response = await Promise.race([fetchPromise, timeoutPromise]);
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            
+                            let resultado;
+                            
+                            // Normalizar resposta
+                            if ('dezenas' in data) {
+                                resultado = {
+                                    concurso: data.concurso,
+                                    data: data.data,
+                                    dezenas: data.dezenas,
+                                    mesDaSorte: data.mesDaSorte || '',
+                                    premiacoes: data.premiacoes || []
+                                };
+                            } else if ('listaDezenas' in data) {
+                                resultado = {
+                                    concurso: data.numero,
+                                    data: data.dataApuracao,
+                                    dezenas: data.listaDezenas,
+                                    mesDaSorte: data.nomeTimeCoracaoMesSorte || '',
+                                    premiacoes: []
+                                };
+                                
+                                if ('listaRateioPremio' in data) {
+                                    data.listaRateioPremio.forEach(premio => {
+                                        resultado.premiacoes.push({
+                                            descricao: premio.descricaoFaixa || '',
+                                            ganhadores: premio.numeroDeGanhadores || 0,
+                                            valorPremio: premio.valorPremio || 0
+                                        });
+                                    });
+                                }
+                            } else {
+                                continue;
+                            }
+                            
+                            // Salvar no cache
+                            resultadosCache.set(concurso, resultado);
+                            
+                            // Manter cache dentro do limite
+                            if (resultadosCache.size > ULTRA_CONFIG.CACHE_CONFIG.MAX_CACHE_SIZE) {
+                                const firstKey = resultadosCache.keys().next().value;
+                                resultadosCache.delete(firstKey);
+                            }
+                            
+                            return resultado;
+                        }
+                    } catch (err) {
+                        // Continuar para próxima API
+                        continue;
+                    }
+                }
+                
+                // Se chegou aqui, não conseguiu obter de nenhuma API
+                console.error(`Não foi possível obter o resultado do concurso ${concurso}`);
+                return null;
+            }
+            
+            // ===== FUNÇÕES DE PROGRESSO E LOGS =====
+            
+            function atualizarProgressoUltraPerformance(loteAtual, totalLotes, concursoInicio, concursoFim) {
+                const progressFill = document.getElementById('progress-fill');
+                
+                // Atualizar contadores
+                document.getElementById('current-batch').textContent = loteAtual;
+                document.getElementById('total-batches').textContent = totalLotes;
+                
+                // Calcular e mostrar progresso
+                const progresso = (loteAtual / totalLotes) * 100;
+                progressFill.style.width = `${progresso}%`;
+                
+                // Atualizar tempo decorrido
+                const elapsed = Date.now() - processamentoStats.startTime;
+                const elapsedFormatted = formatarTempo(elapsed);
+                document.getElementById('time-elapsed').textContent = elapsedFormatted;
+                
+                // Calcular ETA
+                if (loteAtual > 0) {
+                    const tempoRestante = (elapsed / loteAtual) * (totalLotes - loteAtual);
+                    const etaFormatted = formatarTempo(tempoRestante);
+                    document.getElementById('eta').textContent = etaFormatted;
+                }
+                
+                // Calcular taxa de processamento
+                const rate = Math.round(processamentoStats.processedGames / (elapsed / 1000));
+                document.getElementById('processing-rate').textContent = rate;
+                
+                // Atualizar informação de memória
+                const memoryStatus = document.getElementById('memory-status');
+                if (performance?.memory?.usedJSHeapSize) {
+                    const memUsage = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+                    memoryStatus.textContent = `Uso atual: ${memUsage} MB`;
+                } else {
+                    memoryStatus.textContent = "Monitoramento ativo";
+                }
+                
+                // Atualizar título da página
+                document.title = `(${Math.round(progresso)}%) Dia de Sorte Conferidor Ultra`;
+            }
+            
+            function formatarTempo(milliseconds) {
+                const seconds = Math.floor(milliseconds / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                
+                if (hours > 0) {
+                    return `${hours}:${(minutes % 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
+                } else {
+                    return `${minutes}:${(seconds % 60).toString().padStart(2, '0')}`;
+                }
+            }
+            
+            function adicionarLogCritico(mensagem, tipo = "info") {
+                const logsContainer = document.getElementById('progress-logs');
+                
+                const agora = new Date();
+                const timestamp = `${agora.getHours().toString().padStart(2, '0')}:${agora.getMinutes().toString().padStart(2, '0')}:${agora.getSeconds().toString().padStart(2, '0')}`;
+                
+                const logItem = document.createElement('div');
+                logItem.className = `log-item log-${tipo}`;
+                logItem.innerHTML = `<span class="log-time">${timestamp}</span> ${mensagem}`;
+                
+                logsContainer.insertBefore(logItem, logsContainer.firstChild);
+                
+                // Limitar logs para não sobrecarregar
+                while (logsContainer.children.length > ULTRA_CONFIG.LIMITS.MAX_LOGS) {
+                    logsContainer.removeChild(logsContainer.lastChild);
+                }
+                
+                // Atualizar texto principal
+                const progressText = document.getElementById('progress-text');
+                progressText.textContent = mensagem;
+                
+                // Log no console
+                console.log(`[${tipo.toUpperCase()}] ${mensagem}`);
+            }
+            
+            function pararProcessamento() {
+                conferenciaCancelada = true;
+                fecharOverlay();
+                document.title = 'Dia de Sorte Conferidor Ultra';
+                adicionarLogCritico("⏹️ Processamento interrompido pelo usuário", "warning");
+            }
+            
+            function fecharOverlay() {
+                const overlay = document.getElementById('overlay');
+                overlay.style.display = 'none';
+                document.title = 'Dia de Sorte Conferidor Ultra';
+            }
+            
+            // ===== FUNÇÕES DE CACHE OTIMIZADO =====
+            
+            function carregarCacheOtimizado() {
+                try {
+                    const cache = localStorage.getItem('diaSorteResultadosCacheUltra');
+                    if (cache) {
+                        const dadosCache = JSON.parse(cache);
+                        const agora = Date.now();
+                        
+                        // Verificar validade do cache
+                        if (dadosCache.timestamp && 
+                            (agora - dadosCache.timestamp) < (ULTRA_CONFIG.CACHE_CONFIG.CACHE_RETENTION_HOURS * 60 * 60 * 1000)) {
+                            
+                            // Carregar dados válidos no Map
+                            Object.entries(dadosCache.dados).forEach(([key, value]) => {
+                                resultadosCache.set(parseInt(key), value);
+                            });
+                            
+                            console.log(`✅ Cache carregado: ${resultadosCache.size} resultados`);
+                            adicionarLogCritico(`📦 Cache carregado: ${resultadosCache.size} resultados`, "success");
+                        } else {
+                            console.log("⚠️ Cache expirado, será renovado");
+                            localStorage.removeItem('diaSorteResultadosCacheUltra');
+                        }
+                    }
+                } catch (err) {
+                    console.warn(`Erro ao carregar cache: ${err.message}`);
+                    localStorage.removeItem('diaSorteResultadosCacheUltra');
+                }
+            }
+            
+            function salvarCacheOtimizado() {
+                try {
+                    // Converter Map para Object para serialização
+                    const dadosParaSalvar = {};
+                    resultadosCache.forEach((value, key) => {
+                        dadosParaSalvar[key] = value;
+                    });
+                    
+                    const cacheData = {
+                        dados: dadosParaSalvar,
+                        timestamp: Date.now()
+                    };
+                    
+                    localStorage.setItem('diaSorteResultadosCacheUltra', JSON.stringify(cacheData));
+                    console.log(`💾 Cache salvo: ${resultadosCache.size} resultados`);
+                } catch (err) {
+                    console.warn(`Erro ao salvar cache: ${err.message}`);
+                    
+                    // Se o cache estiver muito grande, tentar reduzir
+                    if (err.name === 'QuotaExceededError') {
+                        limparCacheAntigo();
+                        console.log("🧹 Cache reduzido devido ao limite de armazenamento");
+                    }
+                }
+            }
+            
+            function limparCacheAntigo() {
+                const tamanhoAtual = resultadosCache.size;
+                const metaLimpeza = Math.floor(tamanhoAtual * 0.3); // Remover 30%
+                
+                let removidos = 0;
+                const keysParaRemover = [];
+                
+                // Remover os mais antigos (presumindo que chaves menores = mais antigos)
+                for (const key of resultadosCache.keys()) {
+                    if (removidos >= metaLimpeza) break;
+                    keysParaRemover.push(key);
+                    removidos++;
+                }
+                
+                keysParaRemover.forEach(key => resultadosCache.delete(key));
+                
+                console.log(`🧹 Cache limpo: ${removidos} itens removidos`);
+                
+                // Salvar cache reduzido
+                salvarCacheOtimizado();
+            }
+            
+            // ===== FUNÇÕES DE UTILIDADES =====
+            
+            function normalizarMes(mes) {
+                if (!mes) return null;
+                
+                const mesesMap = {
+                    "JAN": "JANEIRO",
+                    "FEV": "FEVEREIRO",
+                    "MAR": "MARÇO", 
+                    "ABR": "ABRIL",
+                    "MAI": "MAIO",
+                    "JUN": "JUNHO",
+                    "JUL": "JULHO",
+                    "AGO": "AGOSTO",
+                    "SET": "SETEMBRO",
+                    "OUT": "OUTUBRO",
+                    "NOV": "NOVEMBRO",
+                    "DEZ": "DEZEMBRO"
+                };
+                
+                const mesUpper = mes.toUpperCase();
+                
+                if (MESES.includes(mesUpper)) {
+                    return mesUpper;
+                }
+                
+                if (mesesMap[mesUpper]) {
+                    return mesesMap[mesUpper];
+                }
+                
+                for (const [abrev, completo] of Object.entries(mesesMap)) {
+                    if (completo.startsWith(mesUpper)) {
+                        return completo;
+                    }
+                }
+                
+                return mesUpper;
+            }
+            
+            function calcularPremio(resultado, acertos, acertouMes = false) {
+                let premio = 0;
+                if ('premiacoes' in resultado) {
+                    try {
+                        resultado.premiacoes.forEach(premiacao => {
+                            if ((acertos === 7 && premiacao.descricao === '7 acertos') ||
+                                (acertos === 6 && premiacao.descricao === '6 acertos') ||
+                                (acertos === 5 && premiacao.descricao === '5 acertos') ||
+                                (acertos === 4 && premiacao.descricao === '4 acertos') ||
+                                (acertouMes && premiacao.descricao === 'Mês da Sorte')) {
+                                premio += premiacao.valorPremio;
+                            }
+                        });
+                    } catch (err) {
+                        // Ignorar erro
+                    }
+                }
+                return premio;
+            }
+            
+            function calcularResumo(resultados) {
+                const quatro = resultados.filter(r => r.acertos === 4).length;
+                const cinco = resultados.filter(r => r.acertos === 5).length;
+                const seis = resultados.filter(r => r.acertos === 6).length;
+                const sete = resultados.filter(r => r.acertos === 7).length;
+                const mes = resultados.filter(r => r.acertou_mes).length;
+                
+                const total_premios = resultados.reduce((sum, r) => sum + r.premio, 0);
+                
+                return {
+                    quatro,
+                    cinco,
+                    seis,
+                    sete,
+                    mes,
+                    total_premios
+                };
+            }
+            
+            function gerarNumerosAleatorios(min, max, quantidade) {
+                const numeros = [];
+                while (numeros.length < quantidade) {
+                    const num = Math.floor(Math.random() * (max - min + 1)) + min;
+                    if (!numeros.includes(num)) {
+                        numeros.push(num);
+                    }
+                }
+                return numeros.sort((a, b) => a - b);
+            }
+            
+            function formatarData(dataStr) {
+                if (!dataStr) return '-';
+                
+                try {
+                    const parts = dataStr.split('/');
+                    if (parts.length === 3) {
+                        const day = parts[0].padStart(2, '0');
+                        const month = parts[1].padStart(2, '0');
+                        const year = parts[2];
+                        return `${day}/${month}/${year}`;
+                    }
+                    return dataStr;
+                } catch (err) {
+                    return dataStr;
+                }
+            }
+            
+            function formatarValor(valor) {
+                return valor > 0 ? 
+                    `R$ ${valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : 
+                    'Não houve ganhadores';
+            }
+            
+            function showAlert(message) {
+                // Versão simples de alert personalizado
+                alert(message);
+            }
+            
+            // ===== FUNÇÕES DE ESTATÍSTICAS OTIMIZADAS =====
+            
+            async function processarEstatisticasJogosOtimizado(resultados, jogos) {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        try {
+                            if (jogos.length > ULTRA_CONFIG.LIMITS.MAX_GAMES_STATS) {
+                                adicionarLogCritico(`⚠️ Limitando estatísticas a ${ULTRA_CONFIG.LIMITS.MAX_GAMES_STATS} jogos para performance`, "warning");
+                                resolve([]);
+                                return;
+                            }
+                            
+                            const estatisticas = calcularEstatisticasJogosRapido(resultados, jogos);
+                            resolve(estatisticas);
+                        } catch (err) {
+                            console.error(`Erro ao calcular estatísticas: ${err.message}`);
+                            resolve([]);
+                        }
+                    }, 10);
+                });
+            }
+            
+            function calcularEstatisticasJogosRapido(resultados, jogos) {
+                const jogosStats = new Map();
+                
+                // Criar índice de jogos para busca rápida
+                const jogoIndex = new Map();
+                jogos.forEach((jogo, index) => {
+                    const key = JSON.stringify(jogo.numeros.sort((a, b) => a - b));
+                    jogoIndex.set(key, {
+                        index,
+                        jogo,
+                        total: 0,
+                        distribuicao: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0},
+                        acertos_mes: 0
+                    });
+                });
+                
+                // Processar resultados
+                resultados.forEach(resultado => {
+                    const chaveJogo = JSON.stringify(resultado.seus_numeros.sort((a, b) => a - b));
+                    const estatJogo = jogoIndex.get(chaveJogo);
+                    
+                    if (estatJogo) {
+                        if (resultado.acertos > 0) {
+                            estatJogo.total += 1;
+                            estatJogo.distribuicao[resultado.acertos] += 1;
+                        }
+                        
+                        if (resultado.acertou_mes) {
+                            estatJogo.acertos_mes += 1;
+                        }
+                    }
+                });
+                
+                // Converter para array e ordenar
+                const resultado = Array.from(jogoIndex.values())
+                    .map(stat => ({
+                        numeros: stat.jogo.numeros,
+                        total: stat.total,
+                        distribuicao: stat.distribuicao,
+                        acertos_mes: stat.acertos_mes
+                    }))
+                    .sort((a, b) => b.total - a.total)
+                    .slice(0, 100); // Limitar aos top 100
+                
+                return resultado;
+            }
+            
+            // ===== FUNÇÕES DE APRESENTAÇÃO DE RESULTADOS OTIMIZADAS =====
+            
+            async function mostrarResultadosOtimizados(data) {
+                adicionarLogCritico("📊 Gerando interface de resultados...", "info");
+                
+                // SEMPRE mostrar a seção de resultados, mesmo se vazia
+                document.getElementById('resultados').style.display = 'block';
+                
+                // Verificar se há resultados
+                const temResultados = data && data.acertos && data.acertos.length > 0;
+                
+                if (!temResultados) {
+                    adicionarLogCritico("⚠️ Conferência concluída - 0 resultados encontrados", "warning");
+                    
+                    // Ainda assim mostrar interface com zeros
+                    document.getElementById('quatro-acertos').textContent = "0";
+                    document.getElementById('cinco-acertos').textContent = "0";
+                    document.getElementById('seis-acertos').textContent = "0";
+                    document.getElementById('sete-acertos').textContent = "0";
+                    document.getElementById('mes-acertos').textContent = "0";
+                    
+                    document.getElementById('quatro-valor').textContent = formatarValor(0);
+                    document.getElementById('cinco-valor').textContent = formatarValor(0);
+                    document.getElementById('seis-valor').textContent = formatarValor(0);
+                    document.getElementById('sete-valor').textContent = formatarValor(0);
+                    document.getElementById('mes-valor').textContent = formatarValor(0);
+                    
+                    // Mostrar mensagem explicativa na tabela
+                    const tabelaBody = document.getElementById('tabela-resultados');
+                    tabelaBody.innerHTML = `
+                        <tr>
+                            <td colspan="10" style="text-align: center; padding: 30px; background-color: #f8f9fa;">
+                                <div style="color: #6c757d; font-size: 16px;">
+                                    <i class="fas fa-info-circle" style="font-size: 24px; margin-bottom: 10px; color: var(--dia-sorte-dourado);"></i>
+                                    <h4 style="margin: 10px 0; color: var(--dia-sorte-verde);">Conferência Concluída - Nenhum Resultado Encontrado</h4>
+                                    <p style="margin: 5px 0;"><strong>Jogos processados:</strong> ${jogosIncluidos.length.toLocaleString()}</p>
+                                    <p style="margin: 5px 0;"><strong>Período verificado:</strong> Concursos ${document.getElementById('inicio').value} a ${document.getElementById('fim').value}</p>
+                                    <p style="margin: 5px 0;"><strong>Filtro aplicado:</strong> ${document.getElementById('somente-premiados').checked ? 'Somente premiados' : 'Todos os resultados'}</p>
+                                    <hr style="margin: 15px 0; border-color: #dee2e6;">
+                                    <p style="margin: 10px 0; font-weight: bold; color: #007bff;">Isso significa que:</p>
+                                    <ul style="text-align: left; display: inline-block; margin: 10px 0;">
+                                        ${document.getElementById('somente-premiados').checked ? 
+                                            '<li>Nenhum dos seus jogos teve 4+ acertos ou acertou o mês da sorte no período</li>' : 
+                                            '<li>Pode haver problema na busca dos resultados dos concursos</li><li>Verifique se o período de concursos está correto</li>'
+                                        }
+                                        <li>Todos os ${jogosIncluidos.length.toLocaleString()} jogos foram verificados com sucesso</li>
+                                        <li>O processamento foi concluído sem erros</li>
+                                    </ul>
+                                    <p style="margin: 10px 0; font-style: italic;">💡 Dica: Se esperava resultados, tente desmarcar "Somente premiados" para ver todos os jogos processados.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    
+                    // Limpar paginação
+                    document.getElementById('pagination-top').innerHTML = '';
+                    document.getElementById('pagination-bottom').innerHTML = '';
+                    
+                    // Ocultar estatísticas de jogos
+                    document.getElementById('jogos-mais-sorteados').style.display = 'none';
+                    
+                    // Scroll para resultados
+                    document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
+                    
+                    adicionarLogCritico("✅ Interface de resultados exibida (0 resultados)", "success");
+                    return;
+                }
+                
+                adicionarLogCritico(`📋 Exibindo ${data.acertos.length} resultados encontrados`, "success");
+                
+                // Atualizar contadores com validação
+                document.getElementById('quatro-acertos').textContent = (data.resumo?.quatro || 0).toLocaleString();
+                document.getElementById('cinco-acertos').textContent = (data.resumo?.cinco || 0).toLocaleString();
+                document.getElementById('seis-acertos').textContent = (data.resumo?.seis || 0).toLocaleString();
+                document.getElementById('sete-acertos').textContent = (data.resumo?.sete || 0).toLocaleString();
+                document.getElementById('mes-acertos').textContent = (data.resumo?.mes || 0).toLocaleString();
+                
+                // Calcular e mostrar valores de prêmios
+                const calcularTotalPremios = (acertos) => {
+                    return data.acertos
+                        .filter(r => r.acertos === acertos)
+                        .reduce((sum, r) => sum + (r.premio || 0), 0);
+                };
+                
+                document.getElementById('quatro-valor').textContent = formatarValor(calcularTotalPremios(4));
+                document.getElementById('cinco-valor').textContent = formatarValor(calcularTotalPremios(5));
+                document.getElementById('seis-valor').textContent = formatarValor(calcularTotalPremios(6));
+                document.getElementById('sete-valor').textContent = formatarValor(calcularTotalPremios(7));
+                document.getElementById('mes-valor').textContent = formatarValor(
+                    data.acertos
+                        .filter(r => r.acertou_mes)
+                        .reduce((sum, r) => sum + (r.premio || 0), 0)
+                );
+                
+                // Salvar dados para exportação
+                dadosUltimaConsulta = data;
+                allResults = data.acertos;
+                
+                adicionarLogCritico(`💾 Dados salvos: ${allResults.length} resultados disponíveis`, "info");
+                
+                // Configurar paginação e tabela de forma assíncrona
+                setTimeout(() => {
+                    try {
+                        configurarTabelaPaginada();
+                        
+                        if (data.jogos_stats && data.jogos_stats.length > 0) {
+                            atualizarTabelaJogosSorteados(data.jogos_stats);
+                            document.getElementById('jogos-mais-sorteados').style.display = 'block';
+                            adicionarLogCritico(`📈 Estatísticas de ${data.jogos_stats.length} jogos carregadas`, "success");
+                        }
+                        
+                        // Mostrar botões de exportação
+                        document.getElementById('export-resumo').classList.remove('hidden');
+                        if (data.acertos.length > 0) {
+                            document.getElementById('export-jogos').classList.remove('hidden');
+                        }
+                        if (data.jogos_stats && data.jogos_stats.length > 0) {
+                            document.getElementById('export-estatisticas').classList.remove('hidden');
+                        }
+                        
+                        // Scroll para resultados
+                        document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
+                        
+                        adicionarLogCritico("✅ Interface de resultados carregada completamente", "success");
+                        
+                    } catch (err) {
+                        adicionarLogCritico(`❌ Erro ao configurar interface: ${err.message}`, "critical");
+                        console.error("Erro na configuração da interface:", err);
+                    }
+                }, 100);
+            }
+            
+            function configurarTabelaPaginada() {
+                const totalResults = allResults.length;
+                const itemsPerPage = ULTRA_CONFIG.LIMITS.PAGINATION_SIZE;
+                const totalPages = Math.ceil(totalResults / itemsPerPage);
+                
+                // Configurar paginação
+                criarPaginacao(totalPages);
+                
+                // Mostrar primeira página
+                currentPage = 1;
+                mostrarPaginaResultados(currentPage);
+                
+                // Atualizar total no rodapé
+                if (dadosUltimaConsulta?.resumo?.total_premios) {
+                    document.querySelector('.total-premios').textContent = formatarValor(dadosUltimaConsulta.resumo.total_premios);
+                }
+            }
+            
+            function criarPaginacao(totalPages) {
+                const paginationTop = document.getElementById('pagination-top');
+                const paginationBottom = document.getElementById('pagination-bottom');
+                
+                if (totalPages <= 1) {
+                    paginationTop.innerHTML = '';
+                    paginationBottom.innerHTML = '';
+                    return;
+                }
+                
+                const paginationHTML = criarHTMLPaginacao(totalPages);
+                paginationTop.innerHTML = paginationHTML;
+                paginationBottom.innerHTML = paginationHTML;
+                
+                // Adicionar event listeners
+                [paginationTop, paginationBottom].forEach(container => {
+                    container.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('page-btn')) {
+                            const page = parseInt(e.target.dataset.page);
+                            if (page !== currentPage) {
+                                currentPage = page;
+                                mostrarPaginaResultados(page);
+                                atualizarPaginacaoAtiva();
+                            }
+                        }
+                    });
+                });
+            }
+            
+            function criarHTMLPaginacao(totalPages) {
+                let html = '';
+                
+                // Botão anterior
+                html += `<button class="page-btn" data-page="${Math.max(1, currentPage - 1)}" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-left"></i> Anterior
+                </button>`;
+                
+                // Páginas
+                const startPage = Math.max(1, currentPage - 2);
+                const endPage = Math.min(totalPages, currentPage + 2);
+                
+                if (startPage > 1) {
+                    html += `<button class="page-btn" data-page="1">1</button>`;
+                    if (startPage > 2) {
+                        html += `<span>...</span>`;
+                    }
+                }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+                }
+                
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        html += `<span>...</span>`;
+                    }
+                    html += `<button class="page-btn" data-page="${totalPages}">${totalPages}</button>`;
+                }
+                
+                // Botão próximo
+                html += `<button class="page-btn" data-page="${Math.min(totalPages, currentPage + 1)}" ${currentPage === totalPages ? 'disabled' : ''}>
+                    Próximo <i class="fas fa-chevron-right"></i>
+                </button>`;
+                
+                return html;
+            }
+            
+            function mostrarPaginaResultados(page) {
+                const itemsPerPage = ULTRA_CONFIG.LIMITS.PAGINATION_SIZE;
+                const startIndex = (page - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, allResults.length);
+                
+                const resultadosPagina = allResults.slice(startIndex, endIndex);
+                
+                // Limitar ainda mais se necessário para performance
+                const resultadosLimitados = resultadosPagina.slice(0, Math.min(resultadosPagina.length, itemsPerPage));
+                
+                preencherTabelaResultados(resultadosLimitados);
+                atualizarPaginacaoAtiva();
+            }
+            
+            function preencherTabelaResultados(resultados) {
+                const tabelaBody = document.getElementById('tabela-resultados');
+                tabelaBody.innerHTML = '';
+                
+                if (resultados.length === 0) {
+                    const row = document.createElement('tr');
+                    const cell = document.createElement('td');
+                    cell.colSpan = 10;
+                    cell.textContent = 'Nenhum resultado encontrado.';
+                    cell.style.textAlign = 'center';
+                    cell.style.padding = '20px';
+                    row.appendChild(cell);
+                    tabelaBody.appendChild(row);
+                    return;
+                }
+                
+                // Criar fragmento para melhor performance
+                const fragment = document.createDocumentFragment();
+                
+                resultados.forEach(resultado => {
+                    const row = document.createElement('tr');
+                    
+                    // Análise de dígitos
+                    const analiseDigitos = extrairDigitosUnicos(resultado.seus_numeros);
+                    
+                    // Formatação de números
+                    const numerosSorteados = resultado.numeros_sorteados
+                        .sort((a, b) => a - b)
+                        .map(n => `<span class="numero-tabela">${String(n).padStart(2, '0')}</span>`)
+                        .join(' ');
+                        
+                    const seusNumeros = resultado.seus_numeros
+                        .sort((a, b) => a - b)
+                        .map(n => `<span class="numero-tabela ${resultado.numeros_sorteados.includes(n) ? 'acerto' : ''}">${String(n).padStart(2, '0')}</span>`)
+                        .join(' ');
+                    
+                    const premioText = resultado.premio > 0 
+                        ? `R$ ${resultado.premio.toLocaleString('pt-BR', {minimumFractionDigits: 2})}` 
+                        : 'Não houve ganhadores';
+                    
+                    row.innerHTML = `
+                        <td>${resultado.concurso}</td>
+                        <td>${formatarData(resultado.data)}</td>
+                        <td><div class="numeros-tabela">${numerosSorteados}</div></td>
+                        <td>${resultado.mes_sorteado || 'N/A'}</td>
+                        <td><div class="numeros-tabela">${seusNumeros}</div></td>
+                        <td>${resultado.seu_mes || 'N/A'}</td>
+                        <td>${resultado.acertos}${resultado.acertou_mes ? ' + Mês' : ''}</td>
+                        <td>${formatarDigitosUsados(resultado.seus_numeros)}</td>
+                        <td>${premioText}</td>
+                        <td>${resultado.premio > 0 ? 'Premiado' : 'Acumulado'}</td>
+                    `;
+                    
+                    fragment.appendChild(row);
+                });
+                
+                tabelaBody.appendChild(fragment);
+            }
+            
+            function atualizarPaginacaoAtiva() {
+                // Atualizar botões ativos na paginação
+                document.querySelectorAll('.page-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (parseInt(btn.dataset.page) === currentPage) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+            
+            function atualizarTabelaJogosSorteados(jogos_stats) {
+                const tbody = document.querySelector('#tabela-jogos-sorteados tbody');
+                tbody.innerHTML = '';
+                
+                if (!jogos_stats || jogos_stats.length === 0) {
+                    document.getElementById('jogos-mais-sorteados').style.display = 'none';
+                    return;
+                }
+                
+                // Limitar para performance
+                const jogosMostrar = jogos_stats.slice(0, 50);
+                
+                const fragment = document.createDocumentFragment();
+                
+                jogosMostrar.forEach(jogo => {
+                    const tr = document.createElement('tr');
+                    
+                    // Números do jogo
+                    const tdJogo = document.createElement('td');
+                    tdJogo.innerHTML = `<div class="numeros-tabela">
+                        ${jogo.numeros.map(n => 
+                            `<span class="numero-tabela">${String(n).padStart(2, '0')}</span>`
+                        ).join(' ')}
+                    </div>`;
+                    
+                    // Total de acertos
+                    const tdTotal = document.createElement('td');
+                    tdTotal.textContent = `${jogo.total} vezes`;
+                    
+                    // Distribuição de acertos
+                    const tdDistribuicao = document.createElement('td');
+                    const distribuicao = [];
+                    for (let i = 1; i <= 7; i++) {
+                        if (jogo.distribuicao[i] > 0) {
+                            distribuicao.push(`${i} ponto${i !== 1 ? 's' : ''}: ${jogo.distribuicao[i]} vez${jogo.distribuicao[i] !== 1 ? 'es' : ''}`);
+                        }
+                    }
+                    tdDistribuicao.textContent = distribuicao.join(' | ');
+                    
+                    // Acertos do mês
+                    const tdMes = document.createElement('td');
+                    tdMes.textContent = jogo.acertos_mes > 0 ? `${jogo.acertos_mes} vezes` : '-';
+                    
+                    tr.appendChild(tdJogo);
+                    tr.appendChild(tdTotal);
+                    tr.appendChild(tdDistribuicao);
+                    tr.appendChild(tdMes);
+                    fragment.appendChild(tr);
+                });
+                
+                tbody.appendChild(fragment);
+            }
+            
+            // ===== FUNÇÕES DE EXPORTAÇÃO OTIMIZADAS =====
+            
+            window.exportarExcel = function(tipo) {
+                if (!dadosUltimaConsulta) {
+                    showAlert('Faça uma consulta primeiro antes de exportar os dados.');
+                    return;
+                }
+                
+                try {
+                    adicionarLogCritico(`📊 Iniciando exportação: ${tipo}`, "info");
+                    
+                    let dados = [];
+                    let nomeArquivo = '';
+                    
+                    if (tipo === 'resumo-acertos') {
+                        dados = [
+                            ['Quantidade de Acertos', 'Total', 'Prêmio Total'],
+                            ['4 acertos', dadosUltimaConsulta.resumo.quatro, calcularPremioTotal(4)],
+                            ['5 acertos', dadosUltimaConsulta.resumo.cinco, calcularPremioTotal(5)],
+                            ['6 acertos', dadosUltimaConsulta.resumo.seis, calcularPremioTotal(6)],
+                            ['7 acertos', dadosUltimaConsulta.resumo.sete, calcularPremioTotal(7)],
+                            ['Mês da Sorte', dadosUltimaConsulta.resumo.mes, calcularPremioTotalMes()]
+                        ];
+                        nomeArquivo = 'resumo-acertos-ultra.xlsx';
+                    }
+                    else if (tipo === 'jogos-premiados') {
+                        dados = [
+                            ['Concurso', 'Data', 'Números Sorteados', 'Mês Sorteado', 'Seus Números', 'Seu Mês', 'Acertos', 'Acertou Mês', 'Prêmio']
+                        ];
+                        
+                        // Limitar exportação para não travar
+                        const maxExport = Math.min(50000, dadosUltimaConsulta.acertos.length);
+                        const resultadosExportar = dadosUltimaConsulta.acertos.slice(0, maxExport);
+                        
+                        if (maxExport < dadosUltimaConsulta.acertos.length) {
+                            adicionarLogCritico(`⚠️ Exportação limitada a ${maxExport.toLocaleString()} resultados`, "warning");
+                        }
+                        
+                        resultadosExportar.forEach(r => {
+                            dados.push([
+                                r.concurso,
+                                formatarData(r.data),
+                                r.numeros_sorteados.join(' '),
+                                r.mes_sorteado || '',
+                                r.seus_numeros.join(' '),
+                                r.seu_mes || '',
+                                r.acertos,
+                                r.acertou_mes ? 'Sim' : 'Não',
+                                r.premio
+                            ]);
+                        });
+                        
+                        nomeArquivo = 'jogos-premiados-ultra.xlsx';
+                    }
+                    else if (tipo === 'jogos-sorteados') {
+                        if (!dadosUltimaConsulta.jogos_stats) {
+                            showAlert('Dados de estatísticas não disponíveis');
+                            return;
+                        }
+                        
+                        dados = [
+                            ['Números', 'Total de Acertos', 'Distribuição', 'Acertos do Mês']
+                        ];
+                        
+                        dadosUltimaConsulta.jogos_stats.forEach(jogo => {
+                            const distribuicao = [];
+                            for (let i = 1; i <= 7; i++) {
+                                if (jogo.distribuicao[i] > 0) {
+                                    distribuicao.push(`${i} pontos: ${jogo.distribuicao[i]}x`);
+                                }
+                            }
+                            
+                            dados.push([
+                                jogo.numeros.join(' '),
+                                jogo.total,
+                                distribuicao.join(', '),
+                                jogo.acertos_mes || 0
+                            ]);
+                        });
+                        
+                        nomeArquivo = 'jogos-sorteados-ultra.xlsx';
+                    }
+                    
+                    // Criar e exportar planilha
+                    const ws = XLSX.utils.aoa_to_sheet(dados);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Dia de Sorte Ultra");
+                    
+                    XLSX.writeFile(wb, nomeArquivo);
+                    
+                    adicionarLogCritico(`✅ Exportação concluída: ${nomeArquivo}`, "success");
+                    
+                } catch (err) {
+                    console.error(`Erro ao exportar Excel: ${err.message}`);
+                    showAlert(`Erro ao exportar dados: ${err.message}`);
+                    adicionarLogCritico(`❌ Erro na exportação: ${err.message}`, "critical");
+                }
+            };
+            
+            function calcularPremioTotal(acertos) {
+                return dadosUltimaConsulta.acertos
+                    .filter(r => r.acertos === acertos)
+                    .reduce((sum, r) => sum + r.premio, 0);
+            }
+            
+            function calcularPremioTotalMes() {
+                return dadosUltimaConsulta.acertos
+                    .filter(r => r.acertou_mes)
+                    .reduce((sum, r) => sum + r.premio, 0);
+            }
+            
+            // Limpar recursos ao sair da página
+            window.addEventListener('beforeunload', () => {
+                if (memoryMonitor) clearInterval(memoryMonitor);
+                if (performanceMonitor) clearInterval(performanceMonitor);
+                salvarCacheOtimizado();
+            });
+            
+            console.log("🎉 Conferidor Ultra Performance inicializado com sucesso!");
+        });
+    </script>
+</body>
+</html>
