@@ -152,20 +152,23 @@
             const tableBody = document.getElementById('gameTable');
             tableBody.innerHTML = '';
 
-            // Combina&ccedil;&otilde;es baseadas na figura - mantendo grupos corretos
+            // Combinações CORRETAS: Jogos 1-6 usam SOMENTE GRUPO I, Jogos 7-12 usam SOMENTE GRUPO II
             const combinations = [
-                { g1: [0,1,2,3], g2: [0,1], trevo: [1,2] },    // Jogo 1: Todo grupo1 + 1&ordm;,2&ordm; do grupo2
-                { g1: [0,1,2,3], g2: [0,2], trevo: [1,3] },    // Jogo 2: Todo grupo1 + 1&ordm;,3&ordm; do grupo2  
-                { g1: [0,1,2,3], g2: [0,3], trevo: [1,4] },    // Jogo 3: Todo grupo1 + 1&ordm;,4&ordm; do grupo2
-                { g1: [0,1,2,3], g2: [1,2], trevo: [2,5] },    // Jogo 4: Todo grupo1 + 2&ordm;,3&ordm; do grupo2
-                { g1: [0,1,2,3], g2: [1,3], trevo: [1,6] },    // Jogo 5: Todo grupo1 + 2&ordm;,4&ordm; do grupo2
-                { g1: [0,1,2,3], g2: [2,3], trevo: [2,3] },    // Jogo 6: Todo grupo1 + 3&ordm;,4&ordm; do grupo2
-                { g1: [], g2: [0,1,2,3], trevo: [3,4] },       // Jogo 7: 20,34,38,40 (todos do grupo2)
-                { g1: [0], g2: [0,1,2], trevo: [3,5] },        // Jogo 8: 3 + 20,34,38
-                { g1: [], g2: [0,1,2,3], trevo: [4,5] },       // Jogo 9: repete 20,34,38,40
-                { g1: [2], g2: [0,1,3], trevo: [2,4] },        // Jogo 10: 10 + 20,34,40
-                { g1: [3], g2: [0,1,2], trevo: [2,5] },        // Jogo 11: 12 + 20,34,38
-                { g1: [1,2], g2: [0,3], trevo: [2,6] }         // Jogo 12: 8,10 + 20,40
+                // JOGOS 1-6: SOMENTE números do GRUPO I
+                { useGroup: 1, trevo: [1,2] },    // Jogo 1: SOMENTE G1
+                { useGroup: 1, trevo: [1,3] },    // Jogo 2: SOMENTE G1
+                { useGroup: 1, trevo: [1,4] },    // Jogo 3: SOMENTE G1
+                { useGroup: 1, trevo: [2,5] },    // Jogo 4: SOMENTE G1
+                { useGroup: 1, trevo: [1,6] },    // Jogo 5: SOMENTE G1
+                { useGroup: 1, trevo: [2,3] },    // Jogo 6: SOMENTE G1
+
+                // JOGOS 7-12: SOMENTE números do GRUPO II
+                { useGroup: 2, trevo: [3,4] },    // Jogo 7: SOMENTE G2
+                { useGroup: 2, trevo: [3,5] },    // Jogo 8: SOMENTE G2
+                { useGroup: 2, trevo: [4,5] },    // Jogo 9: SOMENTE G2
+                { useGroup: 2, trevo: [2,4] },    // Jogo 10: SOMENTE G2
+                { useGroup: 2, trevo: [2,5] },    // Jogo 11: SOMENTE G2
+                { useGroup: 2, trevo: [2,6] }     // Jogo 12: SOMENTE G2
             ];
 
             for (let i = 0; i < 12; i++) {
@@ -175,58 +178,52 @@
                 const combo = combinations[i];
                 const gameNumbers = [];
                 
-                if (i >= 6) { // Jogos 7-12 (&iacute;ndices 6-11)
-                    // Para jogos 7-12: APENAS usar n&uacute;meros do GRUPO II, NUNCA do GRUPO I
-                    combo.g2.forEach(idx => {
-                        if (grupo2[idx] > 0) gameNumbers.push(grupo2[idx]);
-                    });
-                    
-                    // Se houver n&uacute;meros do GRUPO I especificados na combina&ccedil;&atilde;o, 
-                    // s&oacute; usar se GRUPO II estiver completo
-                    if (combo.g1.length > 0) {
-                        let grupo2Completo = combo.g2.every(idx => grupo2[idx] > 0);
-                        if (grupo2Completo) {
-                            combo.g1.forEach(idx => {
-                                if (grupo1[idx] > 0) gameNumbers.push(grupo1[idx]);
-                            });
+                if (combo.useGroup === 1) {
+                    // Jogos 1-6: Usar SOMENTE números do GRUPO I
+                    for (let j = 0; j < 4; j++) {
+                        if (grupo1[j] && grupo1[j] > 0) {
+                            gameNumbers.push(grupo1[j]);
                         }
                     }
-                } else { // Jogos 1-6
-                    // Adicionar n&uacute;meros do grupo 1
-                    combo.g1.forEach(idx => {
-                        if (grupo1[idx] > 0) gameNumbers.push(grupo1[idx]);
-                    });
-                    
-                    // Adicionar n&uacute;meros do grupo 2
-                    combo.g2.forEach(idx => {
-                        if (grupo2[idx] > 0) gameNumbers.push(grupo2[idx]);
-                    });
+                } else {
+                    // Jogos 7-12: Usar SOMENTE números do GRUPO II
+                    for (let j = 0; j < 4; j++) {
+                        if (grupo2[j] && grupo2[j] > 0) {
+                            gameNumbers.push(grupo2[j]);
+                        }
+                    }
                 }
                 
-                // Ordenar os n&uacute;meros
-                gameNumbers.sort((a, b) => a - b);
+                // Remover duplicatas e garantir máximo 6 números
+                const uniqueNumbers = [...new Set(gameNumbers)];
+                if (uniqueNumbers.length > 6) {
+                    uniqueNumbers.splice(6);
+                }
+                
+                // Ordenar os números
+                uniqueNumbers.sort((a, b) => a - b);
                 
                 const game = {
                     numero: i + 1,
-                    numeros: gameNumbers,
+                    numeros: uniqueNumbers,
                     trevo: combo.trevo
                 };
 
-                // N&uacute;mero do jogo
+                // Número do jogo
                 const gameCell = document.createElement('td');
                 gameCell.className = 'border border-gray-300 dark:border-gray-600 p-2 text-center font-bold';
                 gameCell.textContent = i + 1;
                 row.appendChild(gameCell);
 
-                // 6 n&uacute;meros principais
+                // 6 números principais
                 for (let j = 0; j < 6; j++) {
                     const cell = document.createElement('td');
                     cell.className = 'border border-gray-300 dark:border-gray-600 p-2 text-center table-cell';
-                    cell.textContent = gameNumbers[j] || '-';
+                    cell.textContent = uniqueNumbers[j] || '-';
                     row.appendChild(cell);
                 }
 
-                // 2 n&uacute;meros do trevo
+                // 2 números do trevo
                 for (let j = 0; j < 2; j++) {
                     const cell = document.createElement('td');
                     cell.className = 'border border-gray-300 dark:border-gray-600 p-2 text-center trevo-cell table-cell';
@@ -267,7 +264,7 @@
         }
 
         function downloadXLS() {
-            const ws_data = [['Jogo', '1&ordm;', '2&ordm;', '3&ordm;', '4&ordm;', '5&ordm;', '6&ordm;', 'Trevo 1', 'Trevo 2']];
+            const ws_data = [['Jogo', '1º', '2º', '3º', '4º', '5º', '6º', 'Trevo 1', 'Trevo 2']];
             
             gameData.forEach(game => {
                 const row = [
@@ -287,11 +284,11 @@
         function generateHTMLContent() {
             let html = `
                 <html>
-                <head><title>Jogos Milion&aacute;ria</title></head>
+                <head><title>Jogos Milionária</title></head>
                 <body>
-                <h1>Jogos - Modalidade Milion&aacute;ria</h1>
+                <h1>Jogos - Modalidade Milionária</h1>
                 <table border="1">
-                <tr><th>Jogo</th><th>1&ordm;</th><th>2&ordm;</th><th>3&ordm;</th><th>4&ordm;</th><th>5&ordm;</th><th>6&ordm;</th><th>Trevo 1</th><th>Trevo 2</th></tr>
+                <tr><th>Jogo</th><th>1º</th><th>2º</th><th>3º</th><th>4º</th><th>5º</th><th>6º</th><th>Trevo 1</th><th>Trevo 2</th></tr>
             `;
             
             gameData.forEach(game => {
@@ -308,10 +305,10 @@
         }
 
         function generateTXTContent() {
-            let content = 'JOGOS - MODALIDADE MILION\u00C1RIA\n\n';
+            let content = 'JOGOS - MODALIDADE MILIONÁRIA\n\n';
             gameData.forEach(game => {
                 content += `Jogo ${game.numero}:\n`;
-                content += `N\u00FAmeros: ${game.numeros.join(', ')}\n`;
+                content += `Números: ${game.numeros.join(', ')}\n`;
                 content += `Trevo: ${game.trevo.join(', ')}\n\n`;
             });
             return content;
@@ -344,7 +341,7 @@
             document.body.appendChild(modal);
         }
 
-        // Inicializar a aplica&ccedil;&atilde;o
+        // Inicializar a aplicação
         addInputListeners();
         generateGames();
     </script>
