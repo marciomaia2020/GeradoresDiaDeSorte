@@ -812,15 +812,13 @@
             let medio = 0;
             let alto = 0;
             
-            // Contadores para números válidos específicos
+            // ===== CORREÇÃO: Contadores para volumes específicos (baseado na análise real de 3 dígitos) =====
             const specificValidNumbers = {
-                16: 0,    // 11.440 jogos
-                15: 0,    // 6.435 jogos
-                14: 0,    // 3.432 jogos
-                11: 0,    // 330 jogos
-                10: 0,    // 120 jogos
-                9: 0,     // 36 jogos
-                insuf: 0  // ≤ 6 números = insuficiente
+                120: 0,   // 120 jogos
+                36: 0,    // 36 jogos
+                8: 0,     // 8 jogos
+                1: 0,     // 1 jogo
+                insuf: 0  // Insuficiente = 0 jogos
             };
             
             let maxVolume = 0;
@@ -830,7 +828,6 @@
             
             combinationsData.forEach(data => {
                 const volume = data.totalCombinations;
-                const validCount = data.validNumbersCount;
                 
                 if (volume === 0) {
                     insuficiente++;
@@ -854,20 +851,16 @@
                     minVolume = Math.min(minVolume, volume);
                 }
                 
-                // Contabilizar combinações por número de números válidos
-                if (validCount === 16) {
-                    specificValidNumbers[16]++;
-                } else if (validCount === 15) {
-                    specificValidNumbers[15]++;
-                } else if (validCount === 14) {
-                    specificValidNumbers[14]++;
-                } else if (validCount === 11) {
-                    specificValidNumbers[11]++;
-                } else if (validCount === 10) {
-                    specificValidNumbers[10]++;
-                } else if (validCount === 9) {
-                    specificValidNumbers[9]++;
-                } else if (validCount <= 6) {
+                // ===== CORREÇÃO: Contabilizar combinações por volume de jogos (baseado na análise real de 3 dígitos) =====
+                if (volume === 120) {
+                    specificValidNumbers[120]++;
+                } else if (volume === 36) {
+                    specificValidNumbers[36]++;
+                } else if (volume === 8) {
+                    specificValidNumbers[8]++;
+                } else if (volume === 1) {
+                    specificValidNumbers[1]++;
+                } else if (volume === 0) {
                     specificValidNumbers.insuf++;
                 }
             });
@@ -893,19 +886,17 @@
                 }
             });
 
-            // Criar dinamicamente apenas as linhas com valores > 0
+            // ===== CORREÇÃO: Criar dinamicamente apenas as linhas com valores > 0 =====
             const specificVolumesContainer = document.getElementById('specific-volumes');
             if (specificVolumesContainer) {
                 specificVolumesContainer.innerHTML = '';
 
-                // Definir mapeamento de volumes para jogos e cores
+                // ===== CORREÇÃO: Definir mapeamento de volumes para jogos e cores (baseado na análise real de 3 dígitos) =====
                 const volumeMapping = [
-                    { validCount: 16, jogos: '11.440', count: specificValidNumbers[16], color: 'text-green-600 dark:text-green-400' },
-                    { validCount: 15, jogos: '6.435', count: specificValidNumbers[15], color: 'text-green-600 dark:text-green-400' },
-                    { validCount: 14, jogos: '3.432', count: specificValidNumbers[14], color: 'text-blue-600 dark:text-blue-400' },
-                    { validCount: 11, jogos: '330', count: specificValidNumbers[11], color: 'text-blue-600 dark:text-blue-400' },
-                    { validCount: 10, jogos: '120', count: specificValidNumbers[10], color: 'text-yellow-600 dark:text-yellow-400' },
-                    { validCount: 9, jogos: '36', count: specificValidNumbers[9], color: 'text-yellow-600 dark:text-yellow-400' },
+                    { validCount: 120, jogos: '120', count: specificValidNumbers[120], color: 'text-green-600 dark:text-green-400' },
+                    { validCount: 36, jogos: '36', count: specificValidNumbers[36], color: 'text-blue-600 dark:text-blue-400' },
+                    { validCount: 8, jogos: '8', count: specificValidNumbers[8], color: 'text-yellow-600 dark:text-yellow-400' },
+                    { validCount: 1, jogos: '1', count: specificValidNumbers[1], color: 'text-orange-600 dark:text-orange-400' },
                     { validCount: 'insuf', jogos: 'Insuficiente', count: specificValidNumbers.insuf, color: 'text-red-500' }
                 ];
 
@@ -920,7 +911,7 @@
                         
                         const value = document.createElement('span');
                         value.className = `font-bold ${item.color}`;
-                        value.textContent = `${item.count} combinações`;
+                        value.textContent = `${item.count} configurações`;
                         
                         div.appendChild(label);
                         div.appendChild(value);
