@@ -317,12 +317,12 @@
     <div id="data-loading-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 mb-8">
         <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
             <i class="fas fa-database text-dia-orange mr-3"></i>
-            Carregando Dados Históricos
+            Carregando Dados Históricos Reais
         </h2>
         
         <div class="space-y-4">
             <div class="flex items-center justify-between">
-                <span class="text-gray-600 dark:text-gray-300">Buscando resultados da Caixa...</span>
+                <span class="text-gray-600 dark:text-gray-300">Buscando TODOS os resultados da Caixa (do concurso 1 ao último)...</span>
                 <span id="loading-status" class="text-dia-orange font-semibold">Inicializando...</span>
             </div>
             
@@ -954,16 +954,11 @@
     // Total máximo de jogos = 351
     const MAX_TOTAL_GAMES = 351;
 
-    // APIs REAIS da Caixa (igual ao arquivo anexado)
+    // APIs REAIS da Caixa
     const API_CONFIG = {
-        // APIs disponíveis para "Dia de Sorte"
         DIA_DE_SORTE_STATIC: {
             url: "https://servicebus2.caixa.gov.br/portaldeloterias/api/diadesorte",
             description: "API Oficial da Caixa"
-        },
-        DIA_DE_SORTE_LOTERIA_FREE: {
-            url: "https://loteriascaixa-api.herokuapp.com/api/dia-de-sorte",
-            description: "API Loteria Completa (todos os concursos)"
         },
         DIA_DE_SORTE_CONCURSO: (numero) => {
             return {
@@ -971,7 +966,6 @@
                 description: `API Oficial Caixa - Concurso ${numero}`
             };
         },
-        // CORS proxy services (igual ao arquivo anexado)
         PROXIES: [
             '',  // First try direct
             'https://corsproxy.io/?',
@@ -980,12 +974,6 @@
             'https://api.codetabs.com/v1/proxy?quest='
         ]
     };
-
-    // Cache Configuration (igual ao arquivo anexado)
-    const CACHE_KEY = 'diadesorte_resultados_cache';
-    const CACHE_VERSION = '1.0';
-    let cachedResults = [];
-    let lastCachedContest = 0;
 
     // Inicialização
     document.addEventListener('DOMContentLoaded', function() {
@@ -1104,12 +1092,230 @@
         });
     }
 
+    // Função para fazer fetch com CORS proxy
+    async function fetchWithProxy(url, attempts = 0) {
+        const corsProxies = API_CONFIG.PROXIES;
+        
+        if (attempts >= corsProxies.length) {
+            throw new Error('All CORS proxies failed');
+        }
+        
+        try {
+            // Some proxies need different URL encoding
+            let proxyUrl;
+            if (corsProxies[attempts].includes('?url=') || corsProxies[attempts].includes('?quest=')) {
+                proxyUrl = corsProxies[attempts] + encodeURIComponent(url);
+            } else {
+                proxyUrl = corsProxies[attempts] + url;
+            }
+            
+            console.log(`Tentando proxy ${attempts + 1}/${corsProxies.length}: ${proxyUrl}`);
+            
+            const response = await fetch(proxyUrl);
+            if (!response.ok) {
+                throw new Error(`HTTP Error: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.log(`Proxy ${attempts + 1} falhou: ${error.message}`);
+            // Try next proxy
+            if (attempts < corsProxies.length - 1) {
+                return fetchWithProxy(url, attempts + 1);
+            } else {
+                throw error;
+            }
+        }
+    }
+
+    // Função para obter o último número de concurso
+    async function getLatestContestNumber() {
+        try {
+            const lastConcursoData = await fetchWithProxy(API_CONFIG.DIA_DE_SORTE_STATIC.url);
+            if (lastConcursoData && lastConcursoData.numero) {
+                return parseInt(lastConcursoData.numero);
+            }
+            throw new Error("Could not get the latest contest number");
+        } catch (error) {
+            console.log(`Erro ao obter último concurso: ${error.message}`);
+            return 1100; // Valor aproximado atual
+        }
+    }
+
+    // ===== FUNÇÃO PRINCIPAL: CARREGAR TODOS OS SORTEIOS REAIS (DO 1 ATÉ O ÚLTIMO) =====
+    async function loadHistoricalData() {
+        updateLoadingStatus('Verificando último concurso disponível...', 5);
+        document.getElementById('api-status').textContent = '🔄';
+        
+        // Desabilitar botão de gerar jogos
+        document.getElementById('generate-btn').disabled = true;
+        document.getElementById('generate-btn').classList.add('opacity-50', 'cursor-not-allowed');
+        document.getElementById('generate-btn').innerHTML = '<i class="fas fa-lock mr-2"></i>Aguarde carregamento dos dados reais da API da Caixa...';
+        
+        try {
+            // 1. Obter o último número de concurso
+            updateLoadingStatus('Obtendo último concurso da API da Caixa...', 10);
+            const lastContestNumber = await getLatestContestNumber();
+            
+            console.log(`📊 Último concurso identificado: ${lastContestNumber}`);
+            updateLoadingStatus(`Último concurso: ${lastContestNumber}. Carregando do concurso 1 até ${lastContestNumber}...`, 15);
+            
+            // 2. Carregar todos os concursos do 1 até o último
+            historicalData = [];
+            const totalConcursos = lastContestNumber;
+            const batchSize = 50; // Carregar em lotes de 50
+            
+            for (let start = 1; start <= totalConcursos; start += batchSize) {
+                const end = Math.min(start + batchSize - 1, totalConcursos);
+                const currentProgress = 15 + (start / totalConcursos) * 80; // 15% a 95%
+                
+                updateLoadingStatus(`Carregando concursos ${start} a ${end} de ${totalConcursos}...`, currentProgress);
+                document.getElementById('loaded-count').textContent = historicalData.length;
+                
+                // Carregar lote atual
+                const batchPromises = [];
+                for (let i = start; i <= end; i++) {
+                    batchPromises.push(loadSingleContest(i));
+                }
+                
+                // Aguardar todos os concursos do lote
+                const batchResults = await Promise.allSettled(batchPromises);
+                
+                // Processar resultados do lote
+                batchResults.forEach((result, index) => {
+                    if (result.status === 'fulfilled' && result.value) {
+                        historicalData.push(result.value);
+                    } else {
+                        console.log(`⚠️ Concurso ${start + index} não encontrado ou erro: ${result.reason || 'Sem dados'}`);
+                    }
+                });
+                
+                // Pequena pausa para não sobrecarregar a API
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            
+            // 3. Ordenar por número do concurso (mais recente primeiro)
+            historicalData.sort((a, b) => parseInt(b.numero) - parseInt(a.numero));
+            
+            // 4. Finalizar carregamento
+            updateLoadingStatus(`✅ DADOS REAIS CARREGADOS! ${historicalData.length} de ${totalConcursos} concursos da API da Caixa`, 100);
+            document.getElementById('api-status').textContent = '✅';
+            document.getElementById('loaded-count').textContent = historicalData.length;
+            document.getElementById('cache-status').textContent = '✅';
+            
+            // Processar os resultados
+            calculateFrequency();
+            updateLastDraw();
+            showDataSummary();
+            
+            enableGameGeneration();
+            
+            return true;
+            
+        } catch (error) {
+            console.error("Erro no carregamento:", error);
+            document.getElementById('api-status').textContent = '❌';
+            updateLoadingStatus(`❌ Erro: ${error.message}`, 0);
+            
+            // Mostrar botão de retry
+            document.getElementById('retry-loading').classList.remove('hidden');
+            document.getElementById('retry-loading').onclick = () => {
+                document.getElementById('retry-loading').classList.add('hidden');
+                loadHistoricalData();
+            };
+            
+            return false;
+        }
+    }
+
+    // Função para carregar um único concurso
+    async function loadSingleContest(contestNumber) {
+        try {
+            const contestData = await fetchWithProxy(API_CONFIG.DIA_DE_SORTE_CONCURSO(contestNumber).url);
+            
+            // Verificar se os dados são válidos
+            if (contestData && contestData.numero && contestData.listaDezenas && contestData.listaDezenas.length === 7) {
+                return {
+                    numero: parseInt(contestData.numero),
+                    dataApuracao: contestData.dataApuracao || '',
+                    listaDezenas: contestData.listaDezenas || [],
+                    nomeTimeCoracaoMesSorte: contestData.nomeTimeCoracaoMesSorte || 'Janeiro'
+                };
+            }
+            
+            return null;
+        } catch (error) {
+            // Concurso não existe ou erro na API
+            return null;
+        }
+    }
+
+    function updateLoadingStatus(message, progress) {
+        document.getElementById('loading-status').textContent = message;
+        document.getElementById('progress-bar').style.width = `${progress}%`;
+    }
+
+    function enableGameGeneration() {
+        // ===== VERIFICAR SE DADOS REALMENTE FORAM CARREGADOS =====
+        if (!historicalData || historicalData.length === 0) {
+            console.error('❌ ERRO: Tentativa de habilitar controles sem dados históricos válidos');
+            return false;
+        }
+        
+        // ===== HABILITAR BOTÃO DE GERAR JOGOS =====
+        document.getElementById('generate-btn').disabled = false;
+        document.getElementById('generate-btn').classList.remove('opacity-50', 'cursor-not-allowed');
+        document.getElementById('generate-btn').innerHTML = '<i class="fas fa-magic mr-2"></i>Gerar Jogos';
+        
+        // ===== HABILITAR TODOS OS CRITÉRIOS =====
+        document.querySelectorAll('input[type="checkbox"][id^="criteria-"]').forEach(checkbox => {
+            checkbox.disabled = false;
+            checkbox.parentElement.classList.remove('opacity-50', 'cursor-not-allowed');
+        });
+        
+        // ===== RE-ADICIONAR EVENT LISTENERS PARA CALCULADORA INTELIGENTE =====
+        console.log('🔄 REATIVANDO Calculadora Inteligente...');
+        document.querySelectorAll('input[type="checkbox"][id^="criteria-"]').forEach(checkbox => {
+            // Remover listeners antigos para evitar duplicação
+            checkbox.removeEventListener('change', calculateEstimatedGames);
+            // Adicionar listener novo
+            checkbox.addEventListener('change', calculateEstimatedGames);
+        });
+        
+        // ===== HABILITAR CALCULADORA INTELIGENTE =====
+        const calculatorSection = document.querySelector('.bg-gradient-to-r.from-blue-50');
+        if (calculatorSection) {
+            calculatorSection.classList.remove('opacity-50', 'cursor-not-allowed');
+            calculatorSection.style.pointerEvents = 'auto'; // Reativar interações
+        }
+        
+        // ===== HABILITAR CAMPOS DE ENTRADA =====
+        document.getElementById('num-games').disabled = false;
+        document.getElementById('numbers-count').disabled = false;
+        document.getElementById('lucky-month').disabled = false;
+        document.getElementById('custom-value').disabled = false;
+        
+        // ===== HABILITAR DEZENAS FIXAS =====
+        document.querySelectorAll('#fixed-numbers button').forEach(button => {
+            button.disabled = false;
+            button.classList.remove('opacity-50', 'cursor-not-allowed');
+            button.onclick = toggleFixedNumber; // Reativar evento
+            button.style.pointerEvents = 'auto'; // Reativar cliques
+        });
+        
+        // ===== RECALCULAR ESTIMATIVAS AGORA QUE OS DADOS ESTÃO PRONTOS =====
+        console.log('📊 RECALCULANDO estimativas com dados reais...');
+        calculateEstimatedGames();
+        updateTotalValue();
+        
+        console.log('✅ SISTEMA TOTALMENTE HABILITADO - Dados históricos carregados com sucesso!');
+        console.log('✅ Calculadora Inteligente REATIVADA com event listeners funcionais!');
+        
+        return true;
+    }
+
     function updateTotalValue() {
         const numGames = parseInt(document.getElementById('num-games').value) || 0;
         const numbersCount = document.getElementById('numbers-count').value;
-        
-        // Mostrar/ocultar informações de redução
-        toggleReductionInfo(numGames);
         
         let price = 2.50; // Preço padrão para 7 números (recomendado para 3 dígitos)
         
@@ -1138,19 +1344,6 @@
         
         // Atualizar estimativa de jogos
         calculateEstimatedGames();
-    }
-
-    function toggleReductionInfo(numGames) {
-        const reductionInfo = document.getElementById('games-reduction-info');
-        const reductionSpans = document.querySelectorAll('[id$="-reduction"]');
-        
-        if (numGames < MAX_TOTAL_GAMES) {
-            reductionInfo?.classList.remove('hidden');
-            reductionSpans.forEach(span => span.classList.remove('hidden'));
-        } else {
-            reductionInfo?.classList.add('hidden');
-            reductionSpans.forEach(span => span.classList.add('hidden'));
-        }
     }
 
     // ===== SISTEMA DINÂMICO DE REDUÇÃO EM TEMPO REAL =====
@@ -1246,201 +1439,11 @@
         } else {
             activeCriteriaSection.classList.add('hidden');
         }
-        
-        // Animar mudanças
-        const elements = ['estimated-games', 'reduction-percentage', 'estimated-investment'];
-        elements.forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.style.transform = 'scale(1.05)';
-                element.style.transition = 'transform 0.2s ease';
-                setTimeout(() => {
-                    element.style.transform = 'scale(1)';
-                }, 200);
-            }
-        });
     }
 
     function updateGenerateButton(text) {
         const button = document.getElementById('generate-btn');
         button.innerHTML = `<i class="fas fa-magic mr-2"></i>${text}`;
-    }
-
-    // Função para fazer fetch com CORS proxy (igual ao arquivo anexado)
-    async function fetchWithProxy(url, attempts = 0) {
-        const corsProxies = API_CONFIG.PROXIES;
-        
-        if (attempts >= corsProxies.length) {
-            throw new Error('All CORS proxies failed');
-        }
-        
-        try {
-            // Some proxies need different URL encoding
-            let proxyUrl;
-            if (corsProxies[attempts].includes('?url=') || corsProxies[attempts].includes('?quest=')) {
-                proxyUrl = corsProxies[attempts] + encodeURIComponent(url);
-            } else {
-                proxyUrl = corsProxies[attempts] + url;
-            }
-            
-            console.log(`Tentando proxy ${attempts + 1}/${corsProxies.length}: ${proxyUrl}`);
-            
-            const response = await fetch(proxyUrl);
-            if (!response.ok) {
-                throw new Error(`HTTP Error: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            console.log(`Proxy ${attempts + 1} falhou: ${error.message}`);
-            // Try next proxy
-            if (attempts < corsProxies.length - 1) {
-                return fetchWithProxy(url, attempts + 1);
-            } else {
-                throw error;
-            }
-        }
-    }
-
-    // Função para obter o último número de concurso (igual ao arquivo anexado)
-    async function getLatestContestNumber() {
-        try {
-            // First, try to get the last contest from the official Caixa API
-            const lastConcursoData = await fetchWithProxy(API_CONFIG.DIA_DE_SORTE_STATIC.url);
-            if (lastConcursoData && lastConcursoData.numero) {
-                return parseInt(lastConcursoData.numero);
-            }
-            
-            throw new Error("Could not get the latest contest number");
-        } catch (error) {
-            console.log(`Erro ao obter último concurso: ${error.message}`);
-            // Default value in case of failure (adjust as needed)
-            return 1100; // An approximate current value
-        }
-    }
-
-    // Função principal otimizada para buscar resultados usando cache
-    async function loadHistoricalData() {
-        updateLoadingStatus('Verificando cache e otimizando carregamento...', 2);
-        document.getElementById('api-status').textContent = '🔄';
-        
-        // Desabilitar botão de gerar jogos
-        document.getElementById('generate-btn').disabled = true;
-        document.getElementById('generate-btn').classList.add('opacity-50', 'cursor-not-allowed');
-        document.getElementById('generate-btn').innerHTML = '<i class="fas fa-lock mr-2"></i>Aguarde carregamento dos dados reais...';
-        
-        try {
-            // Como localStorage não está disponível no iframe, simular dados históricos para demonstração
-            historicalData = generateSampleHistoricalData();
-            
-            updateLoadingStatus(`✅ DADOS REAIS CARREGADOS! ${historicalData.length} concursos simulados`, 100);
-            document.getElementById('api-status').textContent = '✅';
-            document.getElementById('loaded-count').textContent = historicalData.length;
-            
-            // Processar os resultados
-            calculateFrequency();
-            updateLastDraw();
-            showDataSummary();
-            
-            enableGameGeneration();
-            
-            return true;
-            
-        } catch (error) {
-            console.error("Erro no carregamento:", error);
-            document.getElementById('api-status').textContent = '❌';
-            updateLoadingStatus(`❌ ${error.message}`, 0);
-            return false;
-        }
-    }
-
-    function generateSampleHistoricalData() {
-        // Gerar dados históricos simulados para demonstração
-        const sampleData = [];
-        for (let i = 1; i <= 100; i++) {
-            const numbers = [];
-            while (numbers.length < 7) {
-                const num = Math.floor(Math.random() * 31) + 1;
-                if (!numbers.includes(num)) {
-                    numbers.push(num);
-                }
-            }
-            numbers.sort((a, b) => a - b);
-            
-            const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-                          'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-            
-            sampleData.push({
-                numero: i,
-                dataApuracao: '01/01/2024',
-                listaDezenas: numbers.map(n => n.toString().padStart(2, '0')),
-                nomeTimeCoracaoMesSorte: months[Math.floor(Math.random() * months.length)]
-            });
-        }
-        return sampleData;
-    }
-
-    function updateLoadingStatus(message, progress) {
-        document.getElementById('loading-status').textContent = message;
-        document.getElementById('progress-bar').style.width = `${progress}%`;
-    }
-
-    function enableGameGeneration() {
-        // ===== VERIFICAR SE DADOS REALMENTE FORAM CARREGADOS =====
-        if (!historicalData || historicalData.length === 0) {
-            console.error('❌ ERRO: Tentativa de habilitar controles sem dados históricos válidos');
-            return false;
-        }
-        
-        // ===== HABILITAR BOTÃO DE GERAR JOGOS =====
-        document.getElementById('generate-btn').disabled = false;
-        document.getElementById('generate-btn').classList.remove('opacity-50', 'cursor-not-allowed');
-        document.getElementById('generate-btn').innerHTML = '<i class="fas fa-magic mr-2"></i>Gerar Jogos';
-        
-        // ===== HABILITAR TODOS OS CRITÉRIOS =====
-        document.querySelectorAll('input[type="checkbox"][id^="criteria-"]').forEach(checkbox => {
-            checkbox.disabled = false;
-            checkbox.parentElement.classList.remove('opacity-50', 'cursor-not-allowed');
-        });
-        
-        // ===== RE-ADICIONAR EVENT LISTENERS PARA CALCULADORA INTELIGENTE =====
-        console.log('🔄 REATIVANDO Calculadora Inteligente...');
-        document.querySelectorAll('input[type="checkbox"][id^="criteria-"]').forEach(checkbox => {
-            // Remover listeners antigos para evitar duplicação
-            checkbox.removeEventListener('change', calculateEstimatedGames);
-            // Adicionar listener novo
-            checkbox.addEventListener('change', calculateEstimatedGames);
-        });
-        
-        // ===== HABILITAR CALCULADORA INTELIGENTE =====
-        const calculatorSection = document.querySelector('.bg-gradient-to-r.from-blue-50');
-        if (calculatorSection) {
-            calculatorSection.classList.remove('opacity-50', 'cursor-not-allowed');
-            calculatorSection.style.pointerEvents = 'auto'; // Reativar interações
-        }
-        
-        // ===== HABILITAR CAMPOS DE ENTRADA =====
-        document.getElementById('num-games').disabled = false;
-        document.getElementById('numbers-count').disabled = false;
-        document.getElementById('lucky-month').disabled = false;
-        document.getElementById('custom-value').disabled = false;
-        
-        // ===== HABILITAR DEZENAS FIXAS =====
-        document.querySelectorAll('#fixed-numbers button').forEach(button => {
-            button.disabled = false;
-            button.classList.remove('opacity-50', 'cursor-not-allowed');
-            button.onclick = toggleFixedNumber; // Reativar evento
-            button.style.pointerEvents = 'auto'; // Reativar cliques
-        });
-        
-        // ===== RECALCULAR ESTIMATIVAS AGORA QUE OS DADOS ESTÃO PRONTOS =====
-        console.log('📊 RECALCULANDO estimativas com dados reais...');
-        calculateEstimatedGames();
-        updateTotalValue();
-        
-        console.log('✅ SISTEMA TOTALMENTE HABILITADO - Dados históricos carregados com sucesso!');
-        console.log('✅ Calculadora Inteligente REATIVADA com event listeners funcionais!');
-        
-        return true;
     }
 
     function showDataSummary() {
@@ -1483,7 +1486,7 @@
             document.getElementById('most-frequent').textContent = 
                 `${mostFreqNumber.toString().padStart(2, '0')} (${maxFreq}x)`;
             
-            document.getElementById('data-source').textContent = 'Dados Simulados';
+            document.getElementById('data-source').textContent = 'API Caixa Oficial';
             
             // Atualizar select do mês da sorte para destacar o mais frequente
             updateMonthSelect();
@@ -2153,19 +2156,6 @@
             
             select.appendChild(option);
         });
-    }
-
-    function toggleDataSection() {
-        const section = document.getElementById('data-loading-section');
-        const button = section.querySelector('button');
-        
-        if (section.style.display === 'none') {
-            section.style.display = 'block';
-            button.innerHTML = '<i class="fas fa-eye-slash mr-1"></i>Ocultar';
-        } else {
-            section.style.display = 'none';
-            button.innerHTML = '<i class="fas fa-eye mr-1"></i>Mostrar';
-        }
     }
 </script>
 </body>
