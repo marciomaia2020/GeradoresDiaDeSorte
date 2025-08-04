@@ -187,6 +187,7 @@
 
         let resultadoAtual = null;
         let jogosAnalisados = [];
+        let ordemCrescente = false;
 
         // Configuração para dark mode
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -238,13 +239,28 @@
             const dezenas = data.dezenasSorteadasOrdemSorteio || data.listaDezenas || [];
             const mesSorte = data.nomeTimeCoracaoMesSorte || data.mesSorte || data.mesSorteado || '';
             
+            // Aplicar ordem preferida do usuário
+            let numerosExibir = [...dezenas];
+            if (ordemCrescente) {
+                numerosExibir.sort((a, b) => parseInt(a) - parseInt(b));
+            }
+            
             container.innerHTML = `
                 <div class="bg-dia-sorte-50 dark:bg-dia-sorte-900 border border-dia-sorte-200 rounded-lg p-4">
-                    <h3 class="text-lg font-semibold text-dia-sorte-800 dark:text-dia-sorte-200 mb-2">
-                        Concurso ${data.numero} - ${data.dataApuracao}
-                    </h3>
-                    <div class="flex flex-wrap gap-2 mb-3">
-                        ${dezenas.map(num => `
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-semibold text-dia-sorte-800 dark:text-dia-sorte-200">
+                            Concurso ${data.numero} - ${data.dataApuracao}
+                        </h3>
+                        <button 
+                            onclick="toggleOrdemNumeros()" 
+                            id="btnOrdem"
+                            class="px-3 py-1 bg-dia-sorte-600 text-white rounded-lg hover:bg-dia-sorte-700 transition-colors text-sm font-medium"
+                        >
+                            ${ordemCrescente ? '🔄 Ordem Sorteio' : '🔄 Ordem Crescente'}
+                        </button>
+                    </div>
+                    <div id="numerosResultado" class="flex flex-wrap gap-2 mb-3">
+                        ${numerosExibir.map(num => `
                             <span class="bg-dia-sorte-600 text-white px-3 py-1 rounded-full font-bold text-sm">
                                 ${num.toString().padStart(2, '0')}
                             </span>
@@ -261,6 +277,36 @@
                 </div>
             `;
             container.classList.remove('hidden');
+        }
+
+        function toggleOrdemNumeros() {
+            if (!resultadoAtual) return;
+            
+            const dezenas = resultadoAtual.dezenasSorteadasOrdemSorteio || resultadoAtual.listaDezenas || [];
+            const mesSorte = resultadoAtual.nomeTimeCoracaoMesSorte || resultadoAtual.mesSorte || resultadoAtual.mesSorteado || '';
+            const btnOrdem = document.getElementById('btnOrdem');
+            const numerosContainer = document.getElementById('numerosResultado');
+            
+            ordemCrescente = !ordemCrescente;
+            
+            let numerosExibir = [...dezenas];
+            if (ordemCrescente) {
+                numerosExibir.sort((a, b) => parseInt(a) - parseInt(b));
+                btnOrdem.innerHTML = '🔄 Ordem Sorteio';
+            } else {
+                btnOrdem.innerHTML = '🔄 Ordem Crescente';
+            }
+            
+            numerosContainer.innerHTML = `
+                ${numerosExibir.map(num => `
+                    <span class="bg-dia-sorte-600 text-white px-3 py-1 rounded-full font-bold text-sm">
+                        ${num.toString().padStart(2, '0')}
+                    </span>
+                `).join('')}
+                <span class="bg-orange-500 text-white px-3 py-1 rounded-full font-bold text-sm">
+                    ${mesSorte}
+                </span>
+            `;
         }
 
         function converterMesParaAbreviacao(mesCompleto) {
