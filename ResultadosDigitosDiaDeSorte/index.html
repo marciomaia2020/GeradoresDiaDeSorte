@@ -7,25 +7,25 @@
     <style>
         /* === Base Styles === */
         :root {
-            --primary-color: #5D5CDE;
-            --secondary-color: #4949ca;
+            --primary-color: #D4B31A;
+            --secondary-color: #B8981C;
             --primary-text: #333333;
             --background-color: #FFFFFF;
-            --table-background: #F0F8FF;
-            --border-color: #5D5CDE;
-            --button-hover: #4949ca;
-            --highlight-color: #d9534f;
+            --table-background: #FDF9E8;
+            --border-color: #D4B31A;
+            --button-hover: #B8981C;
+            --highlight-color: #E8C838;
         }
         
         .dark {
-            --primary-color: #5D5CDE;
-            --secondary-color: #6e6ee3;
+            --primary-color: #D4B31A;
+            --secondary-color: #E8C838;
             --primary-text: #e0e0e0;
             --background-color: #181818;
             --table-background: #2a2a2a;
-            --border-color: #5D5CDE;
-            --button-hover: #6e6ee3;
-            --highlight-color: #e05c5c;
+            --border-color: #D4B31A;
+            --button-hover: #E8C838;
+            --highlight-color: #F5E866;
         }
 
         body {
@@ -98,9 +98,9 @@
         }
 
         .cache-hit {
-            background-color: rgba(82, 196, 26, 0.1);
-            border: 1px solid #b7eb8f;
-            color: #52c41a;
+            background-color: rgba(212, 179, 26, 0.1);
+            border: 1px solid #E8C838;
+            color: #B8981C;
         }
 
         .cache-miss {
@@ -120,16 +120,16 @@
         }
 
         .loading {
-            color: #0050b3;
-            background-color: #e6f7ff;
-            border: 1px solid #91d5ff;
+            color: #B8981C;
+            background-color: rgba(212, 179, 26, 0.1);
+            border: 1px solid #E8C838;
             animation: pulse 1.5s infinite;
         }
 
         .completed {
-            color: #52c41a;
-            background-color: #f6ffed;
-            border: 1px solid #b7eb8f;
+            color: #B8981C;
+            background-color: rgba(212, 179, 26, 0.1);
+            border: 1px solid #E8C838;
         }
 
         @keyframes pulse {
@@ -191,7 +191,7 @@
         .statistics-container {
             margin: 20px 0;
             padding: 20px;
-            background-color: rgba(240, 248, 255, 0.1);
+            background-color: rgba(253, 249, 232, 0.1);
             border-radius: 5px;
             border: 1px solid var(--border-color);
             box-shadow: 0 4px 8px rgba(0,0,0,0.05);
@@ -239,7 +239,7 @@
         .filter-container {
             margin: 20px 0;
             padding: 15px;
-            background-color: rgba(240, 248, 255, 0.1);
+            background-color: rgba(253, 249, 232, 0.1);
             border-radius: 5px;
             border: 1px solid var(--border-color);
         }
@@ -359,7 +359,7 @@
         }
 
         .diferencas .para {
-            color: #5bc0de;
+            color: #E8C838;
         }
 
         .combo-info, .similares-info {
@@ -398,8 +398,8 @@
         }
 
         @keyframes highlightResume {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 rgba(93, 92, 222, 0); }
-            50% { transform: scale(1.02); box-shadow: 0 0 20px rgba(93, 92, 222, 0.3); }
+            0% { transform: scale(0.95); box-shadow: 0 0 0 rgba(212, 179, 26, 0); }
+            50% { transform: scale(1.02); box-shadow: 0 0 20px rgba(212, 179, 26, 0.3); }
             100% { transform: scale(1); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         }
 
@@ -453,8 +453,8 @@
         }
 
         .status-live {
-            background-color: #52c41a;
-            box-shadow: 0 0 5px #52c41a;
+            background-color: #B8981C;
+            box-shadow: 0 0 5px #B8981C;
             animation: blink 1.5s infinite;
         }
 
@@ -531,14 +531,14 @@
 
         /* === Row highlighting === */
         .row-highlighted {
-            background-color: rgba(217, 83, 79, 0.15) !important;
+            background-color: rgba(232, 200, 56, 0.15) !important;
             animation: highlightRow 1.5s infinite;
         }
 
         @keyframes highlightRow {
-            0% { background-color: rgba(217, 83, 79, 0.05); }
-            50% { background-color: rgba(217, 83, 79, 0.15); }
-            100% { background-color: rgba(217, 83, 79, 0.05); }
+            0% { background-color: rgba(232, 200, 56, 0.05); }
+            50% { background-color: rgba(232, 200, 56, 0.15); }
+            100% { background-color: rgba(232, 200, 56, 0.05); }
         }
 
         .cell-highlighted {
@@ -558,9 +558,9 @@
         }
 
         .warning-message {
-            background-color: rgba(255, 251, 230, 0.8);
-            border: 1px solid #ffe58f;
-            color: #fa8c16;
+            background-color: rgba(253, 249, 232, 0.8);
+            border: 1px solid #E8C838;
+            color: #B8981C;
             padding: 15px;
             margin: 15px 0;
             border-radius: 5px;
@@ -601,7 +601,7 @@
         .frequency-analysis-container {
             margin: 20px 0;
             padding: 20px;
-            background-color: rgba(240, 248, 255, 0.1);
+            background-color: rgba(253, 249, 232, 0.1);
             border-radius: 5px;
             border: 1px solid var(--border-color);
         }
@@ -687,7 +687,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Análise de Dígitos do <span class="destaque">Dia de Sorte</span> - Versão Otimizada</h1>
+        <h1>Análise de Dígitos do <span class="destaque">Dia de Sorte</span></h1>
         
         <div class="centralizado">
             <p>Análise otimizada dos dígitos de todos os sorteios do Dia de Sorte</p>
@@ -2096,7 +2096,7 @@
                                 row.classList.add('row-highlighted');
                             } else if (intervalo === combo.menorIntervalo) {
                                 tdIntervalo.style.fontWeight = 'bold';
-                                tdIntervalo.style.color = '#4CAF50';
+                                tdIntervalo.style.color = '#B8981C';
                             }
                             
                             row.appendChild(tdIntervalo);
@@ -2361,7 +2361,7 @@
                             if (box.textContent.startsWith(maxDigit)) {
                                 box.style.backgroundColor = 'var(--highlight-color)';
                                 box.style.transform = 'scale(1.1)';
-                                box.style.boxShadow = '0 0 8px rgba(217, 83, 79, 0.7)';
+                                box.style.boxShadow = '0 0 8px rgba(232, 200, 56, 0.7)';
                             }
                         });
                     }
@@ -2485,11 +2485,11 @@
                     // Combination status (likely to appear or not)
                     let statusSaida = '';
                     if (ultimoIntervalo >= intervaloMedio * 0.8) {
-                        statusSaida = `<span style="color: green; font-weight: bold;">FAVORÁVEL PARA SAIR</span>`;
+                        statusSaida = `<span style="color: #B8981C; font-weight: bold;">FAVORÁVEL PARA SAIR</span>`;
                     } else if (ultimoIntervalo < 5) {
                         statusSaida = `<span style="color: red; font-weight: bold;">BAIXA PROBABILIDADE</span>`;
                     } else {
-                        statusSaida = `<span style="color: orange; font-weight: bold;">PROBABILIDADE MÉDIA</span>`;
+                        statusSaida = `<span style="color: #E8C838; font-weight: bold;">PROBABILIDADE MÉDIA</span>`;
                     }
                     
                     resumo.innerHTML = `
@@ -2663,22 +2663,22 @@
                 statsGerais.innerHTML = `
                     <h3>Estatísticas Gerais de Intervalos</h3>
                     <div class="stats-grid" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
-                        <div class="stat-box" style="flex: 1; min-width: 200px; padding: 15px; background-color: rgba(240, 248, 255, 0.1); border-radius: 8px; text-align: center;">
+                        <div class="stat-box" style="flex: 1; min-width: 200px; padding: 15px; background-color: rgba(253, 249, 232, 0.1); border-radius: 8px; text-align: center;">
                             <div class="stat-title" style="font-weight: bold; font-size: 18px;">Média Geral</div>
                             <div class="stat-value" style="font-size: 32px; margin: 10px 0; color: var(--primary-color);">${estatisticas.mediaGeral}</div>
                             <div class="stat-desc" style="font-size: 14px; color: #888;">concursos entre aparições</div>
                         </div>
-                        <div class="stat-box" style="flex: 1; min-width: 200px; padding: 15px; background-color: rgba(240, 248, 255, 0.1); border-radius: 8px; text-align: center;">
+                        <div class="stat-box" style="flex: 1; min-width: 200px; padding: 15px; background-color: rgba(253, 249, 232, 0.1); border-radius: 8px; text-align: center;">
                             <div class="stat-title" style="font-weight: bold; font-size: 18px;">Total de Intervalos</div>
                             <div class="stat-value" style="font-size: 32px; margin: 10px 0; color: var(--primary-color);">${estatisticas.totalIntervalos}</div>
                             <div class="stat-desc" style="font-size: 14px; color: #888;">analisados</div>
                         </div>
-                        <div class="stat-box" style="flex: 1; min-width: 200px; padding: 15px; background-color: rgba(240, 248, 255, 0.1); border-radius: 8px; text-align: center;">
+                        <div class="stat-box" style="flex: 1; min-width: 200px; padding: 15px; background-color: rgba(253, 249, 232, 0.1); border-radius: 8px; text-align: center;">
                             <div class="stat-title" style="font-weight: bold; font-size: 18px;">Maior Frequência</div>
                             <div class="stat-value destacado" style="font-size: 32px; margin: 10px 0; color: var(--highlight-color);">${estatisticas.maximos.frequencia}</div>
                             <div class="stat-desc" style="font-size: 14px; color: #888;">aparições</div>
                         </div>
-                        <div class="stat-box" style="flex: 1; min-width: 200px; padding: 15px; background-color: rgba(240, 248, 255, 0.1); border-radius: 8px; text-align: center;">
+                        <div class="stat-box" style="flex: 1; min-width: 200px; padding: 15px; background-color: rgba(253, 249, 232, 0.1); border-radius: 8px; text-align: center;">
                             <div class="stat-title" style="font-weight: bold; font-size: 18px;">Maior Intervalo</div>
                             <div class="stat-value destacado" style="font-size: 32px; margin: 10px 0; color: var(--highlight-color);">${estatisticas.maximos.maiorIntervalo}</div>
                             <div class="stat-desc" style="font-size: 14px; color: #888;">concursos</div>
@@ -2738,7 +2738,7 @@
                         tdPadrao.style.color = 'var(--highlight-color)';
                         tdPadrao.style.fontWeight = 'bold';
                     } else if (combo.padrao === 'Decrescente') {
-                        tdPadrao.style.color = '#5cb85c';
+                        tdPadrao.style.color = '#B8981C';
                         tdPadrao.style.fontWeight = 'bold';
                     }
                     row.appendChild(tdPadrao);
@@ -2816,9 +2816,9 @@
                     tdPotencial.textContent = `${Math.round(combo.potencial * 100)}%`;
                     tdPotencial.style.fontWeight = 'bold';
                     if (combo.potencial > 0.7) {
-                        tdPotencial.style.color = '#5cb85c'; // Green for high potential
+                        tdPotencial.style.color = '#B8981C'; // Green for high potential
                     } else if (combo.potencial > 0.5) {
-                        tdPotencial.style.color = '#f0ad4e'; // Yellow for medium potential
+                        tdPotencial.style.color = '#E8C838'; // Yellow for medium potential
                     } else {
                         tdPotencial.style.color = 'var(--highlight-color)'; // Red for low potential
                     }
@@ -2829,7 +2829,7 @@
                     const tdPercentual = document.createElement('td');
                     tdPercentual.textContent = `${percentualIntervalo}%`;
                     if (percentualIntervalo >= 100) {
-                        tdPercentual.style.color = '#5cb85c';
+                        tdPercentual.style.color = '#B8981C';
                         tdPercentual.style.fontWeight = 'bold';
                     }
                     row.appendChild(tdPercentual);
@@ -2913,18 +2913,18 @@
                     // Creating an HTML table that Excel can import correctly
                     let excelContent = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
                     excelContent += '<head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Dígitos Dia de Sorte</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->';
-                    excelContent += '<style>th { background-color: #000000; color: #ffffff; text-align: left; font-weight: bold; } td { text-align: left; } .concurso { mso-number-format:"0"; }</style>';
+                    excelContent += '<style>th { background-color: #D4B31A; color: #ffffff; text-align: left; font-weight: bold; } td { text-align: left; } .concurso { mso-number-format:"0"; }</style>';
                     excelContent += '</head>';
                     excelContent += '<body><table border="1">';
                     
                     // Add header
                     excelContent += '<tr>';
-                    excelContent += '<th style="background-color: #000000; color: #ffffff;">Concurso</th>';
-                    excelContent += '<th style="background-color: #000000; color: #ffffff;">Data</th>';
-                    excelContent += '<th style="background-color: #000000; color: #ffffff;">Dezenas</th>';
-                    excelContent += '<th style="background-color: #000000; color: #ffffff;">Dígitos</th>';
-                    excelContent += '<th style="background-color: #000000; color: #ffffff;">Dígitos Ordenados</th>';
-                    excelContent += '<th style="background-color: #000000; color: #ffffff;">Qtd. Dígitos</th>';
+                    excelContent += '<th style="background-color: #D4B31A; color: #ffffff;">Concurso</th>';
+                    excelContent += '<th style="background-color: #D4B31A; color: #ffffff;">Data</th>';
+                    excelContent += '<th style="background-color: #D4B31A; color: #ffffff;">Dezenas</th>';
+                    excelContent += '<th style="background-color: #D4B31A; color: #ffffff;">Dígitos</th>';
+                    excelContent += '<th style="background-color: #D4B31A; color: #ffffff;">Dígitos Ordenados</th>';
+                    excelContent += '<th style="background-color: #D4B31A; color: #ffffff;">Qtd. Dígitos</th>';
                     excelContent += '</tr>';
                     
                     // Add data - ALL results, without limitation
@@ -2973,20 +2973,20 @@
                     <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Análise de Dígitos do Dia de Sorte - Versão Otimizada</title>
+                        <title>Análise de Dígitos do Dia de Sorte</title>
                         <style>
                             body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f0f8ff; color: #333; }
                             .container { max-width: 1200px; margin: 0 auto; padding: 20px; background-color: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 5px; }
-                            h1, h2, h3 { color: #5D5CDE; text-align: center; }
+                            h1, h2, h3 { color: #D4B31A; text-align: center; }
                             .section { margin-bottom: 30px; padding: 15px; background-color: #f9f9f9; border-radius: 5px; border: 1px solid #ddd; }
                             table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-                            th { background-color: #5D5CDE; color: white; padding: 10px; text-align: left; }
+                            th { background-color: #D4B31A; color: white; padding: 10px; text-align: left; }
                             td { padding: 8px; border: 1px solid #ddd; text-align: left; }
                             tr:nth-child(even) { background-color: #f2f2f2; }
-                            .digit-box { display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; margin: 5px; background-color: #5D5CDE; color: white; border-radius: 50%; font-weight: bold; }
+                            .digit-box { display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; margin: 5px; background-color: #D4B31A; color: white; border-radius: 50%; font-weight: bold; }
                             .digit-count { font-size: 12px; color: #666; display: block; text-align: center; }
                             .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; padding: 10px; border-top: 1px solid #ddd; }
-                            .optimized-badge { background: linear-gradient(45deg, #5D5CDE, #00d4aa); color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
+                            .optimized-badge { background: linear-gradient(45deg, #D4B31A, #E8C838); color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
                             
                             @media (prefers-color-scheme: dark) {
                                 body { background-color: #181818; color: #e0e0e0; }
@@ -3034,7 +3034,7 @@
                             <div style="margin: 10px 0; display: flex; align-items: center;">
                                 <div style="width: 30px; text-align: center; font-weight: bold;">${digit}</div>
                                 <div style="flex-grow: 1; margin: 0 10px;">
-                                    <div style="background-color: #5D5CDE; height: 24px; width: ${percentage}%;"></div>
+                                    <div style="background-color: #D4B31A; height: 24px; width: ${percentage}%;"></div>
                                 </div>
                                 <div style="width: 60px; text-align: right;">${count}</div>
                             </div>
