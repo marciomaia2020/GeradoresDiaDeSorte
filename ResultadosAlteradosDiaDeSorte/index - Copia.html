@@ -18,8 +18,6 @@
             --table-odd: #ffffff;
             --text-color: #2d2606;
             --footer-color: #715f0e;
-            --repetida-color: #ff6b6b;
-            --repetida-bg: #ffe6e6;
         }
 
         * {
@@ -135,134 +133,6 @@
             outline: none;
             border-color: #D4B31A;
             box-shadow: 0 0 0 3px rgba(212, 179, 26, 0.2);
-        }
-
-        /* Seção de Alertas de Conferência */
-        .conferencia-section {
-            background: linear-gradient(135deg, #ffe6e6, #ffcccc);
-            border: 2px solid #ff6b6b;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 16px rgba(255, 107, 107, 0.3);
-            display: none;
-        }
-
-        /* Seção de Progresso da Conferência */
-        .progresso-conferencia {
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-            border: 2px solid #2196f3;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
-            display: none;
-        }
-
-        .progresso-title {
-            color: #1565c0;
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .progresso-barra {
-            width: 100%;
-            height: 20px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 15px 0;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .progresso-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4caf50, #8bc34a);
-            border-radius: 10px;
-            transition: width 0.3s ease;
-            position: relative;
-        }
-
-        .progresso-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: shine 2s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .progresso-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .stat-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid #e0e0e0;
-        }
-
-        .stat-number {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #1565c0;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .progresso-texto {
-            text-align: center;
-            margin: 10px 0;
-            color: #1565c0;
-            font-weight: 600;
-        }
-
-        .conferencia-title {
-            color: #c62828;
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .alerta-repetida {
-            background: linear-gradient(135deg, #ff6b6b, #ff5252);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px 0;
-            text-align: center;
-            font-weight: bold;
-            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
-            animation: pulse-alert 2s infinite;
-        }
-
-        @keyframes pulse-alert {
-            0% { box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4); }
-            50% { box-shadow: 0 6px 20px rgba(255, 107, 107, 0.7); }
-            100% { box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4); }
         }
 
         .filters-container {
@@ -470,43 +340,6 @@
             background-color: rgba(212, 179, 26, 0.1);
         }
 
-        /* Destaque para linhas com combinações repetidas */
-        tr.combinacao-repetida {
-            background-color: var(--repetida-bg) !important;
-            border: 2px solid var(--repetida-color);
-            animation: pulse-row 3s infinite;
-        }
-
-        tr.combinacao-repetida:hover {
-            background-color: #ffdddd !important;
-        }
-
-        @keyframes pulse-row {
-            0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
-            70% { box-shadow: 0 0 0 8px rgba(255, 107, 107, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
-        }
-
-        .ajuste-repetido {
-            background-color: var(--repetida-color) !important;
-            color: white !important;
-            font-weight: bold;
-            position: relative;
-        }
-
-        .ajuste-repetido::after {
-            content: "⚠️ JÁ SORTEADA";
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #c62828;
-            color: white;
-            font-size: 0.6rem;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-weight: bold;
-        }
-
         .mes-sorte {
             font-weight: bold;
             color: white;
@@ -531,17 +364,6 @@
             font-size: 0.85rem;
             font-weight: bold;
             box-shadow: 0 2px 4px rgba(212, 179, 26, 0.3);
-        }
-
-        .dezena.repetida {
-            background-color: var(--repetida-color);
-            animation: pulse-dezena 2s infinite;
-        }
-
-        @keyframes pulse-dezena {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
         }
 
         footer {
@@ -633,149 +455,6 @@
         .page-numbers .button.active {
             background-color: var(--primary-dark);
             transform: none;
-        }
-
-        /* Estilos da seção de busca de repetições */
-        .busca-repeticoes {
-            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-            border: 2px solid #ffc107;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 16px rgba(255, 193, 7, 0.3);
-            display: none;
-        }
-
-        .busca-title {
-            color: #856404;
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .busca-controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .busca-input {
-            flex: 1;
-            min-width: 250px;
-            padding: 12px 15px;
-            border: 2px solid #ffc107;
-            border-radius: 8px;
-            font-size: 1rem;
-            background: white;
-            color: #495057;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .busca-input:focus {
-            outline: none;
-            border-color: #856404;
-            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
-        }
-
-        .busca-btn {
-            background: #856404;
-            margin: 0;
-        }
-
-        .busca-clear {
-            background: #6c757d;
-            margin: 0;
-        }
-
-        .resultado-busca {
-            background: white;
-            border-radius: 8px;
-            border: 1px solid #ffc107;
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 15px;
-        }
-
-        .resultado-item {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-left: 4px solid #ffc107;
-        }
-
-        .resultado-item.repetida {
-            border-left-color: var(--repetida-color);
-            background: var(--repetida-bg);
-        }
-
-        .resultado-header {
-            font-weight: bold;
-            color: #495057;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .resultado-detalhes {
-            font-size: 0.9rem;
-            color: #6c757d;
-            line-height: 1.6;
-        }
-
-        .dezenas-busca {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            line-height: 24px;
-            text-align: center;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 50%;
-            margin: 2px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .dezenas-busca.repetida {
-            background-color: var(--repetida-color);
-        }
-
-        .mes-busca {
-            background-color: var(--accent-color);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .sem-resultados {
-            text-align: center;
-            color: #6c757d;
-            font-style: italic;
-            padding: 30px;
-        }
-
-        /* Estilo para destacar linha encontrada na busca */
-        .linha-destacada {
-            background-color: #fff3cd !important;
-            border: 3px solid #ffc107 !important;
-            animation: destacar-linha 2s ease-in-out 3;
-        }
-
-        @keyframes destacar-linha {
-            0% { background-color: #fff3cd; }
-            50% { background-color: #ffeaa7; }
-            100% { background-color: #fff3cd; }
         }
 
         /* Responsividade */
@@ -1064,76 +743,10 @@
             <button class="button" onclick="presetSequencial()">
                 <i class="fas fa-sort-numeric-up"></i> Preset Sequencial
             </button>
-            <button class="button" onclick="conferirCombinacoes()" id="btnConferir" style="background: #e74c3c;">
-                <i class="fas fa-search"></i> Conferir Repetições
-            </button>
         </div>
         
         <div style="text-align: center; margin-top: 10px; font-size: 0.8rem; color: var(--primary-dark);">
-            💡 Os números sempre ficarão entre 01 e 31 (limites do Dia de Sorte) | 🎯 Configurações aplicadas em tempo real | ⚠️ Conferência detecta combinações repetidas
-        </div>
-    </div>
-
-    <!-- Seção de Progresso da Conferência -->
-    <div class="progresso-conferencia" id="progressoConferencia">
-        <div class="progresso-title">
-            <i class="fas fa-search"></i> Conferência de Repetições em Andamento
-        </div>
-        
-        <div class="progresso-texto" id="progressoTexto">
-            Preparando análise...
-        </div>
-        
-        <div class="progresso-barra">
-            <div class="progresso-fill" id="progressoFill" style="width: 0%"></div>
-        </div>
-        
-        <div class="progresso-stats">
-            <div class="stat-item">
-                <div class="stat-number" id="statProcessados">0</div>
-                <div class="stat-label">Concursos Analisados</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="statCombinacoes">0</div>
-                <div class="stat-label">Combinações Verificadas</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="statRepetidas">0</div>
-                <div class="stat-label">Repetições Encontradas</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number" id="statTempo">0s</div>
-                <div class="stat-label">Tempo Decorrido</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Seção de Alertas de Conferência -->
-    <div class="conferencia-section" id="conferenciaSection">
-        <div class="conferencia-title">
-            <i class="fas fa-exclamation-triangle"></i> Conferência de Combinações Repetidas
-        </div>
-        <div id="alertasRepetidas">
-            <!-- Alertas serão inseridos aqui -->
-        </div>
-    </div>
-
-    <!-- Campo de Busca para Repetições -->
-    <div class="busca-repeticoes" id="buscaRepeticoes" style="display: none;">
-        <div class="busca-title">
-            <i class="fas fa-search"></i> Buscar Combinações Repetidas
-        </div>
-        <div class="busca-controls">
-            <input type="text" id="campoBusca" placeholder="Digite o número do concurso ou uma dezena (ex: 386, 03, 04)" class="busca-input">
-            <button class="button busca-btn" onclick="buscarRepeticoes()">
-                <i class="fas fa-search"></i> Buscar
-            </button>
-            <button class="button busca-clear" onclick="limparBusca()">
-                <i class="fas fa-times"></i> Limpar
-            </button>
-        </div>
-        <div id="resultadoBusca" class="resultado-busca">
-            <!-- Resultados da busca serão inseridos aqui -->
+            💡 Os números sempre ficarão entre 01 e 31 (limites do Dia de Sorte) | 🎯 Configurações aplicadas em tempo real
         </div>
     </div>
 
@@ -1265,59 +878,7 @@
                             <li><strong>VOCÊ ESCOLHE</strong> o valor de cada ajuste (-10 até +10)</li>
                             <li>Interface totalmente personalizável</li>
                             <li>Presets prontos para facilitar o uso</li>
-                            <li><strong>🎯 CONFERÊNCIA INTELIGENTE</strong> detecta combinações repetidas</li>
                         </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- NOVA SEÇÃO: CONFERÊNCIA INTELIGENTE -->
-            <div class="help-section">
-                <h3><i class="fas fa-search"></i> CONFERÊNCIA INTELIGENTE DE REPETIÇÕES:</h3>
-                
-                <div style="background: linear-gradient(135deg, #ffe6e6, #ffcccc); padding: 20px; border-radius: 10px; border: 2px solid #ff6b6b; margin: 15px 0;">
-                    <h4 style="color: #c62828; margin-bottom: 15px;"><i class="fas fa-exclamation-triangle"></i> FUNCIONALIDADE PRINCIPAL:</h4>
-                    
-                    <div class="help-steps">
-                        <div class="help-step">
-                            <div class="help-step-number">1</div>
-                            <div class="help-step-content">
-                                <h4>ANÁLISE AUTOMÁTICA:</h4>
-                                <p>O sistema pega CADA combinação ajustada e compara com TODOS os resultados históricos do Dia de Sorte</p>
-                            </div>
-                        </div>
-                        
-                        <div class="help-step">
-                            <div class="help-step-number">2</div>
-                            <div class="help-step-content">
-                                <h4>DETECÇÃO EXATA:</h4>
-                                <p>Se encontrar uma sequência de <strong>7 dezenas IDÊNTICAS</strong> que já foi sorteada, marca como repetida</p>
-                            </div>
-                        </div>
-                        
-                        <div class="help-step">
-                            <div class="help-step-number">3</div>
-                            <div class="help-step-content">
-                                <h4>ALERTA VISUAL:</h4>
-                                <p>Destaca em <span style="background: #ff6b6b; color: white; padding: 2px 6px; border-radius: 4px;">VERMELHO</span> na tabela + mostra em qual concurso foi sorteada</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.3); border-radius: 8px;">
-                        <h4 style="color: #c62828; margin-bottom: 10px;"><i class="fas fa-lightbulb"></i> POR QUE É IMPORTANTE:</h4>
-                        <ul style="color: #8b0000;">
-                            <li><strong>Probabilidade baixíssima:</strong> A chance de repetir EXATAMENTE as mesmas 7 dezenas é praticamente ZERO</li>
-                            <li><strong>Economia:</strong> Evita apostar em combinações que já saíram</li>
-                            <li><strong>Estratégia:</strong> Foca em combinações ainda não sorteadas</li>
-                            <li><strong>Segurança:</strong> Te alerta antes de escolher uma sequência repetida</li>
-                        </ul>
-                    </div>
-
-                    <div style="margin-top: 15px; text-align: center;">
-                        <strong style="color: #c62828; font-size: 1.1rem;">
-                            🎯 CLIQUE EM "CONFERIR REPETIÇÕES" PARA ATIVAR A ANÁLISE
-                        </strong>
                     </div>
                 </div>
             </div>
@@ -1374,10 +935,6 @@
                                     <strong><i class="fas fa-sort-numeric-up"></i> Preset Sequencial:</strong>
                                     <span>Aplica: +1, +2, +3, +4, +5, +6</span>
                                 </div>
-                                <div class="help-preset">
-                                    <strong><i class="fas fa-search"></i> Conferir Repetições:</strong>
-                                    <span style="color: #c62828; font-weight: bold;">Verifica se alguma combinação ajustada já foi sorteada</span>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -1390,7 +947,6 @@
                                 <li>Clique em <strong>"Carregar Resultados Reais"</strong></li>
                                 <li>A aplicação busca TODOS os concursos da API da Caixa</li>
                                 <li>Aplica seus ajustes personalizados automaticamente</li>
-                                <li><strong>🔍 Use "Conferir Repetições" após carregar</strong></li>
                             </ul>
                         </div>
                     </div>
@@ -1419,19 +975,17 @@
                     </div>
                     
                     <div class="help-example">
-                        <h4><i class="fas fa-exclamation-triangle"></i> Exemplo 2 - Combinação Repetida Detectada:</h4>
+                        <h4><i class="fas fa-chart-area"></i> Exemplo 2 - Ajustes Grandes:</h4>
                         <div class="help-example-content">
                             <div class="help-config">
-                                <strong>Situação:</strong> Após aplicar ajuste +2<br>
-                                <strong>Resultado:</strong> 03, 07, 14, 18, 22, 28, 31
+                                <strong>Configuração:</strong> 2 ajustes<br>
+                                <strong>Ajuste 1:</strong> +5 | <strong>Ajuste 2:</strong> -8
                             </div>
                             <div class="help-result">
-                                <div style="background: #ffe6e6; padding: 10px; border-radius: 6px; border: 2px solid #ff6b6b;">
-                                    <strong style="color: #c62828;">⚠️ ALERTA:</strong> Esta sequência <span style="background: #ff6b6b; color: white; padding: 2px 6px; border-radius: 3px;">03, 07, 14, 18, 22, 28, 31</span> já foi sorteada no <strong>Concurso 834</strong>
-                                </div>
-                                <div class="help-note" style="color: #c62828; font-weight: bold;">
-                                    ⚠️ EVITE apostar nesta combinação - probabilidade de repetição é quase zero!
-                                </div>
+                                <div>Resultado Original: <span class="help-numbers">10, 15, 20, 25, 27, 30, 31</span></div>
+                                <div>Ajuste +5: <span class="help-numbers-adj">15, 20, 25, 30, 31*, 31*, 31*</span></div>
+                                <div>Ajuste -8: <span class="help-numbers-adj">02, 07, 12, 17, 19, 22, 23</span></div>
+                                <div class="help-note">*Números que passariam de 31 ficam em 31<br>*Números que ficariam abaixo de 01 ficam em 01</div>
                             </div>
                         </div>
                     </div>
@@ -1458,7 +1012,6 @@
                             <li>✅ Dados 100% reais da API da Caixa</li>
                             <li>✅ Interface responsiva para mobile</li>
                             <li>✅ Paginação inteligente</li>
-                            <li>✅ <strong>Conferência automática de repetições</strong></li>
                         </ul>
                     </div>
                 </div>
@@ -1474,13 +1027,11 @@
                     <div class="help-flow-arrow">⬇️</div>
                     <div class="help-flow-step">3. <strong>Aguarde</strong> o carregamento (pode demorar uns minutos)</div>
                     <div class="help-flow-arrow">⬇️</div>
-                    <div class="help-flow-step">4. <strong>Clique</strong> em "Conferir Repetições" 🔍</div>
+                    <div class="help-flow-step">4. <strong>Analise</strong> os resultados na tabela</div>
                     <div class="help-flow-arrow">⬇️</div>
-                    <div class="help-flow-step">5. <strong>Analise</strong> os alertas e destaques na tabela</div>
+                    <div class="help-flow-step">5. <strong>Ajuste</strong> as configurações se necessário</div>
                     <div class="help-flow-arrow">⬇️</div>
-                    <div class="help-flow-step">6. <strong>Ajuste</strong> as configurações se houver repetições</div>
-                    <div class="help-flow-arrow">⬇️</div>
-                    <div class="help-flow-step">7. <strong>Baixe</strong> os dados no formato desejado</div>
+                    <div class="help-flow-step">6. <strong>Baixe</strong> os dados no formato desejado</div>
                 </div>
             </div>
         </div>
@@ -1875,7 +1426,6 @@ let currentPage = 1;
 const RESULTS_PER_PAGE = 20;
 let totalPages = 0;
 let isLoading = false;
-let combinacoesRepetidas = new Map(); // Armazena combinações repetidas
 
 // Configurações das APIs - PRIORIZANDO API DA CAIXA
 const API_CONFIG = {
@@ -1910,381 +1460,6 @@ const CONFIG_SORTEIOS = {
 };
 
 const CACHE_CONCURSOS = new Map();
-
-// =================== FUNÇÕES DE CONFERÊNCIA INTELIGENTE ===================
-
-// Cache otimizado para conferência
-let cacheConferencia = new Map();
-let cacheOriginais = new Map();
-
-async function conferirCombinacoes() {
-    if (allResults.length === 0) {
-        showNotification('❌ Carregue os resultados primeiro!', 'error');
-        return;
-    }
-
-    console.log('🔍 Iniciando conferência inteligente de combinações repetidas...');
-    
-    // Iniciar feedback em tempo real
-    iniciarProgressoConferencia();
-    
-    const quantidade = parseInt(document.getElementById('quantidadeAjustes').value);
-    let totalCombinacoes = 0;
-    let combinacoesRepetidas = 0;
-    let concursosProcessados = 0;
-    
-    const startTime = Date.now();
-
-    // LOGS DETALHADOS PARA DEBUG
-    console.log(`📊 INICIANDO CONFERÊNCIA DETALHADA:`);
-    console.log(`   - Total de resultados: ${allResults.length}`);
-    console.log(`   - Quantidade de ajustes: ${quantidade}`);
-    console.log(`   - Combinações esperadas: ${allResults.length * quantidade}`);
-
-    try {
-        // Criar cache otimizado se não existir
-        if (cacheOriginais.size === 0) {
-            atualizarProgresso('📋 Criando cache otimizado de combinações...', 5, 0, 0, 0, startTime);
-            
-            console.log('🔨 CONSTRUINDO CACHE DE COMBINAÇÕES ORIGINAIS:');
-            allResults.forEach((result, index) => {
-                // Criar chave única para a combinação
-                const key = [...result.dezenas].sort((a, b) => parseInt(a) - parseInt(b)).join(',');
-                cacheOriginais.set(key, result);
-                
-                // Log das primeiras 5 combinações para verificação
-                if (index < 5) {
-                    console.log(`   Cache[${index}]: Concurso ${result.concurso} -> ${key}`);
-                }
-            });
-            
-            console.log(`💾 Cache criado com ${cacheOriginais.size} combinações únicas`);
-            console.log(`   Primeiras 10 chaves do cache:`, Array.from(cacheOriginais.keys()).slice(0, 10));
-        }
-
-        atualizarProgresso('🔍 Iniciando análise de repetições...', 10, 0, 0, 0, startTime);
-
-        // TESTE MANUAL DE VERIFICAÇÃO
-        console.log('🧪 TESTE MANUAL DE VERIFICAÇÃO:');
-        const primeiroResult = allResults[0];
-        const exemploAjuste = adjustDezenas(primeiroResult.dezenas.map(d => parseInt(d)), 1);
-        const exemploKey = [...exemploAjuste].sort((a, b) => parseInt(a) - parseInt(b)).join(',');
-        console.log(`   Resultado original: ${primeiroResult.dezenas.join(',')}`);
-        console.log(`   Ajuste +1: ${exemploAjuste.join(',')}`);
-        console.log(`   Chave do ajuste: ${exemploKey}`);
-        console.log(`   Existe no cache? ${cacheOriginais.has(exemploKey)}`);
-        if (cacheOriginais.has(exemploKey)) {
-            const encontrado = cacheOriginais.get(exemploKey);
-            console.log(`   Encontrado no concurso: ${encontrado.concurso}`);
-        }
-
-        // Processar em lotes para melhor performance
-        const LOTE_SIZE = 50;
-        const totalLotes = Math.ceil(allResults.length / LOTE_SIZE);
-        let exemploDetalhado = false;
-
-        for (let lote = 0; lote < totalLotes; lote++) {
-            const inicioLote = lote * LOTE_SIZE;
-            const fimLote = Math.min(inicioLote + LOTE_SIZE, allResults.length);
-            
-            // Atualizar progresso do lote
-            const progressoLote = 10 + ((lote / totalLotes) * 80);
-            atualizarProgresso(
-                `🔄 Analisando lote ${lote + 1}/${totalLotes} (concursos ${inicioLote + 1}-${fimLote})...`,
-                progressoLote,
-                concursosProcessados,
-                totalCombinacoes,
-                combinacoesRepetidas,
-                startTime
-            );
-
-            // Processar lote atual
-            for (let i = inicioLote; i < fimLote; i++) {
-                const result = allResults[i];
-                
-                // Limpar dados anteriores
-                result.temRepeticao = false;
-                result.ajustesRepetidos = {};
-
-                // Verificar cada ajuste
-                for (let j = 1; j <= quantidade; j++) {
-                    const ajuste = result[`ajuste${j}`];
-                    if (ajuste) {
-                        totalCombinacoes++;
-                        
-                        // Criar chave única para o ajuste
-                        const ajusteKey = [...ajuste].sort((a, b) => parseInt(a) - parseInt(b)).join(',');
-                        
-                        // LOG DETALHADO DO PRIMEIRO CONCURSO PARA VERIFICAÇÃO
-                        if (!exemploDetalhado && i === 0 && j === 1) {
-                            console.log(`🔍 EXEMPLO DETALHADO - Concurso ${result.concurso}:`);
-                            console.log(`   Original: ${result.dezenas.join(',')}`);
-                            console.log(`   Ajuste ${j}: ${ajuste.join(',')}`);
-                            console.log(`   Chave: ${ajusteKey}`);
-                            console.log(`   Verificando se existe no cache...`);
-                            exemploDetalhado = true;
-                        }
-                        
-                        // Buscar no cache otimizado
-                        if (cacheOriginais.has(ajusteKey)) {
-                            const concursoOriginal = cacheOriginais.get(ajusteKey);
-                            
-                            // LOG QUANDO ENCONTRA UMA COMBINAÇÃO NO CACHE
-                            if (!exemploDetalhado) {
-                                console.log(`🎯 COMBINAÇÃO ENCONTRADA NO CACHE:`);
-                                console.log(`   Ajuste: ${ajusteKey}`);
-                                console.log(`   Concurso atual: ${result.concurso}`);
-                                console.log(`   Concurso original: ${concursoOriginal.concurso}`);
-                            }
-                            
-                            // Não considerar repetição se for o mesmo concurso
-                            if (concursoOriginal.concurso !== result.concurso) {
-                                combinacoesRepetidas++;
-                                result.temRepeticao = true;
-                                result.ajustesRepetidos[`ajuste${j}`] = {
-                                    combinacao: ajuste,
-                                    concursoOriginal: concursoOriginal.concurso,
-                                    dataOriginal: concursoOriginal.data,
-                                    mesOriginal: concursoOriginal.mesDaSorte
-                                };
-
-                                console.log(`⚠️ REPETIÇÃO CONFIRMADA: Ajuste ${j} do concurso ${result.concurso} (${ajusteKey}) = Concurso original ${concursoOriginal.concurso}`);
-                            } else {
-                                console.log(`🔄 Mesmo concurso (${result.concurso}), não é repetição`);
-                            }
-                        }
-                    }
-                }
-                
-                concursosProcessados++;
-            }
-
-            // Pequena pausa para não travar a UI
-            await new Promise(resolve => setTimeout(resolve, 10));
-        }
-
-        // LOG FINAL DE VERIFICAÇÃO
-        console.log(`📊 ESTATÍSTICAS FINAIS DA CONFERÊNCIA:`);
-        console.log(`   - Concursos processados: ${concursosProcessados}`);
-        console.log(`   - Total de combinações verificadas: ${totalCombinacoes}`);
-        console.log(`   - Repetições encontradas: ${combinacoesRepetidas}`);
-        console.log(`   - Tamanho do cache: ${cacheOriginais.size}`);
-        console.log(`   - Taxa de repetição: ${(combinacoesRepetidas / totalCombinacoes * 100).toFixed(2)}%`);
-
-        // VERIFICAÇÃO ADICIONAL - TESTE CRUZADO
-        console.log(`🔬 VERIFICAÇÃO CRUZADA MANUAL:`);
-        let verificacaoManual = 0;
-        const amostra = allResults.slice(0, 10); // Pegar amostra de 10 concursos
-        amostra.forEach(result => {
-            for (let j = 1; j <= quantidade; j++) {
-                const ajuste = result[`ajuste${j}`];
-                if (ajuste) {
-                    const ajusteKey = [...ajuste].sort((a, b) => parseInt(a) - parseInt(b)).join(',');
-                    if (cacheOriginais.has(ajusteKey)) {
-                        const original = cacheOriginais.get(ajusteKey);
-                        if (original.concurso !== result.concurso) {
-                            verificacaoManual++;
-                            console.log(`   Verificação manual encontrou: ${ajusteKey} (Concurso ${result.concurso} vs ${original.concurso})`);
-                        }
-                    }
-                }
-            }
-        });
-        console.log(`   Verificação manual encontrou ${verificacaoManual} repetições na amostra`);
-
-        // Finalizar progresso
-        atualizarProgresso(
-            '✅ Análise concluída! Exibindo resultados...',
-            95,
-            concursosProcessados,
-            totalCombinacoes,
-            combinacoesRepetidas,
-            startTime
-        );
-
-        // Pequena pausa antes de mostrar resultados
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // Finalizar e exibir resultados
-        finalizarProgressoConferencia();
-        exibirResultadosConferencia(totalCombinacoes, combinacoesRepetidas, verificacaoManual);
-        renderCurrentPage();
-
-        console.log(`✅ Conferência concluída: ${combinacoesRepetidas} repetições em ${totalCombinacoes} combinações`);
-        
-    } catch (error) {
-        console.error('Erro durante conferência:', error);
-        finalizarProgressoConferencia();
-        showNotification('❌ Erro durante a conferência!', 'error');
-    }
-}
-
-function iniciarProgressoConferencia() {
-    // Esconder seção de alertas anterior
-    const conferenciaSection = document.getElementById('conferenciaSection');
-    conferenciaSection.style.display = 'none';
-    
-    // Mostrar seção de progresso
-    const progressoSection = document.getElementById('progressoConferencia');
-    progressoSection.style.display = 'block';
-    
-    // Resetar progresso
-    document.getElementById('progressoFill').style.width = '0%';
-    document.getElementById('statProcessados').textContent = '0';
-    document.getElementById('statCombinacoes').textContent = '0';
-    document.getElementById('statRepetidas').textContent = '0';
-    document.getElementById('statTempo').textContent = '0s';
-    
-    // Desabilitar botão
-    const btnConferir = document.getElementById('btnConferir');
-    btnConferir.disabled = true;
-    btnConferir.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analisando...';
-    
-    // Scroll para o progresso
-    progressoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function atualizarProgresso(texto, percentual, processados, combinacoes, repetidas, startTime) {
-    const tempoDecorrido = Math.floor((Date.now() - startTime) / 1000);
-    
-    // Atualizar texto
-    document.getElementById('progressoTexto').textContent = texto;
-    
-    // Atualizar barra de progresso
-    document.getElementById('progressoFill').style.width = `${percentual}%`;
-    
-    // Atualizar estatísticas
-    document.getElementById('statProcessados').textContent = processados.toLocaleString();
-    document.getElementById('statCombinacoes').textContent = combinacoes.toLocaleString();
-    document.getElementById('statRepetidas').textContent = repetidas.toLocaleString();
-    document.getElementById('statTempo').textContent = `${tempoDecorrido}s`;
-    
-    // Log de progresso
-    if (processados > 0 && processados % 100 === 0) {
-        console.log(`📊 Progresso: ${processados} concursos analisados, ${repetidas} repetições encontradas`);
-    }
-}
-
-function finalizarProgressoConferencia() {
-    // Completar barra de progresso
-    document.getElementById('progressoFill').style.width = '100%';
-    document.getElementById('progressoTexto').textContent = '✅ Conferência concluída!';
-    
-    // Restaurar botão
-    const btnConferir = document.getElementById('btnConferir');
-    btnConferir.disabled = false;
-    btnConferir.innerHTML = '<i class="fas fa-search"></i> Conferir Repetições';
-    
-    // Esconder progresso após 2 segundos
-    setTimeout(() => {
-        const progressoSection = document.getElementById('progressoConferencia');
-        progressoSection.style.display = 'none';
-    }, 2000);
-}
-
-function exibirResultadosConferencia(totalCombinacoes, quantidadeRepetidas, verificacaoManual = 0) {
-    const conferenciaSection = document.getElementById('conferenciaSection');
-    const alertasContainer = document.getElementById('alertasRepetidas');
-
-    if (quantidadeRepetidas === 0) {
-        // Nenhuma repetição encontrada
-        alertasContainer.innerHTML = `
-            <div style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 20px; border-radius: 10px; text-align: center; font-weight: bold;">
-                <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                <h3>🎉 EXCELENTE! NENHUMA REPETIÇÃO ENCONTRADA!</h3>
-                <p style="margin: 10px 0;">Analisamos <strong>${totalCombinacoes.toLocaleString()}</strong> combinações ajustadas e nenhuma delas já foi sorteada antes.</p>
-                <p style="font-size: 0.9rem; opacity: 0.9;">✅ Todas as suas configurações de ajustes estão seguras para apostas!</p>
-                
-                <div style="background: rgba(255,255,255,0.2); margin-top: 15px; padding: 15px; border-radius: 8px; font-size: 0.85rem;">
-                    <h4 style="margin-bottom: 10px;"><i class="fas fa-clipboard-check"></i> VERIFICAÇÃO DETALHADA CONFIRMADA:</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left;">
-                        <div>✅ Cache de ${allResults.length} combinações originais</div>
-                        <div>✅ ${totalCombinacoes.toLocaleString()} ajustes verificados</div>
-                        <div>✅ Verificação manual: ${verificacaoManual} repetições na amostra</div>
-                        <div>✅ Conferência 100% funcional</div>
-                    </div>
-                    <div style="margin-top: 10px; text-align: center; font-weight: bold;">
-                        📊 Taxa de repetição: ${(quantidadeRepetidas / totalCombinacoes * 100).toFixed(3)}%
-                    </div>
-                </div>
-            </div>
-        `;
-        conferenciaSection.style.display = 'block';
-        showNotification('🎉 Conferência concluída: ZERO repetições!', 'success');
-    } else {
-        // Repetições encontradas - mostrar campo de busca
-        document.getElementById('buscaRepeticoes').style.display = 'block';
-        
-        let alertasHtml = `
-            <div class="alerta-repetida">
-                <i class="fas fa-exclamation-triangle" style="font-size: 1.5rem; margin-bottom: 10px; display: block;"></i>
-                <h3>⚠️ ${quantidadeRepetidas} REPETIÇÕES DETECTADAS!</h3>
-                <p>De ${totalCombinacoes.toLocaleString()} combinações analisadas, encontramos ${quantidadeRepetidas} que já foram sorteadas antes.</p>
-                <p style="font-size: 0.9rem; margin-top: 10px;"><strong>Recomendação:</strong> Evite apostar nas combinações destacadas em vermelho na tabela.</p>
-                <p style="font-size: 0.9rem; margin-top: 10px; background: rgba(255,255,255,0.2); padding: 10px; border-radius: 6px;">
-                    <i class="fas fa-search"></i> <strong>Use o campo de busca abaixo para localizar rapidamente os jogos repetidos na tabela!</strong>
-                </p>
-            </div>
-        `;
-
-        // Listar as repetições encontradas
-        const repeticoesDetalhadas = [];
-        allResults.forEach(result => {
-            if (result.temRepeticao) {
-                Object.keys(result.ajustesRepetidos).forEach(ajusteKey => {
-                    const info = result.ajustesRepetidos[ajusteKey];
-                    repeticoesDetalhadas.push({
-                        concursoAtual: result.concurso,
-                        dataAtual: result.data,
-                        ajuste: ajusteKey,
-                        combinacao: info.combinacao,
-                        concursoOriginal: info.concursoOriginal,
-                        dataOriginal: info.dataOriginal
-                    });
-                });
-            }
-        });
-
-        if (repeticoesDetalhadas.length > 0) {
-            alertasHtml += `
-                <div style="background: white; margin-top: 15px; padding: 15px; border-radius: 8px; color: #2d2606;">
-                    <h4 style="color: #c62828; margin-bottom: 15px;"><i class="fas fa-list"></i> Detalhes das Repetições:</h4>
-                    <div style="max-height: 200px; overflow-y: auto;">
-            `;
-
-            repeticoesDetalhadas.slice(0, 10).forEach((rep, index) => {
-                const select = document.getElementById(rep.ajuste.replace('ajuste', 'ajuste'));
-                const valorAjuste = select ? select.value : '?';
-                const simbolo = parseInt(valorAjuste) >= 0 ? '+' : '';
-
-                alertasHtml += `
-                    <div style="padding: 10px; margin: 5px 0; background: #ffebee; border-left: 4px solid #c62828; border-radius: 4px;">
-                        <strong>Concurso ${rep.concursoAtual}</strong> - Ajuste ${simbolo}${valorAjuste}: 
-                        <span style="background: #c62828; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.8rem;">${rep.combinacao.join(', ')}</span>
-                        <br><small>Já sorteada no Concurso ${rep.concursoOriginal} (${rep.dataOriginal})</small>
-                    </div>
-                `;
-            });
-
-            if (repeticoesDetalhadas.length > 10) {
-                alertasHtml += `
-                    <div style="text-align: center; margin-top: 10px; font-style: italic; color: #666;">
-                        ... e mais ${repeticoesDetalhadas.length - 10} repetições. Veja a tabela abaixo para detalhes completos.
-                    </div>
-                `;
-            }
-
-            alertasHtml += `</div></div>`;
-        }
-
-        alertasContainer.innerHTML = alertasHtml;
-        conferenciaSection.style.display = 'block';
-        showNotification(`⚠️ ${quantidadeRepetidas} repetições encontradas!`, 'error');
-    }
-
-    // Scroll suave até a seção de conferência
-    conferenciaSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
 
 // =================== FUNÇÕES DE CONTROLE DE AJUSTES ===================
 
@@ -2332,11 +1507,6 @@ function updateTable() {
             calculateAdjustments(result);
         });
         renderCurrentPage();
-        
-        // Limpar conferência anterior quando ajustes mudam
-        const conferenciaSection = document.getElementById('conferenciaSection');
-        conferenciaSection.style.display = 'none';
-        combinacoesRepetidas.clear();
     }
 }
 
@@ -2360,110 +1530,13 @@ function calculateAdjustments(result) {
 }
 
 function adjustDezenas(dezenas, adjustment) {
-    const numerosAjustados = [];
-    const numerosUsados = new Set();
-    
-    // Primeiro, calcular os ajustes básicos
-    const ajustesIniciais = dezenas.map(num => {
+    return dezenas.map(num => {
         let adjustedNum = parseInt(num) + adjustment;
-        // Garantir que fique dentro dos limites básicos
+        // Garantir que sempre fique entre 1 e 31 (limites do Dia de Sorte)
         if (adjustedNum < 1) adjustedNum = 1;
         if (adjustedNum > 31) adjustedNum = 31;
-        return adjustedNum;
+        return adjustedNum.toString().padStart(2, '0');
     });
-    
-    console.log(`🔧 Ajustando sequência: ${dezenas.join(',')} com ajuste ${adjustment >= 0 ? '+' : ''}${adjustment}`);
-    console.log(`   Ajustes iniciais: ${ajustesIniciais.join(',')}`);
-    
-    // Processar cada número garantindo unicidade
-    for (let i = 0; i < ajustesIniciais.length; i++) {
-        let numeroDesejado = ajustesIniciais[i];
-        let numeroFinal = numeroDesejado;
-        
-        // Se o número já foi usado, procurar o próximo disponível
-        if (numerosUsados.has(numeroFinal)) {
-            // Estratégia: procurar o número mais próximo disponível
-            let encontrado = false;
-            let distancia = 1;
-            
-            // Procurar alternando para cima e para baixo
-            while (!encontrado && distancia <= 31) {
-                // Tentar acima
-                const candidatoAcima = numeroDesejado + distancia;
-                if (candidatoAcima <= 31 && !numerosUsados.has(candidatoAcima)) {
-                    numeroFinal = candidatoAcima;
-                    encontrado = true;
-                    console.log(`     Conflito: ${numeroDesejado} já usado, escolhido ${numeroFinal} (+${distancia})`);
-                    break;
-                }
-                
-                // Tentar abaixo
-                const candidatoAbaixo = numeroDesejado - distancia;
-                if (candidatoAbaixo >= 1 && !numerosUsados.has(candidatoAbaixo)) {
-                    numeroFinal = candidatoAbaixo;
-                    encontrado = true;
-                    console.log(`     Conflito: ${numeroDesejado} já usado, escolhido ${numeroFinal} (-${distancia})`);
-                    break;
-                }
-                
-                distancia++;
-            }
-            
-            // Se ainda não encontrou (teoricamente impossível com 7 números de 31)
-            if (!encontrado) {
-                // Última tentativa: buscar qualquer número disponível de 1 a 31
-                for (let num = 1; num <= 31; num++) {
-                    if (!numerosUsados.has(num)) {
-                        numeroFinal = num;
-                        console.log(`     Emergência: Escolhido ${numeroFinal} (primeiro disponível)`);
-                        break;
-                    }
-                }
-            }
-        }
-        
-        numerosUsados.add(numeroFinal);
-        numerosAjustados.push(numeroFinal);
-    }
-    
-    // Ordenar em ordem crescente
-    numerosAjustados.sort((a, b) => a - b);
-    
-    // Converter para formato string com zero à esquerda
-    const resultado = numerosAjustados.map(num => num.toString().padStart(2, '0'));
-    
-    console.log(`   Resultado final: ${resultado.join(',')} (${numerosAjustados.length} números únicos)`);
-    
-    // Validação final - garantir que temos 7 números únicos
-    if (new Set(numerosAjustados).size !== 7) {
-        console.error(`❌ ERRO: Resultado com números repetidos: ${resultado.join(',')}`);
-        // Em caso de erro, gerar sequência válida alternativa
-        return gerarSequenciaAlternativa(adjustment);
-    }
-    
-    return resultado;
-}
-
-function gerarSequenciaAlternativa(adjustment) {
-    console.log(`🔄 Gerando sequência alternativa para ajuste ${adjustment}`);
-    
-    // Gerar uma sequência base determinística baseada no ajuste
-    const base = Math.abs(adjustment) + 7;
-    const numeros = [];
-    
-    let numero = base;
-    while (numeros.length < 7) {
-        if (numero >= 1 && numero <= 31 && !numeros.includes(numero)) {
-            numeros.push(numero);
-        }
-        numero = (numero % 31) + 1; // Circular de 1 a 31
-    }
-    
-    numeros.sort((a, b) => a - b);
-    const resultado = numeros.map(num => num.toString().padStart(2, '0'));
-    
-    console.log(`   Sequência alternativa: ${resultado.join(',')}`);
-    return resultado;
 }
 
 function resetarAjustes() {
@@ -2572,10 +1645,6 @@ async function fetchAllDiaDeSorteResults() {
     allResults = [];
     currentPage = 1;
 
-    // Esconder seção de conferência ao recarregar
-    const conferenciaSection = document.getElementById('conferenciaSection');
-    conferenciaSection.style.display = 'none';
-
     // Atualizar estado dos botões
     updateButtonStates();
 
@@ -2649,10 +1718,6 @@ function showConcursoInfo(results) {
                 <br /><br />
                 Dezenas: ${ultimoConcurso.dezenas.map(num => `<span class="dezenas-ultimo">${num}</span>`).join(' ')}
                 <span class="mes-ultimo">${ultimoConcurso.mesDaSorte}</span>
-                <br /><br />
-                <div style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 10px; border-radius: 8px; margin-top: 10px;">
-                    <i class="fas fa-search"></i> <strong>Use "Conferir Repetições" para verificar se algum ajuste já foi sorteado!</strong>
-                </div>
             </div>
         `;
         
@@ -3287,13 +2352,8 @@ function renderCurrentPage() {
     currentResults.forEach(result => {
         const row = tableBody.insertRow();
         
-        // Verificar se tem repetições para aplicar classe CSS
-        if (result.temRepeticao) {
-            row.classList.add('combinacao-repetida');
-        }
-        
-        const formatDezenas = (dezenas, isRepetida = false) => {
-            return dezenas.map(d => `<span class="dezena ${isRepetida ? 'repetida' : ''}">${d}</span>`).join(' ');
+        const formatDezenas = (dezenas) => {
+            return dezenas.map(d => `<span class="dezena">${d}</span>`).join(' ');
         };
         
         let htmlRow = `
@@ -3306,15 +2366,8 @@ function renderCurrentPage() {
         // Adicionar colunas de ajustes baseadas na quantidade selecionada
         for (let i = 1; i <= quantidade; i++) {
             const ajuste = result[`ajuste${i}`];
-            const isAjusteRepetido = result.ajustesRepetidos && result.ajustesRepetidos[`ajuste${i}`];
-            
             if (ajuste) {
-                if (isAjusteRepetido) {
-                    const info = result.ajustesRepetidos[`ajuste${i}`];
-                    htmlRow += `<td class="ajuste-repetido" title="⚠️ JÁ SORTEADA no Concurso ${info.concursoOriginal} (${info.dataOriginal})">${formatDezenas(ajuste, true)}</td>`;
-                } else {
-                    htmlRow += `<td>${formatDezenas(ajuste)}</td>`;
-                }
+                htmlRow += `<td>${formatDezenas(ajuste)}</td>`;
             } else {
                 htmlRow += `<td>-</td>`;
             }
@@ -3503,213 +2556,9 @@ function iniciarCarregamentoAutomatico() {
     }, 1000);
 }
 
-// =================== FUNÇÕES DE BUSCA DE REPETIÇÕES ===================
-
-function buscarRepeticoes() {
-    const termoBusca = document.getElementById('campoBusca').value.trim();
-    const resultadoContainer = document.getElementById('resultadoBusca');
-    
-    if (!termoBusca) {
-        resultadoContainer.innerHTML = '<div class="sem-resultados">Digite um termo para buscar.</div>';
-        return;
-    }
-    
-    console.log(`🔍 Buscando repetições com termo: "${termoBusca}"`);
-    
-    // Buscar em todas as repetições encontradas
-    const resultadosEncontrados = [];
-    
-    allResults.forEach(result => {
-        if (result.temRepeticao) {
-            // Verificar se o termo bate com o número do concurso
-            if (result.concurso.toString().includes(termoBusca)) {
-                resultadosEncontrados.push({
-                    tipo: 'concurso',
-                    result: result,
-                    match: `Concurso ${result.concurso}`
-                });
-            }
-            
-            // Verificar cada ajuste repetido
-            Object.keys(result.ajustesRepetidos).forEach(ajusteKey => {
-                const info = result.ajustesRepetidos[ajusteKey];
-                
-                // Verificar se o termo bate com alguma dezena da combinação repetida
-                const dezenasStr = info.combinacao.join(',');
-                if (dezenasStr.includes(termoBusca.padStart(2, '0'))) {
-                    resultadosEncontrados.push({
-                        tipo: 'dezena',
-                        result: result,
-                        ajuste: ajusteKey,
-                        info: info,
-                        match: `Dezena ${termoBusca.padStart(2, '0')} encontrada`
-                    });
-                }
-                
-                // Verificar se o termo bate com o concurso original
-                if (info.concursoOriginal.toString().includes(termoBusca)) {
-                    resultadosEncontrados.push({
-                        tipo: 'concurso_original',
-                        result: result,
-                        ajuste: ajusteKey,
-                        info: info,
-                        match: `Concurso original ${info.concursoOriginal}`
-                    });
-                }
-            });
-        }
-    });
-    
-    exibirResultadosBusca(resultadosEncontrados, termoBusca);
-}
-
-function exibirResultadosBusca(resultados, termoBusca) {
-    const resultadoContainer = document.getElementById('resultadoBusca');
-    
-    if (resultados.length === 0) {
-        resultadoContainer.innerHTML = `
-            <div class="sem-resultados">
-                Nenhuma repetição encontrada para "${termoBusca}".
-                <br><small>Tente buscar por: número do concurso (ex: 386) ou dezena (ex: 04)</small>
-            </div>
-        `;
-        return;
-    }
-    
-    let html = `
-        <div style="margin-bottom: 15px; font-weight: bold; color: #495057;">
-            📋 ${resultados.length} resultado(s) encontrado(s) para "${termoBusca}":
-        </div>
-    `;
-    
-    // Agrupar resultados únicos para evitar duplicatas
-    const resultadosUnicos = new Map();
-    
-    resultados.forEach(item => {
-        const chave = `${item.result.concurso}-${item.ajuste || 'geral'}`;
-        if (!resultadosUnicos.has(chave)) {
-            resultadosUnicos.set(chave, item);
-        }
-    });
-    
-    Array.from(resultadosUnicos.values()).forEach(item => {
-        const select = document.getElementById(item.ajuste?.replace('ajuste', 'ajuste') || 'ajuste1');
-        const valorAjuste = select ? select.value : '?';
-        const simbolo = parseInt(valorAjuste) >= 0 ? '+' : '';
-        
-        if (item.tipo === 'concurso') {
-            html += `
-                <div class="resultado-item repetida">
-                    <div class="resultado-header">
-                        <span>🎯 Concurso ${item.result.concurso} (${item.result.data})</span>
-                        <span class="mes-busca">${item.result.mesDaSorte}</span>
-                    </div>
-                    <div class="resultado-detalhes">
-                        <strong>Dezenas Originais:</strong> ${item.result.dezenas.map(d => `<span class="dezenas-busca">${d}</span>`).join(' ')}<br>
-                        <strong>Repetições encontradas:</strong> ${Object.keys(item.result.ajustesRepetidos).length} ajuste(s)
-                        <br><small>Clique em "Ir para linha" para localizar na tabela</small>
-                        <br><button class="button" style="margin-top: 5px; padding: 5px 10px; font-size: 0.8rem;" onclick="irParaLinha(${item.result.concurso})">
-                            <i class="fas fa-arrow-right"></i> Ir para linha
-                        </button>
-                    </div>
-                </div>
-            `;
-        } else if (item.info) {
-            html += `
-                <div class="resultado-item repetida">
-                    <div class="resultado-header">
-                        <span>⚠️ Concurso ${item.result.concurso} - Ajuste ${simbolo}${valorAjuste}</span>
-                        <span class="mes-busca">${item.result.mesDaSorte}</span>
-                    </div>
-                    <div class="resultado-detalhes">
-                        <strong>Combinação Repetida:</strong> ${item.info.combinacao.map(d => `<span class="dezenas-busca repetida">${d}</span>`).join(' ')}<br>
-                        <strong>Já sorteada no:</strong> Concurso ${item.info.concursoOriginal} (${item.info.dataOriginal})
-                        ${item.info.mesOriginal ? `<span class="mes-busca">${item.info.mesOriginal}</span>` : ''}
-                        <br><small>Esta combinação é idêntica a um resultado já sorteado</small>
-                        <br><button class="button" style="margin-top: 5px; padding: 5px 10px; font-size: 0.8rem;" onclick="irParaLinha(${item.result.concurso})">
-                            <i class="fas fa-arrow-right"></i> Ir para linha
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-    });
-    
-    resultadoContainer.innerHTML = html;
-}
-
-function limparBusca() {
-    document.getElementById('campoBusca').value = '';
-    document.getElementById('resultadoBusca').innerHTML = '<div class="sem-resultados">Digite um termo para buscar combinações repetidas.</div>';
-}
-
-function irParaLinha(numeroConcurso) {
-    // Encontrar em qual página está o concurso
-    const indiceConcurso = allResults.findIndex(result => parseInt(result.concurso) === parseInt(numeroConcurso));
-    
-    if (indiceConcurso === -1) {
-        showNotification('❌ Concurso não encontrado na tabela', 'error');
-        return;
-    }
-    
-    // Calcular a página
-    const paginaDestino = Math.ceil((indiceConcurso + 1) / RESULTS_PER_PAGE);
-    
-    // Ir para a página
-    if (paginaDestino !== currentPage) {
-        goToPage(paginaDestino);
-    }
-    
-    // Destacar a linha após um pequeno delay
-    setTimeout(() => {
-        destacarLinhaConcurso(numeroConcurso);
-    }, 500);
-    
-    // Scroll para a tabela
-    setTimeout(() => {
-        const tableContainer = document.querySelector('.table-container');
-        tableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 800);
-    
-    showNotification(`🎯 Navegando para o Concurso ${numeroConcurso}`, 'info');
-}
-
-function destacarLinhaConcurso(numeroConcurso) {
-    // Remover destaque anterior
-    document.querySelectorAll('.linha-destacada').forEach(linha => {
-        linha.classList.remove('linha-destacada');
-    });
-    
-    // Encontrar e destacar a linha do concurso
-    const rows = document.querySelectorAll('#diaDeSorteResults tbody tr');
-    rows.forEach(row => {
-        const concursoCell = row.cells[0];
-        if (concursoCell && parseInt(concursoCell.textContent) === parseInt(numeroConcurso)) {
-            row.classList.add('linha-destacada');
-            
-            // Remover destaque após 5 segundos
-            setTimeout(() => {
-                row.classList.remove('linha-destacada');
-            }, 5000);
-        }
-    });
-}
-
-// Adicionar funcionalidade de busca com Enter
-document.addEventListener('DOMContentLoaded', function() {
-    const campoBusca = document.getElementById('campoBusca');
-    if (campoBusca) {
-        campoBusca.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                buscarRepeticoes();
-            }
-        });
-    }
-});
-
 // Inicialização
 window.addEventListener('load', () => {
-    console.log('Aplicação do Dia de Sorte carregada com ajustes personalizáveis e conferência inteligente.');
+    console.log('Aplicação do Dia de Sorte carregada com ajustes personalizáveis.');
     
     // Configurar estado inicial dos controles
     updateAjustes();
@@ -3729,7 +2578,6 @@ window.addEventListener('load', () => {
     // Iniciar carregamento automático
     iniciarCarregamentoAutomatico();
 });
-
 // Posicionamento dinâmico dos tooltips
 document.addEventListener('DOMContentLoaded', function() {
     const tooltips = document.querySelectorAll('.tooltip');
@@ -3765,6 +2613,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
 
 </script>
 

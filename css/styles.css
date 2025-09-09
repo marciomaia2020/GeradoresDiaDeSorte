@@ -1,0 +1,12 @@
+/*CSS PARA A IMAGEM*/
+img {
+	display: block;
+	margin: auto;
+	width:200px;
+	height:100px;
+	opacity: 0.5;
+	border-radius: 50px 20px;
+	}
+img:hover {
+	opacity: 1.0;
+	}
